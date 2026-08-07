@@ -82,28 +82,101 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Route untuk Pendamping
-    Route::middleware(['auth', 'role:pendamping'])->prefix('pendamping')->name('pendamping.')->group(function () {
-        Route::get('/dashboard', [PendampingController::class, 'dashboard'])->name('dashboard');
-        
-        // Level 1: Daftar Jurusan
-        Route::get('/siswa-boarding', [SiswaBoardingController::class, 'index'])->name('siswa.index');
-        
-        // Level 2: Daftar Kelas dalam Jurusan
-        Route::get('/siswa-boarding/jurusan/{jurusan}', [SiswaBoardingController::class, 'showJurusan'])->name('siswa.jurusan');
-        
-        // Level 3: Daftar Siswa dalam Kelas
-        Route::get('/siswa-boarding/jurusan/{jurusan}/kelas/{kelas}', [SiswaBoardingController::class, 'showKelas'])->name('siswa.kelas');
-        
-        // Detail Siswa
-        Route::get('/siswa-boarding/siswa/{siswa}', [SiswaBoardingController::class, 'showSiswa'])->name('siswa.detail');
-        
-        Route::get('/pemeriksaan', [PendampingController::class, 'pemeriksaan'])->name('pemeriksaan.index');
-        Route::get('/tksi', [PendampingController::class, 'tksi'])->name('tksi.index');
-        Route::get('/kunjungan', [PendampingController::class, 'kunjungan'])->name('kunjungan.index');
-        Route::get('/pengingat', [PendampingController::class, 'pengingat'])->name('pengingat.index');
-        Route::get('/laporan', [PendampingController::class, 'laporan'])->name('laporan.index');
-        Route::get('/pengaturan', [PendampingController::class, 'pengaturan'])->name('pengaturan.index');
-    });
+Route::middleware(['auth', 'role:pendamping'])
+->prefix('pendamping')
+->name('pendamping.')
+->group(function () {
+
+    Route::get('/dashboard', [PendampingController::class, 'dashboard'])
+        ->name('dashboard');
+
+
+    // Siswa Boarding
+    Route::get('/siswa-boarding', [SiswaBoardingController::class, 'index'])
+        ->name('siswa.index');
+
+    Route::get('/siswa-boarding/jurusan/{jurusan}', [SiswaBoardingController::class, 'showJurusan'])
+        ->name('siswa.jurusan');
+
+    Route::get('/siswa-boarding/jurusan/{jurusan}/kelas/{kelas}', [SiswaBoardingController::class, 'showKelas'])
+        ->name('siswa.kelas');
+
+    Route::get('/siswa-boarding/siswa/{siswa}', [SiswaBoardingController::class, 'showSiswa'])
+        ->name('siswa.detail');
+
+
+
+    // Pemeriksaan Berkala
+    Route::get('/pemeriksaan', [PendampingController::class, 'pemeriksaan'])
+        ->name('pemeriksaan.index');
+
+
+    // TAMBAHKAN INI
+    Route::get('/pemeriksaan/{id}', [PendampingController::class, 'pemeriksaanShow'])
+        ->name('pemeriksaan.show');
+
+
+
+    // TKSI Daftar Tes
+// TKSI
+Route::get('/tksi', [PendampingController::class, 'tksi'])
+    ->name('tksi.index');
+
+
+// Tambah Batch Tes
+Route::get('/tksi/create', [PendampingController::class, 'tksiCreate'])
+    ->name('tksi.create');
+    
+
+Route::post('/tksi',
+[PendampingController::class,'tksiStore'])
+->name('tksi.store');
+
+
+
+
+Route::get('/tksi/panduan', [PendampingController::class, 'tksiPanduan'])
+    ->name('tksi.panduan');
+    
+
+Route::get('/tksi/panduan/hand-eye', [PendampingController::class, 'panduanHandEye'])
+    ->name('tksi.panduan.hand-eye');
+
+Route::get('/tksi/panduan/vertical-jump', [PendampingController::class, 'panduanVerticalJump'])
+    ->name('tksi.panduan.vertical-jump');
+
+Route::get('/tksi/panduan/t-test', [PendampingController::class, 'panduanTTest'])
+    ->name('tksi.panduan.t-test');
+
+Route::get('/tksi/panduan/hand-touch', [PendampingController::class, 'panduanHandTouch'])
+    ->name('tksi.panduan.hand-touch');
+
+Route::get('/tksi/panduan/dipping', [PendampingController::class, 'panduanDipping'])
+    ->name('tksi.panduan.dipping');
+
+Route::get('/tksi/panduan/beep', [PendampingController::class, 'panduanBeep'])
+    ->name('tksi.panduan.beep');
+
+Route::get('/tksi/{id}',
+    [PendampingController::class,'tksiShow'])
+    ->name('tksi.show');
+    // Isi Tes Siswa
+Route::get('/tksi/{id}/isi', [PendampingController::class, 'tksiIsi'])
+    ->name('tksi.isi');
+
+    Route::get('/kunjungan', [PendampingController::class, 'kunjungan'])
+        ->name('kunjungan.index');
+
+    Route::get('/pengingat', [PendampingController::class, 'pengingat'])
+        ->name('pengingat.index');
+
+    Route::get('/laporan', [PendampingController::class, 'laporan'])
+        ->name('laporan.index');
+
+    Route::get('/pengaturan', [PendampingController::class, 'pengaturan'])
+        ->name('pengaturan.index');
+
+});
 
     // Route untuk Petugas Klinik
     Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {

@@ -28,9 +28,10 @@ class SiswaBoardingController extends Controller
         ]);
     }
 
-    public function showSiswa(string $siswa): Response
-    {
-        // For detail page, just redirect to Level 3 or render list
-        return redirect()->route('pendamping.siswa.index');
-    }
+    public function showSiswa($siswa)
+{
+   return Inertia::render('Pendamping/SiswaBoarding/Detail',[
+    'nis'=>$siswa
+]);
+}
 }

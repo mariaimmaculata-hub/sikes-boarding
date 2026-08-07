@@ -21,6 +21,13 @@ const { url } = usePage();
 const isMobileSidebarOpen = ref(false);
 const isProfileDropdownOpen = ref(false);
 
+const isTksiOpen = ref(false);
+
+
+const toggleTksi = () => {
+    isTksiOpen.value = !isTksiOpen.value;
+};
+
 const toggleMobileSidebar = () => {
     isMobileSidebarOpen.value = !isMobileSidebarOpen.value;
 };
@@ -193,20 +200,90 @@ const breadcrumbs = computed(() => {
                         </Link>
 
                         <!-- TKSI -->
-                        <Link 
-                            :href="route('pendamping.tksi.index')" 
-                            :class="[
-                                'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                isActive('/pendamping/tksi') 
-                                    ? 'bg-blue-800 text-white shadow-md' 
-                                    : 'text-blue-100 hover:bg-blue-950/40 hover:text-white'
-                            ]"
-                        >
-                            <div class="flex items-center space-x-3">
-                                <BoltIcon class="w-5 h-5" />
-                                <span>TKSI &amp; Kebugaran</span>
-                            </div>
-                        </Link>
+<div>
+
+
+<button
+@click="toggleTksi"
+class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition text-blue-100 hover:bg-blue-950/40 hover:text-white"
+>
+
+
+<div class="flex items-center space-x-3">
+
+
+<BoltIcon class="w-5 h-5" />
+
+
+<span>
+TKSI & Kebugaran
+</span>
+
+
+</div>
+
+
+
+<ChevronDownIcon
+class="w-4 h-4 transition"
+:class="{
+'rotate-180':isTksiOpen
+}"
+/>
+
+
+</button>
+
+
+
+
+
+<!-- Sub Menu TKSI -->
+
+<div
+v-if="isTksiOpen"
+class="ml-8 mt-2 space-y-1"
+>
+
+
+<Link
+:href="route('pendamping.tksi.index')"
+class="
+block px-3 py-2 rounded-lg
+text-sm text-blue-200
+hover:bg-blue-800
+hover:text-white
+"
+>
+
+Daftar Tes
+
+</Link>
+
+
+
+
+<Link
+:href="route('pendamping.tksi.panduan')"
+class="
+block px-3 py-2 rounded-lg
+text-sm text-blue-200
+hover:bg-blue-800
+hover:text-white
+"
+>
+
+Panduan
+
+</Link>
+
+
+
+</div>
+
+
+
+</div>
 
                         <!-- Kunjungan Klinik -->
                         <Link 
@@ -341,13 +418,96 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
                                 <Link 
-                                    :href="route('pendamping.tksi.index')" 
-                                    @click="toggleMobileSidebar"
-                                    :class="[
-                                        'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                        isActive('/pendamping/tksi') ? 'bg-blue-800 text-white shadow-md' : 'text-blue-100 hover:bg-blue-950/40'
-                                    ]"
-                                >
+                                    <!-- TKSI MOBILE -->
+
+<div>
+
+
+<button
+@click="toggleTksi"
+class="
+w-full flex items-center justify-between
+px-3 py-2.5 rounded-xl
+font-medium text-sm
+text-blue-100
+hover:bg-blue-950/40
+"
+>
+
+
+<div class="flex items-center space-x-3">
+
+
+<BoltIcon class="w-5 h-5"/>
+
+
+<span>
+TKSI & Kebugaran
+</span>
+
+
+</div>
+
+
+
+<ChevronDownIcon
+class="w-4 h-4 transition"
+:class="{
+'rotate-180':isTksiOpen
+}"
+/>
+
+
+</button>
+
+
+
+
+
+<div
+v-if="isTksiOpen"
+class="ml-8 mt-2 space-y-1"
+>
+
+
+<Link
+:href="route('pendamping.tksi.index')"
+@click="toggleMobileSidebar"
+class="
+block px-3 py-2 rounded-lg
+text-sm text-blue-200
+hover:bg-blue-800
+"
+>
+
+Daftar Tes
+
+</Link>
+
+
+
+
+<Link
+:href="route('pendamping.tksi.panduan')"
+@click="toggleMobileSidebar"
+class="
+block px-3 py-2 rounded-lg
+text-sm text-blue-200
+hover:bg-blue-800
+"
+>
+
+Panduan
+
+</Link>
+
+
+
+</div>
+
+
+
+</div>
                                     <BoltIcon class="w-5 h-5" />
                                     <span>TKSI &amp; Kebugaran</span>
                                 </Link>
