@@ -1,133 +1,778 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { ArrowLeftIcon, CalendarDaysIcon, HeartIcon, UserIcon } from '@heroicons/vue/24/outline';
+import { Head, Link } from '@inertiajs/vue3'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const props = defineProps({
-    id: {
-        type: String,
-        required: true
-    }
-});
+    kunjungan: {
+        type: Object,
+        required: true,
+    },
+})
 
-// Mock visit details based on ID
-const visit = {
-    id: props.id,
-    date: props.id === '1' ? '04 Mar 2026' : (props.id === '2' ? '08 Mar 2026' : '10 Mar 2026'),
-    nis: props.id === '1' ? '2024001' : (props.id === '2' ? '2023102' : '2022203'),
-    name: props.id === '1' ? 'Ahmad Fauzi' : (props.id === '2' ? 'Rina Agustin' : 'Dimas Saputra'),
-    class: props.id === '1' ? 'X TKJ 1' : (props.id === '2' ? 'XI AK 2' : 'XII TAV 1'),
-    dorm: props.id === '1' ? 'Asrama Putra - Kamar 5' : (props.id === '2' ? 'Asrama Putri - Kamar 12' : 'Asrama Putra - Kamar 1'),
-    complaints: props.id === '1' ? 'Demam tinggi semenjak kemarin malam, batuk berdahak disertai tenggorokan gatal dan pilek.' : (props.id === '2' ? 'Nyeri ulu hati menjalar ke perut kiri bawah, mual tapi tidak muntah.' : 'Sakit kepala berdenyut bagian belakang sejak bangun pagi.'),
-    diagnosis: props.id === '1' ? 'ISPA (Infeksi Saluran Pernapasan Akut)' : (props.id === '2' ? 'Dispepsia (Sakit Maag)' : 'Tension Headache (Sakit Kepala Ketegangan)'),
-    therapy: props.id === '1' ? 'Paracetamol 500mg (3x1 sesudah makan), Ambroxol sirup (3x1 sendok makan), Vitamin C (1x1 tablet).' : (props.id === '2' ? 'Antasida tablet kunyah (3x1 sebelum makan), Domperidone 10mg (3x1).' : 'Ibuprofen 400mg (2x1 sesudah makan), istirahat baring di klinik selama 2 jam.'),
-    attending_staff: props.id === '3' ? 'Dr. Handoko (Dokter Mitra)' : 'Indah Fitriani, A.Md.Kep (Petugas Klinik)',
-    temp: props.id === '1' ? '38.5 °C (Demam)' : '36.6 °C (Normal)',
-    bp: '120/80 mmHg',
-    weight: '64 kg'
-};
+const kunjungan = props.kunjungan
+
+const formatTanggal = (tanggal) => {
+    if (!tanggal) return '-'
+
+    return new Date(tanggal).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    })
+}
+
+const formatWaktu = (tanggal) => {
+    if (!tanggal) return '-'
+
+    return new Date(tanggal).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+    }) + ' WIB'
+}
+
+const kelasSiswa = () => {
+    const siswa = kunjungan?.siswa
+
+    if (!siswa) return '-'
+
+    if (siswa.kelas?.nama_kelas) {
+        return siswa.kelas.nama_kelas
+    }
+
+    if (siswa.kelas?.nama) {
+        return siswa.kelas.nama
+    }
+
+    return siswa.kelas || '-'
+}
+
+const pemeriksaNama = () => {
+    return (
+        kunjungan?.pemeriksa?.name ||
+        kunjungan?.user?.name ||
+        kunjungan?.pemeriksa_nama ||
+        '-'
+    )
+}
+
+const statusStyle = (status) => {
+    switch (String(status || '').toLowerCase()) {
+        case 'selesai':
+            return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+
+        case 'berlangsung':
+            return 'bg-blue-50 text-blue-700 border-blue-200'
+
+        case 'menunggu':
+            return 'bg-amber-50 text-amber-700 border-amber-200'
+
+        case 'batal':
+            return 'bg-red-50 text-red-700 border-red-200'
+
+        default:
+            return 'bg-slate-50 text-slate-600 border-slate-200'
+    }
+}
+
+const initialNama = () => {
+    const nama = kunjungan?.siswa?.nama || '?'
+
+    return nama.charAt(0).toUpperCase()
+}
 </script>
 
 <template>
+    <Head title="Detail Kunjungan Klinik" />
+
     <AdminLayout>
-        <Head title="Detail Kunjungan Klinik" />
 
-        <div class="space-y-6 max-w-3xl">
-            <!-- Header Section -->
-            <div class="flex items-center space-x-3">
-                <Link 
-                    :href="route('admin.kunjungan.index')"
-                    class="p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800 rounded-xl transition"
+        <div class="min-h-screen bg-slate-50">
+
+            <!-- ================================================= -->
+            <!-- TOP HEADER -->
+            <!-- ================================================= -->
+
+            <div class="border-b border-slate-200 bg-white">
+
+                <div class="mx-auto max-w-7xl px-6 py-6">
+
+                    <Link
+                        :href="route('admin.kunjungan.index')"
+                        class="mb-5 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-[#2563EB]"
+                    >
+                        <svg
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+
+                        Kembali ke Kunjungan Klinik
+                    </Link>
+
+                    <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+
+                        <div>
+
+                            <div class="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#2563EB]">
+                                <span class="h-1.5 w-1.5 rounded-full bg-[#2563EB]"></span>
+                                Kunjungan Klinik
+                            </div>
+
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900">
+                                Detail Kunjungan
+                            </h1>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Informasi lengkap riwayat pemeriksaan kesehatan siswa.
+                            </p>
+
+                        </div>
+
+                        <div
+                            class="inline-flex w-fit items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-semibold"
+                            :class="statusStyle(kunjungan.status)"
+                        >
+                            <span class="h-2 w-2 rounded-full bg-current"></span>
+
+                            {{ kunjungan.status || 'Tidak ada status' }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- CONTENT -->
+            <!-- ================================================= -->
+
+            <main class="mx-auto max-w-7xl px-6 py-7">
+
+                <!-- ================================================= -->
+                <!-- STUDENT HERO -->
+                <!-- ================================================= -->
+
+                <section
+                    class="relative mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
-                    <ArrowLeftIcon class="w-5 h-5" />
-                </Link>
-                <div>
-                    <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Detail Kunjungan Klinik</h2>
-                    <p class="text-xs text-slate-500 font-medium">Catatan lengkap rekam medis tindakan &amp; terapi obat siswa.</p>
-                </div>
-            </div>
 
-            <!-- Detail Box Card -->
-            <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-6 md:p-8 space-y-6">
-                <!-- Info row top -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                    <div class="space-y-1">
-                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Pemeriksaan Tanggal</span>
-                        <div class="flex items-center space-x-2">
-                            <CalendarDaysIcon class="w-5 h-5 text-rose-500" />
-                            <span class="font-extrabold text-slate-800 text-base">{{ visit.date }}</span>
+                    <!-- Accent -->
+                    <div class="absolute left-0 top-0 h-full w-1 bg-[#2563EB]"></div>
+
+                    <div class="p-6 md:p-7">
+
+                        <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+
+                            <!-- SISWA -->
+
+                            <div class="flex items-center gap-4">
+
+                                <div
+                                    class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#2563EB] text-xl font-bold text-white shadow-sm"
+                                >
+                                    {{ initialNama() }}
+                                </div>
+
+                                <div>
+
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        Siswa
+                                    </p>
+
+                                    <h2 class="mt-1 text-xl font-bold text-slate-900">
+                                        {{ kunjungan.siswa?.nama || '-' }}
+                                    </h2>
+
+                                    <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+
+                                        <span>
+                                            NISN {{ kunjungan.siswa?.nisn || '-' }}
+                                        </span>
+
+                                        <span class="hidden text-slate-300 sm:inline">
+                                            •
+                                        </span>
+
+                                        <span>
+                                            {{ kelasSiswa() }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TANGGAL -->
+
+                            <div class="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
+
+                                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-[#2563EB] shadow-sm">
+
+                                    <svg
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+
+                                </div>
+
+                                <div>
+
+                                    <p class="text-xs font-medium text-slate-400">
+                                        Tanggal Kunjungan
+                                    </p>
+
+                                    <p class="mt-0.5 text-sm font-semibold text-slate-800">
+                                        {{ formatTanggal(kunjungan.tanggal_kunjungan) }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
                         </div>
+
+
+                        <!-- IDENTITAS -->
+
+                        <div class="mt-6 grid grid-cols-1 border-t border-slate-100 pt-5 sm:grid-cols-3">
+
+                            <div class="border-b border-slate-100 pb-4 sm:border-b-0 sm:border-r sm:pr-5">
+
+                                <p class="text-xs font-medium text-slate-400">
+                                    Jenis Kelamin
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-800">
+                                    {{ kunjungan.siswa?.jenis_kelamin || '-' }}
+                                </p>
+
+                            </div>
+
+                            <div class="border-b border-slate-100 py-4 sm:border-b-0 sm:border-r sm:px-5 sm:py-0">
+
+                                <p class="text-xs font-medium text-slate-400">
+                                    Periode
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-800">
+                                    {{ kunjungan.periode?.nama_periode || '-' }}
+                                </p>
+
+                            </div>
+
+                            <div class="pt-4 sm:pl-5 sm:pt-0">
+
+                                <p class="text-xs font-medium text-slate-400">
+                                    Waktu Kunjungan
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-800">
+                                    {{ formatWaktu(kunjungan.tanggal_kunjungan) }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
                     </div>
-                    <div class="flex items-center space-x-1.5 text-xs text-slate-500 font-bold">
-                        <UserIcon class="w-4 h-4 text-slate-400" />
-                        <span>Pemeriksa: <span class="text-slate-800">{{ visit.attending_staff }}</span></span>
-                    </div>
+
+                </section>
+
+
+                <!-- ================================================= -->
+                <!-- MAIN GRID -->
+                <!-- ================================================= -->
+
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+
+                    <!-- ================================================= -->
+                    <!-- PEMERIKSAAN -->
+                    <!-- ================================================= -->
+
+                    <section
+                        class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-2"
+                    >
+
+                        <div class="border-b border-slate-100 px-6 py-5">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-[#2563EB]">
+
+                                    <svg
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                        />
+                                    </svg>
+
+                                </div>
+
+                                <div>
+
+                                    <h2 class="font-bold text-slate-900">
+                                        Hasil Pemeriksaan
+                                    </h2>
+
+                                    <p class="text-xs text-slate-500">
+                                        Catatan pemeriksaan kesehatan siswa
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="divide-y divide-slate-100">
+
+                            <!-- KELUHAN -->
+
+                            <div class="px-6 py-5">
+
+                                <div class="mb-2 flex items-center gap-2">
+
+                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+
+                                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Keluhan
+                                    </p>
+
+                                </div>
+
+                                <p class="text-sm leading-6 text-slate-700">
+                                    {{ kunjungan.keluhan || 'Tidak ada keluhan yang dicatat.' }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- PEMERIKSAAN -->
+
+                            <div class="px-6 py-5">
+
+                                <div class="mb-2 flex items-center gap-2">
+
+                                    <span class="h-1.5 w-1.5 rounded-full bg-[#2563EB]"></span>
+
+                                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Pemeriksaan
+                                    </p>
+
+                                </div>
+
+                                <p class="text-sm leading-6 text-slate-700">
+                                    {{ kunjungan.pemeriksaan || 'Tidak ada data pemeriksaan.' }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- DIAGNOSIS -->
+
+                            <div class="bg-blue-50/50 px-6 py-5">
+
+                                <div class="mb-2 flex items-center gap-2">
+
+                                    <span class="h-1.5 w-1.5 rounded-full bg-[#2563EB]"></span>
+
+                                    <p class="text-xs font-bold uppercase tracking-wider text-[#2563EB]">
+                                        Diagnosis
+                                    </p>
+
+                                </div>
+
+                                <p class="text-sm font-semibold leading-6 text-blue-900">
+                                    {{ kunjungan.diagnosis || 'Tidak ada diagnosis.' }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- TINDAKAN -->
+
+                            <div class="px-6 py-5">
+
+                                <div class="mb-2 flex items-center gap-2">
+
+                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+
+                                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Tindakan
+                                    </p>
+
+                                </div>
+
+                                <p class="text-sm leading-6 text-slate-700">
+                                    {{ kunjungan.tindakan || 'Tidak ada tindakan yang dicatat.' }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- CATATAN -->
+
+                            <div class="px-6 py-5">
+
+                                <div class="mb-2 flex items-center gap-2">
+
+                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+
+                                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        Catatan Tambahan
+                                    </p>
+
+                                </div>
+
+                                <p class="text-sm leading-6 text-slate-700">
+                                    {{ kunjungan.catatan || 'Tidak ada catatan tambahan.' }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- ================================================= -->
+                    <!-- SIDEBAR -->
+                    <!-- ================================================= -->
+
+                    <aside class="space-y-6">
+
+
+                        <!-- PEMERIKSA -->
+
+                        <section
+                            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                        >
+
+                            <div class="border-b border-slate-100 px-5 py-4">
+
+                                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    Pemeriksa
+                                </p>
+
+                            </div>
+
+                            <div class="p-5">
+
+                                <div class="flex items-center gap-3">
+
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-sm font-bold text-[#2563EB]">
+
+                                        {{
+                                            pemeriksaNama()
+                                                ?.charAt(0)
+                                                ?.toUpperCase() || '?'
+                                        }}
+
+                                    </div>
+
+                                    <div class="min-w-0">
+
+                                        <p class="truncate font-semibold text-slate-900">
+                                            {{ pemeriksaNama() }}
+                                        </p>
+
+                                        <p class="mt-0.5 text-xs text-slate-500">
+                                            Petugas Klinik
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- DETAIL KUNJUNGAN -->
+
+                        <section
+                            class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                        >
+
+                            <p class="mb-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                Informasi Kunjungan
+                            </p>
+
+                            <div class="space-y-4">
+
+                                <div>
+
+                                    <p class="text-xs text-slate-400">
+                                        Tanggal
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-semibold text-slate-800">
+                                        {{ formatTanggal(kunjungan.tanggal_kunjungan) }}
+                                    </p>
+
+                                </div>
+
+                                <div>
+
+                                    <p class="text-xs text-slate-400">
+                                        Waktu
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-semibold text-slate-800">
+                                        {{ formatWaktu(kunjungan.tanggal_kunjungan) }}
+                                    </p>
+
+                                </div>
+
+                                <div>
+
+                                    <p class="text-xs text-slate-400">
+                                        Status
+                                    </p>
+
+                                    <span
+                                        class="mt-1 inline-flex rounded-md border px-2.5 py-1 text-xs font-semibold"
+                                        :class="statusStyle(kunjungan.status)"
+                                    >
+                                        {{ kunjungan.status || '-' }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    </aside>
+
                 </div>
 
-                <!-- Student summary -->
-                <div class="bg-slate-50 rounded-2xl p-4 md:p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                    <div>
-                        <span class="text-slate-400 font-semibold block mb-0.5">Nama Siswa</span>
-                        <span class="text-blue-900 font-bold text-sm">{{ visit.name }}</span>
+
+                <!-- ================================================= -->
+                <!-- OBAT -->
+                <!-- ================================================= -->
+
+                <section
+                    class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                >
+
+                    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-[#2563EB]">
+
+                                <svg
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46"
+                                    />
+                                </svg>
+
+                            </div>
+
+                            <div>
+
+                                <h2 class="font-bold text-slate-900">
+                                    Obat
+                                </h2>
+
+                                <p class="text-xs text-slate-500">
+                                    Obat yang diberikan kepada siswa
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <span
+                            v-if="kunjungan.kunjungan_obat?.length"
+                            class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600"
+                        >
+                            {{ kunjungan.kunjungan_obat.length }} obat
+                        </span>
+
                     </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block mb-0.5">NIS</span>
-                        <span class="text-slate-800 font-bold text-sm">{{ visit.nis }}</span>
+
+
+                    <div class="p-6">
+
+                        <div
+                            v-if="kunjungan.kunjungan_obat?.length"
+                            class="overflow-x-auto"
+                        >
+
+                            <table class="w-full min-w-[600px] text-sm">
+
+                                <thead>
+
+                                    <tr class="border-b border-slate-100 text-left">
+
+                                        <th class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                            #
+                                        </th>
+
+                                        <th class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                            Nama Obat
+                                        </th>
+
+                                        <th class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                            Jumlah
+                                        </th>
+
+                                        <th class="pb-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                            Keterangan
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <tr
+                                        v-for="(item, index) in kunjungan.kunjungan_obat"
+                                        :key="item.id"
+                                        class="border-b border-slate-50 last:border-0"
+                                    >
+
+                                        <td class="py-4 pr-4 text-slate-400">
+                                            {{ index + 1 }}
+                                        </td>
+
+                                        <td class="py-4 pr-4 font-semibold text-slate-800">
+                                            {{ item.obat?.nama_obat || item.nama_obat || '-' }}
+                                        </td>
+
+                                        <td class="py-4 pr-4 text-slate-600">
+                                            {{ item.jumlah || '-' }}
+                                        </td>
+
+                                        <td class="py-4 text-slate-500">
+                                            {{ item.keterangan || '-' }}
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <div
+                            v-else
+                            class="flex flex-col items-center justify-center py-10 text-center"
+                        >
+
+                            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-400">
+
+                                <svg
+                                    class="h-6 w-6"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="1.8"
+                                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46"
+                                    />
+                                </svg>
+
+                            </div>
+
+                            <p class="mt-3 text-sm font-semibold text-slate-600">
+                                Tidak ada obat
+                            </p>
+
+                            <p class="mt-1 text-xs text-slate-400">
+                                Tidak ada obat yang diberikan pada kunjungan ini.
+                            </p>
+
+                        </div>
+
                     </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block mb-0.5">Kelas / Rombel</span>
-                        <span class="text-slate-800 font-bold text-sm">{{ visit.class }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block mb-0.5">Asrama / Kamar</span>
-                        <span class="text-slate-800 font-bold text-sm">{{ visit.dorm }}</span>
-                    </div>
+
+                </section>
+
+
+                <!-- ================================================= -->
+                <!-- FOOTER -->
+                <!-- ================================================= -->
+
+                <div class="mt-6 flex items-center justify-between">
+
+                    <p class="text-xs text-slate-400">
+                        Detail rekam kunjungan klinik
+                    </p>
+
+                    <Link
+                        :href="route('admin.kunjungan.index')"
+                        class="inline-flex items-center gap-2 rounded-xl bg-[#2563EB] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    >
+                        <svg
+                            class="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+
+                        Kembali
+                    </Link>
+
                 </div>
 
-                <!-- Medical Symptoms -->
-                <div class="space-y-4">
-                    <h4 class="text-sm font-extrabold text-slate-800 border-b border-slate-100 pb-1.5 flex items-center space-x-2">
-                        <HeartIcon class="w-5 h-5 text-rose-500" />
-                        <span>Pemeriksaan Klinis &amp; Gejala</span>
-                    </h4>
+            </main>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs">
-                        <div>
-                            <span class="text-slate-400 font-semibold block mb-0.5">Suhu Badan (Klinis)</span>
-                            <span class="text-slate-800 font-bold text-sm" :class="{ 'text-rose-600': visit.temp.includes('Demam') }">{{ visit.temp }}</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 font-semibold block mb-0.5">Tekanan Darah</span>
-                            <span class="text-slate-800 font-bold text-sm">{{ visit.bp }}</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-400 font-semibold block mb-0.5">Berat Badan</span>
-                            <span class="text-slate-800 font-bold text-sm">{{ visit.weight }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Details text areas -->
-                <div class="space-y-4 pt-4 border-t border-slate-100 text-xs">
-                    <div class="space-y-1.5">
-                        <span class="text-slate-400 font-bold uppercase tracking-wider block">Keluhan Utama</span>
-                        <p class="text-slate-700 font-medium leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">{{ visit.complaints }}</p>
-                    </div>
-
-                    <div class="space-y-1.5 pt-2">
-                        <span class="text-slate-400 font-bold uppercase tracking-wider block">Diagnosa Medis</span>
-                        <div class="bg-rose-50 text-rose-950 font-bold px-3 py-2.5 rounded-xl border border-rose-100 text-xs tracking-wide">
-                            {{ visit.diagnosis }}
-                        </div>
-                    </div>
-
-                    <div class="space-y-1.5 pt-2">
-                        <span class="text-slate-400 font-bold uppercase tracking-wider block">Terapi Pengobatan / Tindakan Medis</span>
-                        <p class="text-slate-700 font-medium leading-relaxed bg-slate-50/50 p-3 rounded-xl border border-slate-100">{{ visit.therapy }}</p>
-                    </div>
-                </div>
-
-            </div>
         </div>
+
     </AdminLayout>
 </template>

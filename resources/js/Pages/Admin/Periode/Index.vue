@@ -2,10 +2,6 @@
 import { computed, ref } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import {
-    ArrowUpTrayIcon,
-    UserPlusIcon,
-} from '@heroicons/vue/24/outline';
 
 import {
     PlusIcon,
@@ -17,6 +13,8 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     XMarkIcon,
+    CalendarDaysIcon,
+    ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline';
 
 
@@ -25,7 +23,7 @@ import {
 // ======================================================
 
 const props = defineProps({
-    siswas: {
+    periodes: {
         type: Object,
         required: true,
     },
@@ -38,11 +36,6 @@ const props = defineProps({
 
 const search = ref('');
 const statusFilter = ref('');
-
-const angkatanFilter = ref('');
-const jenisKelaminFilter = ref('');
-const kelasFilter = ref('');
-
 const showFilter = ref(false);
 
 
@@ -55,47 +48,19 @@ const page = usePage();
 const flashSuccess = computed(() => {
     return page.props.flash?.success ?? null;
 });
-const flashError = computed(() => page.props.flash?.error)
 
-
-// ======================================================
-// DATA FILTER OPTIONS
-// ======================================================
-
-const angkatanOptions = computed(() => {
-    const data = props.siswas.data ?? [];
-
-    return [...new Set(
-        data
-            .map((siswa) => siswa.angkatan)
-            .filter(
-                (angkatan) =>
-                    angkatan !== null &&
-                    angkatan !== undefined &&
-                    angkatan !== ''
-            )
-    )].sort((a, b) => Number(b) - Number(a));
+const flashError = computed(() => {
+    return page.props.flash?.error ?? null;
 });
-
-
-// ======================================================
-// KELAS OPTIONS
-// ======================================================
-
-const kelasOptions = [
-    '10',
-    '11',
-    '12',
-];
 
 
 // ======================================================
 // FILTER DATA
 // ======================================================
 
-const filteredSiswas = computed(() => {
+const filteredPeriodes = computed(() => {
 
-    let data = props.siswas.data ?? [];
+    let data = props.periodes.data ?? [];
 
 
     // ==================================================
@@ -108,40 +73,34 @@ const filteredSiswas = computed(() => {
             .toLowerCase()
             .trim();
 
-        data = data.filter((siswa) => {
+        data = data.filter((periode) => {
 
             return (
-                String(siswa.nisn ?? '')
+                String(periode.nama_periode ?? '')
                     .toLowerCase()
                     .includes(keyword)
 
                 ||
 
-                String(siswa.nama ?? '')
+                String(periode.tanggal_mulai ?? '')
                     .toLowerCase()
                     .includes(keyword)
 
                 ||
 
-                String(siswa.kelas?.tingkat ?? '')
+                String(periode.tanggal_selesai ?? '')
                     .toLowerCase()
                     .includes(keyword)
 
                 ||
 
-                String(siswa.kelas?.nama_kelas ?? '')
-                    .toLowerCase()
-                    .includes(keyword)
-
-                ||
-
-                String(
-                    siswa.kelas?.jurusan?.nama_jurusan ?? ''
-                )
+                String(periode.pembuat?.name ?? '')
                     .toLowerCase()
                     .includes(keyword)
             );
+
         });
+
     }
 
 
@@ -152,59 +111,16 @@ const filteredSiswas = computed(() => {
     if (statusFilter.value) {
 
         data = data.filter(
-            (siswa) =>
-                siswa.status === statusFilter.value
-        );
-
-    }
-
-
-    // ==================================================
-    // ANGKATAN
-    // ==================================================
-
-    if (angkatanFilter.value) {
-
-        data = data.filter(
-            (siswa) =>
-                String(siswa.angkatan) ===
-                String(angkatanFilter.value)
-        );
-
-    }
-
-
-    // ==================================================
-    // JENIS KELAMIN
-    // ==================================================
-
-    if (jenisKelaminFilter.value) {
-
-        data = data.filter(
-            (siswa) =>
-                siswa.jenis_kelamin ===
-                jenisKelaminFilter.value
-        );
-
-    }
-
-
-    // ==================================================
-    // KELAS
-    // ==================================================
-
-    if (kelasFilter.value) {
-
-        data = data.filter(
-            (siswa) =>
-                String(siswa.kelas?.tingkat) ===
-                String(kelasFilter.value)
+            (periode) =>
+                String(periode.status ?? '').toLowerCase() ===
+                statusFilter.value.toLowerCase()
         );
 
     }
 
 
     return data;
+
 });
 
 
@@ -216,32 +132,21 @@ const hasActiveFilter = computed(() => {
 
     return Boolean(
         search.value ||
-        statusFilter.value ||
-        angkatanFilter.value ||
-        jenisKelaminFilter.value ||
-        kelasFilter.value
+        statusFilter.value
     );
 
 });
 
 
 // ======================================================
-// JUMLAH FILTER TAMBAHAN AKTIF
+// JUMLAH FILTER
 // ======================================================
 
 const activeFilterCount = computed(() => {
 
     let count = 0;
 
-    if (angkatanFilter.value) {
-        count++;
-    }
-
-    if (jenisKelaminFilter.value) {
-        count++;
-    }
-
-    if (kelasFilter.value) {
+    if (statusFilter.value) {
         count++;
     }
 
@@ -259,9 +164,53 @@ const resetFilter = () => {
     search.value = '';
     statusFilter.value = '';
 
-    angkatanFilter.value = '';
-    jenisKelaminFilter.value = '';
-    kelasFilter.value = '';
+};
+
+
+// ======================================================
+// FORMAT DATE
+// ======================================================
+
+const formatDate = (date) => {
+
+    if (!date) {
+        return '-';
+    }
+
+    return new Date(date).toLocaleDateString(
+        'id-ID',
+        {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+        }
+    );
+
+};
+
+
+// ======================================================
+// STATUS BADGE
+// ======================================================
+
+const getStatusBadge = (status) => {
+
+    const value = String(status ?? '')
+        .toLowerCase();
+
+    if (value === 'aktif') {
+        return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+    }
+
+    if (value === 'selesai') {
+        return 'border-blue-200 bg-blue-50 text-blue-700';
+    }
+
+    if (value === 'tidak aktif') {
+        return 'border-slate-200 bg-slate-100 text-slate-500';
+    }
+
+    return 'border-slate-200 bg-slate-100 text-slate-500';
 
 };
 
@@ -270,10 +219,10 @@ const resetFilter = () => {
 // DELETE
 // ======================================================
 
-const deleteSiswa = (siswa) => {
+const deletePeriode = (periode) => {
 
     const confirmed = confirm(
-        `Apakah Anda yakin ingin menghapus data siswa "${siswa.nama}"?`
+        `Apakah Anda yakin ingin menghapus periode "${periode.nama_periode}"?`
     );
 
     if (!confirmed) {
@@ -282,13 +231,14 @@ const deleteSiswa = (siswa) => {
 
     router.delete(
         route(
-            'admin.master.siswa.destroy',
-            siswa.id
+            'admin.periode.destroy',
+            periode.id
         ),
         {
             preserveScroll: true,
         }
     );
+
 };
 
 
@@ -313,30 +263,11 @@ const goToPage = (url) => {
 
 };
 
-
-// ======================================================
-// FORMAT DATE
-// ======================================================
-
-const formatDate = (date) => {
-
-    if (!date) {
-        return '-';
-    }
-
-    return new Date(date).toLocaleDateString(
-        'id-ID',
-        {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        }
-    );
-
-};
 </script>
 
+
 <template>
+
 <AdminLayout>
 
     <div class="space-y-6">
@@ -354,41 +285,30 @@ const formatDate = (date) => {
                 <h1
                     class="text-2xl font-bold text-slate-800"
                 >
-                    Data Siswa
+                    Data Periode
                 </h1>
 
                 <p
                     class="mt-1 text-sm text-slate-500"
                 >
-                    Kelola data siswa SMKN Jateng Semarang.
+                    Kelola periode pemeriksaan kesehatan siswa.
                 </p>
 
             </div>
 
 
-            <!-- TAMBAH SISWA -->
+            <!-- TAMBAH PERIODE -->
 
-            <div class="flex flex-col gap-2 sm:flex-row">
+            <Link
+                :href="route('admin.periode.create')"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+            >
 
-    <Link
-        :href="route('admin.master.siswa.import')"
-        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-    >
-        <ArrowUpTrayIcon class="h-5 w-5" />
+                <PlusIcon class="h-5 w-5" />
 
-        Import Siswa
-    </Link>
+                Tambah Periode
 
-    <Link
-        :href="route('admin.master.siswa.create')"
-        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
-    >
-        <UserPlusIcon class="h-5 w-5" />
-
-        Tambah Siswa
-    </Link>
-
-</div>
+            </Link>
 
         </div>
 
@@ -409,7 +329,7 @@ const formatDate = (date) => {
             <button
                 type="button"
                 @click="page.props.flash.success = null"
-                class="rounded-lg p-1 hover:bg-emerald-100"
+                class="rounded-lg p-1 transition hover:bg-emerald-100"
             >
 
                 <XMarkIcon class="h-4 w-4" />
@@ -418,326 +338,283 @@ const formatDate = (date) => {
 
         </div>
 
-<!-- ==================================================
-     FLASH ERROR
-================================================== -->
 
-<div
-    v-if="flashError"
-    class="flex items-start justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
->
-    <div class="flex items-start gap-3">
+        <!-- ==================================================
+             FLASH ERROR
+        ================================================== -->
 
         <div
-            class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100"
-        >
-            <ExclamationTriangleIcon class="h-4 w-4 text-rose-600" />
-        </div>
-
-        <div>
-
-            <p class="font-bold text-rose-800">
-                Data siswa tidak dapat dihapus
-            </p>
-
-            <p class="mt-0.5 text-xs text-rose-600">
-                {{ flashError }}
-            </p>
-
-        </div>
-
-    </div>
-
-    <button
-        type="button"
-        @click="page.props.flash.error = null"
-        class="rounded-lg p-1 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
-        title="Tutup"
-    >
-        <XMarkIcon class="h-4 w-4" />
-    </button>
-
-</div>
-
-
-
-<!-- ==================================================
-     FILTER CARD
-================================================== -->
-
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-    <!-- SEARCH + STATUS + FILTER -->
-
-
-<div
-
-    class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[3fr_2fr_1fr]"
->
-
-    <!-- SEARCH -->
-
-    <div class="relative w-full">
-
-        <MagnifyingGlassIcon
-            class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-        />
-
-        <input
-            v-model="search"
-            type="text"
-            placeholder="Cari NISN, nama, kelas, atau jurusan..."
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-        />
-
-    </div>
-
-
-    <!-- STATUS -->
-
-    <div class="w-full">
-
-        <select
-            v-model="statusFilter"
-            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            v-if="flashError"
+            class="flex items-start justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3"
         >
 
-            <option value="">
-                Semua Status
-            </option>
+            <div class="flex items-start gap-3">
 
-            <option value="aktif">
-    Aktif
-</option>
-
-<option value="nonaktif">
-    Nonaktif
-</option>
-
-<option value="lulus">
-    Lulus
-</option>
-
-        </select>
-
-    </div>
-
-
-    <!-- FILTER + RESET -->
-
-    <div class="flex w-full gap-2">
-
-        <!-- FILTER -->
-
-        <button
-            type="button"
-            @click="showFilter = !showFilter"
-            :class="[
-                'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
-                showFilter || activeFilterCount > 0
-                    ? 'border-blue-200 bg-blue-50 text-blue-700'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-            ]"
-        >
-
-            <FunnelIcon class="h-4 w-4" />
-
-            <span>
-                Filter
-            </span>
-
-            <span
-                v-if="activeFilterCount > 0"
-                class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
-            >
-                {{ activeFilterCount }}
-            </span>
-
-        </button>
-
-
-        <!-- RESET -->
-
-        <button
-            v-if="hasActiveFilter"
-            type="button"
-            @click="resetFilter"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-        >
-
-            <XMarkIcon class="h-4 w-4" />
-
-            Reset
-
-        </button>
-
-    </div>
-
-</div>
-
-
-
-    <!-- ==================================================
-         3 FILTER TAMBAHAN
-    ================================================== -->
-
-    <div
-        v-if="showFilter"
-        class="border-t border-slate-100 bg-slate-50/70 px-4 py-4"
-    >
-
-        <div
-            class="grid grid-cols-1 gap-4 md:grid-cols-3"
-        >
-
-            <!-- ANGKATAN -->
-
-            <div>
-
-                <label
-                    class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                >
-                    Angkatan
-                </label>
-
-                <select
-                    v-model="angkatanFilter"
-                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                <div
+                    class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100"
                 >
 
-                    <option value="">
-                        Semua Angkatan
-                    </option>
+                    <ExclamationTriangleIcon
+                        class="h-4 w-4 text-rose-600"
+                    />
 
-                    <option
-                        v-for="angkatan in angkatanOptions"
-                        :key="angkatan"
-                        :value="angkatan"
+                </div>
+
+
+                <div>
+
+                    <p
+                        class="font-bold text-rose-800"
                     >
-                        {{ angkatan }}
-                    </option>
+                        Periode tidak dapat dihapus
+                    </p>
 
-                </select>
-
-            </div>
-
-
-            <!-- JENIS KELAMIN -->
-
-            <div>
-
-                <label
-                    class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                >
-                    Jenis Kelamin
-                </label>
-
-                <select
-                    v-model="jenisKelaminFilter"
-                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                >
-
-                    <option value="">
-                        Semua Jenis Kelamin
-                    </option>
-
-                    <option value="L">
-                        Laki-laki
-                    </option>
-
-                    <option value="P">
-                        Perempuan
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- KELAS -->
-
-            <div>
-
-                <label
-                    class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                >
-                    Kelas
-                </label>
-
-                <select
-                    v-model="kelasFilter"
-                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                >
-
-                    <option value="">
-                        Semua Kelas
-                    </option>
-
-                    <option
-                        v-for="tingkat in kelasOptions"
-                        :key="tingkat"
-                        :value="tingkat"
+                    <p
+                        class="mt-0.5 text-xs text-rose-600"
                     >
-                        Kelas {{ tingkat }}
-                    </option>
+                        {{ flashError }}
+                    </p>
 
-                </select>
+                </div>
 
             </div>
+
+
+            <button
+                type="button"
+                @click="page.props.flash.error = null"
+                class="rounded-lg p-1 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700"
+                title="Tutup"
+            >
+
+                <XMarkIcon class="h-4 w-4" />
+
+            </button>
 
         </div>
 
 
-        <!-- FILTER AKTIF -->
+        <!-- ==================================================
+             FILTER CARD
+        ================================================== -->
 
         <div
-            v-if="activeFilterCount > 0"
-            class="mt-4 flex flex-wrap items-center gap-2"
+            class="rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
 
-            <span class="text-xs font-medium text-slate-400">
-                Filter aktif:
-            </span>
+            <!-- SEARCH + STATUS + FILTER -->
 
-
-            <!-- ANGKATAN -->
-
-            <span
-                v-if="angkatanFilter"
-                class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
+            <div
+                class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[3fr_2fr_1fr]"
             >
-                Angkatan {{ angkatanFilter }}
-            </span>
+
+                <!-- SEARCH -->
+
+                <div class="relative w-full">
+
+                    <MagnifyingGlassIcon
+                        class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                    />
+
+                    <input
+                        v-model="search"
+                        type="text"
+                        placeholder="Cari nama periode atau pembuat..."
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                    />
+
+                </div>
 
 
-            <!-- JENIS KELAMIN -->
+                <!-- STATUS -->
 
-            <span
-                v-if="jenisKelaminFilter"
-                class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700"
+                <div class="w-full">
+
+                    <select
+                        v-model="statusFilter"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+
+                        <option value="">
+                            Semua Status
+                        </option>
+
+                        <option value="aktif">
+                            Aktif
+                        </option>
+
+                        <option value="tidak aktif">
+                            Tidak Aktif
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FILTER + RESET -->
+
+                <div class="flex w-full gap-2">
+
+                    <button
+                        type="button"
+                        @click="showFilter = !showFilter"
+                        :class="[
+
+                            'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
+
+                            showFilter || activeFilterCount > 0
+                                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+
+                        ]"
+                    >
+
+                        <FunnelIcon class="h-4 w-4" />
+
+                        <span>
+                            Filter
+                        </span>
+
+
+                        <span
+                            v-if="activeFilterCount > 0"
+                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
+                        >
+
+                            {{ activeFilterCount }}
+
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        v-if="hasActiveFilter"
+                        type="button"
+                        @click="resetFilter"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                    >
+
+                        <XMarkIcon class="h-4 w-4" />
+
+                        Reset
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTER TAMBAHAN -->
+
+            <div
+                v-if="showFilter"
+                class="border-t border-slate-100 bg-slate-50/70 px-4 py-4"
             >
-                {{
-                    jenisKelaminFilter === 'L'
-                        ? 'Laki-laki'
-                        : 'Perempuan'
-                }}
-            </span>
+
+                <div
+                    class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                >
+
+                    <!-- STATUS -->
+
+                    <div>
+
+                        <label
+                            class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                        >
+                            Status Periode
+                        </label>
+
+                        <select
+                            v-model="statusFilter"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        >
+
+                            <option value="">
+                                Semua Status
+                            </option>
+
+                            <option value="aktif">
+                                Aktif
+                            </option>
+
+                            <option value="tidak aktif">
+                                Tidak Aktif
+                            </option>
+
+                        </select>
+
+                    </div>
 
 
-            <!-- KELAS -->
+                    <!-- INFO -->
 
-            <span
-                v-if="kelasFilter"
-                class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700"
-            >
-                Kelas {{ kelasFilter }}
-            </span>
+                    <div class="flex items-end">
+
+                        <div
+                            class="w-full rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                        >
+
+                            <p
+                                class="text-xs font-bold text-blue-700"
+                            >
+                                Informasi Periode
+                            </p>
+
+                            <p
+                                class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                            >
+                                Periode digunakan sebagai dasar
+                                pengelompokan pemeriksaan kesehatan siswa.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FILTER AKTIF -->
+
+                <div
+                    v-if="activeFilterCount > 0"
+                    class="mt-4 flex flex-wrap items-center gap-2"
+                >
+
+                    <span
+                        class="text-xs font-medium text-slate-400"
+                    >
+                        Filter aktif:
+                    </span>
+
+
+                    <span
+                        v-if="statusFilter"
+                        :class="[
+                            'rounded-full px-2.5 py-1 text-xs font-semibold',
+                            statusFilter === 'aktif'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                        ]"
+                    >
+
+                        {{
+                            statusFilter === 'aktif'
+                                ? 'Aktif'
+                                : 'Tidak Aktif'
+                        }}
+
+                    </span>
+
+                </div>
+
+            </div>
 
         </div>
-
-    </div>
-
-</div>
 
 
         <!-- ==================================================
@@ -759,15 +636,15 @@ const formatDate = (date) => {
                     <h2
                         class="text-sm font-bold text-slate-800"
                     >
-                        Daftar Siswa
+                        Daftar Periode
                     </h2>
 
                     <p
                         class="mt-0.5 text-xs text-slate-400"
                     >
                         Menampilkan
-                        {{ filteredSiswas.length }}
-                        siswa pada halaman ini.
+                        {{ filteredPeriodes.length }}
+                        periode pada halaman ini.
                     </p>
 
                 </div>
@@ -775,9 +652,13 @@ const formatDate = (date) => {
             </div>
 
 
-            <!-- DESKTOP TABLE -->
+            <!-- ==================================================
+                 DESKTOP TABLE
+            ================================================== -->
 
-            <div class="hidden overflow-x-auto lg:block">
+            <div
+                class="hidden overflow-x-auto lg:block"
+            >
 
                 <table class="min-w-full">
 
@@ -796,43 +677,31 @@ const formatDate = (date) => {
                             <th
                                 class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-                                NISN
+                                Nama Periode
                             </th>
 
                             <th
                                 class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-                                Nama Siswa
+                                Tanggal Mulai
                             </th>
 
                             <th
                                 class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-                                Kelas
-                            </th>
-
-                            <th
-                                class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                Jurusan
-                            </th>
-
-                            <th
-                                class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                Angkatan
-                            </th>
-
-                            <th
-                                class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                JK
+                                Tanggal Selesai
                             </th>
 
                             <th
                                 class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
                                 Status
+                            </th>
+
+                            <th
+                                class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
+                            >
+                                Dibuat Oleh
                             </th>
 
                             <th
@@ -851,8 +720,8 @@ const formatDate = (date) => {
                     >
 
                         <tr
-                            v-for="(siswa, index) in filteredSiswas"
-                            :key="siswa.id"
+                            v-for="(periode, index) in filteredPeriodes"
+                            :key="periode.id"
                             class="transition hover:bg-slate-50"
                         >
 
@@ -861,21 +730,14 @@ const formatDate = (date) => {
                             <td
                                 class="whitespace-nowrap px-5 py-4 text-sm text-slate-500"
                             >
+
                                 {{
-                                    (siswas.current_page - 1) *
-                                    siswas.per_page +
+                                    (periodes.current_page - 1) *
+                                    periodes.per_page +
                                     index +
                                     1
                                 }}
-                            </td>
 
-
-                            <!-- NISN -->
-
-                            <td
-                                class="whitespace-nowrap px-5 py-4 text-sm font-semibold text-slate-700"
-                            >
-                                {{ siswa.nisn }}
                             </td>
 
 
@@ -888,27 +750,28 @@ const formatDate = (date) => {
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100"
                                     >
-                                        {{
-                                            siswa.nama
-                                                ?.charAt(0)
-                                                ?.toUpperCase()
-                                        }}
+
+                                        <CalendarDaysIcon
+                                            class="h-4 w-4 text-blue-700"
+                                        />
+
                                     </div>
+
 
                                     <div>
 
                                         <p
                                             class="whitespace-nowrap text-sm font-semibold text-slate-800"
                                         >
-                                            {{ siswa.nama }}
+                                            {{ periode.nama_periode }}
                                         </p>
 
                                         <p
                                             class="text-xs text-slate-400"
                                         >
-                                            {{ siswa.no_hp || '-' }}
+                                            ID Periode: {{ periode.id }}
                                         </p>
 
                                     </div>
@@ -918,51 +781,24 @@ const formatDate = (date) => {
                             </td>
 
 
-                            <!-- KELAS -->
-
-                            <td
-                                class="whitespace-nowrap px-5 py-4 text-sm font-medium text-slate-700"
-                            >
-                            {{ siswa.kelas?.tingkat || '-' }}
-                            </td>
-
-
-                            <!-- JURUSAN -->
+                            <!-- TANGGAL MULAI -->
 
                             <td
                                 class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
                             >
-                                {{
-                                    siswa.kelas?.jurusan
-                                        ?.nama_jurusan || '-'
-                                }}
+
+                                {{ formatDate(periode.tanggal_mulai) }}
+
                             </td>
 
 
-                            <!-- ANGKATAN -->
+                            <!-- TANGGAL SELESAI -->
 
                             <td
-                                class="whitespace-nowrap px-5 py-4 text-center text-sm text-slate-600"
-                            >
-                                {{ siswa.angkatan }}
-                            </td>
-
-
-                            <!-- JK -->
-
-                            <td
-                                class="whitespace-nowrap px-5 py-4 text-center"
+                                class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
                             >
 
-                                <span
-                                    class="inline-flex rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600"
-                                >
-                                    {{
-                                        siswa.jenis_kelamin === 'L'
-                                            ? 'L'
-                                            : 'P'
-                                    }}
-                                </span>
+                                {{ formatDate(periode.tanggal_selesai) }}
 
                             </td>
 
@@ -975,18 +811,59 @@ const formatDate = (date) => {
 
                                 <span
                                     :class="[
-                                        'inline-flex rounded-full px-2.5 py-1 text-xs font-bold',
-                                        siswa.status === 'aktif'
-                                            ? 'bg-emerald-100 text-emerald-700'
-                                            : 'bg-slate-100 text-slate-500'
+                                        'inline-flex rounded-full border px-2.5 py-1 text-xs font-bold',
+                                        getStatusBadge(periode.status)
                                     ]"
                                 >
+
                                     {{
-                                        siswa.status === 'aktif'
+                                        String(
+                                            periode.status ?? ''
+                                        ).toLowerCase() === 'aktif'
                                             ? 'Aktif'
                                             : 'Tidak Aktif'
                                     }}
+
                                 </span>
+
+                            </td>
+
+
+                            <!-- PEMBUAT -->
+
+                            <td
+                                class="px-5 py-4"
+                            >
+
+                                <div
+                                    class="flex items-center gap-2"
+                                >
+
+                                    <div
+                                        class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600"
+                                    >
+
+                                        {{
+                                            periode.pembuat?.name
+                                                ?.charAt(0)
+                                                ?.toUpperCase()
+                                            || '?'
+                                        }}
+
+                                    </div>
+
+
+                                    <p
+                                        class="whitespace-nowrap text-sm font-medium text-slate-700"
+                                    >
+
+                                        {{
+                                            periode.pembuat?.name || '-'
+                                        }}
+
+                                    </p>
+
+                                </div>
 
                             </td>
 
@@ -1004,9 +881,14 @@ const formatDate = (date) => {
                                     <!-- DETAIL -->
 
                                     <Link
+                                        v-if="
+                                            route().has(
+                                                'admin.periode.show'
+                                            )
+                                        "
                                         :href="route(
-                                            'admin.master.siswa.show',
-                                            siswa.id
+                                            'admin.periode.show',
+                                            periode.id
                                         )"
                                         title="Detail"
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
@@ -1023,8 +905,8 @@ const formatDate = (date) => {
 
                                     <Link
                                         :href="route(
-                                            'admin.master.siswa.edit',
-                                            siswa.id
+                                            'admin.periode.edit',
+                                            periode.id
                                         )"
                                         title="Edit"
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600"
@@ -1041,7 +923,7 @@ const formatDate = (date) => {
 
                                     <button
                                         type="button"
-                                        @click="deleteSiswa(siswa)"
+                                        @click="deletePeriode(periode)"
                                         title="Hapus"
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
                                     >
@@ -1062,11 +944,11 @@ const formatDate = (date) => {
                         <!-- EMPTY -->
 
                         <tr
-                            v-if="filteredSiswas.length === 0"
+                            v-if="filteredPeriodes.length === 0"
                         >
 
                             <td
-                                colspan="9"
+                                colspan="7"
                                 class="px-5 py-16 text-center"
                             >
 
@@ -1084,11 +966,13 @@ const formatDate = (date) => {
 
                                     </div>
 
+
                                     <p
                                         class="text-sm font-bold text-slate-700"
                                     >
-                                        Data siswa tidak ditemukan
+                                        Data periode tidak ditemukan
                                     </p>
+
 
                                     <p
                                         class="mt-1 text-xs text-slate-400"
@@ -1110,15 +994,21 @@ const formatDate = (date) => {
             </div>
 
 
-            <!-- MOBILE CARD -->
+            <!-- ==================================================
+                 MOBILE CARD
+            ================================================== -->
 
-            <div class="divide-y divide-slate-100 lg:hidden">
+            <div
+                class="divide-y divide-slate-100 lg:hidden"
+            >
 
                 <div
-                    v-for="(siswa, index) in filteredSiswas"
-                    :key="siswa.id"
+                    v-for="(periode, index) in filteredPeriodes"
+                    :key="periode.id"
                     class="p-4"
                 >
+
+                    <!-- HEADER CARD -->
 
                     <div
                         class="flex items-start justify-between gap-3"
@@ -1129,27 +1019,28 @@ const formatDate = (date) => {
                         >
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100"
                             >
-                                {{
-                                    siswa.nama
-                                        ?.charAt(0)
-                                        ?.toUpperCase()
-                                }}
+
+                                <CalendarDaysIcon
+                                    class="h-5 w-5 text-blue-700"
+                                />
+
                             </div>
+
 
                             <div class="min-w-0">
 
                                 <p
                                     class="truncate text-sm font-bold text-slate-800"
                                 >
-                                    {{ siswa.nama }}
+                                    {{ periode.nama_periode }}
                                 </p>
 
                                 <p
                                     class="text-xs text-slate-400"
                                 >
-                                    NISN: {{ siswa.nisn }}
+                                    ID: {{ periode.id }}
                                 </p>
 
                             </div>
@@ -1157,107 +1048,132 @@ const formatDate = (date) => {
                         </div>
 
 
+                        <!-- STATUS -->
+
                         <span
                             :class="[
-                                'shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold',
-                                siswa.status === 'aktif'
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : 'bg-slate-100 text-slate-500'
+                                'shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold',
+                                getStatusBadge(periode.status)
                             ]"
                         >
+
                             {{
-                                siswa.status === 'aktif'
+                                String(
+                                    periode.status ?? ''
+                                ).toLowerCase() === 'aktif'
                                     ? 'Aktif'
                                     : 'Tidak Aktif'
                             }}
+
                         </span>
 
                     </div>
 
 
+                    <!-- INFO -->
+
                     <div
                         class="mt-4 grid grid-cols-2 gap-3 text-xs"
                     >
 
+                        <!-- TANGGAL MULAI -->
+
                         <div>
 
                             <p class="text-slate-400">
-                                Kelas
+                                Tanggal Mulai
                             </p>
 
                             <p
                                 class="mt-0.5 font-semibold text-slate-700"
                             >
-                                {{
-                            siswa.kelas?.tingkat || '-'
-                                }}
+                                {{ formatDate(periode.tanggal_mulai) }}
                             </p>
 
                         </div>
 
 
+                        <!-- TANGGAL SELESAI -->
+
                         <div>
 
                             <p class="text-slate-400">
-                                Jurusan
+                                Tanggal Selesai
                             </p>
 
                             <p
                                 class="mt-0.5 font-semibold text-slate-700"
                             >
-                                {{
-                                    siswa.kelas?.jurusan
-                                        ?.nama_jurusan || '-'
-                                }}
+                                {{ formatDate(periode.tanggal_selesai) }}
                             </p>
 
                         </div>
 
 
+                        <!-- PEMBUAT -->
+
                         <div>
 
                             <p class="text-slate-400">
-                                Angkatan
+                                Dibuat Oleh
                             </p>
 
                             <p
-                                class="mt-0.5 font-semibold text-slate-700"
+                                class="mt-0.5 truncate font-semibold text-slate-700"
                             >
-                                {{ siswa.angkatan }}
+                                {{ periode.pembuat?.name || '-' }}
                             </p>
 
                         </div>
 
 
+                        <!-- STATUS -->
+
                         <div>
 
                             <p class="text-slate-400">
-                                Jenis Kelamin
+                                Status
                             </p>
 
-                            <p
-                                class="mt-0.5 font-semibold text-slate-700"
+                            <span
+                                :class="[
+                                    'mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold',
+                                    getStatusBadge(periode.status)
+                                ]"
                             >
+
                                 {{
-                                    siswa.jenis_kelamin === 'L'
-                                        ? 'Laki-laki'
-                                        : 'Perempuan'
+                                    String(
+                                        periode.status ?? ''
+                                    ).toLowerCase() === 'aktif'
+                                        ? 'Aktif'
+                                        : 'Tidak Aktif'
                                 }}
-                            </p>
+
+                            </span>
 
                         </div>
 
                     </div>
 
 
+                    <!-- ACTION -->
+
                     <div
                         class="mt-4 flex items-center justify-end gap-1 border-t border-slate-100 pt-3"
                     >
 
+                        <!-- DETAIL -->
+
                         <Link
+                            v-if="
+                                route().has(
+                                    'admin.periode.show'
+                                )
+                            "
                             :href="route(
-                                'admin.master.siswa.show',
-                                siswa.id
+                                'admin.periode.show',
+                                periode.id
                             )"
                             class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50"
                         >
@@ -1269,24 +1185,30 @@ const formatDate = (date) => {
                         </Link>
 
 
+                        <!-- EDIT -->
+
                         <Link
                             :href="route(
-                                'admin.master.siswa.edit',
-                                siswa.id
+                                'admin.periode.edit',
+                                periode.id
                             )"
                             class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-amber-600 hover:bg-amber-50"
                         >
 
-                            <PencilSquareIcon class="h-4 w-4" />
+                            <PencilSquareIcon
+                                class="h-4 w-4"
+                            />
 
                             Edit
 
                         </Link>
 
 
+                        <!-- DELETE -->
+
                         <button
                             type="button"
-                            @click="deleteSiswa(siswa)"
+                            @click="deletePeriode(periode)"
                             class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50"
                         >
 
@@ -1304,14 +1226,14 @@ const formatDate = (date) => {
                 <!-- MOBILE EMPTY -->
 
                 <div
-                    v-if="filteredSiswas.length === 0"
+                    v-if="filteredPeriodes.length === 0"
                     class="px-5 py-16 text-center"
                 >
 
                     <p
                         class="text-sm font-bold text-slate-700"
                     >
-                        Data siswa tidak ditemukan
+                        Data periode tidak ditemukan
                     </p>
 
                     <p
@@ -1330,37 +1252,53 @@ const formatDate = (date) => {
             ================================================== -->
 
             <div
-                v-if="siswas.last_page > 1"
+                v-if="periodes.last_page > 1"
                 class="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
                 <p
                     class="text-xs font-medium text-slate-500"
                 >
+
                     Menampilkan
-                    <span class="font-bold text-slate-700">
-                        {{ siswas.from ?? 0 }}
+
+                    <span
+                        class="font-bold text-slate-700"
+                    >
+                        {{ periodes.from ?? 0 }}
                     </span>
+
                     –
-                    <span class="font-bold text-slate-700">
-                        {{ siswas.to ?? 0 }}
+
+                    <span
+                        class="font-bold text-slate-700"
+                    >
+                        {{ periodes.to ?? 0 }}
                     </span>
+
                     dari
-                    <span class="font-bold text-slate-700">
-                        {{ siswas.total }}
+
+                    <span
+                        class="font-bold text-slate-700"
+                    >
+                        {{ periodes.total }}
                     </span>
-                    siswa
+
+                    periode
+
                 </p>
 
 
-                <div class="flex items-center gap-1">
+                <div
+                    class="flex items-center gap-1"
+                >
 
                     <!-- PREVIOUS -->
 
                     <button
                         type="button"
-                        :disabled="!siswas.prev_page_url"
-                        @click="goToPage(siswas.prev_page_url)"
+                        :disabled="!periodes.prev_page_url"
+                        @click="goToPage(periodes.prev_page_url)"
                         class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
 
@@ -1374,7 +1312,7 @@ const formatDate = (date) => {
                     <!-- PAGE NUMBERS -->
 
                     <template
-                        v-for="link in siswas.links.slice(1, -1)"
+                        v-for="link in periodes.links.slice(1, -1)"
                         :key="link.label"
                     >
 
@@ -1383,15 +1321,20 @@ const formatDate = (date) => {
                             type="button"
                             @click="goToPage(link.url)"
                             :class="[
+
                                 'min-w-9 rounded-lg border px-2.5 py-2 text-xs font-bold transition',
+
                                 link.active
                                     ? 'border-blue-700 bg-blue-700 text-white'
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+
                             ]"
                         >
+
                             <span
                                 v-html="link.label"
                             ></span>
+
                         </button>
 
 
@@ -1408,8 +1351,8 @@ const formatDate = (date) => {
 
                     <button
                         type="button"
-                        :disabled="!siswas.next_page_url"
-                        @click="goToPage(siswas.next_page_url)"
+                        :disabled="!periodes.next_page_url"
+                        @click="goToPage(periodes.next_page_url)"
                         class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
 
@@ -1426,6 +1369,8 @@ const formatDate = (date) => {
         </div>
 
     </div>
+
 </AdminLayout>
 
 </template>
+

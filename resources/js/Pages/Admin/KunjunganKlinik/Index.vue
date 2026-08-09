@@ -1,112 +1,859 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { 
-    EyeIcon, 
+import { Link, router } from '@inertiajs/vue3'
+
+import {
+    ArrowLeftIcon,
     MagnifyingGlassIcon,
-    HeartIcon
-} from '@heroicons/vue/24/outline';
+    FunnelIcon,
+    EyeIcon,
+    HeartIcon,
+    CheckCircleIcon,
+    ClockIcon,
+    UserIcon,
+    CalendarDaysIcon,
+    XMarkIcon,
+} from '@heroicons/vue/24/outline'
 
-// Mock Kunjungan Klinik
-const visits = ref([
-    { id: 1, date: '04 Mar 2026', nis: '2024001', name: 'Ahmad Fauzi', class: 'X TKJ 1', complaints: 'Demam tinggi, batuk berdahak', diagnosis: 'ISPA', therapy: 'Paracetamol 500mg, Ambroxol, Vitamin C', staff: 'Petugas Klinik' },
-    { id: 2, date: '08 Mar 2026', nis: '2023102', name: 'Rina Agustin', class: 'XI AK 2', complaints: 'Nyeri perut sebelah kiri bawah', diagnosis: 'Dispepsia (Maag)', therapy: 'Antasida, Domperidone', staff: 'Petugas Klinik' },
-    { id: 3, date: '10 Mar 2026', nis: '2022203', name: 'Dimas Saputra', class: 'XII TAV 1', complaints: 'Sakit kepala, pusing berputar', diagnosis: 'Sakit Kepala Ketegangan', therapy: 'Ibuprofen 400mg, Istirahat 2 Jam', staff: 'Dr. Handoko' }
-]);
+const props = defineProps({
+    kunjungan: {
+        type: Object,
+        required: true,
+    },
 
-const searchQuery = ref('');
+    periodes: {
+        type: Array,
+        default: () => [],
+    },
 
-const filteredVisits = computed(() => {
-    if (!searchQuery.value) return visits.value;
-    return visits.value.filter(v => v.name.toLowerCase().includes(searchQuery.value.toLowerCase()) || v.nis.includes(searchQuery.value) || v.diagnosis.toLowerCase().includes(searchQuery.value.toLowerCase()));
-});
+    filters: {
+        type: Object,
+        default: () => ({
+            search: '',
+            periode_id: '',
+            status: '',
+        }),
+    },
+
+    statistics: {
+        type: Object,
+        default: () => ({
+            total: 0,
+            selesai: 0,
+            proses: 0,
+        }),
+    },
+})
+
+// =====================================================
+// FILTER
+// =====================================================
+
+const search = ref(props.filters.search ?? '')
+const periodeId = ref(props.filters.periode_id ?? '')
+const status = ref(props.filters.status ?? '')
+
+// =====================================================
+// SEARCH DENGAN DEBOUNCE
+// =====================================================
+
+let searchTimeout = null
+
+watch(search, () => {
+    clearTimeout(searchTimeout)
+
+    searchTimeout = setTimeout(() => {
+        applyFilter()
+    }, 400)
+})
+
+// =====================================================
+// FILTER
+// =====================================================
+
+const applyFilter = () => {
+    router.get(
+        route('admin.kunjungan.index'),
+        {
+            search: search.value || undefined,
+            periode_id: periodeId.value || undefined,
+            status: status.value || undefined,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    )
+}
+
+// =====================================================
+// RESET
+// =====================================================
+
+const resetFilter = () => {
+    search.value = ''
+    periodeId.value = ''
+    status.value = ''
+
+    router.get(
+        route('admin.kunjungan.index'),
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        }
+    )
+}
+
+// =====================================================
+// ADA FILTER AKTIF?
+// =====================================================
+
+const hasFilter = computed(() => {
+    return (
+        search.value ||
+        periodeId.value ||
+        status.value
+    )
+})
+
+// =====================================================
+// FORMAT TANGGAL
+// =====================================================
+
+const formatTanggal = (tanggal) => {
+    if (!tanggal) return '-'
+
+    return new Date(tanggal).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
+// =====================================================
+// STATUS
+// =====================================================
+
+const statusLabel = (value) => {
+    if (!value) return '-'
+
+    const labels = {
+        selesai: 'Selesai',
+        proses: 'Proses',
+        menunggu: 'Menunggu',
+        batal: 'Batal',
+    }
+
+    return labels[value.toLowerCase()] ?? value
+}
+
+const statusClass = (value) => {
+    if (!value) {
+        return 'bg-slate-100 text-slate-600'
+    }
+
+    switch (value.toLowerCase()) {
+        case 'selesai':
+            return 'bg-emerald-100 text-emerald-700'
+
+        case 'proses':
+            return 'bg-blue-100 text-blue-700'
+
+        case 'menunggu':
+            return 'bg-amber-100 text-amber-700'
+
+        case 'batal':
+            return 'bg-red-100 text-red-700'
+
+        default:
+            return 'bg-slate-100 text-slate-600'
+    }
+}
+
+// =====================================================
+// KELAS SISWA
+// =====================================================
+
+const namaKelas = (siswa) => {
+    if (!siswa?.kelas) return '-'
+
+    return siswa.kelas.nama_kelas ?? '-'
+}
 </script>
 
 <template>
-    <AdminLayout>
-        <Head title="Kunjungan Klinik" />
+    <AdminLayout :breadcrumbs="breadcrumbs">
 
-        <div class="space-y-6">
-            <!-- Header Section -->
+    <div class="space-y-6">
+
+        <!-- ==================================================
+             HEADER
+        ================================================== -->
+
+        <div
+            class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+        >
+
             <div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Kunjungan Klinik</h2>
-                <p class="text-xs sm:text-sm text-slate-500 font-medium">Pantau catatan kunjungan harian, keluhan medis, dan pengobatan siswa boarding.</p>
+
+                <div class="mb-2">
+
+                    <Link
+                        :href="route('admin.dashboard')"
+                        class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-blue-600"
+                    >
+
+                        <ArrowLeftIcon class="h-4 w-4" />
+
+                        Kembali ke Dashboard
+
+                    </Link>
+
+                </div>
+
+                <h1 class="text-2xl font-bold text-slate-800">
+                    Kunjungan Klinik
+                </h1>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Rekap seluruh kunjungan kesehatan siswa.
+                </p>
+
             </div>
 
-            <!-- Card Wrap -->
-            <div class="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
-                <!-- Search & Filters -->
-                <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="relative w-full sm:max-w-xs">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                            <MagnifyingGlassIcon class="w-4.5 h-4.5" />
-                        </span>
-                        <input 
-                            type="text" 
-                            placeholder="Cari Nama/NIS/Diagnosa..." 
-                            v-model="searchQuery"
-                            class="pl-10 pr-4 py-2 w-full border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-800"
-                        />
-                    </div>
-                </div>
-
-                <!-- Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                                <th class="py-3 px-6">Tanggal</th>
-                                <th class="py-3 px-6">NIS</th>
-                                <th class="py-3 px-6">Nama Siswa</th>
-                                <th class="py-3 px-6">Kelas</th>
-                                <th class="py-3 px-6">Keluhan</th>
-                                <th class="py-3 px-6">Diagnosa</th>
-                                <th class="py-3 px-6">Terapi / Obat</th>
-                                <th class="py-3 px-6 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr 
-                                v-for="visit in filteredVisits" 
-                                :key="visit.id" 
-                                class="border-b border-slate-100 hover:bg-slate-50/50 transition cursor-pointer"
-                            >
-                                <td class="py-4 px-6 font-bold text-slate-500 text-xs">{{ visit.date }}</td>
-                                <td class="py-4 px-6 font-bold text-slate-400 text-xs">{{ visit.nis }}</td>
-                                <td class="py-4 px-6 font-bold text-blue-900 text-sm">
-                                    <div class="flex items-center space-x-2">
-                                        <HeartIcon class="w-4.5 h-4.5 text-rose-500" />
-                                        <span>{{ visit.name }}</span>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 font-semibold text-slate-600 text-sm">{{ visit.class }}</td>
-                                <td class="py-4 px-6 text-slate-600 text-xs max-w-xs truncate">{{ visit.complaints }}</td>
-                                <td class="py-4 px-6">
-                                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-100 uppercase tracking-wide">
-                                        {{ visit.diagnosis }}
-                                    </span>
-                                </td>
-                                <td class="py-4 px-6 text-slate-500 text-xs truncate max-w-xs">{{ visit.therapy }}</td>
-                                <td class="py-4 px-6 text-right space-x-2" @click.stop>
-                                    <Link 
-                                        :href="route('admin.kunjungan.show', visit.id)"
-                                        class="inline-flex p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition"
-                                        title="Detail Kunjungan"
-                                    >
-                                        <EyeIcon class="w-4.5 h-4.5" />
-                                    </Link>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Empty State -->
-                <div v-if="filteredVisits.length === 0" class="py-12 text-center text-slate-400 font-medium">
-                    Tidak ditemukan data kunjungan klinik.
-                </div>
-            </div>
         </div>
-    </AdminLayout>
+
+
+        <!-- ==================================================
+             STATISTICS
+        ================================================== -->
+
+        <div
+            class="grid grid-cols-1 gap-4 sm:grid-cols-3"
+        >
+
+            <!-- TOTAL -->
+
+            <div
+                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                    >
+
+                        <HeartIcon
+                            class="h-5 w-5 text-blue-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-xs font-medium text-slate-400">
+                            Total Kunjungan
+                        </p>
+
+                        <p class="text-xl font-bold text-slate-800">
+                            {{ statistics.total }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SELESAI -->
+
+            <div
+                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100"
+                    >
+
+                        <CheckCircleIcon
+                            class="h-5 w-5 text-emerald-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-xs font-medium text-slate-400">
+                            Selesai
+                        </p>
+
+                        <p class="text-xl font-bold text-slate-800">
+                            {{ statistics.selesai }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROSES -->
+
+            <div
+                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100"
+                    >
+
+                        <ClockIcon
+                            class="h-5 w-5 text-amber-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <p class="text-xs font-medium text-slate-400">
+                            Dalam Proses
+                        </p>
+
+                        <p class="text-xl font-bold text-slate-800">
+                            {{ statistics.proses }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             FILTER
+        ================================================== -->
+
+        <div
+            class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+
+            <div
+                class="mb-4 flex items-center gap-2"
+            >
+
+                <FunnelIcon class="h-5 w-5 text-slate-500" />
+
+                <h2 class="text-sm font-bold text-slate-700">
+                    Filter Kunjungan
+                </h2>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1 gap-3 md:grid-cols-4"
+            >
+
+                <!-- SEARCH -->
+
+                <div class="relative md:col-span-2">
+
+                    <MagnifyingGlassIcon
+                        class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                    />
+
+                    <input
+                        v-model="search"
+                        type="text"
+                        placeholder="Cari nama atau NISN siswa..."
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                    />
+
+                </div>
+
+
+                <!-- PERIODE -->
+
+                <select
+                    v-model="periodeId"
+                    @change="applyFilter"
+                    class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                >
+
+                    <option value="">
+                        Semua Periode
+                    </option>
+
+                    <option
+                        v-for="periode in periodes"
+                        :key="periode.id"
+                        :value="periode.id"
+                    >
+                        {{ periode.nama_periode }}
+                    </option>
+
+                </select>
+
+
+                <!-- STATUS -->
+
+                <select
+                    v-model="status"
+                    @change="applyFilter"
+                    class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                >
+
+                    <option value="">
+                        Semua Status
+                    </option>
+
+                    <option value="selesai">
+                        Selesai
+                    </option>
+
+                    <option value="proses">
+                        Proses
+                    </option>
+
+                    <option value="menunggu">
+                        Menunggu
+                    </option>
+
+                    <option value="batal">
+                        Batal
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- RESET -->
+
+            <div
+                v-if="hasFilter"
+                class="mt-3"
+            >
+
+                <button
+                    type="button"
+                    @click="resetFilter"
+                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-red-500 transition hover:text-red-700"
+                >
+
+                    <XMarkIcon class="h-4 w-4" />
+
+                    Reset Filter
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             TABLE
+        ================================================== -->
+
+        <div
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
+
+            <!-- TABLE HEADER -->
+
+            <div
+                class="border-b border-slate-200 px-6 py-5"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
+                    >
+
+                        <HeartIcon
+                            class="h-5 w-5 text-blue-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="text-sm font-bold text-slate-800">
+                            Daftar Kunjungan Klinik
+                        </h2>
+
+                        <p class="text-xs text-slate-400">
+                            Data kunjungan kesehatan siswa.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full min-w-[1000px]">
+
+                    <thead>
+
+                        <tr
+                            class="border-b border-slate-100 bg-slate-50/70"
+                        >
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                No
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Siswa
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Kelas
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Periode
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Tanggal
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Keluhan
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Status
+                            </th>
+
+                            <th
+                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                            >
+                                Aksi
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <!-- DATA -->
+
+                        <tr
+                            v-for="(item, index) in kunjungan.data"
+                            :key="item.id"
+                            class="border-b border-slate-100 transition hover:bg-slate-50/70"
+                        >
+
+                            <!-- NO -->
+
+                            <td
+                                class="px-5 py-4 text-sm font-medium text-slate-500"
+                            >
+
+                                {{
+                                    (kunjungan.current_page - 1)
+                                    * kunjungan.per_page
+                                    + index
+                                    + 1
+                                }}
+
+                            </td>
+
+
+                            <!-- SISWA -->
+
+                            <td class="px-5 py-4">
+
+                                <div class="flex items-center gap-3">
+
+                                    <div
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                                    >
+
+                                        <UserIcon
+                                            class="h-4 w-4 text-blue-600"
+                                        />
+
+                                    </div>
+
+                                    <div>
+
+                                        <p
+                                            class="text-sm font-bold text-slate-700"
+                                        >
+                                            {{ item.siswa?.nama ?? '-' }}
+                                        </p>
+
+                                        <p
+                                            class="text-xs text-slate-400"
+                                        >
+                                            NISN:
+                                            {{ item.siswa?.nisn ?? '-' }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- KELAS -->
+
+                            <td class="px-5 py-4">
+
+                                <span
+                                    class="text-sm font-medium text-slate-600"
+                                >
+                                    {{ namaKelas(item.siswa) }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- PERIODE -->
+
+                            <td class="px-5 py-4">
+
+                                <div class="flex items-center gap-2">
+
+                                    <CalendarDaysIcon
+                                        class="h-4 w-4 text-purple-500"
+                                    />
+
+                                    <span
+                                        class="text-sm font-medium text-slate-600"
+                                    >
+                                        {{
+                                            item.periode?.nama_periode
+                                            ?? '-'
+                                        }}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- TANGGAL -->
+
+                            <td class="px-5 py-4">
+
+                                <span
+                                    class="text-sm text-slate-600"
+                                >
+                                    {{
+                                        formatTanggal(
+                                            item.tanggal_kunjungan
+                                        )
+                                    }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- KELUHAN -->
+
+                            <td class="max-w-[220px] px-5 py-4">
+
+                                <p
+                                    class="truncate text-sm text-slate-600"
+                                    :title="item.keluhan"
+                                >
+                                    {{ item.keluhan ?? '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- STATUS -->
+
+                            <td class="px-5 py-4 text-center">
+
+                                <span
+                                    :class="[
+                                        'inline-flex rounded-full px-3 py-1 text-xs font-bold',
+                                        statusClass(item.status)
+                                    ]"
+                                >
+                                    {{ statusLabel(item.status) }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- AKSI -->
+
+                            <td class="px-5 py-4 text-center">
+
+                                <Link
+                                    :href="route(
+                                        'admin.kunjungan.show',
+                                        item.id
+                                    )"
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
+                                >
+
+                                    <EyeIcon class="h-4 w-4" />
+
+                                    Detail
+
+                                </Link>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- EMPTY -->
+
+                        <tr v-if="!kunjungan.data.length">
+
+                            <td
+                                colspan="8"
+                                class="px-6 py-14 text-center"
+                            >
+
+                                <div
+                                    class="mx-auto flex max-w-sm flex-col items-center"
+                                >
+
+                                    <div
+                                        class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100"
+                                    >
+
+                                        <HeartIcon
+                                            class="h-7 w-7 text-slate-400"
+                                        />
+
+                                    </div>
+
+                                    <p
+                                        class="mt-4 text-sm font-semibold text-slate-600"
+                                    >
+                                        Belum ada data kunjungan
+                                    </p>
+
+                                    <p
+                                        class="mt-1 text-xs text-slate-400"
+                                    >
+                                        Data kunjungan klinik akan muncul
+                                        di halaman ini.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ==================================================
+                 PAGINATION
+            ================================================== -->
+
+            <div
+                v-if="kunjungan.last_page > 1"
+                class="flex flex-col gap-3 border-t border-slate-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+
+                <p class="text-xs text-slate-400">
+
+                    Menampilkan
+
+                    <span class="font-semibold text-slate-600">
+                        {{ kunjungan.from }}
+                    </span>
+
+                    sampai
+
+                    <span class="font-semibold text-slate-600">
+                        {{ kunjungan.to }}
+                    </span>
+
+                    dari
+
+                    <span class="font-semibold text-slate-600">
+                        {{ kunjungan.total }}
+                    </span>
+
+                    kunjungan
+
+                </p>
+
+
+                <div class="flex items-center gap-1">
+
+                    <Link
+                        v-for="link in kunjungan.links"
+                        :key="link.label"
+                        :href="link.url ?? '#'"
+                        v-html="link.label"
+                        :class="[
+                            'min-w-[36px] rounded-lg px-3 py-2 text-center text-xs font-semibold transition',
+                            link.active
+                                ? 'bg-blue-600 text-white'
+                                : link.url
+                                    ? 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                                    : 'cursor-not-allowed bg-slate-50 text-slate-300'
+                        ]"
+                        preserve-scroll
+                        preserve-state
+                    />
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+        </AdminLayout>
+
 </template>
