@@ -2,21 +2,35 @@
 
 use App\Http\Controllers\ProfileController;
 //admin
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\Master\SiswaController;
+// ADMIN
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\Master\SiswaController as AdminSiswaController;
 use App\Http\Controllers\Admin\Master\SiswaImportController;
 use App\Http\Controllers\Admin\Master\UserController;
 use App\Http\Controllers\Admin\PeriodeController;
 use App\Http\Controllers\Admin\SiswaPeriodeAktifController;
-use App\Http\Controllers\Admin\KunjunganController;
+use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
+
+// KLINIK
+use App\Http\Controllers\Klinik\DashboardController as KlinikDashboardController;
+use App\Http\Controllers\Klinik\SiswaController as KlinikSiswaController;
+use App\Http\Controllers\Klinik\PemeriksaanBerkalaController;
+use App\Http\Controllers\Klinik\ReportController;
+use App\Http\Controllers\Klinik\KunjunganController as KlinikKunjunganController;
+use App\Http\Controllers\Klinik\ObatController as KlinikObatController;
+use App\Http\Controllers\Klinik\PenyakitController as KlinikPenyakitController;
+
+//TKSI
+use App\Http\Controllers\Tksi\DashboardController as TksiDashboardController;
+use App\Http\Controllers\Tksi\TksiController as TksiTksiController;
+use App\Http\Controllers\Tksi\TksiReportController;
+
+
 
 use App\Http\Controllers\KlinikController;
-use App\Http\Controllers\TksiController;
 use App\Http\Controllers\PemeriksaanController;
-use App\Http\Controllers\ObatController;
-use App\Http\Controllers\PenyakitController;
 use App\Http\Controllers\KelasController;
-use App\Http\Controllers\SiswaBoardingController;
+// use App\Http\Controllers\SiswaBoardingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -73,7 +87,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/dashboard', [DashboardController::class, 'index'])
+       Route::get('/dashboard', [AdminDashboardController::class, 'index'])
     ->name('dashboard');
     
 
@@ -93,7 +107,7 @@ Route::prefix('master')
         |--------------------------------------------------------------------------
         */
 
-        Route::resource('siswa', SiswaController::class);
+        Route::resource('siswa', AdminSiswaController::class);
         //import
          Route::get('/siswa-import', [SiswaImportController::class, 'create'])
             ->name('siswa.import');
@@ -168,10 +182,10 @@ Route::resource('periode', PeriodeController::class);
 |--------------------------------------------------------------------------
 */
 
-Route::get('/kunjungan', [KunjunganController::class, 'index'])
+Route::get('/kunjungan', [AdminKunjunganController::class, 'index'])
     ->name('kunjungan.index');
 
-Route::get('/kunjungan/{kunjungan}', [KunjunganController::class, 'show'])
+Route::get('/kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])
     ->name('kunjungan.show');
 
         /*
@@ -212,120 +226,197 @@ Route::get('/kunjungan/{kunjungan}', [KunjunganController::class, 'show'])
 | Role klinik menggantikan role petugas.
 |
 */
-
 Route::middleware(['auth', 'verified', 'role:klinik'])
     ->prefix('klinik')
     ->name('klinik.')
     ->group(function () {
 
+        // Dashboard
+        Route::get('/dashboard', [
+            KlinikDashboardController::class,
+            'index'
+        ])->name('dashboard');
+        
+
+        // Siswa
+Route::get('/siswa', [
+    KlinikSiswaController::class,
+    'index'
+])->name('siswa.index');
+
+Route::get('/siswa/{siswa}', [
+    KlinikSiswaController::class,
+    'show'
+])->name('siswa.show');
+
+
+        // Pemeriksaan Berkala
+        Route::get(
+            '/kesehatan/pemeriksaan-berkala',
+            [PemeriksaanBerkalaController::class, 'index']
+        )->name('kesehatan.pemeriksaan.index');
+
+
+        Route::get(
+            '/kesehatan/pemeriksaan-berkala/{siswa}/{jenis}',
+            [PemeriksaanBerkalaController::class, 'create']
+        )->name('kesehatan.pemeriksaan.create');
+
+
+        Route::post(
+            '/kesehatan/pemeriksaan-berkala/{siswa}/{jenis}',
+            [PemeriksaanBerkalaController::class, 'store']
+        )->name('kesehatan.pemeriksaan.store');
+
+
+        Route::get(
+            '/kesehatan/pemeriksaan-berkala/detail/{pemeriksaanBerkala}',
+            [PemeriksaanBerkalaController::class, 'show']
+        )->name('kesehatan.pemeriksaan.show');
+
+
+        Route::get(
+            '/kesehatan/pemeriksaan-berkala/{pemeriksaanBerkala}/edit',
+            [PemeriksaanBerkalaController::class, 'edit']
+        )->name('kesehatan.pemeriksaan.edit');
+
+
+        Route::put(
+            '/kesehatan/pemeriksaan-berkala/{pemeriksaanBerkala}',
+            [PemeriksaanBerkalaController::class, 'update']
+        )->name('kesehatan.pemeriksaan.update');
+
+
+    
         /*
         |--------------------------------------------------------------------------
-        | Dashboard
+        | REPORT BERKALA
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/dashboard', [KlinikController::class, 'dashboard']);
+        Route::prefix('kesehatan/report')
+            ->name('kesehatan.report.')
+            ->group(function () {
+
+                Route::get(
+                    '/berkala',
+                    [ReportController::class, 'berkala']
+                )->name('berkala');
+
+                Route::get(
+                    '/berkala/excel',
+                    [ReportController::class, 'downloadExcel']
+                )->name('berkala.excel');
+
+                Route::get(
+                    '/berkala/pdf',
+                    [ReportController::class, 'downloadPdf']
+                )->name('berkala.pdf');
+
+                Route::get(
+                    '/berkala/detail/{pemeriksaan}/pdf',
+                    [ReportController::class, 'downloadDetailPdf']
+                )->name('berkala.detail.pdf');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Data Siswa
-        |--------------------------------------------------------------------------
-        |
-        | Klinik hanya melihat data siswa.
-        | Pengelolaan siswa tetap milik Admin.
-        |
-        */
+                /*
+                |--------------------------------------------------------------------------
+                | REPORT KUNJUNGAN KLINIK
+                |--------------------------------------------------------------------------
+                */
 
-        Route::get('/siswa', [SiswaBoardingController::class, 'index'])
-            ->name('siswa.index');
+                Route::get(
+                    '/kunjungan',
+                    [ReportController::class, 'kunjungan']
+                )->name('kunjungan');
 
-        Route::get('/siswa/{siswa}', [SiswaBoardingController::class, 'showSiswa'])
-            ->name('siswa.detail');
+                Route::get(
+                    '/kunjungan/excel',
+                    [ReportController::class, 'downloadKunjunganExcel']
+                )->name('kunjungan.excel');
 
+                Route::get(
+                    '/kunjungan/pdf',
+                    [ReportController::class, 'downloadKunjunganPdf']
+                )->name('kunjungan.pdf');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pemeriksaan Berkala
-        |--------------------------------------------------------------------------
-        */
+                Route::get(
+                    '/kunjungan/{kunjungan}/pdf',
+                    [ReportController::class, 'downloadKunjunganDetailPdf']
+                )->name('kunjungan.detail.pdf');
+            });
+    
 
-        Route::get('/pemeriksaan', [PemeriksaanController::class, 'index'])
-            ->name('pemeriksaan.index');
+/*
+|--------------------------------------------------------------------------
+| Kunjungan Klinik
+|--------------------------------------------------------------------------
+*/
 
-        Route::get('/pemeriksaan/{pemeriksaan}', [PemeriksaanController::class, 'show'])
-            ->name('pemeriksaan.show');
+Route::get(
+    '/kesehatan/kunjungan',
+    [KlinikKunjunganController::class, 'index']
+)->name('kesehatan.kunjungan.index');
 
-        Route::get('/pemeriksaan/{pemeriksaan}/edit', [PemeriksaanController::class, 'edit'])
-            ->name('pemeriksaan.edit');
+Route::get(
+    '/kesehatan/kunjungan/create',
+    [KlinikKunjunganController::class, 'create']
+)->name('kesehatan.kunjungan.create');
 
-        Route::put('/pemeriksaan/{pemeriksaan}', [PemeriksaanController::class, 'update'])
-            ->name('pemeriksaan.update');
+Route::post(
+    '/kesehatan/kunjungan',
+    [KlinikKunjunganController::class, 'store']
+)->name('kesehatan.kunjungan.store');
 
+Route::get(
+    '/kesehatan/kunjungan/{kunjungan}',
+    [KlinikKunjunganController::class, 'show']
+)->name('kesehatan.kunjungan.show');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Report Berkala
-        |--------------------------------------------------------------------------
-        */
+Route::get(
+    '/kesehatan/kunjungan/{kunjungan}/edit',
+    [KlinikKunjunganController::class, 'edit']
+)->name('kesehatan.kunjungan.edit');
 
-       Route::get('/report-berkala', [KlinikController::class, 'reportBerkala']);
+Route::put(
+    '/kesehatan/kunjungan/{kunjungan}',
+    [KlinikKunjunganController::class, 'update']
+)->name('kesehatan.kunjungan.update');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Kunjungan Klinik
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/kunjungan', [KunjunganController::class, 'index'])
-            ->name('kunjungan.index');
-
-        Route::get('/kunjungan/create', [KunjunganController::class, 'create'])
-            ->name('kunjungan.create');
-
-        Route::post('/kunjungan', [KunjunganController::class, 'store'])
-            ->name('kunjungan.store');
-
-        Route::get('/kunjungan/{kunjungan}', [KunjunganController::class, 'show'])
-            ->name('kunjungan.show');
-
-        Route::get('/kunjungan/{kunjungan}/edit', [KunjunganController::class, 'edit'])
-            ->name('kunjungan.edit');
-
-        Route::put('/kunjungan/{kunjungan}', [KunjunganController::class, 'update'])
-            ->name('kunjungan.update');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Data Obat
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource('/obat', ObatController::class)
-            ->names('obat');
+Route::delete(
+    '/kesehatan/kunjungan/{kunjungan}',
+    [KlinikKunjunganController::class, 'destroy']
+)->name('kesehatan.kunjungan.destroy');
+    });
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Data Penyakit
-        |--------------------------------------------------------------------------
-        */
+    //obat
+ Route::get('/klinik/obat', [KlinikObatController::class, 'index'])
+            ->name('klinik.obat.index');
 
-        Route::resource('/penyakit', PenyakitController::class)
-            ->names('penyakit');
+        Route::get('/klinik/obat/create', [KlinikObatController::class, 'create'])
+            ->name('klinik.obat.create');
 
+        Route::post('/klinik/obat', [KlinikObatController::class, 'store'])
+            ->name('klinik.obat.store');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Notifikasi
-        |--------------------------------------------------------------------------
-        */
+        Route::get('/klinik/obat/{obat}/edit', [KlinikObatController::class, 'edit'])
+            ->name('klinik.obat.edit');
 
+        Route::put('/klinik/obat/{obat}', [KlinikObatController::class, 'update'])
+            ->name('klinik.obat.update');
+
+        Route::delete('/klinik/obat/{obat}', [KlinikObatController::class, 'destroy'])
+            ->name('klinik.obat.destroy');
+
+        //penyakit
+        Route::get('/klinik/penyakit', [KlinikPenyakitController::class, 'index'])
+        ->name('klinik.penyakit.index');
+    
+        // Notifikasi
         Route::get('/notifikasi', function () {
             return Inertia::render('Klinik/Notifikasi/Index');
         })->name('notifikasi.index');
-    });
 
 
 /*
@@ -352,8 +443,38 @@ Route::middleware(['auth', 'verified', 'role:tksi'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/dashboard', [TksiController::class, 'dashboard'])
-    ->name('dashboard');
+        Route::get('/dashboard', [TksiDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::get('/panduan', function () {
+    return Inertia::render('Tksi/Tksi/Panduan');
+})->name('panduan');
+
+          Route::get('/tksi', function () {
+            return Inertia::render('Tksi/Tksi/Index');
+        })->name('tksi.index');
+
+     
+Route::get('/input', [TksiTksiController::class, 'index'])
+    ->name('input.index');
+
+Route::get('/input/create/{siswa}', [TksiTksiController::class, 'create'])
+    ->name('input.create');
+
+Route::post('/input', [TksiTksiController::class, 'store'])
+    ->name('input.store');
+
+
+    //report tksi
+Route::get('/report', [ TksiReportController::class, 'index' ])
+->name('report'); 
+Route::get('/report/excel', 
+[ TksiReportController::class, 'exportExcel' ])
+->name('report.excel');
+ Route::get('/report/pdf', [ TksiReportController::class, 'exportPdf' ])
+ ->name('report.pdf');
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -361,17 +482,17 @@ Route::middleware(['auth', 'verified', 'role:tksi'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/siswa', [SiswaBoardingController::class, 'index'])
-            ->name('siswa.index');
+        // Route::get('/siswa', [SiswaBoardingController::class, 'index'])
+        //     ->name('siswa.index');
 
-        Route::get('/siswa/jurusan/{jurusan}', [SiswaBoardingController::class, 'showJurusan'])
-            ->name('siswa.jurusan');
+        // Route::get('/siswa/jurusan/{jurusan}', [SiswaBoardingController::class, 'showJurusan'])
+        //     ->name('siswa.jurusan');
 
-        Route::get('/siswa/jurusan/{jurusan}/kelas/{kelas}', [SiswaBoardingController::class, 'showKelas'])
-            ->name('siswa.kelas');
+        // Route::get('/siswa/jurusan/{jurusan}/kelas/{kelas}', [SiswaBoardingController::class, 'showKelas'])
+        //     ->name('siswa.kelas');
 
-        Route::get('/siswa/{siswa}', [SiswaBoardingController::class, 'showSiswa'])
-            ->name('siswa.detail');
+        // Route::get('/siswa/{siswa}', [SiswaBoardingController::class, 'showSiswa'])
+        //     ->name('siswa.detail');
 
 
         /*
@@ -380,26 +501,26 @@ Route::middleware(['auth', 'verified', 'role:tksi'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/panduan', [TksiController::class, 'tksiPanduan'])
-    ->name('panduan');
+//         Route::get('/panduan', [TksiController::class, 'tksiPanduan'])
+//     ->name('panduan');
 
-Route::get('/panduan/hand-eye', [TksiController::class, 'panduanHandEye'])
-    ->name('panduan.hand-eye');
+// Route::get('/panduan/hand-eye', [TksiController::class, 'panduanHandEye'])
+//     ->name('panduan.hand-eye');
 
-Route::get('/panduan/vertical-jump', [TksiController::class, 'panduanVerticalJump'])
-    ->name('panduan.vertical-jump');
+// Route::get('/panduan/vertical-jump', [TksiController::class, 'panduanVerticalJump'])
+//     ->name('panduan.vertical-jump');
 
-Route::get('/panduan/t-test', [TksiController::class, 'panduanTTest'])
-    ->name('panduan.t-test');
+// Route::get('/panduan/t-test', [TksiController::class, 'panduanTTest'])
+//     ->name('panduan.t-test');
 
-Route::get('/panduan/hand-touch', [TksiController::class, 'panduanHandTouch'])
-    ->name('panduan.hand-touch');
+// Route::get('/panduan/hand-touch', [TksiController::class, 'panduanHandTouch'])
+//     ->name('panduan.hand-touch');
 
-Route::get('/panduan/dipping', [TksiController::class, 'panduanDipping'])
-    ->name('panduan.dipping');
+// Route::get('/panduan/dipping', [TksiController::class, 'panduanDipping'])
+//     ->name('panduan.dipping');
 
-Route::get('/panduan/beep', [TksiController::class, 'panduanBeep'])
-    ->name('panduan.beep');
+// Route::get('/panduan/beep', [TksiController::class, 'panduanBeep'])
+//     ->name('panduan.beep');
 
 
         /*
@@ -408,29 +529,29 @@ Route::get('/panduan/beep', [TksiController::class, 'panduanBeep'])
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/input', [TksiController::class, 'tksi'])
-    ->name('input.index');
+//         Route::get('/input', [TksiController::class, 'tksi'])
+//     ->name('input.index');
 
-Route::get('/input/create', [TksiController::class, 'tksiCreate'])
-    ->name('input.create');
+// Route::get('/input/create', [TksiController::class, 'tksiCreate'])
+//     ->name('input.create');
 
-Route::post('/input', [TksiController::class, 'tksiStore'])
-    ->name('input.store');
+// Route::post('/input', [TksiController::class, 'tksiStore'])
+//     ->name('input.store');
 
-Route::get('/input/{id}', [TksiController::class, 'tksiShow'])
-    ->name('input.show');
+// Route::get('/input/{id}', [TksiController::class, 'tksiShow'])
+//     ->name('input.show');
 
-Route::get('/input/{id}/isi', [TksiController::class, 'tksiIsi'])
-    ->name('input.isi');
+// Route::get('/input/{id}/isi', [TksiController::class, 'tksiIsi'])
+//     ->name('input.isi');
 
         /*
         |--------------------------------------------------------------------------
         | Report Periode
         |--------------------------------------------------------------------------
-        */
+    //     */
 
-        Route::get('/report-periode', [TksiController::class, 'reportPeriode'])
-    ->name('report.periode');
+    //     Route::get('/report-periode', [TksiController::class, 'reportPeriode'])
+    // ->name('report.periode');
 
         /*
         |--------------------------------------------------------------------------

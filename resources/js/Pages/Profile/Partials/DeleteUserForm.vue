@@ -18,88 +18,116 @@ const form = useForm({
 const confirmUserDeletion = () => {
     confirmingUserDeletion.value = true;
 
-    nextTick(() => passwordInput.value.focus());
+    nextTick(() => {
+        passwordInput.value?.focus();
+    });
 };
 
 const deleteUser = () => {
     form.delete(route('profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
+        onError: () => passwordInput.value?.focus(),
         onFinish: () => form.reset(),
     });
 };
 
 const closeModal = () => {
     confirmingUserDeletion.value = false;
-
     form.clearErrors();
     form.reset();
 };
 </script>
 
 <template>
-    <section class="space-y-6">
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                Delete Account
-            </h2>
+    <section>
+        <p class="text-sm leading-6 text-slate-600">
+            Setelah akun dihapus, seluruh data dan akses akun akan
+            dihapus secara permanen. Pastikan Anda benar-benar ingin
+            melakukan tindakan ini.
+        </p>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Once your account is deleted, all of its resources and data will
-                be permanently deleted. Before deleting your account, please
-                download any data or information that you wish to retain.
-            </p>
-        </header>
+        <div class="mt-5">
+            <button
+                type="button"
+                @click="confirmUserDeletion"
+                class="rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+                HAPUS AKUN
+            </button>
+        </div>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
-
-        <Modal :show="confirmingUserDeletion" @close="closeModal">
+        <Modal
+            :show="confirmingUserDeletion"
+            @close="closeModal"
+        >
             <div class="p-6">
-                <h2
-                    class="text-lg font-medium text-gray-900"
+
+                <div
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600"
                 >
-                    Are you sure you want to delete your account?
+                    <svg
+                        class="h-7 w-7"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 7h12M9 7V4h6v3m-8 0l1 13h6l1-13"
+                        />
+                    </svg>
+                </div>
+
+                <h2
+                    class="mt-4 text-center text-lg font-bold text-slate-800"
+                >
+                    Hapus Akun?
                 </h2>
 
-                <p class="mt-1 text-sm text-gray-600">
-                    Once your account is deleted, all of its resources and data
-                    will be permanently deleted. Please enter your password to
-                    confirm you would like to permanently delete your account.
+                <p class="mt-2 text-center text-sm text-slate-500">
+                    Tindakan ini tidak dapat dibatalkan. Masukkan password
+                    untuk mengonfirmasi penghapusan akun.
                 </p>
 
                 <div class="mt-6">
                     <InputLabel
-                        for="password"
+                        for="delete-password"
                         value="Password"
-                        class="sr-only"
+                        class="font-semibold text-slate-700"
                     />
 
                     <TextInput
-                        id="password"
+                        id="delete-password"
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-1 block w-3/4"
-                        placeholder="Password"
+                        class="mt-2 block w-full rounded-xl border-slate-300"
+                        placeholder="Masukkan password"
                         @keyup.enter="deleteUser"
                     />
 
-                    <InputError :message="form.errors.password" class="mt-2" />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.password"
+                    />
                 </div>
 
-                <div class="mt-6 flex justify-end">
-                    <SecondaryButton @click="closeModal">
-                        Cancel
+                <div class="mt-6 flex justify-end gap-3">
+                    <SecondaryButton
+                        type="button"
+                        @click="closeModal"
+                    >
+                        Batal
                     </SecondaryButton>
 
                     <DangerButton
-                        class="ms-3"
-                        :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Delete Account
+                        Hapus Akun
                     </DangerButton>
                 </div>
             </div>

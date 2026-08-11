@@ -9,25 +9,39 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tksi_hasil', function (Blueprint $table) {
+
             $table->id();
 
-            $table->foreignId('tksi_batch_siswa_id')
-                ->constrained('tksi_batch_siswa')
-                ->cascadeOnUpdate()
+            $table->foreignId('periode_id')
+                ->constrained('periodes')
                 ->cascadeOnDelete();
 
-            $table->string('komponen');
+            $table->foreignId('siswa_id')
+                ->constrained('siswas')
+                ->cascadeOnDelete();
 
-            $table->decimal('nilai', 8, 2)->nullable();
+            $table->date('tanggal');
 
-            $table->text('catatan')->nullable();
+            $table->string('komponen', 50);
+
+            $table->decimal('nilai', 10, 2);
+
+            $table->text('catatan')
+                ->nullable();
 
             $table->timestamps();
 
-            $table->unique([
-                'tksi_batch_siswa_id',
-                'komponen',
-            ]);
+            /*
+            |--------------------------------------------------------------------------
+            | Satu siswa hanya boleh mempunyai satu hasil
+            | untuk satu komponen dalam satu periode.
+            |--------------------------------------------------------------------------
+            */
+
+            $table->unique(
+                ['periode_id', 'siswa_id', 'komponen'],
+                'tksi_hasil_periode_siswa_komponen_unique'
+            );
         });
     }
 

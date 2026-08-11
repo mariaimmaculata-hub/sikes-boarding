@@ -16,14 +16,14 @@ defineProps({
 const form = useForm({
     email: '',
     password: '',
-    role: '', // 'admin', 'petugas', 'pendamping'
+    role: '', // 'admin', 'klinik', 'tksi'
     remember: false,
 });
 
 onMounted(() => {
     const params = new URLSearchParams(window.location.search);
     const roleParam = params.get('role');
-    if (roleParam && ['admin', 'petugas', 'pendamping'].includes(roleParam)) {
+    if (roleParam && ['admin', 'klinik', 'tksi'].includes(roleParam)) {
         form.role = roleParam;
     }
 });
@@ -90,16 +90,16 @@ const submit = () => {
                         
                         <!-- Role 1: Petugas Klinik -->
                         <div 
-                            @click="selectRole('petugas')"
+                            @click="selectRole('klinik')"
                             :class="[
                                 'flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition text-center select-none bg-gray-50',
-                                form.role === 'petugas'
+                                form.role === 'klinik'
                                     ? 'border-blue-500 bg-blue-50/50 text-blue-950'
                                     : 'border-slate-200 text-slate-600 hover:border-slate-300'
                             ]"
                         >
                             <!-- Custom Stethoscope SVG Icon -->
-                            <svg class="w-7 h-7 mb-1" :class="form.role === 'petugas' ? 'text-blue-600' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="w-7 h-7 mb-1" :class="form.role === 'klinik' ? 'text-blue-600' : 'text-slate-400'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M4.8 2.3A.3.3 0 1 0 5 3a2.5 2.5 0 0 0 4.5-.5.3.3 0 1 0-.6-.2A1.5 1.5 0 0 1 7.4 3.5a1.5 1.5 0 0 1-1.5-1.1Z"/>
                                 <path d="M13.2 2.3A.3.3 0 1 1 13 3a2.5 2.5 0 0 1-4.5-.5.3.3 0 1 1 .6-.2A1.5 1.5 0 0 0 10.6 3.5a1.5 1.5 0 0 0 1.5-1.1Z"/>
                                 <path d="M9 3v7a5 5 0 0 0 10 0V3"/>
@@ -113,17 +113,17 @@ const submit = () => {
 
                         <!-- Role 2: Pendamping -->
                         <div 
-                            @click="selectRole('pendamping')"
+                            @click="selectRole('tksi')"
                             :class="[
                                 'flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition text-center select-none bg-gray-50',
-                                form.role === 'pendamping'
+                                form.role === 'tksi'
                                     ? 'border-green-500 bg-green-50/50 text-green-950'
                                     : 'border-slate-200 text-slate-600 hover:border-slate-300'
                             ]"
                         >
                             <!-- UserGroupIcon -->
-                            <UserGroupIcon class="w-7 h-7 mb-1" :class="form.role === 'pendamping' ? 'text-green-600' : 'text-slate-400'" />
-                            <span class="font-semibold text-xs mt-1 block">Pendamping</span>
+                            <UserGroupIcon class="w-7 h-7 mb-1" :class="form.role === 'tksi' ? 'text-green-600' : 'text-slate-400'" />
+                            <span class="font-semibold text-xs mt-1 block">TKSI</span>
                         </div>
 
                         <!-- Role 3: Admin -->

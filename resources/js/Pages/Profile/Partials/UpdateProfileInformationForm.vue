@@ -20,93 +20,112 @@ const form = useForm({
     name: user.name,
     email: user.email,
 });
+
+const submit = () => {
+    form.patch(route('profile.update'), {
+        preserveScroll: true,
+    });
+};
 </script>
 
 <template>
-    <section>
-        <header>
-            <h2 class="text-lg font-medium text-gray-900">
-                Profile Information
-            </h2>
+    <form @submit.prevent="submit" class="space-y-6">
 
-            <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
-            </p>
-        </header>
+        <!-- NAMA -->
+        <div>
+            <InputLabel
+                for="name"
+                value="Nama Lengkap"
+                class="font-semibold text-slate-700"
+            />
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
-            <div>
-                <InputLabel for="name" value="Name" />
+            <TextInput
+                id="name"
+                type="text"
+                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 focus:border-blue-500 focus:ring-blue-500"
+                v-model="form.name"
+                required
+                autocomplete="name"
+            />
 
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
+            <InputError
+                class="mt-2"
+                :message="form.errors.name"
+            />
+        </div>
 
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+        <!-- EMAIL -->
+        <div>
+            <InputLabel
+                for="email"
+                value="Alamat Email"
+                class="font-semibold text-slate-700"
+            />
 
-            <div>
-                <InputLabel for="email" value="Email" />
+            <TextInput
+                id="email"
+                type="email"
+                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 focus:border-blue-500 focus:ring-blue-500"
+                v-model="form.email"
+                required
+                autocomplete="username"
+            />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autocomplete="username"
-                />
+            <InputError
+                class="mt-2"
+                :message="form.errors.email"
+            />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Click here to re-send the verification email.
-                    </Link>
+            <!-- VERIFIKASI -->
+            <div
+                v-if="mustVerifyEmail && user.email_verified_at === null"
+                class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4"
+            >
+                <p class="text-sm text-amber-800">
+                    Alamat email Anda belum diverifikasi.
                 </p>
+
+                <Link
+                    :href="route('verification.send')"
+                    method="post"
+                    as="button"
+                    class="mt-2 text-sm font-semibold text-blue-700 underline hover:text-blue-900"
+                >
+                    Kirim ulang email verifikasi
+                </Link>
 
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
+                    class="mt-2 text-sm font-semibold text-green-700"
                 >
-                    A new verification link has been sent to your email address.
+                    Link verifikasi baru telah dikirim ke email Anda.
                 </div>
             </div>
+        </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+        <!-- BUTTON -->
+        <div class="flex items-center gap-4">
+            <button
+                type="submit"
+                :disabled="form.processing"
+                class="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:from-blue-700 hover:to-blue-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                SIMPAN PERUBAHAN
+            </button>
 
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
+            <Transition
+                enter-active-class="transition ease-in-out"
+                enter-from-class="opacity-0"
+                leave-active-class="transition ease-in-out"
+                leave-to-class="opacity-0"
+            >
+                <p
+                    v-if="form.recentlySuccessful"
+                    class="text-sm font-semibold text-green-600"
                 >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
-                    >
-                        Saved.
-                    </p>
-                </Transition>
-            </div>
-        </form>
-    </section>
+                    Tersimpan.
+                </p>
+            </Transition>
+        </div>
+    </form>
 </template>
