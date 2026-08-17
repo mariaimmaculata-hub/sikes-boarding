@@ -78,4 +78,8 @@ class User extends Authenticatable
             'pemeriksa_id'
         );
     }
+    public function notifications(): HasMany
+{
+    return $this->hasMany(Notification::class);
+}
 }

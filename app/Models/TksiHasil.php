@@ -10,26 +10,30 @@ class TksiHasil extends Model
     protected $table = 'tksi_hasil';
 
     protected $fillable = [
-        'periode_id',
         'siswa_id',
-        'tanggal',
+        'periode_id',
         'komponen',
+        'tanggal',
         'nilai',
+        'level',
+        'balikan',
         'catatan',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
-        'nilai' => 'decimal:2',
+        'nilai' => 'float',
+        'level' => 'integer',
+        'balikan' => 'integer',
     ];
-
-    public function periode(): BelongsTo
-    {
-        return $this->belongsTo(Periode::class);
-    }
 
     public function siswa(): BelongsTo
     {
         return $this->belongsTo(Siswa::class);
+    }
+
+    public function periode(): BelongsTo
+    {
+        return $this->belongsTo(Periode::class);
     }
 }

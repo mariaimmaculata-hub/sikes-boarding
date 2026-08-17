@@ -8,9 +8,12 @@ import {
     CalendarDaysIcon,
     CheckCircleIcon,
     ClockIcon,
-    UserIcon,
 } from '@heroicons/vue/24/outline'
 
+
+// ==================================================
+// PROPS
+// ==================================================
 
 const props = defineProps({
     periode: {
@@ -25,13 +28,12 @@ const props = defineProps({
 })
 
 
-/*
-|--------------------------------------------------------------------------
-| STATUS
-|--------------------------------------------------------------------------
-*/
+// ==================================================
+// STATUS
+// ==================================================
 
 const statusLabel = (status) => {
+
     return status === 'selesai'
         ? 'Selesai'
         : 'Belum'
@@ -39,6 +41,7 @@ const statusLabel = (status) => {
 
 
 const statusClass = (status) => {
+
     return status === 'selesai'
         ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
         : 'border-amber-200 bg-amber-50 text-amber-700'
@@ -46,6 +49,7 @@ const statusClass = (status) => {
 
 
 const overallStatusLabel = (status) => {
+
     return status === 'lengkap'
         ? 'Pemeriksaan Lengkap'
         : 'Belum Lengkap'
@@ -53,19 +57,19 @@ const overallStatusLabel = (status) => {
 
 
 const overallStatusClass = (status) => {
+
     return status === 'lengkap'
         ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
         : 'border-amber-200 bg-amber-50 text-amber-700'
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| KELAS
-|--------------------------------------------------------------------------
-*/
+// ==================================================
+// KELAS
+// ==================================================
 
 const namaKelas = (kelas) => {
+
     if (!kelas?.nama_kelas) {
         return '-'
     }
@@ -74,18 +78,23 @@ const namaKelas = (kelas) => {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| FORMAT TANGGAL
-|--------------------------------------------------------------------------
-*/
+// ==================================================
+// FORMAT TANGGAL
+// ==================================================
 
 const formatTanggal = (tanggal) => {
+
     if (!tanggal) {
         return '-'
     }
 
-    return new Date(tanggal).toLocaleDateString(
+    const value = new Date(tanggal)
+
+    if (Number.isNaN(value.getTime())) {
+        return tanggal
+    }
+
+    return value.toLocaleDateString(
         'id-ID',
         {
             day: '2-digit',
@@ -109,67 +118,57 @@ const formatTanggal = (tanggal) => {
             ================================================== -->
 
             <div
-                class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+                class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
-                <div>
+                <!-- JUDUL + TOMBOL KEMBALI -->
 
-                    <div
-                        class="flex items-center gap-2 text-xs font-semibold text-slate-400"
+                <div
+                    class="flex items-center gap-3"
+                >
+
+                    <!-- TOMBOL KEMBALI -->
+
+                    <Link
+                        :href="route('admin.periode.siswa-aktif')"
+                        class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                        title="Kembali"
                     >
 
-                        <Link
-                            :href="
-                                route(
-                                    'admin.periode.index'
-                                )
-                            "
-                            class="transition hover:text-blue-600"
+                        <ArrowLeftIcon
+                            class="h-5 w-5"
+                        />
+
+                    </Link>
+
+
+                    <!-- JUDUL -->
+
+                    <div>
+
+                        <h1
+                            class="text-2xl font-bold text-slate-800"
                         >
-                            Periode
-                        </Link>
-
-                        <span>/</span>
-
-                        <Link
-                            :href="
-                                route(
-                                    'admin.periode.siswa-aktif'
-                                )
-                            "
-                            class="transition hover:text-blue-600"
-                        >
-                            Siswa Periode Aktif
-                        </Link>
-
-                        <span>/</span>
-
-                        <span class="text-slate-600">
                             Detail Siswa
-                        </span>
+                        </h1>
+
+
+                        <p
+                            v-if="periode"
+                            class="mt-1 text-sm text-slate-500"
+                        >
+
+                            Periode:
+
+                            <span
+                                class="font-semibold text-slate-700"
+                            >
+                                {{ periode.nama_periode }}
+                            </span>
+
+                        </p>
 
                     </div>
-
-
-                    <h1
-                        class="mt-2 text-2xl font-bold text-slate-800"
-                    >
-                        Detail Siswa
-                    </h1>
-
-
-                    <p
-                        v-if="periode"
-                        class="mt-1 text-sm text-slate-500"
-                    >
-                        Periode:
-
-                        <span
-                            class="font-semibold text-slate-700"
-                        >
-                            {{ periode.nama_periode }}
-                        </span>
-                    </p>
 
                 </div>
 
@@ -202,6 +201,7 @@ const formatTanggal = (tanggal) => {
             </div>
 
 
+
             <!-- ==================================================
                  IDENTITAS SISWA
             ================================================== -->
@@ -219,6 +219,7 @@ const formatTanggal = (tanggal) => {
                     >
                         Identitas Siswa
                     </h2>
+
 
                     <p
                         class="mt-0.5 text-xs text-slate-400"
@@ -240,17 +241,22 @@ const formatTanggal = (tanggal) => {
                         <div
                             class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-2xl font-bold text-blue-700"
                         >
+
                             {{
                                 siswa.nama
                                     ?.charAt(0)
                                     ?.toUpperCase()
+                                || '?'
                             }}
+
                         </div>
 
 
                         <!-- DATA UTAMA -->
 
-                        <div class="min-w-0 flex-1">
+                        <div
+                            class="min-w-0 flex-1"
+                        >
 
                             <h3
                                 class="text-xl font-bold text-slate-800"
@@ -258,15 +264,19 @@ const formatTanggal = (tanggal) => {
                                 {{ siswa.nama }}
                             </h3>
 
+
                             <p
                                 class="mt-1 text-sm text-slate-400"
                             >
+
                                 NISN:
+
                                 <span
                                     class="font-semibold text-slate-600"
                                 >
                                     {{ siswa.nisn || '-' }}
                                 </span>
+
                             </p>
 
 
@@ -274,19 +284,27 @@ const formatTanggal = (tanggal) => {
                                 class="mt-4 flex flex-wrap gap-2"
                             >
 
+                                <!-- KELAS -->
+
                                 <span
                                     class="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
                                 >
                                     {{ namaKelas(siswa.kelas) }}
                                 </span>
 
+
+                                <!-- JURUSAN -->
+
                                 <span
                                     class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-600"
                                 >
+
                                     {{
                                         siswa.jurusan
-                                            ?.nama_jurusan ?? '-'
+                                            ?.nama_jurusan
+                                        ?? '-'
                                     }}
+
                                 </span>
 
                             </div>
@@ -296,11 +314,14 @@ const formatTanggal = (tanggal) => {
                     </div>
 
 
+
                     <!-- DATA TAMBAHAN -->
 
                     <div
                         class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-100 pt-6 sm:grid-cols-3"
                     >
+
+                        <!-- TEMPAT LAHIR -->
 
                         <div>
 
@@ -309,6 +330,7 @@ const formatTanggal = (tanggal) => {
                             >
                                 Tempat Lahir
                             </p>
+
 
                             <p
                                 class="mt-1 text-sm font-semibold text-slate-700"
@@ -319,6 +341,8 @@ const formatTanggal = (tanggal) => {
                         </div>
 
 
+                        <!-- TANGGAL LAHIR -->
+
                         <div>
 
                             <p
@@ -327,18 +351,23 @@ const formatTanggal = (tanggal) => {
                                 Tanggal Lahir
                             </p>
 
+
                             <p
                                 class="mt-1 text-sm font-semibold text-slate-700"
                             >
+
                                 {{
                                     formatTanggal(
                                         siswa.tanggal_lahir
                                     )
                                 }}
+
                             </p>
 
                         </div>
 
+
+                        <!-- JENIS KELAMIN -->
 
                         <div>
 
@@ -347,6 +376,7 @@ const formatTanggal = (tanggal) => {
                             >
                                 Jenis Kelamin
                             </p>
+
 
                             <p
                                 class="mt-1 text-sm font-semibold text-slate-700"
@@ -363,6 +393,7 @@ const formatTanggal = (tanggal) => {
             </div>
 
 
+
             <!-- ==================================================
                  STATUS PEMERIKSAAN
             ================================================== -->
@@ -376,6 +407,7 @@ const formatTanggal = (tanggal) => {
                     >
                         Status Pemeriksaan
                     </h2>
+
 
                     <p
                         class="mt-0.5 text-xs text-slate-400"
@@ -392,7 +424,9 @@ const formatTanggal = (tanggal) => {
                 >
 
 
-                    <!-- BERKALA 1 -->
+                    <!-- ==================================================
+                         BERKALA 1
+                    ================================================== -->
 
                     <div
                         class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -409,6 +443,7 @@ const formatTanggal = (tanggal) => {
                                 >
                                     Pemeriksaan
                                 </p>
+
 
                                 <h3
                                     class="mt-1 text-base font-bold text-slate-800"
@@ -421,7 +456,7 @@ const formatTanggal = (tanggal) => {
 
                             <div
                                 :class="
-                                    siswa.berkala_1.status ===
+                                    siswa.berkala_1?.status ===
                                     'selesai'
                                         ? 'bg-emerald-50 text-emerald-600'
                                         : 'bg-amber-50 text-amber-600'
@@ -431,11 +466,12 @@ const formatTanggal = (tanggal) => {
 
                                 <CheckCircleIcon
                                     v-if="
-                                        siswa.berkala_1.status ===
+                                        siswa.berkala_1?.status ===
                                         'selesai'
                                     "
                                     class="h-5 w-5"
                                 />
+
 
                                 <ClockIcon
                                     v-else
@@ -452,16 +488,18 @@ const formatTanggal = (tanggal) => {
                             <span
                                 :class="
                                     statusClass(
-                                        siswa.berkala_1.status
+                                        siswa.berkala_1?.status
                                     )
                                 "
                                 class="inline-flex rounded-full border px-3 py-1 text-xs font-bold"
                             >
+
                                 {{
                                     statusLabel(
-                                        siswa.berkala_1.status
+                                        siswa.berkala_1?.status
                                     )
                                 }}
+
                             </span>
 
                         </div>
@@ -469,7 +507,10 @@ const formatTanggal = (tanggal) => {
                     </div>
 
 
-                    <!-- BERKALA 2 -->
+
+                    <!-- ==================================================
+                         BERKALA 2
+                    ================================================== -->
 
                     <div
                         class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -486,6 +527,7 @@ const formatTanggal = (tanggal) => {
                                 >
                                     Pemeriksaan
                                 </p>
+
 
                                 <h3
                                     class="mt-1 text-base font-bold text-slate-800"
@@ -498,7 +540,7 @@ const formatTanggal = (tanggal) => {
 
                             <div
                                 :class="
-                                    siswa.berkala_2.status ===
+                                    siswa.berkala_2?.status ===
                                     'selesai'
                                         ? 'bg-emerald-50 text-emerald-600'
                                         : 'bg-amber-50 text-amber-600'
@@ -508,11 +550,12 @@ const formatTanggal = (tanggal) => {
 
                                 <CheckCircleIcon
                                     v-if="
-                                        siswa.berkala_2.status ===
+                                        siswa.berkala_2?.status ===
                                         'selesai'
                                     "
                                     class="h-5 w-5"
                                 />
+
 
                                 <ClockIcon
                                     v-else
@@ -529,16 +572,18 @@ const formatTanggal = (tanggal) => {
                             <span
                                 :class="
                                     statusClass(
-                                        siswa.berkala_2.status
+                                        siswa.berkala_2?.status
                                     )
                                 "
                                 class="inline-flex rounded-full border px-3 py-1 text-xs font-bold"
                             >
+
                                 {{
                                     statusLabel(
-                                        siswa.berkala_2.status
+                                        siswa.berkala_2?.status
                                     )
                                 }}
+
                             </span>
 
                         </div>
@@ -546,7 +591,10 @@ const formatTanggal = (tanggal) => {
                     </div>
 
 
-                    <!-- TKSI -->
+
+                    <!-- ==================================================
+                         TKSI
+                    ================================================== -->
 
                     <div
                         class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -564,6 +612,7 @@ const formatTanggal = (tanggal) => {
                                     Pemeriksaan
                                 </p>
 
+
                                 <h3
                                     class="mt-1 text-base font-bold text-slate-800"
                                 >
@@ -575,9 +624,9 @@ const formatTanggal = (tanggal) => {
 
                             <div
                                 :class="
-                                    siswa.tksi.status ===
+                                    siswa.tksi?.status ===
                                     'selesai'
-                                        ? 'bg-emerald-50 text-blue-600'
+                                        ? 'bg-blue-50 text-blue-600'
                                         : 'bg-amber-50 text-amber-600'
                                 "
                                 class="flex h-10 w-10 items-center justify-center rounded-xl"
@@ -585,11 +634,12 @@ const formatTanggal = (tanggal) => {
 
                                 <CheckCircleIcon
                                     v-if="
-                                        siswa.tksi.status ===
+                                        siswa.tksi?.status ===
                                         'selesai'
                                     "
                                     class="h-5 w-5"
                                 />
+
 
                                 <ClockIcon
                                     v-else
@@ -606,16 +656,18 @@ const formatTanggal = (tanggal) => {
                             <span
                                 :class="
                                     statusClass(
-                                        siswa.tksi.status
+                                        siswa.tksi?.status
                                     )
                                 "
                                 class="inline-flex rounded-full border px-3 py-1 text-xs font-bold"
                             >
+
                                 {{
                                     statusLabel(
-                                        siswa.tksi.status
+                                        siswa.tksi?.status
                                     )
                                 }}
+
                             </span>
 
                         </div>
@@ -625,6 +677,7 @@ const formatTanggal = (tanggal) => {
                 </div>
 
             </div>
+
 
 
             <!-- ==================================================
@@ -648,6 +701,7 @@ const formatTanggal = (tanggal) => {
                             class="h-5 w-5 text-blue-600"
                         />
 
+
                         <h2
                             class="text-sm font-bold text-slate-800"
                         >
@@ -663,6 +717,8 @@ const formatTanggal = (tanggal) => {
                     class="grid grid-cols-1 gap-5 p-5 sm:grid-cols-3"
                 >
 
+                    <!-- NAMA PERIODE -->
+
                     <div>
 
                         <p
@@ -670,6 +726,7 @@ const formatTanggal = (tanggal) => {
                         >
                             Nama Periode
                         </p>
+
 
                         <p
                             class="mt-1 text-sm font-bold text-slate-700"
@@ -680,6 +737,8 @@ const formatTanggal = (tanggal) => {
                     </div>
 
 
+                    <!-- TANGGAL MULAI -->
+
                     <div>
 
                         <p
@@ -688,18 +747,23 @@ const formatTanggal = (tanggal) => {
                             Tanggal Mulai
                         </p>
 
+
                         <p
                             class="mt-1 text-sm font-semibold text-slate-700"
                         >
+
                             {{
                                 formatTanggal(
                                     periode.tanggal_mulai
                                 )
                             }}
+
                         </p>
 
                     </div>
 
+
+                    <!-- TANGGAL SELESAI -->
 
                     <div>
 
@@ -709,53 +773,21 @@ const formatTanggal = (tanggal) => {
                             Tanggal Selesai
                         </p>
 
+
                         <p
                             class="mt-1 text-sm font-semibold text-slate-700"
                         >
+
                             {{
                                 formatTanggal(
                                     periode.tanggal_selesai
                                 )
                             }}
+
                         </p>
 
                     </div>
 
-                </div>
-
-            </div>
-
-
-            <!-- ==================================================
-                 FOOTER ACTION
-            ================================================== -->
-
-            <div
-                class="flex items-center justify-between border-t border-slate-200 pt-5"
-            >
-
-                <Link
-                    :href="
-                        route(
-                            'admin.periode.siswa-aktif'
-                        )
-                    "
-                    class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
-                >
-
-                    <ArrowLeftIcon
-                        class="h-4 w-4"
-                    />
-
-                    Kembali
-
-                </Link>
-
-
-                <div
-                    class="text-xs text-slate-400"
-                >
-                    {{ siswa.nama }}
                 </div>
 
             </div>

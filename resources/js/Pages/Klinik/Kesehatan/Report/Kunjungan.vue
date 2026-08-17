@@ -469,13 +469,6 @@ const obatList = computed(() => {
 
                     <span>Kesehatan</span>
 
-                    <span>/</span>
-
-                    <span>Report</span>
-
-                    <span>/</span>
-
-                    <span>Kunjungan Klinik</span>
 
                 </div>
 

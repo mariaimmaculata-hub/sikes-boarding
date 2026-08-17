@@ -1,6 +1,6 @@
 <script setup>
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import KlinikLayout from '@/Layouts/KlinikLayout.vue'
 
 import {
@@ -17,14 +17,26 @@ import {
 
 
 // ======================================================
+// PROPS
+// ======================================================
+
+const props = defineProps({
+    obat: {
+        type: Object,
+        required: true,
+    },
+})
+
+
+// ======================================================
 // FORM
 // ======================================================
 
 const form = useForm({
-    nama_obat: '',
-    satuan: '',
-    stok: 0,
-    keterangan: '',
+    nama_obat: props.obat.nama_obat ?? '',
+    satuan: props.obat.satuan ?? '',
+    stok: props.obat.stok ?? 0,
+    keterangan: props.obat.keterangan ?? '',
 })
 
 
@@ -34,8 +46,11 @@ const form = useForm({
 
 const submit = () => {
 
-    form.post(
-        route('klinik.obat.store'),
+    form.put(
+        route(
+            'klinik.obat.update',
+            props.obat.id
+        ),
         {
             preserveScroll: true,
         }
@@ -81,20 +96,16 @@ const getError = (field) => {
 
             <div>
 
-              
-                <!-- TITLE -->
-
                 <h1
-                    class="mt-1 text-2xl font-bold text-slate-800"
+                    class="text-2xl font-bold text-slate-800"
                 >
-                    Tambah Obat
+                    Edit Obat
                 </h1>
-
 
                 <p
                     class="mt-1 text-sm text-slate-500"
                 >
-                    Tambahkan data obat baru ke dalam data obat klinik.
+                    Perbarui informasi dan stok obat klinik.
                 </p>
 
             </div>
@@ -150,7 +161,6 @@ const getError = (field) => {
                     class="mt-0.5 text-xs text-rose-600"
                 >
                     Terdapat beberapa data yang belum sesuai.
-
                 </p>
 
             </div>
@@ -202,7 +212,7 @@ const getError = (field) => {
                         <p
                             class="mt-0.5 text-xs text-slate-400"
                         >
-                            Isi informasi obat dan stok yang tersedia.
+                            Perbarui informasi obat dan stok yang tersedia.
                         </p>
 
                     </div>
@@ -487,7 +497,7 @@ const getError = (field) => {
                 </Link>
 
 
-                <!-- SIMPAN -->
+                <!-- UPDATE -->
 
                 <button
                     type="submit"
@@ -503,7 +513,7 @@ const getError = (field) => {
                         {{
                             form.processing
                                 ? 'Menyimpan...'
-                                : 'Simpan Obat'
+                                : 'Simpan Perubahan'
                         }}
                     </span>
 

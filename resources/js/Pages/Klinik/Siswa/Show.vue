@@ -162,17 +162,17 @@ const pemeriksaan = () => {
 // ======================================================
 // PEMERIKSAAN 1
 // ======================================================
-
 const pemeriksaan1 = () => {
     const data = pemeriksaan();
 
     return data.find(
         (item) =>
             String(item.jenis_pemeriksaan ?? '')
-                .toLowerCase()
-                .includes('1')
-    ) ?? data[0] ?? null;
+                .toLowerCase() === 'berkala_1'
+    ) ?? null;
 };
+
+
 
 
 // ======================================================
@@ -185,11 +185,9 @@ const pemeriksaan2 = () => {
     return data.find(
         (item) =>
             String(item.jenis_pemeriksaan ?? '')
-                .toLowerCase()
-                .includes('2')
-    ) ?? data[1] ?? null;
+                .toLowerCase() === 'berkala_2'
+    ) ?? null;
 };
-
 
 // ======================================================
 // INITIAL
@@ -228,31 +226,7 @@ const initial = props.siswa.nama
 
                 <div>
 
-                    <div
-                        class="flex items-center gap-2 text-xs font-semibold text-slate-400"
-                    >
-
-                        <span>
-                            Klinik
-                        </span>
-
-                        <span>
-                            /
-                        </span>
-
-                        <span>
-                            Data Siswa
-                        </span>
-
-                        <span>
-                            /
-                        </span>
-
-                        <span class="text-blue-600">
-                            Detail
-                        </span>
-
-                    </div>
+                  
 
                     <h1
                         class="mt-1 text-2xl font-bold text-slate-800"
@@ -892,8 +866,8 @@ const initial = props.siswa.nama
                                     class="mt-1 rounded-xl bg-slate-50 p-3 text-sm leading-relaxed text-slate-700"
                                 >
                                     {{
-                                        pemeriksaan1()?.hasil || '-'
-                                    }}
+    pemeriksaan1()?.hasil_pemeriksaan || '-'
+}}
                                 </div>
 
                             </div>
@@ -1109,8 +1083,8 @@ const initial = props.siswa.nama
                                     class="mt-1 rounded-xl bg-slate-50 p-3 text-sm leading-relaxed text-slate-700"
                                 >
                                     {{
-                                        pemeriksaan2()?.hasil || '-'
-                                    }}
+    pemeriksaan2()?.hasil_pemeriksaan || '-'
+}}
                                 </div>
 
                             </div>
@@ -1663,22 +1637,6 @@ const initial = props.siswa.nama
              FOOTER
         ================================================== -->
 
-        <div
-            class="flex items-center justify-start border-t border-slate-200 pt-2"
-        >
-
-            <Link
-                :href="route('klinik.siswa.index')"
-                class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-blue-600"
-            >
-
-                <ArrowLeftIcon class="h-4 w-4" />
-
-                Kembali ke Data Siswa
-
-            </Link>
-
-        </div>
 
 
     </div>

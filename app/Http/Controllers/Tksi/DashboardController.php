@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Tksi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
-use App\Models\TksiBatch;
-use App\Models\TksiBatchSiswa;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Periode;
+use App\Models\PeriodeSiswa;
+use App\Models\TksiHasil;
+use App\Models\KunjunganKlinik;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -15,102 +17,240 @@ class DashboardController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
-        | TOTAL SISWA AKTIF
+        | USER
         |--------------------------------------------------------------------------
         */
 
-        $totalSiswa = Siswa::where('status', 'aktif')->count();
+        $user = auth()->user();
 
 
         /*
         |--------------------------------------------------------------------------
-        | TOTAL BATCH TKSI
+        | PERIODE AKTIF
         |--------------------------------------------------------------------------
         */
 
-        $totalBatch = TksiBatch::count();
+        $periode = Periode::where('status', 'aktif')
+            ->latest('id')
+            ->first();
 
 
         /*
         |--------------------------------------------------------------------------
-        | PESERTA SUDAH TKSI
+        | TOTAL SISWA PADA PERIODE AKTIF
+        |--------------------------------------------------------------------------
+        */
+
+        $totalSiswa = 0;
+
+        if ($periode) {
+            $totalSiswa = PeriodeSiswa::where(
+                'periode_id',
+                $periode->id
+            )->count();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SISWA YANG SUDAH MELAKUKAN TKSI
         |--------------------------------------------------------------------------
         |
-        | Peserta dianggap sudah selesai apabila status = selesai.
+        | Menggunakan TksiHasil.
+        |
+        | Satu siswa bisa memiliki banyak hasil berdasarkan komponen,
+        | sehingga harus DISTINCT berdasarkan siswa_id.
         |
         */
 
-        $pesertaSelesai = TksiBatchSiswa::where('status', 'selesai')
-            ->count();
+        $siswaSudahTksiIds = collect();
+
+        if ($periode) {
+            $siswaSudahTksiIds = TksiHasil::where(
+                'periode_id',
+                $periode->id
+            )
+                ->whereNotNull('siswa_id')
+                ->pluck('siswa_id')
+                ->unique()
+                ->values();
+        }
+
+        $totalSudahTksi = $siswaSudahTksiIds->count();
 
 
         /*
         |--------------------------------------------------------------------------
-        | PESERTA BELUM TKSI
+        | SISWA BELUM TKSI
         |--------------------------------------------------------------------------
         */
 
-        $pesertaBelum = TksiBatchSiswa::where('status', '!=', 'selesai')
-            ->count();
+        $siswaBelumTksiQuery = Siswa::query()
+            ->whereHas('periodeSiswa', function ($query) use ($periode) {
+
+                if ($periode) {
+                    $query->where(
+                        'periode_id',
+                        $periode->id
+                    );
+                }
+
+            })
+            ->whereNotIn(
+                'id',
+                $siswaSudahTksiIds->toArray()
+            );
+
+
+        $totalBelumTksi = $siswaBelumTksiQuery->count();
 
 
         /*
         |--------------------------------------------------------------------------
-        | STATISTIK
+        | KUNJUNGAN KLINIK
         |--------------------------------------------------------------------------
         */
 
-        $stats = [
-            [
-                'name' => 'Total Siswa',
-                'value' => $totalSiswa,
-                'sub' => 'Siswa aktif',
-                'color' => 'border-blue-600',
-            ],
-            [
-                'name' => 'Batch TKSI',
-                'value' => $totalBatch,
-                'sub' => 'Total pelaksanaan TKSI',
-                'color' => 'border-emerald-600',
-            ],
-            [
-                'name' => 'Sudah TKSI',
-                'value' => $pesertaSelesai,
-                'sub' => 'Peserta selesai',
-                'color' => 'border-purple-600',
-            ],
-            [
-                'name' => 'Belum TKSI',
-                'value' => $pesertaBelum,
-                'sub' => 'Peserta perlu diisi',
-                'color' => 'border-rose-600',
-            ],
-        ];
+        $totalKunjungan = 0;
+
+        if ($periode) {
+            $totalKunjungan = KunjunganKlinik::where(
+                'periode_id',
+                $periode->id
+            )->count();
+        }
 
 
         /*
         |--------------------------------------------------------------------------
-        | SISWA / PESERTA PERLU PERHATIAN
+        | PESERTA PERLU PERHATIAN
+        |--------------------------------------------------------------------------
+        |
+        | Prioritas:
+        |
+        | 1. Siswa yang belum melakukan TKSI
+        | 2. Siswa dengan hasil TKSI level 1 / 2
+        |
+        */
+
+        $attentionStudents = [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | 1. SISWA BELUM TKSI
         |--------------------------------------------------------------------------
         */
 
-        $attentionStudents = TksiBatchSiswa::with([
-                'siswa.kelas',
-                'batch',
-            ])
-            ->where('status', '!=', 'selesai')
-            ->latest()
-            ->take(5)
-            ->get()
-            ->map(function ($peserta) {
-                return [
-                    'id' => $peserta->id,
-                    'name' => $peserta->siswa?->nama ?? '-',
-                    'class' => $peserta->siswa?->kelas?->nama_kelas ?? '-',
-                    'note' => $peserta->batch?->nama_tes ?? 'TKSI',
-                    'status' => $peserta->status ?? 'Belum',
+        $belumTksi = $siswaBelumTksiQuery
+            ->with('kelas')
+            ->limit(10)
+            ->get();
+
+
+        foreach ($belumTksi as $siswa) {
+
+            $attentionStudents[] = [
+
+                'id' => $siswa->id,
+
+                'name' =>
+                    $siswa->nama ?? '-',
+
+                'class' =>
+                    $siswa->kelas?->nama_kelas ?? '-',
+
+                'note' =>
+                    'Belum melakukan TKSI',
+
+                'status' =>
+                    'Belum TKSI',
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2. HASIL TKSI RENDAH
+        |--------------------------------------------------------------------------
+        */
+
+        if (count($attentionStudents) < 10) {
+
+            $limit = 10 - count($attentionStudents);
+
+
+            $tksiRendahQuery = TksiHasil::query()
+                ->with([
+                    'siswa.kelas',
+                ])
+                ->whereIn(
+                    'level',
+                    [1, 2]
+                );
+
+
+            if ($periode) {
+                $tksiRendahQuery->where(
+                    'periode_id',
+                    $periode->id
+                );
+            }
+
+
+            $tksiRendah = $tksiRendahQuery
+                ->latest('tanggal')
+                ->limit($limit)
+                ->get();
+
+
+            foreach ($tksiRendah as $hasil) {
+
+                /*
+                | Jangan tampilkan siswa yang sudah masuk
+                | daftar belum TKSI.
+                */
+
+                if (
+                    collect($attentionStudents)
+                        ->contains('id', $hasil->siswa_id)
+                ) {
+                    continue;
+                }
+
+
+                $attentionStudents[] = [
+
+                    'id' =>
+                        $hasil->siswa_id,
+
+                    'name' =>
+                        $hasil->siswa?->nama ?? '-',
+
+                    'class' =>
+                        $hasil->siswa?->kelas?->nama_kelas ?? '-',
+
+                    'note' =>
+                        $hasil->komponen
+                            ? $hasil->komponen .
+                                ' - Level ' .
+                                ($hasil->level ?? '-')
+                            : 'Hasil TKSI rendah',
+
+                    'status' =>
+                        'Perlu Perhatian',
                 ];
-            });
+
+
+                /*
+                | Maksimal 10 peserta.
+                */
+
+                if (count($attentionStudents) >= 10) {
+                    break;
+                }
+            }
+        }
 
 
         /*
@@ -119,58 +259,320 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $activities = TksiBatch::with('periode')
+        $activities = [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HASIL TKSI TERBARU
+        |--------------------------------------------------------------------------
+        */
+
+        $tksiActivitiesQuery = TksiHasil::query()
+            ->with('siswa')
             ->latest('tanggal')
-            ->take(5)
-            ->get()
-            ->map(function ($batch) {
-                return [
-                    'text' => 'Batch TKSI: ' . $batch->nama_tes,
-                    'staff' => $batch->periode?->nama_periode ?? 'Periode aktif',
-                    'time' => $batch->tanggal
-                        ? $batch->tanggal->format('d M Y')
+            ->limit(10);
+
+
+        if ($periode) {
+            $tksiActivitiesQuery->where(
+                'periode_id',
+                $periode->id
+            );
+        }
+
+
+        $tksiActivities = $tksiActivitiesQuery->get();
+
+
+        foreach ($tksiActivities as $item) {
+
+            $activities[] = [
+
+                'text' =>
+                    'TKSI - ' .
+                    ($item->siswa?->nama ?? 'Siswa'),
+
+                'staff' =>
+                    $item->komponen
+                        ? 'Komponen: ' . $item->komponen
+                        : 'Hasil TKSI',
+
+                'time' =>
+                    $item->tanggal
+                        ? Carbon::parse(
+                            $item->tanggal
+                        )->diffForHumans()
                         : '-',
-                ];
-            });
+
+                '_date' =>
+                    $item->tanggal,
+            ];
+        }
 
 
         /*
         |--------------------------------------------------------------------------
-        | JADWAL & PENGINGAT
+        | URUTKAN AKTIVITAS
         |--------------------------------------------------------------------------
         */
 
-        $reminders = TksiBatch::with('periode')
-            ->whereDate('tanggal', '>=', now()->toDateString())
-            ->orderBy('tanggal')
-            ->take(5)
-            ->get()
-            ->map(function ($batch) {
-                return [
-                    'title' => $batch->nama_tes,
-                    'date' => $batch->tanggal
-                        ? $batch->tanggal->format('d M Y')
-                        : '-',
-                    'deadline' => $batch->periode?->tanggal_selesai
-                        ? $batch->periode->tanggal_selesai->format('d M Y')
-                        : '-',
-                    'status' => 'Terjadwal',
-                ];
-            });
+        usort(
+            $activities,
+            function ($a, $b) {
+
+                return strtotime(
+                    $b['_date'] ?? '1970-01-01'
+                )
+                <=>
+                strtotime(
+                    $a['_date'] ?? '1970-01-01'
+                );
+            }
+        );
 
 
         /*
         |--------------------------------------------------------------------------
-        | RESPONSE
+        | REMINDERS
         |--------------------------------------------------------------------------
         */
 
-        return Inertia::render('Tksi/Dashboard/Index', [
-            'user' => Auth::user(),
-            'stats' => $stats,
-            'attentionStudents' => $attentionStudents,
-            'activities' => $activities,
-            'reminders' => $reminders,
-        ]);
+        $reminders = [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMINDER SISWA BELUM TKSI
+        |--------------------------------------------------------------------------
+        */
+
+        if ($totalBelumTksi > 0) {
+
+            $reminders[] = [
+
+                'title' =>
+                    $totalBelumTksi .
+                    ' siswa belum melakukan TKSI',
+
+                'date' =>
+                    $periode?->nama_periode
+                    ?? 'Periode aktif',
+
+                'deadline' =>
+                    $periode?->tanggal_selesai
+                        ? Carbon::parse(
+                            $periode->tanggal_selesai
+                        )->format('d M Y')
+                        : '-',
+
+                'status' =>
+                    'Perlu Ditindaklanjuti',
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMINDER PERIODE AKAN BERAKHIR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $periode &&
+            $periode->tanggal_selesai
+        ) {
+
+            $tanggalSelesai = Carbon::parse(
+                $periode->tanggal_selesai
+            );
+
+
+            $sisaHari = Carbon::now()->diffInDays(
+                $tanggalSelesai,
+                false
+            );
+
+
+            if (
+                $sisaHari >= 0 &&
+                $sisaHari <= 7
+            ) {
+
+                $reminders[] = [
+
+                    'title' =>
+                        'Periode ' .
+                        $periode->nama_periode .
+                        ' segera berakhir',
+
+                    'date' =>
+                        $periode->tanggal_mulai
+                            ? Carbon::parse(
+                                $periode->tanggal_mulai
+                            )->format('d M Y')
+                            : '-',
+
+                    'deadline' =>
+                        $tanggalSelesai->format('d M Y'),
+
+                    'status' =>
+                        'Segera Selesai',
+                ];
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PERSENTASE TKSI
+        |--------------------------------------------------------------------------
+        */
+
+        $persentaseTksi = $totalSiswa > 0
+            ? round(
+                ($totalSudahTksi / $totalSiswa) * 100
+            )
+            : 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STATISTICS
+        |--------------------------------------------------------------------------
+        */
+
+        $stats = [
+
+            [
+                'name' =>
+                    'Total Siswa',
+
+                'value' =>
+                    $totalSiswa,
+
+                'sub' =>
+                    $periode
+                        ? $periode->nama_periode
+                        : 'Tidak ada periode aktif',
+
+                'color' =>
+                    'border-blue-500',
+            ],
+
+
+            [
+                'name' =>
+                    'Sudah TKSI',
+
+                'value' =>
+                    $totalSudahTksi,
+
+                'sub' =>
+                    $persentaseTksi .
+                    '% siswa sudah dites',
+
+                'color' =>
+                    'border-emerald-500',
+            ],
+
+
+            [
+                'name' =>
+                    'Belum TKSI',
+
+                'value' =>
+                    $totalBelumTksi,
+
+                'sub' =>
+                    'Siswa belum mengikuti tes',
+
+                'color' =>
+                    'border-amber-500',
+            ],
+
+
+            [
+                'name' =>
+                    'Kunjungan Klinik',
+
+                'value' =>
+                    $totalKunjungan,
+
+                'sub' =>
+                    $periode
+                        ? $periode->nama_periode
+                        : 'Tidak ada periode aktif',
+
+                'color' =>
+                    'border-rose-500',
+            ],
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HAPUS FIELD INTERNAL
+        |--------------------------------------------------------------------------
+        */
+
+        $activities = collect($activities)
+            ->map(function ($item) {
+
+                unset($item['_date']);
+
+                return $item;
+            })
+            ->values()
+            ->all();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN INERTIA
+        |--------------------------------------------------------------------------
+        |
+        | PENTING:
+        |
+        | File:
+        | resources/js/Pages/Tksi/Dashboard/Index.vue
+        |
+        | Maka:
+        | Tksi/Dashboard/Index
+        |
+        */
+
+        return Inertia::render(
+            'Tksi/Dashboard/Index',
+            [
+
+                'user' => [
+
+                    'id' =>
+                        $user->id,
+
+                    'name' =>
+                        $user->name,
+
+                    'email' =>
+                        $user->email,
+                ],
+
+                'periode' =>
+                    $periode,
+
+                'stats' =>
+                    $stats,
+
+                'attentionStudents' =>
+                    $attentionStudents,
+
+                'activities' =>
+                    $activities,
+
+                'reminders' =>
+                    $reminders,
+            ]
+        );
     }
 }

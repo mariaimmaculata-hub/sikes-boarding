@@ -5,8 +5,8 @@ namespace App\Exports\Tksi;
 use App\Models\TksiHasil;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -16,11 +16,187 @@ class TksReportExport implements
     ShouldAutoSize,
     WithStyles
 {
-    protected $periodeId;
+    /**
+     * Filter yang digunakan.
+     */
+    protected ?int $periodeId;
+    protected Collection $komponen;
+    protected ?string $search;
+    protected ?string $tingkat;
+    protected ?int $jurusanId;
 
-    public function __construct($periodeId = null)
+    /**
+     * Constructor.
+     *
+     * URUTAN PARAMETER HARUS SAMA DENGAN CONTROLLER:
+     *
+     * new TksReportExport(
+     *     $periodeId,
+     *     $komponen,
+     *     $search,
+     *     $tingkat,
+     *     $jurusanId
+     * );
+     */
+    public function __construct(
+        $periodeId = null,
+        $komponen = [],
+        $search = null,
+        $tingkat = null,
+        $jurusanId = null
+    ) {
+        /*
+         * ---------------------------------------------------------
+         * PERIODE
+         * ---------------------------------------------------------
+         *
+         * Pastikan Collection tidak pernah masuk ke sini.
+         */
+        if ($periodeId instanceof Collection) {
+            $periodeId = $periodeId->first();
+        }
+
+        if (is_array($periodeId)) {
+            $periodeId = $periodeId[0] ?? null;
+        }
+
+        $this->periodeId = is_numeric($periodeId)
+            ? (int) $periodeId
+            : null;
+
+
+        /*
+         * ---------------------------------------------------------
+         * KOMPONEN
+         * ---------------------------------------------------------
+         */
+        if ($komponen instanceof Collection) {
+
+            $this->komponen = $komponen
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->unique()
+                ->values();
+
+        } elseif (is_array($komponen)) {
+
+            $this->komponen = collect($komponen)
+                ->map(fn ($item) => trim((string) $item))
+                ->filter()
+                ->unique()
+                ->values();
+
+        } elseif ($komponen !== null && $komponen !== '') {
+
+            $this->komponen = collect([
+                trim((string) $komponen)
+            ])
+                ->filter()
+                ->values();
+
+        } else {
+
+            $this->komponen = collect();
+        }
+
+
+        /*
+         * ---------------------------------------------------------
+         * SEARCH
+         * ---------------------------------------------------------
+         */
+        $this->search = $search !== null && $search !== ''
+            ? trim((string) $search)
+            : null;
+
+
+        /*
+         * ---------------------------------------------------------
+         * TINGKAT
+         * ---------------------------------------------------------
+         */
+        $this->tingkat = $tingkat !== null && $tingkat !== ''
+            ? trim((string) $tingkat)
+            : null;
+
+
+        /*
+         * ---------------------------------------------------------
+         * JURUSAN
+         * ---------------------------------------------------------
+         *
+         * Disimpan jika nanti dibutuhkan.
+         *
+         * Tetapi query export DI SINI tidak menggunakan
+         * relasi siswa.jurusan karena model Siswa kamu
+         * belum mempunyai relasi tersebut.
+         */
+        if ($jurusanId instanceof Collection) {
+            $jurusanId = $jurusanId->first();
+        }
+
+        if (is_array($jurusanId)) {
+            $jurusanId = $jurusanId[0] ?? null;
+        }
+
+        $this->jurusanId = is_numeric($jurusanId)
+            ? (int) $jurusanId
+            : null;
+    }
+
+
+    /**
+     * =========================================================
+     * KOMPONEN
+     * =========================================================
+     *
+     * Jika user memilih komponen:
+     * gunakan komponen tersebut.
+     *
+     * Jika tidak memilih:
+     * ambil semua komponen yang tersedia di database.
+     */
+    private function getKomponen(): Collection
     {
-        $this->periodeId = $periodeId;
+        /*
+         * Jika ada komponen dari filter.
+         */
+        if ($this->komponen->isNotEmpty()) {
+
+            return $this->komponen
+                ->map(fn ($item) => (string) $item)
+                ->filter()
+                ->unique()
+                ->values();
+        }
+
+
+        /*
+         * Jika tidak ada filter komponen,
+         * ambil seluruh komponen dari database.
+         */
+        $query = TksiHasil::query()
+            ->whereNotNull('komponen')
+            ->where('komponen', '!=', '');
+
+
+        /*
+         * Filter periode hanya jika ada.
+         */
+        if ($this->periodeId !== null) {
+            $query->where(
+                'periode_id',
+                $this->periodeId
+            );
+        }
+
+
+        return $query
+            ->distinct()
+            ->orderBy('komponen')
+            ->pluck('komponen')
+            ->map(fn ($item) => (string) $item)
+            ->values();
     }
 
 
@@ -32,26 +208,37 @@ class TksReportExport implements
     public function collection()
     {
         /*
-         * Ambil seluruh nama komponen
+         * Ambil daftar komponen.
          */
-        $komponenOptions = TksiHasil::query()
-            ->whereNotNull('komponen')
-            ->where('komponen', '!=', '')
-            ->distinct()
-            ->orderBy('komponen')
-            ->pluck('komponen')
-            ->values();
+        $komponenOptions = $this->getKomponen();
 
 
         /*
-         * Query hasil TKSI
+         * ---------------------------------------------------------
+         * QUERY HASIL TKSI
+         * ---------------------------------------------------------
+         *
+         * HANYA menggunakan relasi yang memang tersedia:
+         *
+         * siswa.kelas
+         * periode
+         *
+         * Jangan gunakan:
+         * siswa.jurusan
          */
         $query = TksiHasil::with([
             'siswa.kelas',
             'periode',
         ]);
 
-        if ($this->periodeId) {
+
+        /*
+         * ---------------------------------------------------------
+         * FILTER PERIODE
+         * ---------------------------------------------------------
+         */
+        if ($this->periodeId !== null) {
+
             $query->where(
                 'periode_id',
                 $this->periodeId
@@ -59,6 +246,106 @@ class TksReportExport implements
         }
 
 
+        /*
+         * ---------------------------------------------------------
+         * FILTER KOMPONEN
+         * ---------------------------------------------------------
+         */
+        if ($komponenOptions->isNotEmpty()) {
+
+            $query->whereIn(
+                'komponen',
+                $komponenOptions->toArray()
+            );
+        }
+
+
+        /*
+         * ---------------------------------------------------------
+         * FILTER SEARCH
+         * ---------------------------------------------------------
+         *
+         * Cari berdasarkan:
+         * - nama siswa
+         * - NISN
+         */
+        if ($this->search !== null) {
+
+            $search = $this->search;
+
+            $query->whereHas('siswa', function ($q) use ($search) {
+
+                $q->where(function ($subQuery) use ($search) {
+
+                    $subQuery
+                        ->where(
+                            'nama',
+                            'like',
+                            '%' . $search . '%'
+                        )
+                        ->orWhere(
+                            'nisn',
+                            'like',
+                            '%' . $search . '%'
+                        );
+
+                });
+
+            });
+        }
+
+
+        /*
+         * ---------------------------------------------------------
+         * FILTER TINGKAT
+         * ---------------------------------------------------------
+         *
+         * Diasumsikan tingkat tersimpan di tabel kelas.
+         *
+         * Kalau nama kolom tingkat di tabel kelas berbeda,
+         * bagian ini perlu disesuaikan.
+         */
+        if ($this->tingkat !== null) {
+
+            $tingkat = $this->tingkat;
+
+            $query->whereHas('siswa.kelas', function ($q) use ($tingkat) {
+
+                $q->where(
+                    'tingkat',
+                    $tingkat
+                );
+
+            });
+        }
+
+
+        /*
+         * ---------------------------------------------------------
+         * FILTER JURUSAN
+         * ---------------------------------------------------------
+         *
+         * UNTUK SEMENTARA TIDAK DIJALANKAN.
+         *
+         * Alasannya:
+         * Model Siswa kamu tidak mempunyai relasi jurusan.
+         *
+         * Kalau nanti struktur database sudah jelas,
+         * filter jurusan bisa ditambahkan melalui field FK
+         * yang benar.
+         */
+        /*
+        if ($this->jurusanId !== null) {
+            ...
+        }
+        */
+
+
+        /*
+         * ---------------------------------------------------------
+         * AMBIL DATA
+         * ---------------------------------------------------------
+         */
         $hasil = $query
             ->orderBy('siswa_id')
             ->orderBy('tanggal')
@@ -67,25 +354,50 @@ class TksReportExport implements
 
 
         /*
-         * Kelompokkan berdasarkan siswa
+         * ---------------------------------------------------------
+         * KELOMPOKKAN BERDASARKAN SISWA
+         * ---------------------------------------------------------
+         *
+         * 1 siswa = 1 baris Excel.
          */
         $grouped = $hasil->groupBy('siswa_id');
+
 
         $rows = collect();
 
 
         /*
-         * 1 siswa = 1 baris
+         * =========================================================
+         * LOOP SETIAP SISWA
+         * =========================================================
          */
         foreach ($grouped as $items) {
 
             $first = $items->first();
 
-            $siswa = $first->siswa;
+
+            /*
+             * Data siswa.
+             */
+            $siswa = $first?->siswa;
 
 
             /*
-             * Data komponen
+             * Jika data siswa tidak ditemukan,
+             * lewati baris tersebut.
+             */
+            if (!$siswa) {
+                continue;
+            }
+
+
+            /*
+             * -----------------------------------------------------
+             * DATA KOMPONEN
+             * -----------------------------------------------------
+             *
+             * Untuk setiap komponen:
+             * ambil nilai terbaru berdasarkan tanggal.
              */
             $komponenData = [];
 
@@ -93,7 +405,10 @@ class TksReportExport implements
             foreach ($komponenOptions as $namaKomponen) {
 
                 $hasilKomponen = $items
-                    ->where('komponen', $namaKomponen)
+                    ->where(
+                        'komponen',
+                        $namaKomponen
+                    )
                     ->sortByDesc('tanggal')
                     ->first();
 
@@ -106,22 +421,39 @@ class TksReportExport implements
 
 
             /*
-             * Buat row
+             * -----------------------------------------------------
+             * IDENTITAS SISWA
+             * -----------------------------------------------------
              */
             $row = [
 
-                $siswa?->nisn ?? '-',
+                /*
+                 * NISN
+                 */
+                $siswa->nisn ?? '-',
 
-                $siswa?->nama ?? '-',
+                /*
+                 * Nama
+                 */
+                $siswa->nama ?? '-',
 
-                $siswa?->kelas?->nama_kelas ?? '-',
+                /*
+                 * Kelas
+                 */
+                $siswa->kelas?->nama_kelas ?? '-',
 
+                /*
+                 * Periode
+                 */
                 $first->periode?->nama_periode ?? '-',
+
             ];
 
 
             /*
-             * Tambahkan 6 komponen
+             * -----------------------------------------------------
+             * TAMBAHKAN NILAI KOMPONEN
+             * -----------------------------------------------------
              */
             foreach ($komponenOptions as $namaKomponen) {
 
@@ -131,26 +463,45 @@ class TksReportExport implements
 
 
             /*
-             * Tambahkan total dan rata-rata
+             * -----------------------------------------------------
+             * HITUNG TOTAL & RATA-RATA
+             * -----------------------------------------------------
+             *
+             * Hanya nilai numerik yang dihitung.
              */
             $nilai = collect($komponenData)
-                ->filter(fn ($value) =>
-                    $value !== '-' &&
-                    $value !== null &&
-                    $value !== ''
-                )
-                ->map(fn ($value) =>
-                    (float) $value
-                );
+                ->filter(function ($value) {
+
+                    return $value !== '-'
+                        && $value !== null
+                        && $value !== ''
+                        && is_numeric($value);
+
+                })
+                ->map(function ($value) {
+
+                    return (float) $value;
+
+                });
 
 
+            /*
+             * Total nilai.
+             */
             $row[] = $nilai->sum();
 
+
+            /*
+             * Rata-rata.
+             */
             $row[] = $nilai->count()
                 ? round($nilai->avg(), 2)
                 : '-';
 
 
+            /*
+             * Masukkan baris ke hasil Excel.
+             */
             $rows->push($row);
         }
 
@@ -166,13 +517,10 @@ class TksReportExport implements
      */
     public function headings(): array
     {
-        $komponenOptions = TksiHasil::query()
-            ->whereNotNull('komponen')
-            ->where('komponen', '!=', '')
-            ->distinct()
-            ->orderBy('komponen')
-            ->pluck('komponen')
-            ->values();
+        /*
+         * Harus sama persis dengan kolom pada collection().
+         */
+        $komponenOptions = $this->getKomponen();
 
 
         return array_merge(
@@ -204,6 +552,9 @@ class TksReportExport implements
     {
         return [
 
+            /*
+             * Header.
+             */
             1 => [
                 'font' => [
                     'bold' => true,

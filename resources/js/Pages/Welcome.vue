@@ -1,176 +1,2923 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+
+import { computed } from 'vue'
+import { Head, Link } from '@inertiajs/vue3'
+
+import {
+    Line,
+    Doughnut,
+    Bar
+} from 'vue-chartjs'
+
+import {
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    ArcElement,
+    Filler
+} from 'chart.js'
+
+
+/*
+|--------------------------------------------------------------------------
+| CHART JS
+|--------------------------------------------------------------------------
+*/
+
+ChartJS.register(
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    ArcElement,
+    Filler
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| PROPS
+|--------------------------------------------------------------------------
+*/
+
+const props = defineProps({
+
+    stats: {
+        type: Object,
+        default: () => ({})
+    },
+
+    lineChart: {
+        type: Object,
+        default: () => ({
+            labels: [],
+            data: []
+        })
+    },
+
+    doughnutChart: {
+        type: Object,
+        default: () => ({
+            labels: [],
+            data: []
+        })
+    },
+
+    diseaseChart: {
+        type: Object,
+        default: () => ({
+            labels: [],
+            data: []
+        })
+    },
+
+    tableData: {
+        type: Array,
+        default: () => []
+    },
+
+    recentVisits: {
+        type: Array,
+        default: () => []
+    },
+
+    diseases: {
+        type: Array,
+        default: () => []
+    }
+
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| HELPER
+|--------------------------------------------------------------------------
+*/
+
+const numberFormat = (value) => {
+    return Number(value ?? 0).toLocaleString('id-ID')
+}
+
+
+const percentage = (value) => {
+    return `${Number(value ?? 0).toFixed(1)}%`
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| STATISTIK UTAMA
+|--------------------------------------------------------------------------
+*/
+
+const totalSiswa = computed(() =>
+    numberFormat(props.stats?.totalSiswa)
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| PERIODE AKTIF
+|--------------------------------------------------------------------------
+*/
+
+const periodeAktif = computed(() =>
+    props.stats?.periodeAktif ??
+    props.stats?.namaPeriode ??
+    '-'
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| PEMERIKSAAN BERKALA
+|--------------------------------------------------------------------------
+|
+| Berkala 1 = jumlah siswa yang sudah menyelesaikan Berkala 1
+| Berkala 2 = jumlah siswa yang sudah menyelesaikan Berkala 2
+|
+|--------------------------------------------------------------------------
+*/
+
+const berkala1 = computed(() =>
+    numberFormat(
+        props.stats?.berkala1 ??
+        props.stats?.berkala_1_selesai ??
+        0
+    )
+)
+
+
+const berkala2 = computed(() =>
+    numberFormat(
+        props.stats?.berkala2 ??
+        props.stats?.berkala_2_selesai ??
+        0
+    )
+)
+
+
+const totalPemeriksaan = computed(() => {
+
+    const value =
+        props.stats?.pemeriksaanBerkala ??
+        props.stats?.totalPemeriksaan ??
+        (
+            Number(
+                props.stats?.berkala1 ??
+                props.stats?.berkala_1_selesai ??
+                0
+            ) +
+            Number(
+                props.stats?.berkala2 ??
+                props.stats?.berkala_2_selesai ??
+                0
+            )
+        )
+
+    return numberFormat(value)
+
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| TKSI
+|--------------------------------------------------------------------------
+|
+| Prioritas:
+| tksiSelesai
+| tesKebugaran
+| tesKebugaranBulanIni
+|
+|--------------------------------------------------------------------------
+*/
+
+const tksiSelesai = computed(() =>
+    numberFormat(
+        props.stats?.tksiSelesai ??
+        props.stats?.tesKebugaran ??
+        0
+    )
+)
+
+
+const tksiBulanIni = computed(() =>
+    numberFormat(
+        props.stats?.tksiBulanIni ??
+        props.stats?.tesKebugaranBulanIni ??
+        0
+    )
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| KUNJUNGAN KLINIK
+|--------------------------------------------------------------------------
+*/
+
+const totalKunjungan = computed(() =>
+    numberFormat(
+        props.stats?.totalKunjungan ??
+        0
+    )
+)
+
+
+const kunjunganBulanIni = computed(() =>
+    numberFormat(
+        props.stats?.kunjunganBulanIni ??
+        0
+    )
+)
+
+
+const totalKunjungan30Hari = computed(() =>
+    numberFormat(
+        props.stats?.totalKunjungan30Hari ??
+        0
+    )
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| STATISTIK TAMBAHAN
+|--------------------------------------------------------------------------
+*/
+
+const totalKelas = computed(() =>
+    numberFormat(
+        props.stats?.totalKelas
+    )
+)
+
+
+const rataRataKunjungan = computed(() =>
+    Number(
+        props.stats?.rataRataKunjungan ??
+        0
+    ).toFixed(1)
+)
+
+
+const puncakKunjungan = computed(() =>
+    numberFormat(
+        props.stats?.puncakKunjungan
+    )
+)
+
+
+const tren7Hari = computed(() =>
+    Number(
+        props.stats?.tren7Hari ??
+        0
+    )
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS KESEHATAN
+|--------------------------------------------------------------------------
+*/
+
+const sehat = computed(() =>
+    numberFormat(
+        props.stats?.sehat
+    )
+)
+
+
+const perluPerhatian = computed(() =>
+    numberFormat(
+        props.stats?.perluPerhatian
+    )
+)
+
+
+const rujuk = computed(() =>
+    numberFormat(
+        props.stats?.rujuk
+    )
+)
+
+
+const belumDiperiksa = computed(() =>
+    numberFormat(
+        props.stats?.belumDiperiksa
+    )
+)
+
+
+const totalStatusKesehatan = computed(() =>
+    numberFormat(
+        props.stats?.totalStatusKesehatan
+    )
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| PROGRESS PEMERIKSAAN KESEHATAN
+|--------------------------------------------------------------------------
+*/
+
+const progressKesehatan = computed(() => {
+
+    const total = Number(
+        props.stats?.totalSiswa ?? 0
+    )
+
+    const diperiksa = Number(
+        props.stats?.totalStatusKesehatan ?? 0
+    )
+
+    if (total <= 0) {
+        return 0
+    }
+
+    return Math.min(
+        100,
+        Math.round(
+            (diperiksa / total) * 100
+        )
+    )
+
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| PROGRESS TKSI
+|--------------------------------------------------------------------------
+*/
+
+const progressTKSI = computed(() => {
+
+    const total = Number(
+        props.stats?.totalSiswa ?? 0
+    )
+
+    const selesai = Number(
+        props.stats?.tksiSelesai ??
+        props.stats?.tesKebugaran ??
+        0
+    )
+
+    if (total <= 0) {
+        return 0
+    }
+
+    return Math.min(
+        100,
+        Math.round(
+            (selesai / total) * 100
+        )
+    )
+
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| LINE CHART
+|--------------------------------------------------------------------------
+*/
+
+const lineChartData = computed(() => ({
+
+    labels:
+        props.lineChart?.labels ?? [],
+
+    datasets: [
+
+        {
+            label: 'Jumlah Kunjungan',
+
+            data:
+                props.lineChart?.data ?? [],
+
+            borderColor:
+                '#2563eb',
+
+            backgroundColor:
+                'rgba(37, 99, 235, 0.08)',
+
+            borderWidth:
+                2.5,
+
+            fill:
+                true,
+
+            tension:
+                0.35,
+
+            pointBackgroundColor:
+                '#2563eb',
+
+            pointBorderColor:
+                '#ffffff',
+
+            pointBorderWidth:
+                2,
+
+            pointRadius:
+                4,
+
+            pointHoverRadius:
+                6
+        }
+
+    ]
+
+}))
+
+
+const lineChartOptions = {
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+
+        legend: {
+            display: false
+        },
+
+        tooltip: {
+
+            padding: 10,
+
+            backgroundColor:
+                '#0f172a',
+
+            titleFont: {
+                size: 12,
+                weight: 'bold'
+            },
+
+            bodyFont: {
+                size: 11
+            },
+
+            cornerRadius: 8
+
+        }
+
+    },
+
+    scales: {
+
+        y: {
+
+            beginAtZero: true,
+
+            ticks: {
+
+                precision: 0,
+
+                color:
+                    '#64748b',
+
+                font: {
+                    size: 10
+                }
+
+            },
+
+            grid: {
+                color:
+                    '#f1f5f9'
+            }
+
+        },
+
+        x: {
+
+            grid: {
+                display: false
+            },
+
+            ticks: {
+
+                color:
+                    '#64748b',
+
+                font: {
+                    size: 10
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DOUGHNUT CHART
+|--------------------------------------------------------------------------
+*/
+
+const doughnutChartData = computed(() => ({
+
+    labels:
+        props.doughnutChart?.labels ?? [],
+
+    datasets: [
+
+        {
+
+            data:
+                props.doughnutChart?.data ?? [],
+
+            backgroundColor: [
+                '#10b981',
+                '#f59e0b',
+                '#f43f5e'
+            ],
+
+            borderWidth:
+                0,
+
+            hoverOffset:
+                5
+
+        }
+
+    ]
+
+}))
+
+
+const doughnutChartOptions = {
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+
+        legend: {
+
+            position:
+                'bottom',
+
+            labels: {
+
+                color:
+                    '#475569',
+
+                font: {
+
+                    size: 11,
+
+                    weight:
+                        '600'
+
+                },
+
+                padding:
+                    15,
+
+                usePointStyle:
+                    true
+
+            }
+
+        },
+
+        tooltip: {
+
+            padding:
+                10,
+
+            callbacks: {
+
+                label:
+                    (context) => {
+
+                        return ` ${context.label}: ${context.raw}%`
+
+                    }
+
+            }
+
+        }
+
+    },
+
+    cutout:
+        '68%'
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DISEASE BAR CHART
+|--------------------------------------------------------------------------
+*/
+
+const diseaseChartData = computed(() => ({
+
+    labels:
+        props.diseaseChart?.labels ?? [],
+
+    datasets: [
+
+        {
+
+            label:
+                'Jumlah Kasus',
+
+            data:
+                props.diseaseChart?.data ?? [],
+
+            backgroundColor: [
+                '#3b82f6',
+                '#10b981',
+                '#f59e0b',
+                '#f43f5e',
+                '#8b5cf6',
+                '#06b6d4',
+                '#64748b',
+                '#ec4899'
+            ],
+
+            borderRadius:
+                6,
+
+            borderSkipped:
+                false
+
+        }
+
+    ]
+
+}))
+
+
+const diseaseChartOptions = {
+
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    plugins: {
+
+        legend: {
+            display: false
+        },
+
+        tooltip: {
+
+            padding:
+                10,
+
+            backgroundColor:
+                '#0f172a',
+
+            cornerRadius:
+                8
+
+        }
+
+    },
+
+    scales: {
+
+        y: {
+
+            beginAtZero:
+                true,
+
+            ticks: {
+
+                precision:
+                    0,
+
+                color:
+                    '#64748b'
+
+            },
+
+            grid: {
+
+                color:
+                    '#f1f5f9'
+
+            }
+
+        },
+
+        x: {
+
+            grid: {
+                display: false
+            },
+
+            ticks: {
+                color:
+                    '#64748b'
+            }
+
+        }
+
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| PENYAKIT TERATAS
+|--------------------------------------------------------------------------
+*/
+
+const topDisease = computed(() => {
+
+    if (!props.diseases?.length) {
+        return null
+    }
+
+    return [...props.diseases].sort(
+        (a, b) =>
+            Number(
+                b.total ??
+                b.jumlah ??
+                0
+            )
+            -
+            Number(
+                a.total ??
+                a.jumlah ??
+                0
+            )
+    )[0]
+
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| AKTIVITAS
+|--------------------------------------------------------------------------
+*/
+
+const recentActivityCount = computed(() =>
+    props.recentVisits?.length ?? 0
+)
+
+
+/*
+|--------------------------------------------------------------------------
+| STATUS SISTEM
+|--------------------------------------------------------------------------
+*/
+
+const systemStatus = computed(() => {
+
+    if (
+        props.stats &&
+        Object.keys(
+            props.stats
+        ).length > 0
+    ) {
+        return 'Sistem Aktif'
+    }
+
+    return 'Menunggu Data'
+
+})
+
 </script>
 
+
 <template>
-    <Head title="Selamat Datang di SiKes-Boarding" />
 
-    <div class="relative min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white font-sans overflow-hidden flex flex-col justify-between">
-        
-        <!-- Decorative Top-Right Light Glow -->
-        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none"></div>
-        <!-- Decorative Bottom-Left Light Glow -->
-        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-[150px] pointer-events-none"></div>
- 
-        <!-- Decorative Wave Grid Pattern Overlay -->
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none"></div>
+<Head title="SiKes-Boarding | SMKN Jateng Semarang" />
 
-        <!-- HEADER -->
-        <header class="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between font-sans">
-            <!-- Left Corner: SMKN Jateng Logo & Name -->
-            <div class="flex items-center space-x-3">
-                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/10 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        <path d="M12 6v12M8 10h8" stroke-width="1.5" opacity="0.8" />
-                    </svg>
-                </div>
-                <div class="flex flex-col">
-                    <span class="text-white text-2xl font-bold tracking-tight leading-none">SMKN Jateng</span>
-                    <span class="text-white/60 text-[9px] tracking-widest mt-0.5 uppercase hidden sm:inline-block font-medium">Semarang</span>
-                </div>
+
+<div
+    class="min-h-screen bg-slate-50 text-slate-800 font-sans"
+>
+
+
+<!-- ================================================================== -->
+<!-- HERO -->
+<!-- ================================================================== -->
+
+<section
+    class="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white overflow-hidden"
+>
+
+    <div
+        class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none"
+    ></div>
+
+    <div
+        class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none"
+    ></div>
+
+    <div
+        class="absolute inset-0 opacity-40 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none"
+    ></div>
+
+
+    <!-- HEADER -->
+
+    <header
+        class="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 py-5 sm:py-6 flex items-center justify-between"
+    >
+
+        <div class="flex items-center gap-3">
+
+            <div
+                class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10"
+            >
+
+                <svg
+                    class="w-6 h-6 text-yellow-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                >
+
+                    <path
+                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                    />
+
+                    <path
+                        d="M12 6v12M8 10h8"
+                        stroke-width="1.5"
+                    />
+
+                </svg>
+
             </div>
 
-            <!-- Middle: SiKes-Boarding Text -->
-            <div class="hidden md:block">
-                <span class="text-white/90 font-bold text-2xl tracking-wider font-sans drop-shadow-sm">
-                    SiKes-Boarding
-                </span>
-            </div>
-
-            <!-- Right Corner: Login Button (TETAP PERTAHANKAN) -->
             <div>
-                <Link 
-                    :href="route('login')"
-                    class="px-6 py-2 border border-white text-white font-medium rounded-xl transition-all duration-300 hover:bg-white hover:text-blue-900 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+
+                <p
+                    class="text-white text-xl sm:text-2xl font-bold tracking-tight leading-none"
                 >
-                    Login
-                </Link>
-            </div>
-        </header>
-
-        <!-- HERO SECTION -->
-        <main class="relative z-10 flex-grow flex flex-col justify-center items-center px-6 py-16 md:py-20 max-w-7xl mx-auto w-full">
-            
-            <!-- Left Side Wave Decor -->
-            <div class="absolute left-6 bottom-1/4 hidden lg:block pointer-events-none opacity-40 select-none animate-pulse" style="animation-duration: 4s;">
-                <svg class="w-16 h-auto text-blue-300" viewBox="0 0 100 40" fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M0,10 Q15,0 30,10 T60,10 T90,10" />
-                    <path d="M0,20 Q15,10 30,20 T60,20 T90,20" />
-                    <path d="M0,30 Q15,20 30,30 T60,30 T90,30" />
-                </svg>
-            </div>
-
-            <!-- Right Side Wave Decor + Sparkle -->
-            <div class="absolute right-6 bottom-1/4 hidden lg:block pointer-events-none opacity-40 select-none flex flex-col items-center space-y-4">
-                <svg class="w-16 h-auto text-blue-300" viewBox="0 0 100 40" fill="none" stroke="currentColor" stroke-width="3">
-                    <path d="M0,10 Q15,0 30,10 T60,10 T90,10" />
-                    <path d="M0,20 Q15,10 30,20 T60,20 T90,20" />
-                    <path d="M0,30 Q15,20 30,30 T60,30 T90,30" />
-                </svg>
-                <svg class="w-6 h-6 text-yellow-300 animate-spin" style="animation-duration: 10s;" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" />
-                </svg>
-            </div>
-
-            <!-- Hero Text Group -->
-            <div class="text-center max-w-4xl mx-auto mb-16">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight md:leading-none drop-shadow-md">
-                    Sistem Informasi Kesehatan &amp; Kebugaran Siswa Boarding
-                </h1>
-                <p class="text-lg sm:text-xl text-white/80 mt-6 max-w-2xl mx-auto font-medium">
-                    Pantau kesehatan dan kebugaran siswa secara terintegrasi.
+                    SMKN Jateng
                 </p>
-            </div>
 
-            <!-- SERVICE CARDS SECTION (DITAMBAH FUNGSI KLIK & LINK) -->
-            <div class="w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-                
-                <!-- CARD 1: Layanan Klinik & Kesehatan (Redirects with role: petugas) -->
-                <Link 
-                    :href="route('login', { role: 'petugas' })" 
-                    class="bg-white rounded-2xl shadow-xl p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col sm:flex-row items-center sm:items-start gap-6 border border-slate-100 group cursor-pointer block"
+                <p
+                    class="text-white/60 text-[9px] tracking-[0.2em] uppercase mt-1"
                 >
-                    <!-- Icon Container -->
-                    <div class="flex items-center space-x-1.5 flex-shrink-0 bg-blue-50/70 p-4 rounded-2xl border border-blue-100 group-hover:scale-105 transition-transform duration-300">
-                        <svg class="w-10 h-10 text-emerald-500 fill-current drop-shadow-sm" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7V2z" />
-                        </svg>
-                        <svg class="w-12 h-12 text-sky-600 drop-shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4 3h2M18 3h2" />
-                            <path d="M5 3v4.5C5 9.43 6.57 11 8.5 11S12 9.43 12 7.5V3" />
-                            <path d="M12 3v4.5C12 9.43 13.57 11 15.5 11S19 9.43 19 7.5V3" />
-                            <path d="M12 11v4c0 2.2 1.8 4 4 4" />
-                            <circle cx="16" cy="19" r="2.5" fill="currentColor" fill-opacity="0.1" />
-                        </svg>
-                    </div>
+                    Semarang
+                </p>
 
-                    <!-- Text Contents -->
-                    <div class="flex flex-col text-center sm:text-left">
-                        <h2 class="text-xl sm:text-2xl font-bold text-blue-950 group-hover:text-blue-900 transition-colors">
-                            Layanan Klinik &amp; Kesehatan
-                        </h2>
-                        <p class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed font-normal">
-                            Kelola pemeriksaan berkala, kunjungan klinik, dan riwayat kesehatan siswa secara terstruktur.
-                        </p>
-                        <!-- Teks indikasi tambahan (biru) -->
-                        <p class="text-sm text-blue-500 font-bold mt-4 flex items-center justify-center sm:justify-start">
-                            Login sebagai Petugas Klinik &rarr;
-                        </p>
-                    </div>
-                </Link>
+            </div>
 
-                <!-- CARD 2: Layanan Tes Kebugaran (Redirects with role: pendamping) -->
-                <Link 
-                    :href="route('login', { role: 'pendamping' })" 
-                    class="bg-white rounded-2xl shadow-xl p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl flex flex-col sm:flex-row items-center sm:items-start gap-6 border border-slate-100 group cursor-pointer block"
+        </div>
+
+
+        <div class="hidden md:block">
+
+            <span
+                class="text-white/90 font-bold text-xl lg:text-2xl tracking-wider"
+            >
+                SiKes-Boarding
+            </span>
+
+        </div>
+
+
+        <Link
+            :href="route('login')"
+            class="px-5 sm:px-6 py-2 border border-white/80 text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-white hover:text-blue-900 transition duration-300"
+        >
+            Login
+        </Link>
+
+    </header>
+
+
+    <!-- HERO CONTENT -->
+
+    <div
+        class="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 pt-12 sm:pt-16 pb-20"
+    >
+
+        <div class="text-center max-w-4xl mx-auto">
+
+            <h1
+                class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight"
+            >
+                Sistem Informasi Kesehatan &
+                Kebugaran Siswa Boarding
+            </h1>
+
+            <p
+                class="text-base sm:text-lg md:text-xl text-white/75 mt-6 max-w-2xl mx-auto leading-relaxed"
+            >
+                Pantau kesehatan dan kebugaran siswa secara
+                terintegrasi melalui satu sistem informasi.
+            </p>
+
+        </div>
+
+
+        <!-- SERVICE -->
+
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto mt-14"
+        >
+
+            <!-- KLINIK -->
+
+            <Link
+                :href="route('login', { role: 'klinik' })"
+                class="group bg-white rounded-2xl shadow-xl p-6 sm:p-8 hover:-translate-y-1.5 hover:shadow-2xl transition duration-300 flex flex-col sm:flex-row gap-5 items-center sm:items-start"
+            >
+
+                <div
+                    class="bg-blue-50 p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
                 >
-                    <!-- Icon Container -->
-                    <div class="flex items-center space-x-1 flex-shrink-0 bg-emerald-50/70 p-4 rounded-2xl border border-emerald-100 group-hover:scale-105 transition-transform duration-300">
-                        <svg class="w-12 h-12 text-emerald-500 drop-shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M2 6h4M1 11h5M2 16h4" stroke-width="2.2" opacity="0.8" />
-                            <circle cx="15" cy="4" r="2.2" fill="currentColor" />
-                            <path d="M11 9l3 1.5 3-1M9 13l3.5-3v4l4 3.5M13 14l-2.5 4H8" />
-                            <circle cx="19" cy="18" r="1.8" fill="currentColor" />
-                        </svg>
-                    </div>
 
-                    <!-- Text Contents -->
-                    <div class="flex flex-col text-center sm:text-left">
-                        <h2 class="text-xl sm:text-2xl font-bold text-blue-950 group-hover:text-blue-900 transition-colors">
-                            Layanan Tes Kebugaran
-                        </h2>
-                        <p class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed font-normal">
-                            Catat dan pantau hasil tes koordinasi mata-tangan serta kebugaran fisik siswa untuk prestasi.
-                        </p>
-                        <!-- Teks indikasi tambahan (hijau) -->
-                        <p class="text-sm text-green-500 font-bold mt-4 flex items-center justify-center sm:justify-start">
-                            Login sebagai Pendamping &rarr;
-                        </p>
-                    </div>
-                </Link>
+                    <svg
+                        class="w-11 h-11 text-emerald-500"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                    >
 
-            </div>
-        </main>
+                        <path
+                            d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7V2z"
+                        />
 
-        <!-- FOOTER -->
-        <footer class="relative z-10 bg-blue-950/80 backdrop-blur-md py-6 border-t border-white/5 text-white/70 text-xs sm:text-sm">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-4 text-center lg:text-left font-normal">
-                <div>
-                    &copy; 2026 SMKN Jateng Semarang. All rights reserved.
+                    </svg>
+
                 </div>
-                <div class="flex items-center space-x-1 justify-center">
-                    <span class="font-semibold text-white/95">Kontak Klinik Sekolah:</span>
-                    <span>(024) 7643 1488</span>
-                    <span class="text-white/30 px-1">|</span>
-                    <a href="mailto:klinik@smknjateng.sch.id" class="hover:text-white hover:underline transition">klinik@smknjateng.sch.id</a>
+
+
+                <div class="text-center sm:text-left">
+
+                    <h2
+                        class="text-xl sm:text-2xl font-bold text-blue-900"
+                    >
+                        Layanan Klinik & Kesehatan
+                    </h2>
+
+                    <p
+                        class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed"
+                    >
+                        Kelola pemeriksaan berkala, kunjungan
+                        klinik, dan riwayat kesehatan siswa.
+                    </p>
+
+                    <p
+                        class="text-sm text-blue-600 font-bold mt-4"
+                    >
+                        Login sebagai Petugas Klinik →
+                    </p>
+
                 </div>
-                <div class="flex items-center space-x-1 justify-center lg:justify-end">
-                    <span class="font-semibold text-white/95">Alamat:</span>
-                    <span>Jl. Brotojoyo No.1, Semarang Utara, Kota Semarang.</span>
+
+            </Link>
+
+
+            <!-- TKSI -->
+
+            <Link
+                :href="route('login', { role: 'tksi' })"
+                class="group bg-white rounded-2xl shadow-xl p-6 sm:p-8 hover:-translate-y-1.5 hover:shadow-2xl transition duration-300 flex flex-col sm:flex-row gap-5 items-center sm:items-start"
+            >
+
+                <div
+                    class="bg-emerald-50 p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
+                >
+
+                    <svg
+                        class="w-11 h-11 text-emerald-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+
+                        <circle
+                            cx="15"
+                            cy="4"
+                            r="2"
+                        />
+
+                        <path
+                            d="M11 9l3 1.5 3-1M9 13l3.5-3v4l4 3.5M13 14l-2.5 4H8"
+                        />
+
+                    </svg>
+
                 </div>
-            </div>
-        </footer>
+
+
+                <div class="text-center sm:text-left">
+
+                    <h2
+                        class="text-xl sm:text-2xl font-bold text-blue-900"
+                    >
+                        Layanan Tes Kebugaran
+                    </h2>
+
+                    <p
+                        class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed"
+                    >
+                        Catat dan pantau hasil tes kebugaran
+                        fisik siswa secara terstruktur.
+                    </p>
+
+                    <p
+                        class="text-sm text-emerald-600 font-bold mt-4"
+                    >
+                        Login sebagai Petugas TKSI →
+                    </p>
+
+                </div>
+
+            </Link>
+
+        </div>
 
     </div>
+
+</section>
+
+
+<!-- WAVE -->
+
+<div
+    class="-mt-8 sm:-mt-12 relative z-10"
+>
+
+    <svg
+        class="w-full h-10 sm:h-12"
+        viewBox="0 0 1200 120"
+        preserveAspectRatio="none"
+    >
+
+        <path
+            d="M0,0 C300,120 900,120 1200,0 L1200,120 L0,120 Z"
+            fill="#f8fafc"
+        />
+
+    </svg>
+
+</div>
+
+
+<!-- ================================================================== -->
+<!-- STATISTIK -->
+<!-- ================================================================== -->
+
+<section
+    class="bg-slate-50 py-12 sm:py-16"
+>
+
+<div
+    class="max-w-7xl mx-auto px-5 sm:px-6 space-y-8 sm:space-y-10"
+>
+
+
+    <!-- TITLE -->
+
+    <div
+        class="text-center max-w-3xl mx-auto"
+    >
+
+        <div
+            class="inline-flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-2"
+        >
+
+            <span
+                class="w-8 h-px bg-blue-600"
+            ></span>
+
+            DATA SISTEM
+
+            <span
+                class="w-8 h-px bg-blue-600"
+            ></span>
+
+        </div>
+
+
+        <h2
+            class="text-2xl sm:text-3xl font-extrabold text-slate-800"
+        >
+            Statistik Kesehatan & Kebugaran
+        </h2>
+
+
+        <p
+            class="text-sm sm:text-base text-slate-500 mt-2"
+        >
+            Ringkasan data kesehatan dan kebugaran siswa
+            berdasarkan periode aktif.
+        </p>
+
+
+        <div
+            v-if="props.stats?.periodeAktif || props.stats?.namaPeriode"
+            class="mt-3 inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold"
+        >
+
+            Periode Aktif:
+
+            {{ periodeAktif }}
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- STAT CARD UTAMA -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
+    >
+
+
+        <!-- TOTAL SISWA -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-blue-600 shadow-sm hover:shadow-md transition"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <p
+                    class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider"
+                >
+                    Siswa
+                </p>
+
+                <span class="text-xl">
+                    👥
+                </span>
+
+            </div>
+
+
+            <p
+                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+            >
+                {{ totalSiswa }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa periode aktif
+            </p>
+
+        </div>
+
+
+        <!-- BERKALA 1 -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-blue-500 shadow-sm hover:shadow-md transition"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <p
+                    class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider"
+                >
+                    Berkala 1
+                </p>
+
+                <span class="text-xl">
+                    🩺
+                </span>
+
+            </div>
+
+
+            <p
+                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+            >
+                {{ berkala1 }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa sudah diperiksa
+            </p>
+
+        </div>
+
+
+        <!-- BERKALA 2 -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-indigo-500 shadow-sm hover:shadow-md transition"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <p
+                    class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider"
+                >
+                    Berkala 2
+                </p>
+
+                <span class="text-xl">
+                    🩺
+                </span>
+
+            </div>
+
+
+            <p
+                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+            >
+                {{ berkala2 }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa sudah diperiksa
+            </p>
+
+        </div>
+
+
+        <!-- TKSI -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-amber-500 shadow-sm hover:shadow-md transition"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <p
+                    class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider"
+                >
+                    TKSI
+                </p>
+
+                <span class="text-xl">
+                    🏃
+                </span>
+
+            </div>
+
+
+            <p
+                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+            >
+                {{ tksiSelesai }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa sudah tes
+            </p>
+
+        </div>
+
+
+        <!-- KUNJUNGAN -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-emerald-500 shadow-sm hover:shadow-md transition"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <p
+                    class="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider"
+                >
+                    Klinik
+                </p>
+
+                <span class="text-xl">
+                    🏥
+                </span>
+
+            </div>
+
+
+            <p
+                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+            >
+                {{ totalKunjungan }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Total kunjungan klinik
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- RINGKASAN PEMERIKSAAN -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
+
+
+        <!-- BERKALA 1 -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p
+                        class="text-xs font-bold text-blue-600 uppercase tracking-wider"
+                    >
+                        Pemeriksaan Berkala 1
+                    </p>
+
+
+                    <p
+                        class="text-2xl font-black text-slate-800 mt-2"
+                    >
+                        {{ berkala1 }}
+                        <span
+                            class="text-sm font-semibold text-slate-400"
+                        >
+                            siswa
+                        </span>
+                    </p>
+
+
+                    <p
+                        class="text-[10px] text-slate-400 mt-1"
+                    >
+                        Siswa yang sudah menyelesaikan pemeriksaan tahap 1.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-xl font-black text-blue-600"
+                >
+                    1
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BERKALA 2 -->
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+        >
+
+            <div
+                class="flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p
+                        class="text-xs font-bold text-indigo-600 uppercase tracking-wider"
+                    >
+                        Pemeriksaan Berkala 2
+                    </p>
+
+
+                    <p
+                        class="text-2xl font-black text-slate-800 mt-2"
+                    >
+                        {{ berkala2 }}
+                        <span
+                            class="text-sm font-semibold text-slate-400"
+                        >
+                            siswa
+                        </span>
+                    </p>
+
+
+                    <p
+                        class="text-[10px] text-slate-400 mt-1"
+                    >
+                        Siswa yang sudah menyelesaikan pemeriksaan tahap 2.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center text-xl font-black text-indigo-600"
+                >
+                    2
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TKSI -->
+
+        <div
+            class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white shadow-sm"
+        >
+
+            <p
+                class="text-xs font-bold uppercase tracking-wider text-white/80"
+            >
+                Tes TKSI Periode Aktif
+            </p>
+
+
+            <p
+                class="text-3xl font-black mt-2"
+            >
+                {{ tksiSelesai }}
+                <span
+                    class="text-sm font-semibold text-white/70"
+                >
+                    siswa
+                </span>
+            </p>
+
+
+            <p
+                class="text-xs text-white/75 mt-1"
+            >
+                Siswa yang sudah menyelesaikan tes kebugaran.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- KUNJUNGAN KLINIK -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
+
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+        >
+
+            <p
+                class="text-xs font-bold text-indigo-600 uppercase tracking-wider"
+            >
+                Total Kunjungan Klinik
+            </p>
+
+
+            <p
+                class="text-3xl font-black text-slate-800 mt-2"
+            >
+                {{ totalKunjungan }}
+            </p>
+
+
+            <p
+                class="text-xs text-slate-400 mt-1"
+            >
+                Seluruh kunjungan yang tercatat.
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+        >
+
+            <p
+                class="text-xs font-bold text-purple-600 uppercase tracking-wider"
+            >
+                Kunjungan Bulan Ini
+            </p>
+
+
+            <p
+                class="text-3xl font-black text-slate-800 mt-2"
+            >
+                {{ kunjunganBulanIni }}
+            </p>
+
+
+            <p
+                class="text-xs text-slate-400 mt-1"
+            >
+                Kunjungan klinik pada bulan berjalan.
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+        >
+
+            <p
+                class="text-xs font-bold text-rose-600 uppercase tracking-wider"
+            >
+                30 Hari Terakhir
+            </p>
+
+
+            <p
+                class="text-3xl font-black text-slate-800 mt-2"
+            >
+                {{ totalKunjungan30Hari }}
+            </p>
+
+
+            <p
+                class="text-xs text-slate-400 mt-1"
+            >
+                Aktivitas kunjungan klinik.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- PROGRESS TKSI -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+
+            <div>
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    🏃 Progress Tes TKSI
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Persentase siswa periode aktif yang sudah menyelesaikan tes TKSI.
+                </p>
+
+            </div>
+
+
+            <div
+                class="text-2xl font-black text-amber-500"
+            >
+                {{ progressTKSI }}%
+            </div>
+
+        </div>
+
+
+        <div
+            class="mt-5 h-3 bg-slate-100 rounded-full overflow-hidden"
+        >
+
+            <div
+                class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
+                :style="{
+                    width: `${progressTKSI}%`
+                }"
+            ></div>
+
+        </div>
+
+
+        <div
+            class="flex justify-between mt-2 text-[10px] text-slate-400"
+        >
+
+            <span>
+                {{ tksiSelesai }} siswa sudah tes
+            </span>
+
+
+            <span>
+                {{ totalSiswa }} siswa total
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- STATUS KESEHATAN -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-4"
+    >
+
+        <div
+            class="bg-white rounded-xl p-4 border border-emerald-100"
+        >
+
+            <p
+                class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
+            >
+                Sehat
+            </p>
+
+
+            <p
+                class="text-2xl font-black text-emerald-600 mt-2"
+            >
+                {{ sehat }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-amber-100"
+        >
+
+            <p
+                class="text-[10px] font-bold text-amber-600 uppercase tracking-wider"
+            >
+                Perlu Perhatian
+            </p>
+
+
+            <p
+                class="text-2xl font-black text-amber-600 mt-2"
+            >
+                {{ perluPerhatian }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-rose-100"
+        >
+
+            <p
+                class="text-[10px] font-bold text-rose-600 uppercase tracking-wider"
+            >
+                Rujuk
+            </p>
+
+
+            <p
+                class="text-2xl font-black text-rose-600 mt-2"
+            >
+                {{ rujuk }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-slate-200"
+        >
+
+            <p
+                class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"
+            >
+                Belum Diperiksa
+            </p>
+
+
+            <p
+                class="text-2xl font-black text-slate-600 mt-2"
+            >
+                {{ belumDiperiksa }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                Siswa
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- PROGRESS KESEHATAN -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+        >
+
+            <div>
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    📊 Progress Pemeriksaan Kesehatan
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Persentase siswa yang sudah memiliki status kesehatan
+                    pada periode aktif.
+                </p>
+
+            </div>
+
+
+            <div
+                class="text-2xl font-black text-blue-600"
+            >
+                {{ progressKesehatan }}%
+            </div>
+
+        </div>
+
+
+        <div
+            class="mt-5 h-3 bg-slate-100 rounded-full overflow-hidden"
+        >
+
+            <div
+                class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-500"
+                :style="{
+                    width: `${progressKesehatan}%`
+                }"
+            ></div>
+
+        </div>
+
+
+        <div
+            class="flex justify-between mt-2 text-[10px] text-slate-400"
+        >
+
+            <span>
+                {{ totalStatusKesehatan }} siswa sudah diperiksa
+            </span>
+
+
+            <span>
+                {{ totalSiswa }} siswa total
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- SECONDARY STAT -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-2 md:grid-cols-4 gap-4"
+    >
+
+        <div
+            class="bg-white rounded-xl p-4 border border-slate-200"
+        >
+
+            <p
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+            >
+                Total Kelas
+            </p>
+
+
+            <p
+                class="text-xl font-black text-slate-800 mt-2"
+            >
+                {{ totalKelas }}
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-slate-200"
+        >
+
+            <p
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+            >
+                Rata-rata Harian
+            </p>
+
+
+            <p
+                class="text-xl font-black text-slate-800 mt-2"
+            >
+                {{ rataRataKunjungan }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                kunjungan / hari
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-slate-200"
+        >
+
+            <p
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+            >
+                Puncak Kunjungan
+            </p>
+
+
+            <p
+                class="text-xl font-black text-slate-800 mt-2"
+            >
+                {{ puncakKunjungan }}
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                tertinggi dalam 30 hari
+            </p>
+
+        </div>
+
+
+        <div
+            class="bg-white rounded-xl p-4 border border-slate-200"
+        >
+
+            <p
+                class="text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+            >
+                Tren 7 Hari
+            </p>
+
+
+            <p
+                :class="[
+                    'text-xl font-black mt-2',
+                    tren7Hari >= 0
+                        ? 'text-emerald-600'
+                        : 'text-rose-600'
+                ]"
+            >
+                {{ tren7Hari >= 0 ? '+' : '' }}{{ tren7Hari }}%
+            </p>
+
+
+            <p
+                class="text-[10px] text-slate-400 mt-1"
+            >
+                perubahan kunjungan
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- LINE CHART -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-4 mb-5"
+        >
+
+            <div>
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    📈 Aktivitas Kunjungan Klinik
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Pergerakan jumlah kunjungan dalam 30 hari terakhir.
+                </p>
+
+            </div>
+
+
+            <div
+                class="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg w-fit"
+            >
+                30 Hari Terakhir
+            </div>
+
+        </div>
+
+
+        <div
+            v-if="props.lineChart?.labels?.length"
+            class="h-64 sm:h-80"
+        >
+
+            <Line
+                :data="lineChartData"
+                :options="lineChartOptions"
+            />
+
+        </div>
+
+
+        <div
+            v-else
+            class="h-64 flex items-center justify-center text-sm text-slate-400"
+        >
+            Belum tersedia data kunjungan.
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- HEALTH + DISEASE -->
+    <!-- ================================================================= -->
+
+    <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+
+
+        <!-- STATUS KESEHATAN -->
+
+        <div
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        >
+
+            <div
+                class="border-b border-slate-100 pb-4 mb-4"
+            >
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    🩺 Distribusi Status Kesehatan
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Menggunakan status pemeriksaan terbaru setiap siswa.
+                </p>
+
+            </div>
+
+
+            <div
+                v-if="
+                    props.doughnutChart?.labels?.length &&
+                    Number(props.stats?.totalStatusKesehatan ?? 0) > 0
+                "
+                class="h-72"
+            >
+
+                <Doughnut
+                    :data="doughnutChartData"
+                    :options="doughnutChartOptions"
+                />
+
+            </div>
+
+
+            <div
+                v-else
+                class="h-72 flex items-center justify-center text-sm text-slate-400"
+            >
+                Belum tersedia data kesehatan.
+            </div>
+
+
+            <div
+                class="grid grid-cols-3 gap-2 mt-4"
+            >
+
+                <div
+                    class="text-center bg-emerald-50 rounded-xl p-3"
+                >
+
+                    <p
+                        class="text-lg font-black text-emerald-600"
+                    >
+                        {{ sehat }}
+                    </p>
+
+                    <p
+                        class="text-[10px] text-emerald-700"
+                    >
+                        Sehat
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="text-center bg-amber-50 rounded-xl p-3"
+                >
+
+                    <p
+                        class="text-lg font-black text-amber-600"
+                    >
+                        {{ perluPerhatian }}
+                    </p>
+
+                    <p
+                        class="text-[10px] text-amber-700"
+                    >
+                        Perhatian
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="text-center bg-rose-50 rounded-xl p-3"
+                >
+
+                    <p
+                        class="text-lg font-black text-rose-600"
+                    >
+                        {{ rujuk }}
+                    </p>
+
+                    <p
+                        class="text-[10px] text-rose-700"
+                    >
+                        Rujuk
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENYAKIT -->
+
+        <div
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        >
+
+            <div
+                class="flex items-start justify-between gap-3 border-b border-slate-100 pb-4 mb-4"
+            >
+
+                <div>
+
+                    <h3
+                        class="text-lg font-bold text-slate-800"
+                    >
+                        🦠 Penyakit yang Sering Ditemukan
+                    </h3>
+
+
+                    <p
+                        class="text-xs text-slate-400 mt-1"
+                    >
+                        Ringkasan kasus berdasarkan data klinik.
+                    </p>
+
+                </div>
+
+
+                <div
+                    v-if="topDisease"
+                    class="text-right"
+                >
+
+                    <p
+                        class="text-[9px] text-slate-400 uppercase font-bold"
+                    >
+                        Terbanyak
+                    </p>
+
+
+                    <p
+                        class="text-xs font-bold text-blue-600 mt-1"
+                    >
+                        {{
+                            topDisease.nama ??
+                            topDisease.name ??
+                            '-'
+                        }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                v-if="props.diseaseChart?.labels?.length"
+                class="h-72"
+            >
+
+                <Bar
+                    :data="diseaseChartData"
+                    :options="diseaseChartOptions"
+                />
+
+            </div>
+
+
+            <div
+                v-else
+                class="h-72 flex items-center justify-center text-sm text-slate-400"
+            >
+                Belum tersedia data penyakit.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- REKAP PENYAKIT -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4"
+        >
+
+            <div>
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    📋 Ringkasan Penyakit
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Daftar penyakit berdasarkan jumlah kasus.
+                </p>
+
+            </div>
+
+
+            <span
+                class="hidden sm:block text-xs font-semibold text-slate-400"
+            >
+                Data agregat
+            </span>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+            <table
+                class="w-full min-w-[500px] text-sm"
+            >
+
+                <thead>
+
+                    <tr
+                        class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500"
+                    >
+
+                        <th class="px-4 py-3 text-left">
+                            Penyakit
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Jumlah Kasus
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Persentase
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr
+                        v-for="(item, index) in props.diseases"
+                        :key="item.id ?? index"
+                        class="border-b border-slate-100 hover:bg-slate-50 transition"
+                    >
+
+                        <td
+                            class="px-4 py-3 font-semibold text-slate-700"
+                        >
+
+                            <div
+                                class="flex items-center gap-3"
+                            >
+
+                                <span
+                                    class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold"
+                                >
+                                    {{ index + 1 }}
+                                </span>
+
+
+                                {{
+                                    item.nama ??
+                                    item.name ??
+                                    '-'
+                                }}
+
+                            </div>
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center font-bold text-slate-800"
+                        >
+
+                            {{
+                                numberFormat(
+                                    item.total ??
+                                    item.jumlah ??
+                                    0
+                                )
+                            }}
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center font-semibold text-blue-600"
+                        >
+
+                            {{
+                                percentage(
+                                    item.percentage ??
+                                    item.persentase ??
+                                    0
+                                )
+                            }}
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr
+                        v-if="props.diseases.length === 0"
+                    >
+
+                        <td
+                            colspan="3"
+                            class="py-10 text-center text-slate-400"
+                        >
+                            Belum ada data penyakit.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- REKAP KELAS -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="border-b border-slate-100 pb-4 mb-4"
+        >
+
+            <h3
+                class="text-lg font-bold text-slate-800"
+            >
+                📚 Rekapitulasi Kesehatan per Kelas
+            </h3>
+
+
+            <p
+                class="text-xs text-slate-400 mt-1"
+            >
+                Setiap siswa hanya dihitung satu kali berdasarkan
+                status pemeriksaan terbarunya.
+            </p>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+            <table
+                class="w-full min-w-[900px] text-sm"
+            >
+
+                <thead>
+
+                    <tr
+                        class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500"
+                    >
+
+                        <th class="px-4 py-3 text-left">
+                            Kelas
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Total Siswa
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Sehat
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Perhatian
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Rujuk
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Belum
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Progress
+                        </th>
+
+                        <th class="px-4 py-3 text-center">
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr
+                        v-for="(row, index) in props.tableData"
+                        :key="row.class ?? index"
+                        class="border-b border-slate-100 hover:bg-slate-50 transition"
+                    >
+
+                        <td
+                            class="px-4 py-3 font-bold text-blue-900"
+                        >
+                            {{ row.class ?? '-' }}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center font-bold"
+                        >
+                            {{ numberFormat(row.total) }}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center text-emerald-600 font-semibold"
+                        >
+                            {{ numberFormat(row.healthy) }}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center text-amber-600 font-semibold"
+                        >
+                            {{ numberFormat(row.attention) }}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center text-rose-600 font-semibold"
+                        >
+                            {{ numberFormat(row.refer) }}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center text-slate-500 font-semibold"
+                        >
+
+                            {{
+                                numberFormat(
+                                    row.notExamined ??
+                                    Math.max(
+                                        0,
+                                        Number(row.total ?? 0) -
+                                        Number(row.examined ?? 0)
+                                    )
+                                )
+                            }}
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3"
+                        >
+
+                            <div
+                                class="flex items-center gap-2 justify-center"
+                            >
+
+                                <span
+                                    class="text-xs font-semibold text-slate-600 w-12 text-right"
+                                >
+                                    {{ row.progress ?? 0 }}%
+                                </span>
+
+
+                                <div
+                                    class="w-24 h-2.5 bg-slate-200 rounded-full overflow-hidden"
+                                >
+
+                                    <div
+                                        :class="row.barColor ?? 'bg-blue-500'"
+                                        class="h-full rounded-full transition-all"
+                                        :style="{
+                                            width: `${Math.min(
+                                                100,
+                                                Math.max(
+                                                    0,
+                                                    Number(row.progress ?? 0)
+                                                )
+                                            )}%`
+                                        }"
+                                    ></div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center"
+                        >
+
+                            <span
+                                :class="[
+                                    'px-2.5 py-1 rounded-full text-[10px] font-bold inline-block',
+                                    row.badgeClass ??
+                                    'bg-slate-100 text-slate-600'
+                                ]"
+                            >
+                                {{ row.status ?? '-' }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+
+                    <tr
+                        v-if="props.tableData.length === 0"
+                    >
+
+                        <td
+                            colspan="8"
+                            class="text-center py-10 text-slate-400"
+                        >
+                            Belum ada data kelas.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- AKTIVITAS TERBARU -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+    >
+
+        <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4"
+        >
+
+            <div>
+
+                <h3
+                    class="text-lg font-bold text-slate-800"
+                >
+                    🏥 Aktivitas Klinik Terbaru
+                </h3>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Informasi aktivitas ditampilkan secara anonim
+                    untuk menjaga privasi siswa.
+                </p>
+
+            </div>
+
+
+            <div
+                class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold w-fit"
+            >
+
+                {{ numberFormat(recentActivityCount) }}
+                aktivitas terbaru
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5"
+        >
+
+            <div
+                class="rounded-xl bg-slate-50 border border-slate-100 p-4"
+            >
+
+                <p
+                    class="text-[10px] font-bold text-slate-400 uppercase"
+                >
+                    Total Aktivitas
+                </p>
+
+
+                <p
+                    class="text-2xl font-black text-slate-800 mt-2"
+                >
+                    {{ numberFormat(recentActivityCount) }}
+                </p>
+
+            </div>
+
+
+            <div
+                class="rounded-xl bg-emerald-50 border border-emerald-100 p-4"
+            >
+
+                <p
+                    class="text-[10px] font-bold text-emerald-600 uppercase"
+                >
+                    Status
+                </p>
+
+
+                <p
+                    class="text-lg font-black text-emerald-700 mt-2"
+                >
+                    Tercatat
+                </p>
+
+            </div>
+
+
+            <div
+                class="rounded-xl bg-blue-50 border border-blue-100 p-4"
+            >
+
+                <p
+                    class="text-[10px] font-bold text-blue-600 uppercase"
+                >
+                    Privasi
+                </p>
+
+
+                <p
+                    class="text-lg font-black text-blue-700 mt-2"
+                >
+                    Terlindungi
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="mt-5 bg-blue-50 border border-blue-100 rounded-xl p-4"
+        >
+
+            <div class="flex gap-3">
+
+                <div
+                    class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0"
+                >
+                    🔒
+                </div>
+
+
+                <div>
+
+                    <p
+                        class="text-sm font-bold text-blue-900"
+                    >
+                        Perlindungan Data Siswa
+                    </p>
+
+
+                    <p
+                        class="text-xs text-slate-600 mt-1 leading-relaxed"
+                    >
+                        Data statistik publik hanya menampilkan
+                        informasi agregat. Identitas, keluhan,
+                        dan riwayat kesehatan individual siswa
+                        hanya dapat diakses oleh petugas yang
+                        memiliki hak akses setelah login.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- INFO SYSTEM -->
+    <!-- ================================================================= -->
+
+    <div
+        class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg"
+    >
+
+        <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between gap-6"
+        >
+
+            <div>
+
+                <div
+                    class="flex items-center gap-2 mb-2"
+                >
+
+                    <span
+                        class="w-2.5 h-2.5 bg-emerald-300 rounded-full animate-pulse"
+                    ></span>
+
+
+                    <span
+                        class="text-xs font-bold uppercase tracking-wider text-white/80"
+                    >
+                        Sistem Aktif
+                    </span>
+
+                </div>
+
+
+                <h3
+                    class="text-xl sm:text-2xl font-bold"
+                >
+                    SiKes-Boarding
+                </h3>
+
+
+                <p
+                    class="text-sm text-white/75 mt-2 max-w-2xl leading-relaxed"
+                >
+                    Sistem informasi kesehatan dan kebugaran
+                    siswa boarding untuk membantu pencatatan,
+                    pemantauan, dan pengelolaan data kesehatan
+                    secara terintegrasi.
+                </p>
+
+            </div>
+
+
+            <Link
+                :href="route('login')"
+                class="inline-flex items-center justify-center px-5 py-2.5 bg-white text-blue-700 rounded-xl font-bold text-sm hover:bg-blue-50 transition shadow-sm whitespace-nowrap"
+            >
+                Masuk ke Sistem →
+            </Link>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ================================================================== -->
+<!-- FOOTER -->
+<!-- ================================================================== -->
+
+<footer
+    class="bg-white border-t border-slate-200 py-8"
+>
+
+    <div
+        class="max-w-7xl mx-auto px-5 sm:px-6"
+    >
+
+        <div
+            class="flex flex-col lg:flex-row justify-between gap-5"
+        >
+
+            <div>
+
+                <p
+                    class="font-bold text-slate-700"
+                >
+                    SiKes-Boarding
+                </p>
+
+
+                <p
+                    class="text-xs text-slate-400 mt-1"
+                >
+                    Sistem Informasi Kesehatan &
+                    Kebugaran Siswa Boarding
+                </p>
+
+            </div>
+
+
+            <div
+                class="text-xs sm:text-sm text-slate-500"
+            >
+
+                <span
+                    class="font-bold text-slate-700"
+                >
+                    SMKN Jateng Semarang
+                </span>
+
+
+                <span class="mx-2 hidden sm:inline">
+                    |
+                </span>
+
+
+                <span
+                    class="block sm:inline mt-1 sm:mt-0"
+                >
+                    Jl. Brotojoyo No.1,
+                    Semarang Utara,
+                    Kota Semarang
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="border-t border-slate-100 mt-6 pt-5 flex flex-col sm:flex-row justify-between gap-2 text-xs text-slate-400"
+        >
+
+            <p>
+                © 2026 SMKN Jateng Semarang.
+                Seluruh Hak Cipta Dilindungi.
+            </p>
+
+
+            <p>
+                Data publik ditampilkan dalam bentuk agregat
+                untuk menjaga privasi siswa.
+            </p>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</div>
+
 </template>

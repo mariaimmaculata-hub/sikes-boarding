@@ -7,173 +7,693 @@
     <title>Report TKSI</title>
 
     <style>
+
+        @page {
+            size: A4 landscape;
+            margin: 15px;
+        }
+
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
-            color: #222;
+            font-size: 10px;
+            color: #1e293b;
+            margin: 0;
         }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================== */
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .header h2 {
             margin: 0;
             font-size: 18px;
+            font-weight: bold;
+            color: #1e293b;
         }
 
         .header p {
-            margin: 4px 0;
-            font-size: 11px;
+            margin: 4px 0 0;
+            font-size: 10px;
+            color: #64748b;
         }
 
-        .filter {
+
+        /* =========================================================
+           INFO
+        ========================================================== */
+
+        .info {
+            width: 100%;
             margin-bottom: 15px;
+            border-collapse: collapse;
         }
 
-        .filter table {
-            width: auto;
+        .info td {
             border: none;
+            padding: 3px 5px;
+            vertical-align: top;
         }
 
-        .filter td {
-            border: none;
-            padding: 2px 8px 2px 0;
+        .info .label {
+            width: 100px;
+            font-weight: bold;
         }
+
+
+        /* =========================================================
+           TABLE
+        ========================================================== */
 
         table.report {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         table.report th,
         table.report td {
-            border: 1px solid #333;
-            padding: 6px;
+            border: 1px solid #94a3b8;
+            padding: 6px 5px;
+            vertical-align: middle;
         }
 
         table.report th {
+            background: #f1f5f9;
+            color: #334155;
             text-align: center;
             font-weight: bold;
+            font-size: 9px;
         }
 
-        table.report td.center {
+        table.report td {
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           ALIGNMENT
+        ========================================================== */
+
+        .center {
             text-align: center;
         }
 
-        .footer {
-            margin-top: 20px;
-            text-align: right;
-            font-size: 10px;
+        .component {
+            text-align: center;
         }
+
+        .average {
+            text-align: center;
+            font-weight: bold;
+            color: #7e22ce;
+        }
+
+
+        /* =========================================================
+           WIDTH
+        ========================================================== */
+
+        .col-no {
+            width: 4%;
+        }
+
+        .col-siswa {
+            width: 20%;
+        }
+
+        .col-kelas {
+            width: 10%;
+        }
+
+        .col-component {
+            width: 9%;
+        }
+
+        .col-average {
+            width: 9%;
+        }
+
+
+        /* =========================================================
+           KOMPONEN
+        ========================================================== */
+
+        .component-value {
+            font-size: 10px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .component-status {
+            margin-top: 2px;
+            font-size: 7px;
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           EMPTY
+        ========================================================== */
+
+        .empty {
+            text-align: center;
+            padding: 15px !important;
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================== */
+
+        .footer {
+            margin-top: 18px;
+            text-align: right;
+            font-size: 8px;
+            color: #64748b;
+        }
+
+
+        /* =========================================================
+           PAGE
+        ========================================================== */
+
+        tr {
+            page-break-inside: avoid;
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
+
+    {{-- =========================================================
+         NORMALISASI DATA
+    ========================================================== --}}
+
+    @php
+
+        /*
+        |--------------------------------------------------------------------------
+        | Data
+        |--------------------------------------------------------------------------
+        */
+
+        if ($data instanceof \Illuminate\Support\Collection) {
+            $rows = $data;
+        } elseif (is_array($data)) {
+            $rows = collect($data);
+        } else {
+            $rows = collect();
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Komponen
+        |--------------------------------------------------------------------------
+        */
+
+        if ($komponenOptions instanceof \Illuminate\Support\Collection) {
+            $komponenList = $komponenOptions->values();
+        } elseif (is_array($komponenOptions ?? null)) {
+            $komponenList = collect($komponenOptions)->values();
+        } else {
+            $komponenList = collect();
+        }
+
+    @endphp
+
+
+    {{-- =========================================================
+         HEADER
+    ========================================================== --}}
+
     <div class="header">
-        <h2>REPORT HASIL TKSI</h2>
-        <p>SIKES BOARDING</p>
+
+        <h2>
+            REPORT HASIL TKSI
+        </h2>
+
+        <p>
+            SIKES BOARDING
+        </p>
+
     </div>
 
-    <div class="filter">
-        <table>
-            <tr>
-                <td><strong>Periode</strong></td>
-                <td>:</td>
-                <td>{{ $periode->nama_periode ?? 'Semua Periode' }}</td>
-            </tr>
 
-            <tr>
-                <td><strong>Kategori</strong></td>
-                <td>:</td>
-                <td>{{ $kategori ?? 'Semua Kategori' }}</td>
-            </tr>
+    {{-- =========================================================
+         INFORMASI REPORT
+    ========================================================== --}}
 
-            <tr>
-                <td><strong>Jumlah Data</strong></td>
-                <td>:</td>
-                <td>{{ $data->count() }} siswa</td>
-            </tr>
-        </table>
-    </div>
+    <table class="info">
 
-    <table class="report">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>NISN</th>
-                <th>Nama Siswa</th>
-                <th>Kelas</th>
-                <th>Jurusan</th>
-                <th>Periode</th>
-                <th>Tanggal Tes</th>
-                <th>Kategori</th>
-                <th>Hasil</th>
-                <th>Catatan</th>
-            </tr>
-        </thead>
+        <tr>
 
-        <tbody>
-            @forelse ($data as $index => $item)
-                <tr>
-                    <td class="center">
-                        {{ $index + 1 }}
-                    </td>
+            <td class="label">
+                Periode
+            </td>
 
-                    <td>
-                        {{ $item->siswa->nisn ?? '-' }}
-                    </td>
+            <td>
+                :
+            </td>
 
-                    <td>
-                        {{ $item->siswa->nama ?? '-' }}
-                    </td>
+            <td>
 
-                    <td class="center">
-                        {{ $item->siswa->kelas->nama_kelas ?? '-' }}
-                    </td>
+                @if (!empty($periode))
 
-                    <td>
-                        {{ $item->siswa->jurusan->nama_jurusan ?? '-' }}
-                    </td>
+                    {{ $periode->nama_periode ?? 'Semua Periode' }}
 
-                    <td>
-                        {{ $item->periode->nama_periode ?? '-' }}
-                    </td>
+                @else
 
-                    <td class="center">
-                        {{ $item->tanggal_tes
-                            ? \Carbon\Carbon::parse($item->tanggal_tes)->format('d-m-Y')
-                            : '-' }}
-                    </td>
+                    Semua Periode
 
-                    <td>
-                        {{ $item->kategori ?? '-' }}
-                    </td>
+                @endif
 
-                    <td>
-                        {{ $item->hasil ?? '-' }}
-                    </td>
+            </td>
 
-                    <td>
-                        {{ $item->catatan ?? '-' }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="10" class="center">
-                        Belum ada data TKSI.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+                Komponen
+            </td>
+
+            <td>
+                :
+            </td>
+
+            <td>
+
+                @if ($komponenList->isNotEmpty())
+
+                    {{ $komponenList->implode(', ') }}
+
+                @else
+
+                    Semua Komponen
+
+                @endif
+
+            </td>
+
+        </tr>
+
+
+        <tr>
+
+            <td class="label">
+                Jumlah Siswa
+            </td>
+
+            <td>
+                :
+            </td>
+
+            <td>
+                {{ $rows->count() }} siswa
+            </td>
+
+        </tr>
+
     </table>
 
+
+    {{-- =========================================================
+         TABLE REPORT
+    ========================================================== --}}
+
+    <table class="report">
+
+        <thead>
+
+            <tr>
+
+                {{-- NO --}}
+
+                <th class="col-no">
+                    No
+                </th>
+
+
+                {{-- SISWA --}}
+
+                <th class="col-siswa">
+                    Siswa
+                </th>
+
+
+                {{-- KELAS --}}
+
+                <th class="col-kelas">
+                    Kelas
+                </th>
+
+
+                {{-- KOMPONEN --}}
+
+                @foreach ($komponenList as $namaKomponen)
+
+                    <th class="col-component">
+
+                        {{ $namaKomponen }}
+
+                    </th>
+
+                @endforeach
+
+
+                {{-- RATA-RATA --}}
+
+                <th class="col-average">
+                    Rata-rata
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+
+            {{-- =================================================
+                 DATA
+            ================================================== --}}
+
+            @forelse ($rows as $index => $item)
+
+                @php
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Item
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (is_array($item)) {
+
+                        $siswa =
+                            $item['siswa']
+                            ?? null;
+
+                        $komponen =
+                            $item['komponen']
+                            ?? [];
+
+                        $rataRata =
+                            $item['rata_rata']
+                            ?? null;
+
+                    } else {
+
+                        $siswa =
+                            $item->siswa
+                            ?? null;
+
+                        $komponen =
+                            $item->komponen
+                            ?? [];
+
+                        $rataRata =
+                            $item->rata_rata
+                            ?? null;
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Siswa
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (is_array($siswa)) {
+
+                        $nisn =
+                            $siswa['nisn']
+                            ?? '-';
+
+                        $nama =
+                            $siswa['nama']
+                            ?? '-';
+
+                        $kelas =
+                            $siswa['kelas']
+                            ?? null;
+
+                    } else {
+
+                        $nisn =
+                            $siswa->nisn
+                            ?? '-';
+
+                        $nama =
+                            $siswa->nama
+                            ?? '-';
+
+                        $kelas =
+                            $siswa->kelas
+                            ?? null;
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Kelas
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (is_array($kelas)) {
+
+                        $namaKelas =
+                            $kelas['nama_kelas']
+                            ?? '-';
+
+                    } else {
+
+                        $namaKelas =
+                            $kelas->nama_kelas
+                            ?? '-';
+
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Komponen
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if ($komponen instanceof \Illuminate\Support\Collection) {
+
+                        $komponen = $komponen->toArray();
+
+                    }
+
+                @endphp
+
+
+                <tr>
+
+
+                    {{-- NO --}}
+
+                    <td class="center">
+
+                        {{ $loop->iteration }}
+
+                    </td>
+
+
+                    {{-- SISWA --}}
+
+                    <td>
+
+                        <strong>
+                            {{ $nama }}
+                        </strong>
+
+                        <br>
+
+                        <span style="font-size: 8px; color: #64748b;">
+
+                            NISN:
+                            {{ $nisn }}
+
+                        </span>
+
+                    </td>
+
+
+                    {{-- KELAS --}}
+
+                    <td class="center">
+
+                        {{ $namaKelas }}
+
+                    </td>
+
+
+                    {{-- KOMPONEN --}}
+
+                    @foreach ($komponenList as $namaKomponen)
+
+                        @php
+
+                            $componentData =
+                                $komponen[$namaKomponen]
+                                ?? null;
+
+
+                            if (
+                                $componentData instanceof \Illuminate\Support\Collection
+                            ) {
+
+                                $componentData =
+                                    $componentData->toArray();
+
+                            }
+
+
+                            if (is_array($componentData)) {
+
+                                $nilai =
+                                    $componentData['nilai']
+                                    ?? null;
+
+                            } elseif (is_object($componentData)) {
+
+                                $nilai =
+                                    $componentData->nilai
+                                    ?? null;
+
+                            } else {
+
+                                $nilai =
+                                    $componentData;
+
+                            }
+
+                        @endphp
+
+
+                        <td class="component">
+
+                            @if (
+                                $nilai !== null &&
+                                $nilai !== ''
+                            )
+
+                                <div class="component-value">
+
+                                    {{ $nilai }}
+
+                                </div>
+
+
+                                <div class="component-status">
+
+                                    Selesai
+
+                                </div>
+
+                            @else
+
+                                <div
+                                    style="color:#94a3b8;"
+                                >
+                                    -
+                                </div>
+
+
+                                <div class="component-status">
+
+                                    Belum
+
+                                </div>
+
+                            @endif
+
+                        </td>
+
+                    @endforeach
+
+
+                    {{-- RATA-RATA --}}
+
+                    <td class="average">
+
+                        @if (
+                            $rataRata !== null &&
+                            $rataRata !== ''
+                        )
+
+                            {{ number_format((float) $rataRata, 2) }}
+
+                        @else
+
+                            -
+
+                        @endif
+
+                    </td>
+
+
+                </tr>
+
+            @empty
+
+
+                {{-- =================================================
+                     EMPTY
+                ================================================== --}}
+
+                <tr>
+
+                    <td
+                        colspan="{{ 4 + $komponenList->count() }}"
+                        class="empty"
+                    >
+
+                        Belum ada data TKSI.
+
+                    </td>
+
+                </tr>
+
+
+            @endforelse
+
+        </tbody>
+
+    </table>
+
+
+    {{-- =========================================================
+         FOOTER
+    ========================================================== --}}
+
     <div class="footer">
+
         Dicetak pada:
+
         {{ now()->format('d-m-Y H:i') }}
+
     </div>
+
 
 </body>
 

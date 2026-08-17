@@ -68,4 +68,18 @@ class PenyakitController extends Controller
             ->route('klinik.penyakit.index')
             ->with('success', 'Data penyakit berhasil dihapus.');
     }
+    public function show(Penyakit $penyakit)
+{
+    return Inertia::render(
+        'Klinik/Penyakit/Show',
+        [
+            'penyakit' => [
+                'id' => $penyakit->id,
+                'nama_penyakit' => $penyakit->nama_penyakit,
+                'kategori' => $penyakit->kategori,
+                'keterangan' => $penyakit->keterangan,
+            ],
+        ]
+    );
+}
 }

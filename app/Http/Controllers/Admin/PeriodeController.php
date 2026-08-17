@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\PemeriksaanBerkala;
-use App\Models\KunjunganKlinik;
-use App\Models\TksiBatch;
-use App\Models\TksiBatchSiswa;
 use App\Http\Controllers\Controller;
+use App\Models\KunjunganKlinik;
 use App\Models\Periode;
+use App\Models\PemeriksaanBerkala;
 use App\Models\Siswa;
+use App\Models\TksiHasil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -16,7 +15,9 @@ use Inertia\Inertia;
 class PeriodeController extends Controller
 {
     /**
-     * Menampilkan daftar periode.
+     * ==========================================================
+     * DAFTAR PERIODE
+     * ==========================================================
      */
     public function index()
     {
@@ -31,9 +32,10 @@ class PeriodeController extends Controller
         ]);
     }
 
-
     /**
-     * Form tambah periode.
+     * ==========================================================
+     * FORM TAMBAH PERIODE
+     * ==========================================================
      */
     public function create()
     {
@@ -49,9 +51,10 @@ class PeriodeController extends Controller
         ]);
     }
 
-
     /**
-     * Menyimpan periode baru.
+     * ==========================================================
+     * SIMPAN PERIODE
+     * ==========================================================
      */
     public function store(Request $request)
     {
@@ -74,9 +77,9 @@ class PeriodeController extends Controller
             ],
 
             'status' => [
-    'required',
-    'in:aktif,selesai,draft',
-],
+                'required',
+                'in:aktif,selesai,draft',
+            ],
 
             'siswa_ids' => [
                 'nullable',
@@ -89,26 +92,31 @@ class PeriodeController extends Controller
             ],
         ]);
 
-
         DB::transaction(function () use (
             $validated,
             $request
         ) {
-
             $periode = Periode::create([
-                'nama_periode' => $validated['nama_periode'],
-                'tanggal_mulai' => $validated['tanggal_mulai'],
-                'tanggal_selesai' => $validated['tanggal_selesai'],
-                'status' => $validated['status'],
-                'created_by' => $request->user()->id,
-            ]);
+                'nama_periode' =>
+                    $validated['nama_periode'],
 
+                'tanggal_mulai' =>
+                    $validated['tanggal_mulai'],
+
+                'tanggal_selesai' =>
+                    $validated['tanggal_selesai'],
+
+                'status' =>
+                    $validated['status'],
+
+                'created_by' =>
+                    $request->user()->id,
+            ]);
 
             $periode->siswa()->sync(
                 $validated['siswa_ids'] ?? []
             );
         });
-
 
         return redirect()
             ->route('admin.periode.index')
@@ -118,28 +126,475 @@ class PeriodeController extends Controller
             );
     }
 
-
     /**
-     * Detail periode.
+     * ==========================================================
+     * DETAIL PERIODE
+     * ==========================================================
      */
     public function show(Periode $periode)
     {
         $periode->load([
             'pembuat',
             'siswa.kelas.jurusan',
-            'tksiBatches',
-            'pemeriksaanBerkala',
-            'kunjunganKlinik',
         ]);
 
-        return Inertia::render('Admin/Periode/Show', [
-            'periode' => $periode,
-        ]);
+        $siswaIds =
+            $periode->siswa->pluck('id');
+
+        $siswa = $periode->siswa->map(
+            function ($siswa) use ($periode) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | BERKALA 1
+                |--------------------------------------------------------------------------
+                */
+                $berkala1 =
+                    PemeriksaanBerkala::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->where(
+                            'siswa_id',
+                            $siswa->id
+                        )
+                        ->where(
+                            'jenis_pemeriksaan',
+                            'berkala_1'
+                        )
+                        ->latest(
+                            'tanggal_pemeriksaan'
+                        )
+                        ->first();
+
+                /*
+                |--------------------------------------------------------------------------
+                | BERKALA 2
+                |--------------------------------------------------------------------------
+                */
+                $berkala2 =
+                    PemeriksaanBerkala::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->where(
+                            'siswa_id',
+                            $siswa->id
+                        )
+                        ->where(
+                            'jenis_pemeriksaan',
+                            'berkala_2'
+                        )
+                        ->latest(
+                            'tanggal_pemeriksaan'
+                        )
+                        ->first();
+
+                /*
+                |--------------------------------------------------------------------------
+                | TKSI
+                |--------------------------------------------------------------------------
+                */
+                $tksiHasil =
+                    TksiHasil::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->where(
+                            'siswa_id',
+                            $siswa->id
+                        )
+                        ->orderBy(
+                            'tanggal'
+                        )
+                        ->get();
+
+                /*
+                |--------------------------------------------------------------------------
+                | HITUNG NILAI AKHIR TKSI
+                |--------------------------------------------------------------------------
+                */
+                $nilaiAkhirTksi =
+                    $this->hitungNilaiAkhirTksi(
+                        $tksiHasil
+                    );
+
+                /*
+                |--------------------------------------------------------------------------
+                | TKSI LENGKAP JIKA 6 KOMPONEN MEMILIKI NILAI
+                |--------------------------------------------------------------------------
+                */
+                $tksiLengkap =
+                    $this->jumlahKomponenTksi(
+                        $tksiHasil
+                    ) >= 6;
+
+                $tksiTanggal =
+                    $tksiHasil->first()?->tanggal;
+
+                /*
+                |--------------------------------------------------------------------------
+                | KUNJUNGAN KLINIK
+                |--------------------------------------------------------------------------
+                */
+                $kunjungan =
+                    KunjunganKlinik::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->where(
+                            'siswa_id',
+                            $siswa->id
+                        )
+                        ->count();
+
+                return [
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SISWA
+                    |--------------------------------------------------------------------------
+                    */
+                    'id' =>
+                        $siswa->id,
+
+                    'nama' =>
+                        $siswa->nama,
+
+                    'nisn' =>
+                        $siswa->nisn,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | KELAS
+                    |--------------------------------------------------------------------------
+                    */
+                    'kelas' =>
+                        $siswa->kelas
+                            ? [
+
+                                'id' =>
+                                    $siswa->kelas->id,
+
+                                'nama_kelas' =>
+                                    $siswa->kelas
+                                        ->nama_kelas,
+
+                                'tingkat' =>
+                                    $siswa->kelas
+                                        ->tingkat
+                                        ?? null,
+
+                                'jurusan' =>
+                                    $siswa->kelas
+                                        ->jurusan
+                                        ? [
+
+                                            'id' =>
+                                                $siswa
+                                                    ->kelas
+                                                    ->jurusan
+                                                    ->id,
+
+                                            'nama_jurusan' =>
+                                                $siswa
+                                                    ->kelas
+                                                    ->jurusan
+                                                    ->nama_jurusan,
+                                        ]
+                                        : null,
+                            ]
+                            : null,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BERKALA 1
+                    |--------------------------------------------------------------------------
+                    */
+                    'berkala_1' => [
+
+                        'selesai' =>
+                            $berkala1 !== null,
+
+                        'tanggal' =>
+                            $this->formatTanggal(
+                                $berkala1
+                                    ?->tanggal_pemeriksaan
+                            ),
+
+                        'kondisi_umum' =>
+                            $berkala1
+                                ?->kondisi_umum
+                                ?? '-',
+
+                        'hasil_pemeriksaan' =>
+                            $berkala1
+                                ?->hasil_pemeriksaan
+                                ?? '-',
+
+                        'rekomendasi' =>
+                            $berkala1
+                                ?->rekomendasi
+                                ?? '-',
+
+                        'catatan' =>
+                            $berkala1
+                                ?->catatan
+                                ?? '-',
+                    ],
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BERKALA 2
+                    |--------------------------------------------------------------------------
+                    */
+                    'berkala_2' => [
+
+                        'selesai' =>
+                            $berkala2 !== null,
+
+                        'tanggal' =>
+                            $this->formatTanggal(
+                                $berkala2
+                                    ?->tanggal_pemeriksaan
+                            ),
+
+                        'kondisi_umum' =>
+                            $berkala2
+                                ?->kondisi_umum
+                                ?? '-',
+
+                        'hasil_pemeriksaan' =>
+                            $berkala2
+                                ?->hasil_pemeriksaan
+                                ?? '-',
+
+                        'rekomendasi' =>
+                            $berkala2
+                                ?->rekomendasi
+                                ?? '-',
+
+                        'catatan' =>
+                            $berkala2
+                                ?->catatan
+                                ?? '-',
+                    ],
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TKSI
+                    |--------------------------------------------------------------------------
+                    */
+                    'tksi' => [
+
+                        'selesai' =>
+                            $tksiLengkap,
+
+                        'tanggal' =>
+                            $this->formatTanggal(
+                                $tksiTanggal
+                            ),
+
+                        /*
+                        | Nilai akhir:
+                        | (nilai1 + nilai2 + ... + nilai6) / 6
+                        */
+                        'nilai_akhir' =>
+                            $nilaiAkhirTksi,
+
+                        /*
+                        | Jumlah komponen yang memiliki nilai
+                        */
+                        'jumlah_komponen' =>
+                            $this->jumlahKomponenTksi(
+                                $tksiHasil
+                            ),
+
+                        /*
+                        | Semua hasil per komponen
+                        */
+                        'hasil' =>
+                            $tksiHasil
+                                ->map(
+                                    function ($hasil) {
+
+                                        return [
+
+                                            'id' =>
+                                                $hasil->id,
+
+                                            'komponen' =>
+                                                $hasil->komponen,
+
+                                            'kategori' =>
+                                                $hasil->kategori,
+
+                                            'nilai' =>
+                                                $hasil->nilai,
+
+                                            'level' =>
+                                                $hasil->level,
+
+                                            'balikan' =>
+                                                $hasil->balikan,
+
+                                            'catatan' =>
+                                                $hasil->catatan,
+
+                                            'tanggal' =>
+                                                $this->formatTanggal(
+                                                    $hasil->tanggal
+                                                ),
+                                        ];
+                                    }
+                                )
+                                ->values(),
+                    ],
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | KUNJUNGAN
+                    |--------------------------------------------------------------------------
+                    */
+                    'jumlah_kunjungan' =>
+                        $kunjungan,
+                ];
+            }
+        )->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | JUMLAH BERKALA 1
+        |--------------------------------------------------------------------------
+        */
+        $jumlahBerkala1 =
+            PemeriksaanBerkala::where(
+                'periode_id',
+                $periode->id
+            )
+                ->whereIn(
+                    'siswa_id',
+                    $siswaIds
+                )
+                ->where(
+                    'jenis_pemeriksaan',
+                    'berkala_1'
+                )
+                ->distinct()
+                ->count(
+                    'siswa_id'
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | JUMLAH BERKALA 2
+        |--------------------------------------------------------------------------
+        */
+        $jumlahBerkala2 =
+            PemeriksaanBerkala::where(
+                'periode_id',
+                $periode->id
+            )
+                ->whereIn(
+                    'siswa_id',
+                    $siswaIds
+                )
+                ->where(
+                    'jenis_pemeriksaan',
+                    'berkala_2'
+                )
+                ->distinct()
+                ->count(
+                    'siswa_id'
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | JUMLAH SISWA SUDAH TKSI
+        |--------------------------------------------------------------------------
+        */
+        $jumlahTksi =
+            TksiHasil::where(
+                'periode_id',
+                $periode->id
+            )
+                ->whereIn(
+                    'siswa_id',
+                    $siswaIds
+                )
+                ->get()
+                ->groupBy('siswa_id')
+                ->filter(function ($hasil) {
+
+                    return $this->jumlahKomponenTksi(
+                        $hasil
+                    ) >= 6;
+                })
+                ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | JUMLAH KUNJUNGAN
+        |--------------------------------------------------------------------------
+        */
+        $jumlahKunjungan =
+            KunjunganKlinik::where(
+                'periode_id',
+                $periode->id
+            )
+                ->whereIn(
+                    'siswa_id',
+                    $siswaIds
+                )
+                ->count();
+
+        return Inertia::render(
+            'Admin/Periode/Show',
+            [
+
+                'periode' => [
+
+                    'id' =>
+                        $periode->id,
+
+                    'nama_periode' =>
+                        $periode->nama_periode,
+
+                    'tanggal_mulai' =>
+                        $periode->tanggal_mulai,
+
+                    'tanggal_selesai' =>
+                        $periode->tanggal_selesai,
+
+                    'status' =>
+                        $periode->status,
+
+                    'pembuat' =>
+                        $periode->pembuat,
+
+                    'siswa' =>
+                        $siswa,
+
+                    'jumlah_berkala_1' =>
+                        $jumlahBerkala1,
+
+                    'jumlah_berkala_2' =>
+                        $jumlahBerkala2,
+
+                    'jumlah_tksi' =>
+                        $jumlahTksi,
+
+                    'jumlah_kunjungan' =>
+                        $jumlahKunjungan,
+                ],
+            ]
+        );
     }
 
-
     /**
-     * Form edit periode.
+     * ==========================================================
+     * FORM EDIT PERIODE
+     * ==========================================================
      */
     public function edit(Periode $periode)
     {
@@ -148,19 +603,31 @@ class PeriodeController extends Controller
         $siswas = Siswa::with([
             'kelas.jurusan',
         ])
-            ->where('status', 'aktif')
-            ->orderBy('nama')
+            ->where(
+                'status',
+                'aktif'
+            )
+            ->orderBy(
+                'nama'
+            )
             ->get();
 
-        return Inertia::render('Admin/Periode/Edit', [
-            'periode' => $periode,
-            'siswas' => $siswas,
-        ]);
+        return Inertia::render(
+            'Admin/Periode/Edit',
+            [
+                'periode' =>
+                    $periode,
+
+                'siswas' =>
+                    $siswas,
+            ]
+        );
     }
 
-
     /**
-     * Update periode.
+     * ==========================================================
+     * UPDATE PERIODE
+     * ==========================================================
      */
     public function update(
         Request $request,
@@ -185,9 +652,9 @@ class PeriodeController extends Controller
             ],
 
             'status' => [
-    'required',
-    'in:aktif,selesai,draft',
-],
+                'required',
+                'in:aktif,selesai,draft',
+            ],
 
             'siswa_ids' => [
                 'nullable',
@@ -200,52 +667,76 @@ class PeriodeController extends Controller
             ],
         ]);
 
+        DB::transaction(
+            function () use (
+                $validated,
+                $periode
+            ) {
 
-        DB::transaction(function () use (
-            $validated,
-            $periode
-        ) {
+                $periode->update([
 
-            $periode->update([
-                'nama_periode' => $validated['nama_periode'],
-                'tanggal_mulai' => $validated['tanggal_mulai'],
-                'tanggal_selesai' => $validated['tanggal_selesai'],
-                'status' => $validated['status'],
-            ]);
+                    'nama_periode' =>
+                        $validated[
+                            'nama_periode'
+                        ],
 
+                    'tanggal_mulai' =>
+                        $validated[
+                            'tanggal_mulai'
+                        ],
 
-            $periode->siswa()->sync(
-                $validated['siswa_ids'] ?? []
-            );
-        });
+                    'tanggal_selesai' =>
+                        $validated[
+                            'tanggal_selesai'
+                        ],
 
+                    'status' =>
+                        $validated[
+                            'status'
+                        ],
+                ]);
+
+                $periode->siswa()->sync(
+                    $validated[
+                        'siswa_ids'
+                    ] ?? []
+                );
+            }
+        );
 
         return redirect()
-            ->route('admin.periode.index')
+            ->route(
+                'admin.periode.index'
+            )
             ->with(
                 'success',
                 'Periode berhasil diperbarui.'
             );
     }
 
-
     /**
-     * Hapus periode.
+     * ==========================================================
+     * HAPUS PERIODE
+     * ==========================================================
      */
-    public function destroy(Periode $periode)
-    {
+    public function destroy(
+        Periode $periode
+    ) {
         try {
 
-            DB::transaction(function () use ($periode) {
+            DB::transaction(
+                function () use ($periode) {
 
-                $periode->siswa()->detach();
+                    $periode->siswa()->detach();
 
-                $periode->delete();
-            });
-
+                    $periode->delete();
+                }
+            );
 
             return redirect()
-                ->route('admin.periode.index')
+                ->route(
+                    'admin.periode.index'
+                )
                 ->with(
                     'success',
                     'Periode berhasil dihapus.'
@@ -261,328 +752,751 @@ class PeriodeController extends Controller
                 );
         }
     }
+
     /**
- * Menampilkan report.
- */
-public function report()
+     * ==========================================================
+     * REPORT SEMUA PERIODE
+     * ==========================================================
+     */
+    public function report()
     {
         $periodes = Periode::with([
             'siswa',
-            'tksiBatches.peserta',
         ])
-        ->withCount([
-            'siswa as jumlah_siswa',
-            'kunjunganKlinik as jumlah_kunjungan',
-        ])
-        ->orderByDesc('tanggal_mulai')
-        ->get();
+            ->withCount([
+                'siswa as jumlah_siswa',
+                'kunjunganKlinik as jumlah_kunjungan',
+            ])
+            ->orderByDesc(
+                'tanggal_mulai'
+            )
+            ->get();
 
-        $reports = $periodes->map(function ($periode) {
+        $reports = $periodes->map(
+            function ($periode) {
 
-            $jumlahSiswa = $periode->jumlah_siswa;
+                $jumlahSiswa =
+                    $periode->jumlah_siswa;
 
-            /*
-             * ==========================================
-             * BERKALA 1
-             * ==========================================
-             */
+                $siswaIds =
+                    $periode->siswa
+                        ->pluck('id');
 
-            $b1Selesai = $periode->pemeriksaanBerkala()
-                ->where('jenis_pemeriksaan', 'berkala_1')
-                ->whereIn(
-                    'siswa_id',
-                    $periode->siswa->pluck('id')
+                /*
+                |--------------------------------------------------------------------------
+                | BERKALA 1
+                |--------------------------------------------------------------------------
+                */
+                $b1Selesai =
+                    PemeriksaanBerkala::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->whereIn(
+                            'siswa_id',
+                            $siswaIds
+                        )
+                        ->where(
+                            'jenis_pemeriksaan',
+                            'berkala_1'
+                        )
+                        ->distinct()
+                        ->count(
+                            'siswa_id'
+                        );
+
+                /*
+                |--------------------------------------------------------------------------
+                | BERKALA 2
+                |--------------------------------------------------------------------------
+                */
+                $b2Selesai =
+                    PemeriksaanBerkala::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->whereIn(
+                            'siswa_id',
+                            $siswaIds
+                        )
+                        ->where(
+                            'jenis_pemeriksaan',
+                            'berkala_2'
+                        )
+                        ->distinct()
+                        ->count(
+                            'siswa_id'
+                        );
+
+                /*
+                |--------------------------------------------------------------------------
+                | TKSI
+                |--------------------------------------------------------------------------
+                */
+                $tksiData =
+                    TksiHasil::where(
+                        'periode_id',
+                        $periode->id
+                    )
+                        ->whereIn(
+                            'siswa_id',
+                            $siswaIds
+                        )
+                        ->get()
+                        ->groupBy(
+                            'siswa_id'
+                        );
+
+                $tksiSelesai =
+                    $tksiData
+                        ->filter(function ($hasil) {
+
+                            return $this->jumlahKomponenTksi(
+                                $hasil
+                            ) >= 6;
+                        })
+                        ->count();
+
+                return [
+
+                    'id' =>
+                        $periode->id,
+
+                    'nama_periode' =>
+                        $periode->nama_periode,
+
+                    'jumlah_siswa' =>
+                        $jumlahSiswa,
+
+                    'jumlah_kunjungan' =>
+                        $periode->jumlah_kunjungan,
+
+                    'berkala_1' => [
+
+                        'selesai' =>
+                            $b1Selesai,
+
+                        'total' =>
+                            $jumlahSiswa,
+
+                        'lengkap' =>
+                            $jumlahSiswa > 0 &&
+                            $b1Selesai >=
+                            $jumlahSiswa,
+                    ],
+
+                    'berkala_2' => [
+
+                        'selesai' =>
+                            $b2Selesai,
+
+                        'total' =>
+                            $jumlahSiswa,
+
+                        'lengkap' =>
+                            $jumlahSiswa > 0 &&
+                            $b2Selesai >=
+                            $jumlahSiswa,
+                    ],
+
+                    'tksi' => [
+
+                        'selesai' =>
+                            $tksiSelesai,
+
+                        'total' =>
+                            $jumlahSiswa,
+
+                        'lengkap' =>
+                            $jumlahSiswa > 0 &&
+                            $tksiSelesai >=
+                            $jumlahSiswa,
+                    ],
+                ];
+            }
+        );
+
+        return Inertia::render(
+            'Admin/Periode/Report',
+            [
+                'reports' =>
+                    $reports,
+            ]
+        );
+    }
+
+    /**
+     * ==========================================================
+     * DETAIL REPORT PERIODE
+     * ==========================================================
+     */
+    public function showReport(
+        Periode $periode
+    ) {
+        $periode->load([
+            'siswa.kelas.jurusan',
+        ]);
+
+        $siswaReports =
+            $periode->siswa->map(
+                function ($siswa) use ($periode) {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BERKALA 1
+                    |--------------------------------------------------------------------------
+                    */
+                    $b1 =
+                        PemeriksaanBerkala::where(
+                            'periode_id',
+                            $periode->id
+                        )
+                            ->where(
+                                'siswa_id',
+                                $siswa->id
+                            )
+                            ->where(
+                                'jenis_pemeriksaan',
+                                'berkala_1'
+                            )
+                            ->latest(
+                                'tanggal_pemeriksaan'
+                            )
+                            ->first();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BERKALA 2
+                    |--------------------------------------------------------------------------
+                    */
+                    $b2 =
+                        PemeriksaanBerkala::where(
+                            'periode_id',
+                            $periode->id
+                        )
+                            ->where(
+                                'siswa_id',
+                                $siswa->id
+                            )
+                            ->where(
+                                'jenis_pemeriksaan',
+                                'berkala_2'
+                            )
+                            ->latest(
+                                'tanggal_pemeriksaan'
+                            )
+                            ->first();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | KUNJUNGAN KLINIK
+                    |--------------------------------------------------------------------------
+                    */
+                    $jumlahKunjungan =
+                        KunjunganKlinik::where(
+                            'periode_id',
+                            $periode->id
+                        )
+                            ->where(
+                                'siswa_id',
+                                $siswa->id
+                            )
+                            ->count();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TKSI
+                    |--------------------------------------------------------------------------
+                    */
+                    $tksiHasil =
+                        TksiHasil::where(
+                            'periode_id',
+                            $periode->id
+                        )
+                            ->where(
+                                'siswa_id',
+                                $siswa->id
+                            )
+                            ->orderBy(
+                                'tanggal'
+                            )
+                            ->get();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | HITUNG NILAI AKHIR
+                    |--------------------------------------------------------------------------
+                    */
+                    $nilaiAkhirTksi =
+                        $this->hitungNilaiAkhirTksi(
+                            $tksiHasil
+                        );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | STATUS TKSI
+                    |--------------------------------------------------------------------------
+                    */
+                    $tksiLengkap =
+                        $this->jumlahKomponenTksi(
+                            $tksiHasil
+                        ) >= 6;
+
+                    $tksiTanggal =
+                        $tksiHasil
+                            ->first()
+                            ?->tanggal;
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | STATUS KESELURUHAN
+                    |--------------------------------------------------------------------------
+                    */
+                    $b1Lengkap =
+                        $b1 !== null;
+
+                    $b2Lengkap =
+                        $b2 !== null;
+
+                    $lengkap =
+                        $b1Lengkap &&
+                        $b2Lengkap &&
+                        $tksiLengkap;
+
+                    return [
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | IDENTITAS SISWA
+                        |--------------------------------------------------------------------------
+                        */
+                        'id' =>
+                            $siswa->id,
+
+                        'nama' =>
+                            $siswa->nama,
+
+                        'nisn' =>
+                            $siswa->nisn,
+
+                        'kelas' =>
+                            $siswa->kelas
+                                ?->nama_kelas
+                            ?? '-',
+
+                        'jurusan' =>
+                            $siswa->kelas
+                                ?->jurusan
+                                ?->nama_jurusan
+                            ?? null,
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | KUNJUNGAN
+                        |--------------------------------------------------------------------------
+                        */
+                        'jumlah_kunjungan' =>
+                            $jumlahKunjungan,
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | BERKALA 1
+                        |--------------------------------------------------------------------------
+                        */
+                        'b1' => [
+
+                            'lengkap' =>
+                                $b1Lengkap,
+
+                            'tanggal' =>
+                                $this->formatTanggal(
+                                    $b1
+                                        ?->tanggal_pemeriksaan
+                                ),
+
+                            'kondisi_umum' =>
+                                $b1
+                                    ?->kondisi_umum
+                                ?? '-',
+
+                            'hasil_pemeriksaan' =>
+                                $b1
+                                    ?->hasil_pemeriksaan
+                                ?? '-',
+
+                            'rekomendasi' =>
+                                $b1
+                                    ?->rekomendasi
+                                ?? '-',
+
+                            'catatan' =>
+                                $b1
+                                    ?->catatan
+                                ?? '-',
+                        ],
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | BERKALA 2
+                        |--------------------------------------------------------------------------
+                        */
+                        'b2' => [
+
+                            'lengkap' =>
+                                $b2Lengkap,
+
+                            'tanggal' =>
+                                $this->formatTanggal(
+                                    $b2
+                                        ?->tanggal_pemeriksaan
+                                ),
+
+                            'kondisi_umum' =>
+                                $b2
+                                    ?->kondisi_umum
+                                ?? '-',
+
+                            'hasil_pemeriksaan' =>
+                                $b2
+                                    ?->hasil_pemeriksaan
+                                ?? '-',
+
+                            'rekomendasi' =>
+                                $b2
+                                    ?->rekomendasi
+                                ?? '-',
+
+                            'catatan' =>
+                                $b2
+                                    ?->catatan
+                                ?? '-',
+                        ],
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | TKSI
+                        |--------------------------------------------------------------------------
+                        */
+                        'tksi' => [
+
+                            'lengkap' =>
+                                $tksiLengkap,
+
+                            'tanggal' =>
+                                $this->formatTanggal(
+                                    $tksiTanggal
+                                ),
+
+                            /*
+                            | Nilai akhir:
+                            |
+                            | (nilai1 + nilai2 + ... + nilai6) / 6
+                            */
+                            'nilai_akhir' =>
+                                $nilaiAkhirTksi,
+
+                            /*
+                            | Jumlah komponen
+                            */
+                            'jumlah_komponen' =>
+                                $this->jumlahKomponenTksi(
+                                    $tksiHasil
+                                ),
+
+                            /*
+                            | Semua hasil per komponen
+                            */
+                            'hasil' =>
+                                $tksiHasil
+                                    ->map(
+                                        function ($hasil) {
+
+                                            return [
+
+                                                'id' =>
+                                                    $hasil->id,
+
+                                                'komponen' =>
+                                                    $hasil->komponen,
+
+                                                'kategori' =>
+                                                    $hasil->kategori,
+
+                                                'nilai' =>
+                                                    $hasil->nilai,
+
+                                                'level' =>
+                                                    $hasil->level,
+
+                                                'balikan' =>
+                                                    $hasil->balikan,
+
+                                                'catatan' =>
+                                                    $hasil->catatan,
+
+                                                'tanggal' =>
+                                                    $this->formatTanggal(
+                                                        $hasil->tanggal
+                                                    ),
+                                            ];
+                                        }
+                                    )
+                                    ->values(),
+                        ],
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | STATUS KESELURUHAN
+                        |--------------------------------------------------------------------------
+                        */
+                        'status' =>
+                            $lengkap
+                                ? 'Lengkap'
+                                : 'Belum Lengkap',
+                    ];
+                }
+            )
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUMMARY
+        |--------------------------------------------------------------------------
+        */
+        $totalSiswa =
+            $siswaReports->count();
+
+        $totalKunjungan =
+            KunjunganKlinik::where(
+                'periode_id',
+                $periode->id
+            )->count();
+
+        $totalLengkap =
+            $siswaReports
+                ->where(
+                    'status',
+                    'Lengkap'
                 )
-                ->distinct()
-                ->count('siswa_id');
-
-
-            /*
-             * ==========================================
-             * BERKALA 2
-             * ==========================================
-             */
-
-            $b2Selesai = $periode->pemeriksaanBerkala()
-                ->where('jenis_pemeriksaan', 'berkala_2')
-                ->whereIn(
-                    'siswa_id',
-                    $periode->siswa->pluck('id')
-                )
-                ->distinct()
-                ->count('siswa_id');
-
-
-            /*
-             * ==========================================
-             * TKSI
-             *
-             * Periode
-             *    ↓
-             * TksiBatch
-             *    ↓
-             * TksiBatchSiswa
-             * ==========================================
-             */
-
-            $tksiSelesai = $periode->tksiBatches
-                ->flatMap(function ($batch) {
-                    return $batch->peserta;
-                })
-                ->whereIn(
-                    'siswa_id',
-                    $periode->siswa->pluck('id')
-                )
-                ->where('status', 'selesai')
-                ->pluck('siswa_id')
-                ->unique()
                 ->count();
 
+        return Inertia::render(
+            'Admin/Periode/ShowReport',
+            [
 
-            return [
-                'id' => $periode->id,
+                'periode' => [
 
-                'nama_periode' => $periode->nama_periode,
+                    'id' =>
+                        $periode->id,
 
-                'jumlah_siswa' => $jumlahSiswa,
+                    'nama_periode' =>
+                        $periode->nama_periode,
 
-                'jumlah_kunjungan' => $periode->jumlah_kunjungan,
+                    'tanggal_mulai' =>
+                        $this->formatTanggal(
+                            $periode->tanggal_mulai,
+                            'd F Y'
+                        ),
 
-                'berkala_1' => [
-                    'selesai' => $b1Selesai,
-                    'total' => $jumlahSiswa,
-                    'lengkap' =>
-                        $jumlahSiswa > 0 &&
-                        $b1Selesai >= $jumlahSiswa,
+                    'tanggal_selesai' =>
+                        $this->formatTanggal(
+                            $periode->tanggal_selesai,
+                            'd F Y'
+                        ),
                 ],
 
-                'berkala_2' => [
-                    'selesai' => $b2Selesai,
-                    'total' => $jumlahSiswa,
-                    'lengkap' =>
-                        $jumlahSiswa > 0 &&
-                        $b2Selesai >= $jumlahSiswa,
+                'summary' => [
+
+                    'total_siswa' =>
+                        $totalSiswa,
+
+                    'total_kunjungan' =>
+                        $totalKunjungan,
+
+                    'total_lengkap' =>
+                        $totalLengkap,
                 ],
 
-                'tksi' => [
-                    'selesai' => $tksiSelesai,
-                    'total' => $jumlahSiswa,
-                    'lengkap' =>
-                        $jumlahSiswa > 0 &&
-                        $tksiSelesai >= $jumlahSiswa,
-                ],
-            ];
-        });
-
-        return Inertia::render('Admin/Periode/Report', [
-            'reports' => $reports,
-        ]);
+                'siswa' =>
+                    $siswaReports,
+            ]
+        );
     }
-public function showReport(Periode $periode)
-{
-    $periode->load([
-        'siswa.kelas',
-    ]);
 
-    $siswaReports = $periode->siswa->map(function ($siswa) use ($periode) {
+    /**
+     * ==========================================================
+     * HITUNG JUMLAH KOMPONEN TKSI
+     * ==========================================================
+     *
+     * Hanya menghitung data TKSI yang memiliki nilai.
+     *
+     * Jadi:
+     *
+     * Komponen 1 -> nilai 80 -> dihitung
+     * Komponen 2 -> nilai 75 -> dihitung
+     * dst.
+     *
+     * Data yang nilai-nya kosong tidak dihitung.
+     */
+    private function jumlahKomponenTksi(
+        $hasilTksi
+    ) {
+        if (
+            !$hasilTksi ||
+            $hasilTksi->isEmpty()
+        ) {
+            return 0;
+        }
 
-        // =====================================================
-        // B1
-        // =====================================================
+        return $hasilTksi
+            ->filter(function ($hasil) {
 
-        $b1 = PemeriksaanBerkala::where('periode_id', $periode->id)
-            ->where('siswa_id', $siswa->id)
-            ->where(function ($query) {
-                $query->where('jenis_pemeriksaan', 'B1')
-                    ->orWhere('jenis_pemeriksaan', 'b1')
-                    ->orWhere('jenis_pemeriksaan', 'berkala_1')
-                    ->orWhere('jenis_pemeriksaan', 'Berkala 1')
-                    ->orWhere('jenis_pemeriksaan', 'Pemeriksaan Berkala 1');
+                return $hasil->nilai !== null
+                    && trim(
+                        (string) $hasil->nilai
+                    ) !== '';
             })
-            ->latest('tanggal_pemeriksaan')
-            ->first();
-
-        // =====================================================
-        // B2
-        // =====================================================
-
-        $b2 = PemeriksaanBerkala::where('periode_id', $periode->id)
-            ->where('siswa_id', $siswa->id)
-            ->where(function ($query) {
-                $query->where('jenis_pemeriksaan', 'B2')
-                    ->orWhere('jenis_pemeriksaan', 'b2')
-                    ->orWhere('jenis_pemeriksaan', 'berkala_2')
-                    ->orWhere('jenis_pemeriksaan', 'Berkala 2')
-                    ->orWhere('jenis_pemeriksaan', 'Pemeriksaan Berkala 2');
-            })
-            ->latest('tanggal_pemeriksaan')
-            ->first();
-
-        // =====================================================
-        // KUNJUNGAN
-        // =====================================================
-
-        $jumlahKunjungan = KunjunganKlinik::where('periode_id', $periode->id)
-            ->where('siswa_id', $siswa->id)
             ->count();
+    }
 
-        // =====================================================
-        // TKSI
-        // =====================================================
+    /**
+     * ==========================================================
+     * HITUNG NILAI AKHIR TKSI
+     * ==========================================================
+     *
+     * Rumus:
+     *
+     * (Skor 1 + Skor 2 + Skor 3 +
+     *  Skor 4 + Skor 5 + Skor 6) / 6
+     *
+     * Contoh:
+     *
+     * 80 + 75 + 70 + 85 + 90 + 80
+     * = 480
+     *
+     * 480 / 6
+     * = 80
+     */
+    private function hitungNilaiAkhirTksi(
+        $hasilTksi
+    ) {
+        if (
+            !$hasilTksi ||
+            $hasilTksi->isEmpty()
+        ) {
+            return null;
+        }
 
-        $tksiPeserta = TksiBatchSiswa::with([
-                'hasil',
-                'batch',
-            ])
-            ->where('siswa_id', $siswa->id)
-            ->whereHas('batch', function ($query) use ($periode) {
-                $query->where('periode_id', $periode->id);
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil hanya komponen yang mempunyai nilai
+        |--------------------------------------------------------------------------
+        */
+        $komponen = $hasilTksi
+            ->filter(function ($hasil) {
+
+                return $hasil->nilai !== null
+                    && trim(
+                        (string) $hasil->nilai
+                    ) !== '';
             })
-            ->latest()
-            ->first();
+            ->values();
 
-        // =====================================================
-        // HASIL TKSI
-        // =====================================================
-
-        $tksiHasil = [];
-
-        if ($tksiPeserta) {
-            $tksiHasil = $tksiPeserta->hasil->map(function ($hasil) {
-                return [
-                    'komponen' => $hasil->komponen,
-                    'nilai' => $hasil->nilai,
-                    'catatan' => $hasil->catatan,
-                ];
-            })->values();
+        /*
+        |--------------------------------------------------------------------------
+        | Harus ada minimal 6 komponen
+        |--------------------------------------------------------------------------
+        */
+        if ($komponen->count() < 6) {
+            return null;
         }
 
-        // =====================================================
-        // STATUS
-        // =====================================================
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil 6 komponen pertama
+        |--------------------------------------------------------------------------
+        */
+        $komponen =
+            $komponen->take(6);
 
-        $b1Lengkap = $b1 !== null;
-        $b2Lengkap = $b2 !== null;
+        /*
+        |--------------------------------------------------------------------------
+        | Jumlahkan semua nilai
+        |--------------------------------------------------------------------------
+        */
+        $totalSkor =
+            $komponen->sum(
+                function ($hasil) {
 
-        $tksiLengkap = $tksiPeserta !== null
-            && $tksiPeserta->hasil->count() > 0;
+                    return (float) $hasil->nilai;
+                }
+            );
 
-        $lengkap = $b1Lengkap
-            && $b2Lengkap
-            && $tksiLengkap;
+        /*
+        |--------------------------------------------------------------------------
+        | Bagi 6
+        |--------------------------------------------------------------------------
+        */
+        $nilaiAkhir =
+            $totalSkor / 6;
 
-        // =====================================================
-        // HASIL B1
-        // =====================================================
-
-        $hasilB1 = $this->formatHasilPemeriksaan($b1);
-
-        // =====================================================
-        // HASIL B2
-        // =====================================================
-
-        $hasilB2 = $this->formatHasilPemeriksaan($b2);
-
-        return [
-            'id' => $siswa->id,
-            'nama' => $siswa->nama,
-            'nisn' => $siswa->nisn,
-
-            'kelas' => $siswa->kelas?->nama_kelas ?? '-',
-
-            'jumlah_kunjungan' => $jumlahKunjungan,
-
-            'b1' => [
-                'lengkap' => $b1Lengkap,
-                'tanggal' => $b1?->tanggal_pemeriksaan?->format('d M Y'),
-                'hasil' => $hasilB1,
-            ],
-
-            'b2' => [
-                'lengkap' => $b2Lengkap,
-                'tanggal' => $b2?->tanggal_pemeriksaan?->format('d M Y'),
-                'hasil' => $hasilB2,
-            ],
-
-            'tksi' => [
-                'lengkap' => $tksiLengkap,
-                'tanggal' => $tksiPeserta?->batch?->tanggal?->format('d M Y'),
-                'hasil' => $tksiHasil,
-            ],
-
-            'status' => $lengkap
-                ? 'Lengkap'
-                : 'Belum Lengkap',
-        ];
-    })->values();
-
-    // =====================================================
-    // SUMMARY
-    // =====================================================
-
-    $totalSiswa = $siswaReports->count();
-
-    $totalKunjungan = KunjunganKlinik::where(
-        'periode_id',
-        $periode->id
-    )->count();
-
-    $totalLengkap = $siswaReports
-        ->where('status', 'Lengkap')
-        ->count();
-
-    return Inertia::render('Admin/Periode/ShowReport', [
-
-        'periode' => [
-            'id' => $periode->id,
-            'nama_periode' => $periode->nama_periode,
-
-            'tanggal_mulai' => $periode->tanggal_mulai
-                ? $periode->tanggal_mulai->format('d F Y')
-                : '-',
-
-            'tanggal_selesai' => $periode->tanggal_selesai
-                ? $periode->tanggal_selesai->format('d F Y')
-                : '-',
-        ],
-
-        'summary' => [
-            'total_siswa' => $totalSiswa,
-            'total_kunjungan' => $totalKunjungan,
-            'total_lengkap' => $totalLengkap,
-        ],
-
-        'siswa' => $siswaReports,
-    ]);
-}
-/**
- * Format hasil pemeriksaan berkala
- */
-private function formatHasilPemeriksaan($pemeriksaan)
-{
-    if (!$pemeriksaan) {
-        return [];
+        /*
+        |--------------------------------------------------------------------------
+        | 2 angka di belakang koma
+        |--------------------------------------------------------------------------
+        */
+        return round(
+            $nilaiAkhir,
+            2
+        );
     }
 
-    $hasil = $pemeriksaan->hasil;
-
-    if (is_array($hasil)) {
-        return $hasil;
-    }
-
-    if (is_string($hasil)) {
-        $decoded = json_decode($hasil, true);
-
-        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            return $decoded;
+    /**
+     * ==========================================================
+     * FORMAT TANGGAL
+     * ==========================================================
+     */
+    private function formatTanggal(
+        $tanggal,
+        string $format = 'd M Y'
+    ) {
+        if (!$tanggal) {
+            return null;
         }
 
-        return [
-            'hasil' => $hasil,
-        ];
+        /*
+        |--------------------------------------------------------------------------
+        | SUDAH CARBON
+        |--------------------------------------------------------------------------
+        */
+        if (
+            is_object($tanggal) &&
+            method_exists(
+                $tanggal,
+                'format'
+            )
+        ) {
+            return $tanggal->format(
+                $format
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STRING
+        |--------------------------------------------------------------------------
+        */
+        try {
+
+            return \Carbon\Carbon::parse(
+                $tanggal
+            )->format(
+                $format
+            );
+
+        } catch (\Throwable $e) {
+
+            return $tanggal;
+        }
     }
-
-    return [];
-}
-
 }

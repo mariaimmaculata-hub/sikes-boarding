@@ -183,7 +183,7 @@ const breadcrumbs = computed(() => {
         ]
     }
 
-    if (path === '/tksi/') {
+    if (path === '/tksi/report') {
         return [
             {
                 name: 'Dashboard',
@@ -196,7 +196,7 @@ const breadcrumbs = computed(() => {
         ]
     }
 
-    if (path === '/tksi/notifikasi') {
+    if (path === '/notifikasi') {
         return [
             {
                 name: 'Dashboard',
@@ -204,7 +204,7 @@ const breadcrumbs = computed(() => {
             },
             {
                 name: 'Notifikasi',
-                url: '/tksi/notifikasi',
+                url: '/notifikasi',
             },
         ]
     }
@@ -313,7 +313,7 @@ const breadcrumbs = computed(() => {
                 <!-- NOTIFICATION -->
 
                 <Link
-                    href="/tksi/notifikasi"
+                    href="/notifikasi"
                     class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
                     aria-label="Notifikasi"
                 >
@@ -667,10 +667,10 @@ const breadcrumbs = computed(() => {
                         ================================================== -->
 
                         <Link
-                            href="/tksi/notifikasi"
+                            href="/notifikasi"
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                isActive('/tksi/notifikasi')
+                                isActive('/notifikasi')
                                     ? 'bg-blue-700 text-white shadow-md'
                                     : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
                             ]"
@@ -948,11 +948,11 @@ const breadcrumbs = computed(() => {
                                 <!-- NOTIFIKASI -->
 
                                 <Link
-                                    href="/tksi/notifikasi"
+                                    href="/notifikasi"
                                     @click="toggleMobileSidebar"
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                        isActive('/tksi/notifikasi')
+                                        isActive('/notifikasi')
                                             ? 'bg-blue-700 text-white'
                                             : 'text-blue-100 hover:bg-blue-900/50'
                                     ]"

@@ -129,17 +129,13 @@ const progress2 = computed(() => {
 | FILTER
 |--------------------------------------------------------------------------
 */
-
 function applyFilter() {
 
     router.get(
-        '/kesehatan/report/berkala',
+        '/klinik/kesehatan/report/berkala',
         {
-            periode_id:
-                props.periode?.id,
-
-            kelas_id:
-                kelasId.value,
+            periode_id: props.periode?.id,
+            kelas_id: kelasId.value,
         },
         {
             preserveState: true,
@@ -149,16 +145,14 @@ function applyFilter() {
 
 }
 
-
 function resetFilter() {
 
     kelasId.value = ''
 
     router.get(
-        '/kesehatan/report/berkala',
+        '/klinik/kesehatan/report/berkala',
         {
-            periode_id:
-                props.periode?.id,
+            periode_id: props.periode?.id,
         },
         {
             preserveState: true,
@@ -174,7 +168,6 @@ function resetFilter() {
 | GANTI PERIODE
 |--------------------------------------------------------------------------
 */
-
 function changePeriode(event) {
 
     const id = event.target.value
@@ -184,7 +177,7 @@ function changePeriode(event) {
     }
 
     router.get(
-        '/kesehatan/report/berkala',
+        '/klinik/kesehatan/report/berkala',
         {
             periode_id: id,
         },
@@ -195,7 +188,6 @@ function changePeriode(event) {
     )
 
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -456,18 +448,14 @@ function overallLabel(status) {
             <div>
 
                 <div
-                    class="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-400"
+                    class="flex items-center gap-2 text-xs font-semibold text-slate-400"
                 >
 
                     <ClipboardDocumentCheckIcon
                         class="h-4 w-4"
                     />
 
-                    <span>Kesehatan</span>
-
-                    <span>/</span>
-
-                    <span>Report</span>
+                    Kesehatan
 
                 </div>
 
@@ -879,56 +867,59 @@ function overallLabel(status) {
                     v-else
                     class="overflow-x-auto"
                 >
-
-                    <table
-                        class="w-full min-w-[1100px] text-left"
-                    >
+<table
+    class="w-full min-w-[1000px] table-fixed text-left"
+>
 
                         <thead
-                            class="border-b border-slate-100 bg-slate-50"
-                        >
+    class="border-b border-slate-100 bg-slate-50"
+>
+    <tr>
 
-                            <tr>
+        <!-- SISWA -->
+        <th
+            class="w-[24%] px-6 py-3 text-[11px] font-bold uppercase text-slate-400"
+        >
+            Siswa
+        </th>
 
-                                <th
-                                    class="px-6 py-3 text-[11px] font-bold uppercase text-slate-400"
-                                >
-                                    Siswa
-                                </th>
+        <!-- KELAS -->
+        <th
+            class="w-[16%] px-4 py-3 text-[11px] font-bold uppercase text-slate-400"
+        >
+            Kelas
+        </th>
 
-                                <th
-                                    class="px-4 py-3 text-[11px] font-bold uppercase text-slate-400"
-                                >
-                                    Kelas
-                                </th>
+        <!-- B1 -->
+        <th
+            class="w-[17%] px-4 py-3 text-[11px] font-bold uppercase text-blue-500"
+        >
+            Berkala 1
+        </th>
 
-                                <th
-                                    class="px-4 py-3 text-[11px] font-bold uppercase text-blue-500"
-                                >
-                                    Berkala 1
-                                </th>
+        <!-- B2 -->
+        <th
+            class="w-[17%] px-4 py-3 text-[11px] font-bold uppercase text-purple-500"
+        >
+            Berkala 2
+        </th>
 
-                                <th
-                                    class="px-4 py-3 text-[11px] font-bold uppercase text-purple-500"
-                                >
-                                    Berkala 2
-                                </th>
+        <!-- STATUS -->
+        <th
+            class="w-[14%] px-3 py-3 text-[11px] font-bold uppercase text-slate-400"
+        >
+            Status
+        </th>
 
-                                <th
-                                    class="px-4 py-3 text-[11px] font-bold uppercase text-slate-400"
-                                >
-                                    Status
-                                </th>
+        <!-- AKSI -->
+        <th
+            class="w-[12%] px-3 py-3 text-center text-[11px] font-bold uppercase text-slate-400"
+        >
+            Aksi
+        </th>
 
-                                <th
-                                    class="px-6 py-3 text-right text-[11px] font-bold uppercase text-slate-400"
-                                >
-                                    Aksi
-                                </th>
-
-                            </tr>
-
-                        </thead>
+    </tr>
+</thead>
 
 
                         <tbody
@@ -1074,38 +1065,35 @@ function overallLabel(status) {
 
 
                                 <!-- STATUS -->
+<td class="px-3 py-4">
 
-                                <td class="px-4 py-4">
+    <span
+        :class="[
+            'inline-flex max-w-full rounded-full px-2.5 py-1 text-xs font-bold whitespace-nowrap',
+            overallClass(
+                item.status_keseluruhan
+            )
+        ]"
+    >
+        {{
+            overallLabel(
+                item.status_keseluruhan
+            )
+        }}
+    </span>
 
-                                    <span
-                                        :class="[
-                                            'inline-flex rounded-full px-2.5 py-1 text-xs font-bold',
-                                            overallClass(
-                                                item.status_keseluruhan
-                                            )
-                                        ]"
-                                    >
-
-                                        {{
-                                            overallLabel(
-                                                item.status_keseluruhan
-                                            )
-                                        }}
-
-                                    </span>
-
-                                </td>
+</td>
 
 
                                 <!-- AKSI -->
 
                                 <td
-                                    class="px-6 py-4 text-right"
-                                >
+    class="px-3 py-4 text-center"
+>
 
-                                    <div
-                                        class="flex justify-end gap-1.5"
-                                    >
+    <div
+        class="flex items-center justify-center gap-1.5"
+    >
 
                                         <button
                                             v-if="item.berkala_1"
@@ -1165,8 +1153,8 @@ function overallLabel(status) {
             >
 
                 <div
-                    class="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl"
-                >
+    class="flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+>
 
                     <!-- HEADER -->
 
@@ -1220,9 +1208,8 @@ function overallLabel(status) {
                     <!-- BODY -->
 
                     <div
-                        class="max-h-[calc(90vh-150px)] overflow-y-auto p-6"
-                    >
-
+    class="min-h-0 flex-1 overflow-y-auto p-6"
+>
                         <template
                             v-if="selectedPemeriksaan.pemeriksaan"
                         >
@@ -1257,6 +1244,56 @@ function overallLabel(status) {
                                 </span>
 
                             </div>
+
+                            <!-- PEMERIKSA -->
+
+<div
+    class="mb-6 rounded-xl border border-emerald-100 bg-emerald-50 p-4"
+>
+    <div class="flex items-start gap-3">
+
+        <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100"
+        >
+            <CheckCircleIcon
+                class="h-5 w-5 text-emerald-600"
+            />
+        </div>
+
+        <div>
+
+            <p
+                class="text-xs font-bold uppercase tracking-wide text-emerald-600"
+            >
+                Pemeriksa
+            </p>
+
+            <p
+                class="mt-1 text-sm font-bold text-emerald-800"
+            >
+                {{
+                    selectedPemeriksaan
+                        .pemeriksaan
+                        ?.pemeriksa
+                        ?.name || 'Belum tercatat'
+                }}
+            </p>
+
+            <p class="mt-1 text-xs text-emerald-700">
+                Petugas yang melaksanakan pemeriksaan
+                {{
+                    formatJenis(
+                        selectedPemeriksaan
+                            .pemeriksaan
+                            ?.jenis_pemeriksaan
+                    )
+                }}.
+            </p>
+
+        </div>
+
+    </div>
+</div>
 
 
                             <!-- ANTROPOMETRI -->
@@ -1589,9 +1626,8 @@ function overallLabel(status) {
                     <!-- FOOTER -->
 
                     <div
-                        class="flex justify-between border-t border-slate-100 px-6 py-4"
-                    >
-
+    class="flex shrink-0 justify-between border-t border-slate-100 bg-white px-6 py-4"
+>
                         <button
                             type="button"
                             @click="downloadDetail"

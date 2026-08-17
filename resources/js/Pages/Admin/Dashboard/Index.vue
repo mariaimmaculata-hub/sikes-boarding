@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Head, Link } from '@inertiajs/vue3'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 import {
     UserGroupIcon,
@@ -10,12 +10,18 @@ import {
     ClipboardDocumentCheckIcon,
     ChevronRightIcon,
     CalendarDaysIcon,
-    BoltIcon,
-    ClockIcon,
     BellIcon
-} from '@heroicons/vue/24/outline';
+} from '@heroicons/vue/24/outline'
+
+
+/*
+|--------------------------------------------------------------------------
+| PROPS
+|--------------------------------------------------------------------------
+*/
 
 const props = defineProps({
+
     stats: {
         type: Array,
         default: () => []
@@ -50,134 +56,310 @@ const props = defineProps({
         type: Array,
         default: () => []
     }
-});
+
+})
 
 
-// ======================================================
-// STAT CARD
-// ======================================================
+/*
+|--------------------------------------------------------------------------
+| ICON STATISTIK
+|--------------------------------------------------------------------------
+*/
 
 const statIcons = {
+
     siswa: UserGroupIcon,
+
     kelas: AcademicCapIcon,
+
     klinik: HeartIcon,
+
     pendamping: UserPlusIcon,
+
     pemeriksaan: ClipboardDocumentCheckIcon,
-};
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| WARNA STATISTIK
+|--------------------------------------------------------------------------
+*/
 
 const statColors = {
-    siswa: 'border-blue-600 text-blue-600 bg-blue-50/50',
-    kelas: 'border-green-600 text-green-600 bg-green-50/50',
-    klinik: 'border-purple-600 text-purple-600 bg-purple-50/50',
-    pendamping: 'border-orange-600 text-orange-600 bg-orange-50/50',
-    pemeriksaan: 'border-rose-600 text-rose-600 bg-rose-50/50',
-};
+
+    siswa:
+        'border-blue-600 text-blue-600 bg-blue-50/50',
+
+    kelas:
+        'border-green-600 text-green-600 bg-green-50/50',
+
+    klinik:
+        'border-purple-600 text-purple-600 bg-purple-50/50',
+
+    pendamping:
+        'border-orange-600 text-orange-600 bg-orange-50/50',
+
+    pemeriksaan:
+        'border-rose-600 text-rose-600 bg-rose-50/50',
+
+}
 
 
-// ======================================================
-// HELPERS
-// ======================================================
+/*
+|--------------------------------------------------------------------------
+| FORMAT ANGKA
+|--------------------------------------------------------------------------
+*/
 
 const formatNumber = (value) => {
-    return Number(value ?? 0).toLocaleString('id-ID');
-};
+
+    return Number(
+        value ?? 0
+    ).toLocaleString('id-ID')
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| WARNA PENYAKIT
+|--------------------------------------------------------------------------
+*/
 
 const illnessColors = [
+
     'bg-rose-500',
+
     'bg-orange-500',
+
     'bg-amber-500',
+
     'bg-blue-500',
+
     'bg-teal-500',
-];
+
+]
+
 
 const getIllnessColor = (index) => {
-    return illnessColors[index % illnessColors.length];
-};
+
+    return illnessColors[
+        index % illnessColors.length
+    ]
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MAX JUMLAH PENYAKIT
+|--------------------------------------------------------------------------
+*/
 
 const maxIllnessCount = () => {
+
     if (!props.penyakitTerbanyak.length) {
-        return 1;
+
+        return 1
+
     }
 
     return Math.max(
-        ...props.penyakitTerbanyak.map(item => Number(item.count ?? 0)),
+
+        ...props.penyakitTerbanyak.map(
+            item => Number(item.count ?? 0)
+        ),
+
         1
-    );
-};
+
+    )
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| BAR PENYAKIT
+|--------------------------------------------------------------------------
+*/
 
 const illnessWidth = (count) => {
-    const max = maxIllnessCount();
 
-    return `${Math.min((Number(count ?? 0) / max) * 100, 100)}%`;
-};
+    const max = maxIllnessCount()
+
+    return `${Math.min(
+
+        (
+            Number(count ?? 0) /
+            max
+        ) * 100,
+
+        100
+
+    )}%`
+
+}
 
 
-// ======================================================
-// CHART HELPERS
-// ======================================================
+/*
+|--------------------------------------------------------------------------
+| CHART MAX
+|--------------------------------------------------------------------------
+*/
 
 const getChartMax = (data) => {
+
     if (!data || !data.length) {
-        return 10;
+
+        return 10
+
     }
 
     return Math.max(
-        ...data.map(item => Number(item.value ?? 0)),
-        10
-    );
-};
 
-const chartPoint = (data, index, width = 250, height = 100) => {
+        ...data.map(
+            item => Number(item.value ?? 0)
+        ),
+
+        10
+
+    )
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHART POINT
+|--------------------------------------------------------------------------
+*/
+
+const chartPoint = (
+    data,
+    index,
+    width = 250,
+    height = 100
+) => {
+
     if (!data || !data.length) {
-        return '0,100';
+
+        return '0,100'
+
     }
 
-    const max = getChartMax(data);
+    const max =
+        getChartMax(data)
 
     const x =
         data.length === 1
             ? width / 2
-            : 50 + (index * ((width - 50) / (data.length - 1)));
+            : 50 +
+              (
+                  index *
+                  (
+                      (width - 50) /
+                      (data.length - 1)
+                  )
+              )
 
-    const value = Number(data[index]?.value ?? 0);
+    const value =
+        Number(
+            data[index]?.value ?? 0
+        )
 
     const y =
         height -
-        ((value / max) * (height - 20));
+        (
+            (value / max) *
+            (height - 20)
+        )
 
-    return `${x},${y}`;
-};
+    return `${x},${y}`
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHART LINE
+|--------------------------------------------------------------------------
+*/
 
 const chartLine = (data) => {
+
     if (!data || !data.length) {
-        return '';
+
+        return ''
+
     }
 
     return data
-        .map((_, index) => chartPoint(data, index))
-        .join(' L');
-};
+
+        .map(
+            (_, index) =>
+                chartPoint(
+                    data,
+                    index
+                )
+        )
+
+        .join(' L')
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CHART AREA
+|--------------------------------------------------------------------------
+*/
 
 const chartArea = (data) => {
+
     if (!data || !data.length) {
-        return '';
+
+        return ''
+
     }
 
     const points = data
-        .map((_, index) => chartPoint(data, index))
-        .join(' L');
+
+        .map(
+            (_, index) =>
+                chartPoint(
+                    data,
+                    index
+                )
+        )
+
+        .join(' L')
 
     const lastX =
         data.length === 1
             ? 50
-            : 50 + ((data.length - 1) * (200 / (data.length - 1)));
+            : 250
 
-    return `M${points} L${lastX},120 L50,120 Z`;
-};
+    return `M${points} L${lastX},120 L50,120 Z`
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| NILAI TITIK GRAFIK
+|--------------------------------------------------------------------------
+*/
 
 const getPointValue = (item) => {
-    return formatNumber(item?.value ?? 0);
-};
+
+    return formatNumber(
+        item?.value ?? 0
+    )
+
+}
+
 </script>
 
 
@@ -187,10 +369,6 @@ const getPointValue = (item) => {
 
         <Head title="Admin Dashboard" />
 
-
-        <!-- ==================================================
-             DASHBOARD CONTAINER
-        =================================================== -->
 
         <div class="space-y-6">
 
@@ -203,7 +381,6 @@ const getPointValue = (item) => {
                 class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg flex items-center justify-between"
             >
 
-                <!-- Background -->
                 <div
                     class="absolute right-0 top-0 w-80 h-80 bg-white/5 rounded-full blur-2xl pointer-events-none"
                 ></div>
@@ -213,7 +390,6 @@ const getPointValue = (item) => {
                 ></div>
 
 
-                <!-- Text -->
                 <div class="relative z-10 space-y-2">
 
                     <h2
@@ -225,14 +401,15 @@ const getPointValue = (item) => {
                     <p
                         class="text-sm md:text-base text-blue-100/90 max-w-2xl font-medium leading-relaxed"
                     >
-                        Kelola data kesehatan dan kebugaran siswa dengan mudah
-                        dan terintegrasi.
+                        Kelola data kesehatan dan kebugaran siswa
+                        dengan mudah dan terintegrasi.
                     </p>
 
                 </div>
 
 
-                <!-- Building Illustration -->
+                <!-- ILUSTRASI GEDUNG -->
+
                 <div
                     class="hidden md:block relative z-10 w-44 h-auto opacity-95"
                 >
@@ -270,7 +447,6 @@ const getPointValue = (item) => {
                             fill-opacity="0.3"
                         />
 
-                        <!-- Medical Cross -->
                         <path
                             d="M60 10v6M57 13h6"
                             stroke="#EF4444"
@@ -286,7 +462,7 @@ const getPointValue = (item) => {
 
 
             <!-- ==================================================
-                 STATISTICS
+                 STATISTIK
             =================================================== -->
 
             <div
@@ -300,7 +476,9 @@ const getPointValue = (item) => {
                     :class="statColors[item.type]?.split(' ')[0]"
                 >
 
-                    <div class="flex items-center justify-between">
+                    <div
+                        class="flex items-center justify-between"
+                    >
 
                         <span
                             class="text-slate-500 text-xs font-bold uppercase tracking-wider"
@@ -339,21 +517,6 @@ const getPointValue = (item) => {
 
                     </div>
 
-
-                    <div
-                        class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-blue-600"
-                    >
-
-                        <span>
-                            Lihat detail
-                        </span>
-
-                        <ChevronRightIcon
-                            class="w-3.5 h-3.5"
-                        />
-
-                    </div>
-
                 </div>
 
             </div>
@@ -361,7 +524,7 @@ const getPointValue = (item) => {
 
 
             <!-- ==================================================
-                 CHART + ILLNESS
+                 GRAFIK + PENYAKIT
             =================================================== -->
 
             <div
@@ -369,9 +532,9 @@ const getPointValue = (item) => {
             >
 
 
-                <!-- ==========================================
+                <!-- ==================================================
                      PEMERIKSAAN BERKALA
-                =========================================== -->
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -404,7 +567,8 @@ const getPointValue = (item) => {
                             preserveAspectRatio="none"
                         >
 
-                            <!-- Grid -->
+                            <!-- GRID -->
+
                             <line
                                 x1="30"
                                 y1="20"
@@ -439,7 +603,8 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Area -->
+                            <!-- AREA -->
+
                             <path
                                 v-if="pemeriksaanBulanan.length"
                                 :d="chartArea(pemeriksaanBulanan)"
@@ -448,7 +613,8 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Line -->
+                            <!-- LINE -->
+
                             <path
                                 v-if="pemeriksaanBulanan.length"
                                 :d="`M${chartLine(pemeriksaanBulanan)}`"
@@ -460,7 +626,8 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Points -->
+                            <!-- POINT -->
+
                             <template
                                 v-for="(item, index) in pemeriksaanBulanan"
                                 :key="index"
@@ -485,6 +652,7 @@ const getPointValue = (item) => {
                                     stroke-width="2"
                                 />
 
+
                                 <text
                                     :x="
                                         chartPoint(
@@ -508,6 +676,7 @@ const getPointValue = (item) => {
                                     {{ getPointValue(item) }}
                                 </text>
 
+
                                 <text
                                     :x="
                                         chartPoint(
@@ -527,7 +696,8 @@ const getPointValue = (item) => {
                             </template>
 
 
-                            <!-- Empty -->
+                            <!-- EMPTY -->
+
                             <text
                                 v-if="!pemeriksaanBulanan.length"
                                 x="150"
@@ -547,9 +717,9 @@ const getPointValue = (item) => {
 
 
 
-                <!-- ==========================================
+                <!-- ==================================================
                      KUNJUNGAN KLINIK
-                =========================================== -->
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -582,7 +752,6 @@ const getPointValue = (item) => {
                             preserveAspectRatio="none"
                         >
 
-                            <!-- Grid -->
                             <line
                                 x1="30"
                                 y1="20"
@@ -617,7 +786,6 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Area -->
                             <path
                                 v-if="kunjunganBulanan.length"
                                 :d="chartArea(kunjunganBulanan)"
@@ -626,7 +794,6 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Line -->
                             <path
                                 v-if="kunjunganBulanan.length"
                                 :d="`M${chartLine(kunjunganBulanan)}`"
@@ -638,7 +805,6 @@ const getPointValue = (item) => {
                             />
 
 
-                            <!-- Points -->
                             <template
                                 v-for="(item, index) in kunjunganBulanan"
                                 :key="index"
@@ -663,6 +829,7 @@ const getPointValue = (item) => {
                                     stroke-width="2"
                                 />
 
+
                                 <text
                                     :x="
                                         chartPoint(
@@ -685,6 +852,7 @@ const getPointValue = (item) => {
                                 >
                                     {{ getPointValue(item) }}
                                 </text>
+
 
                                 <text
                                     :x="
@@ -724,9 +892,9 @@ const getPointValue = (item) => {
 
 
 
-                <!-- ==========================================
+                <!-- ==================================================
                      PENYAKIT TERBANYAK
-                =========================================== -->
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -749,9 +917,7 @@ const getPointValue = (item) => {
                     </div>
 
 
-                    <div
-                        class="my-4 space-y-3.5"
-                    >
+                    <div class="my-4 space-y-3.5">
 
                         <div
                             v-for="(ill, idx) in penyakitTerbanyak"
@@ -769,7 +935,9 @@ const getPointValue = (item) => {
 
                                     <span
                                         class="w-2.5 h-2.5 rounded-full"
-                                        :class="getIllnessColor(idx)"
+                                        :class="
+                                            getIllnessColor(idx)
+                                        "
                                     ></span>
 
                                     <span>
@@ -782,7 +950,8 @@ const getPointValue = (item) => {
                                 <span
                                     class="text-slate-900 font-bold"
                                 >
-                                    {{ formatNumber(ill.count) }} kasus
+                                    {{ formatNumber(ill.count) }}
+                                    kasus
                                 </span>
 
                             </div>
@@ -794,9 +963,14 @@ const getPointValue = (item) => {
 
                                 <div
                                     class="h-full rounded-full transition-all duration-500"
-                                    :class="getIllnessColor(idx)"
+                                    :class="
+                                        getIllnessColor(idx)
+                                    "
                                     :style="{
-                                        width: illnessWidth(ill.count)
+                                        width:
+                                            illnessWidth(
+                                                ill.count
+                                            )
                                     }"
                                 ></div>
 
@@ -837,7 +1011,7 @@ const getPointValue = (item) => {
 
 
             <!-- ==================================================
-                 BOTTOM SECTION
+                 BAGIAN BAWAH
             =================================================== -->
 
             <div
@@ -845,9 +1019,9 @@ const getPointValue = (item) => {
             >
 
 
-                <!-- ==========================================
-                     JADWAL
-                =========================================== -->
+                <!-- ==================================================
+                     JADWAL HARI INI
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -956,9 +1130,9 @@ const getPointValue = (item) => {
 
 
 
-                <!-- ==========================================
+                <!-- ==================================================
                      SISWA PEMANTAUAN
-                =========================================== -->
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -1097,9 +1271,9 @@ const getPointValue = (item) => {
 
 
 
-                <!-- ==========================================
+                <!-- ==================================================
                      NOTIFIKASI
-                =========================================== -->
+                =================================================== -->
 
                 <div
                     class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
@@ -1142,7 +1316,10 @@ const getPointValue = (item) => {
                                 >
 
                                     <component
-                                        :is="notif.icon ?? BellIcon"
+                                        :is="
+                                            notif.icon ??
+                                            BellIcon
+                                        "
                                         class="w-4 h-4"
                                     />
 

@@ -36,6 +36,9 @@ const props = defineProps({
 
 const search = ref('');
 const statusFilter = ref('');
+const periodeFilter = ref('');
+const tanggalMulaiFilter = ref('');
+const tanggalSelesaiFilter = ref('');
 const showFilter = ref(false);
 
 
@@ -105,7 +108,22 @@ const filteredPeriodes = computed(() => {
 
 
     // ==================================================
-    // STATUS
+    // FILTER PERIODE
+    // ==================================================
+
+    if (periodeFilter.value) {
+
+        data = data.filter(
+            (periode) =>
+                String(periode.id) ===
+                String(periodeFilter.value)
+        );
+
+    }
+
+
+    // ==================================================
+    // FILTER STATUS
     // ==================================================
 
     if (statusFilter.value) {
@@ -114,6 +132,36 @@ const filteredPeriodes = computed(() => {
             (periode) =>
                 String(periode.status ?? '').toLowerCase() ===
                 statusFilter.value.toLowerCase()
+        );
+
+    }
+
+
+    // ==================================================
+    // FILTER TANGGAL MULAI
+    // ==================================================
+
+    if (tanggalMulaiFilter.value) {
+
+        data = data.filter(
+            (periode) =>
+                periode.tanggal_mulai &&
+                periode.tanggal_mulai >= tanggalMulaiFilter.value
+        );
+
+    }
+
+
+    // ==================================================
+    // FILTER TANGGAL SELESAI
+    // ==================================================
+
+    if (tanggalSelesaiFilter.value) {
+
+        data = data.filter(
+            (periode) =>
+                periode.tanggal_selesai &&
+                periode.tanggal_selesai <= tanggalSelesaiFilter.value
         );
 
     }
@@ -132,25 +180,59 @@ const hasActiveFilter = computed(() => {
 
     return Boolean(
         search.value ||
-        statusFilter.value
+        statusFilter.value ||
+        periodeFilter.value ||
+        tanggalMulaiFilter.value ||
+        tanggalSelesaiFilter.value
     );
 
 });
 
 
 // ======================================================
-// JUMLAH FILTER
+// JUMLAH FILTER AKTIF
 // ======================================================
 
 const activeFilterCount = computed(() => {
 
     let count = 0;
 
+    if (periodeFilter.value) {
+        count++;
+    }
+
+    if (tanggalMulaiFilter.value) {
+        count++;
+    }
+
+    if (tanggalSelesaiFilter.value) {
+        count++;
+    }
+
     if (statusFilter.value) {
         count++;
     }
 
     return count;
+
+});
+
+
+// ======================================================
+// PERIODE YANG DIPILIH
+// ======================================================
+
+const selectedPeriode = computed(() => {
+
+    if (!periodeFilter.value) {
+        return null;
+    }
+
+    return (props.periodes.data ?? []).find(
+        (periode) =>
+            String(periode.id) ===
+            String(periodeFilter.value)
+    ) ?? null;
 
 });
 
@@ -163,6 +245,9 @@ const resetFilter = () => {
 
     search.value = '';
     statusFilter.value = '';
+    periodeFilter.value = '';
+    tanggalMulaiFilter.value = '';
+    tanggalSelesaiFilter.value = '';
 
 };
 
@@ -185,6 +270,47 @@ const formatDate = (date) => {
             year: 'numeric',
         }
     );
+
+};
+
+
+// ======================================================
+// FORMAT DATE INPUT
+// ======================================================
+
+const formatDateInput = (date) => {
+
+    if (!date) {
+        return '';
+    }
+
+    return String(date).substring(0, 10);
+
+};
+
+
+// ======================================================
+// PILIH PERIODE
+// ======================================================
+
+const selectPeriode = () => {
+
+    if (!selectedPeriode.value) {
+        return;
+    }
+
+    // Ketika periode dipilih,
+    // tanggal mulai dan selesai otomatis mengikuti periode tersebut.
+
+    tanggalMulaiFilter.value =
+        formatDateInput(
+            selectedPeriode.value.tanggal_mulai
+        );
+
+    tanggalSelesaiFilter.value =
+        formatDateInput(
+            selectedPeriode.value.tanggal_selesai
+        );
 
 };
 
@@ -282,22 +408,16 @@ const goToPage = (url) => {
 
             <div>
 
-                <h1
-                    class="text-2xl font-bold text-slate-800"
-                >
+                <h1 class="text-2xl font-bold text-slate-800">
                     Data Periode
                 </h1>
 
-                <p
-                    class="mt-1 text-sm text-slate-500"
-                >
+                <p class="mt-1 text-sm text-slate-500">
                     Kelola periode pemeriksaan kesehatan siswa.
                 </p>
 
             </div>
 
-
-            <!-- TAMBAH PERIODE -->
 
             <Link
                 :href="route('admin.periode.create')"
@@ -363,15 +483,11 @@ const goToPage = (url) => {
 
                 <div>
 
-                    <p
-                        class="font-bold text-rose-800"
-                    >
+                    <p class="font-bold text-rose-800">
                         Periode tidak dapat dihapus
                     </p>
 
-                    <p
-                        class="mt-0.5 text-xs text-rose-600"
-                    >
+                    <p class="mt-0.5 text-xs text-rose-600">
                         {{ flashError }}
                     </p>
 
@@ -402,7 +518,9 @@ const goToPage = (url) => {
             class="rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
 
-            <!-- SEARCH + STATUS + FILTER -->
+            <!-- ==================================================
+                 SEARCH + STATUS + FILTER BUTTON
+            ================================================== -->
 
             <div
                 class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[3fr_2fr_1fr]"
@@ -428,7 +546,7 @@ const goToPage = (url) => {
 
                 <!-- STATUS -->
 
-                <div class="w-full">
+                <div>
 
                     <select
                         v-model="statusFilter"
@@ -452,7 +570,7 @@ const goToPage = (url) => {
                 </div>
 
 
-                <!-- FILTER + RESET -->
+                <!-- FILTER BUTTON -->
 
                 <div class="flex w-full gap-2">
 
@@ -475,7 +593,6 @@ const goToPage = (url) => {
                         <span>
                             Filter
                         </span>
-
 
                         <span
                             v-if="activeFilterCount > 0"
@@ -507,7 +624,9 @@ const goToPage = (url) => {
             </div>
 
 
-            <!-- FILTER TAMBAHAN -->
+            <!-- ==================================================
+                 FILTER TAMBAHAN
+            ================================================== -->
 
             <div
                 v-if="showFilter"
@@ -515,34 +634,39 @@ const goToPage = (url) => {
             >
 
                 <div
-                    class="grid grid-cols-1 gap-4 md:grid-cols-2"
+                    class="grid grid-cols-1 gap-4 md:grid-cols-3"
                 >
 
-                    <!-- STATUS -->
+                    <!-- ==================================================
+                         PILIH PERIODE
+                    ================================================== -->
 
                     <div>
 
                         <label
                             class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                         >
-                            Status Periode
+                            Pilih Periode
                         </label>
 
                         <select
-                            v-model="statusFilter"
+                            v-model="periodeFilter"
+                            @change="selectPeriode"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         >
 
                             <option value="">
-                                Semua Status
+                                Semua Periode
                             </option>
 
-                            <option value="aktif">
-                                Aktif
-                            </option>
+                            <option
+                                v-for="periode in (periodes.data ?? [])"
+                                :key="periode.id"
+                                :value="periode.id"
+                            >
 
-                            <option value="tidak aktif">
-                                Tidak Aktif
+                                {{ periode.nama_periode }}
+
                             </option>
 
                         </select>
@@ -550,25 +674,98 @@ const goToPage = (url) => {
                     </div>
 
 
-                    <!-- INFO -->
+                    <!-- ==================================================
+                         TANGGAL MULAI
+                    ================================================== -->
 
-                    <div class="flex items-end">
+                    <div>
+
+                        <label
+                            class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                        >
+                            Tanggal Mulai
+                        </label>
+
+                        <input
+                            v-model="tanggalMulaiFilter"
+                            type="date"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        />
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TANGGAL SELESAI
+                    ================================================== -->
+
+                    <div>
+
+                        <label
+                            class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                        >
+                            Tanggal Selesai
+                        </label>
+
+                        <input
+                            v-model="tanggalSelesaiFilter"
+                            type="date"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        />
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     PERIODE TERPILIH
+                ================================================== -->
+
+                <div
+                    v-if="selectedPeriode"
+                    class="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                >
+
+                    <div class="flex items-start gap-3">
 
                         <div
-                            class="w-full rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
                         >
 
+                            <CalendarDaysIcon
+                                class="h-5 w-5 text-blue-700"
+                            />
+
+                        </div>
+
+
+                        <div>
+
                             <p
-                                class="text-xs font-bold text-blue-700"
+                                class="text-xs font-bold uppercase tracking-wide text-blue-600"
                             >
-                                Informasi Periode
+                                Periode Dipilih
                             </p>
 
                             <p
-                                class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                                class="mt-0.5 text-sm font-bold text-blue-800"
                             >
-                                Periode digunakan sebagai dasar
-                                pengelompokan pemeriksaan kesehatan siswa.
+
+                                {{ selectedPeriode.nama_periode }}
+
+                            </p>
+
+                            <p
+                                class="mt-1 text-xs text-blue-600"
+                            >
+
+                                {{ formatDate(selectedPeriode.tanggal_mulai) }}
+
+                                –
+
+                                {{ formatDate(selectedPeriode.tanggal_selesai) }}
+
                             </p>
 
                         </div>
@@ -578,7 +775,9 @@ const goToPage = (url) => {
                 </div>
 
 
-                <!-- FILTER AKTIF -->
+                <!-- ==================================================
+                     FILTER AKTIF
+                ================================================== -->
 
                 <div
                     v-if="activeFilterCount > 0"
@@ -592,13 +791,57 @@ const goToPage = (url) => {
                     </span>
 
 
+                    <!-- PERIODE -->
+
+                    <span
+                        v-if="periodeFilter"
+                        class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                    >
+
+                        Periode:
+                        {{ selectedPeriode?.nama_periode ?? '-' }}
+
+                    </span>
+
+
+                    <!-- TANGGAL MULAI -->
+
+                    <span
+                        v-if="tanggalMulaiFilter"
+                        class="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-semibold text-indigo-700"
+                    >
+
+                        Mulai:
+                        {{ formatDate(tanggalMulaiFilter) }}
+
+                    </span>
+
+
+                    <!-- TANGGAL SELESAI -->
+
+                    <span
+                        v-if="tanggalSelesaiFilter"
+                        class="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700"
+                    >
+
+                        Selesai:
+                        {{ formatDate(tanggalSelesaiFilter) }}
+
+                    </span>
+
+
+                    <!-- STATUS -->
+
                     <span
                         v-if="statusFilter"
                         :class="[
+
                             'rounded-full px-2.5 py-1 text-xs font-semibold',
+
                             statusFilter === 'aktif'
                                 ? 'bg-emerald-100 text-emerald-700'
                                 : 'bg-slate-100 text-slate-600'
+
                         ]"
                     >
 
@@ -633,18 +876,16 @@ const goToPage = (url) => {
 
                 <div>
 
-                    <h2
-                        class="text-sm font-bold text-slate-800"
-                    >
+                    <h2 class="text-sm font-bold text-slate-800">
                         Daftar Periode
                     </h2>
 
-                    <p
-                        class="mt-0.5 text-xs text-slate-400"
-                    >
+                    <p class="mt-0.5 text-xs text-slate-400">
+
                         Menampilkan
                         {{ filteredPeriodes.length }}
                         periode pada halaman ini.
+
                     </p>
 
                 </div>
@@ -656,9 +897,7 @@ const goToPage = (url) => {
                  DESKTOP TABLE
             ================================================== -->
 
-            <div
-                class="hidden overflow-x-auto lg:block"
-            >
+            <div class="hidden overflow-x-auto lg:block">
 
                 <table class="min-w-full">
 
@@ -715,9 +954,7 @@ const goToPage = (url) => {
                     </thead>
 
 
-                    <tbody
-                        class="divide-y divide-slate-100"
-                    >
+                    <tbody class="divide-y divide-slate-100">
 
                         <tr
                             v-for="(periode, index) in filteredPeriodes"
@@ -811,8 +1048,11 @@ const goToPage = (url) => {
 
                                 <span
                                     :class="[
+
                                         'inline-flex rounded-full border px-2.5 py-1 text-xs font-bold',
+
                                         getStatusBadge(periode.status)
+
                                     ]"
                                 >
 
@@ -831,9 +1071,7 @@ const goToPage = (url) => {
 
                             <!-- PEMBUAT -->
 
-                            <td
-                                class="px-5 py-4"
-                            >
+                            <td class="px-5 py-4">
 
                                 <div
                                     class="flex items-center gap-2"
@@ -894,9 +1132,7 @@ const goToPage = (url) => {
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
                                     >
 
-                                        <EyeIcon
-                                            class="h-4 w-4"
-                                        />
+                                        <EyeIcon class="h-4 w-4" />
 
                                     </Link>
 
@@ -928,9 +1164,7 @@ const goToPage = (url) => {
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
                                     >
 
-                                        <TrashIcon
-                                            class="h-4 w-4"
-                                        />
+                                        <TrashIcon class="h-4 w-4" />
 
                                     </button>
 
@@ -943,9 +1177,7 @@ const goToPage = (url) => {
 
                         <!-- EMPTY -->
 
-                        <tr
-                            v-if="filteredPeriodes.length === 0"
-                        >
+                        <tr v-if="filteredPeriodes.length === 0">
 
                             <td
                                 colspan="7"
@@ -998,9 +1230,7 @@ const goToPage = (url) => {
                  MOBILE CARD
             ================================================== -->
 
-            <div
-                class="divide-y divide-slate-100 lg:hidden"
-            >
+            <div class="divide-y divide-slate-100 lg:hidden">
 
                 <div
                     v-for="(periode, index) in filteredPeriodes"
@@ -1008,7 +1238,7 @@ const goToPage = (url) => {
                     class="p-4"
                 >
 
-                    <!-- HEADER CARD -->
+                    <!-- HEADER -->
 
                     <div
                         class="flex items-start justify-between gap-3"
@@ -1037,9 +1267,7 @@ const goToPage = (url) => {
                                     {{ periode.nama_periode }}
                                 </p>
 
-                                <p
-                                    class="text-xs text-slate-400"
-                                >
+                                <p class="text-xs text-slate-400">
                                     ID: {{ periode.id }}
                                 </p>
 
@@ -1052,8 +1280,11 @@ const goToPage = (url) => {
 
                         <span
                             :class="[
+
                                 'shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold',
+
                                 getStatusBadge(periode.status)
+
                             ]"
                         >
 
@@ -1076,8 +1307,6 @@ const goToPage = (url) => {
                         class="mt-4 grid grid-cols-2 gap-3 text-xs"
                     >
 
-                        <!-- TANGGAL MULAI -->
-
                         <div>
 
                             <p class="text-slate-400">
@@ -1092,8 +1321,6 @@ const goToPage = (url) => {
 
                         </div>
 
-
-                        <!-- TANGGAL SELESAI -->
 
                         <div>
 
@@ -1110,8 +1337,6 @@ const goToPage = (url) => {
                         </div>
 
 
-                        <!-- PEMBUAT -->
-
                         <div>
 
                             <p class="text-slate-400">
@@ -1127,8 +1352,6 @@ const goToPage = (url) => {
                         </div>
 
 
-                        <!-- STATUS -->
-
                         <div>
 
                             <p class="text-slate-400">
@@ -1137,8 +1360,11 @@ const goToPage = (url) => {
 
                             <span
                                 :class="[
+
                                     'mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold',
+
                                     getStatusBadge(periode.status)
+
                                 ]"
                             >
 
@@ -1262,25 +1488,19 @@ const goToPage = (url) => {
 
                     Menampilkan
 
-                    <span
-                        class="font-bold text-slate-700"
-                    >
+                    <span class="font-bold text-slate-700">
                         {{ periodes.from ?? 0 }}
                     </span>
 
                     –
 
-                    <span
-                        class="font-bold text-slate-700"
-                    >
+                    <span class="font-bold text-slate-700">
                         {{ periodes.to ?? 0 }}
                     </span>
 
                     dari
 
-                    <span
-                        class="font-bold text-slate-700"
-                    >
+                    <span class="font-bold text-slate-700">
                         {{ periodes.total }}
                     </span>
 
@@ -1289,9 +1509,7 @@ const goToPage = (url) => {
                 </p>
 
 
-                <div
-                    class="flex items-center gap-1"
-                >
+                <div class="flex items-center gap-1">
 
                     <!-- PREVIOUS -->
 
@@ -1302,9 +1520,7 @@ const goToPage = (url) => {
                         class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
 
-                        <ChevronLeftIcon
-                            class="h-4 w-4"
-                        />
+                        <ChevronLeftIcon class="h-4 w-4" />
 
                     </button>
 
@@ -1356,9 +1572,7 @@ const goToPage = (url) => {
                         class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
                     >
 
-                        <ChevronRightIcon
-                            class="h-4 w-4"
-                        />
+                        <ChevronRightIcon class="h-4 w-4" />
 
                     </button>
 
@@ -1373,4 +1587,3 @@ const goToPage = (url) => {
 </AdminLayout>
 
 </template>
-

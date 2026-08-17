@@ -6,13 +6,13 @@ import AdminLayout from '@/Layouts/AdminLayout.vue'
 import {
     ArrowLeftIcon,
     CalendarDaysIcon,
-    CheckCircleIcon,
     ClipboardDocumentCheckIcon,
     ClockIcon,
     PencilSquareIcon,
     UserGroupIcon,
-    UserIcon,
     HeartIcon,
+    CheckCircleIcon,
+    XCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -29,28 +29,79 @@ const props = defineProps({
 
 
 // ==================================================
-// DATA
+// DATA SISWA
 // ==================================================
 
 const siswa = computed(() => props.periode.siswa ?? [])
 
-const jumlahSiswa = computed(() => siswa.value.length)
-
-const jumlahTksi = computed(() =>
-    (props.periode.tksiBatches ?? []).length
-)
-
-const jumlahPemeriksaan = computed(() =>
-    (props.periode.pemeriksaanBerkala ?? []).length
-)
-
-const jumlahKunjungan = computed(() =>
-    (props.periode.kunjunganKlinik ?? []).length
+const jumlahSiswa = computed(() =>
+    siswa.value.length
 )
 
 
 // ==================================================
-// STATUS
+// STATISTIK PERIODE
+// ==================================================
+
+const jumlahBerkala1 = computed(() =>
+    Number(props.periode.jumlah_berkala_1 ?? 0)
+)
+
+const jumlahBerkala2 = computed(() =>
+    Number(props.periode.jumlah_berkala_2 ?? 0)
+)
+
+const jumlahTksi = computed(() =>
+    Number(props.periode.jumlah_tksi ?? 0)
+)
+
+const jumlahKunjungan = computed(() =>
+    Number(props.periode.jumlah_kunjungan ?? 0)
+)
+
+
+// ==================================================
+// PERSENTASE
+// ==================================================
+
+const persenBerkala1 = computed(() => {
+
+    if (jumlahSiswa.value === 0) {
+        return 0
+    }
+
+    return Math.round(
+        (jumlahBerkala1.value / jumlahSiswa.value) * 100
+    )
+})
+
+
+const persenBerkala2 = computed(() => {
+
+    if (jumlahSiswa.value === 0) {
+        return 0
+    }
+
+    return Math.round(
+        (jumlahBerkala2.value / jumlahSiswa.value) * 100
+    )
+})
+
+
+const persenTksi = computed(() => {
+
+    if (jumlahSiswa.value === 0) {
+        return 0
+    }
+
+    return Math.round(
+        (jumlahTksi.value / jumlahSiswa.value) * 100
+    )
+})
+
+
+// ==================================================
+// STATUS PERIODE
 // ==================================================
 
 const statusLabel = computed(() => {
@@ -93,6 +144,90 @@ const statusClass = computed(() => {
             return 'border-slate-200 bg-slate-50 text-slate-600'
     }
 })
+
+
+// ==================================================
+// STATUS PEMERIKSAAN SISWA
+// ==================================================
+
+const isSelesai = (value) => {
+    return (
+        value === true ||
+        value === 1 ||
+        value === '1' ||
+        value === 'selesai' ||
+        value === 'Selesai' ||
+        value === 'sudah' ||
+        value === 'Sudah'
+    )
+}
+
+
+// ==================================================
+// STATUS BERKALA 1
+// ==================================================
+
+const statusBerkala1 = (item) => {
+
+    if (
+        isSelesai(item.berkala_1?.selesai) ||
+        isSelesai(item.berkala_1_selesai) ||
+        isSelesai(item.b1_selesai)
+    ) {
+        return 'Selesai'
+    }
+
+    return 'Belum Tes'
+}
+
+
+// ==================================================
+// STATUS BERKALA 2
+// ==================================================
+
+const statusBerkala2 = (item) => {
+
+    if (
+        isSelesai(item.berkala_2?.selesai) ||
+        isSelesai(item.berkala_2_selesai) ||
+        isSelesai(item.b2_selesai)
+    ) {
+        return 'Selesai'
+    }
+
+    return 'Belum Tes'
+}
+
+
+// ==================================================
+// STATUS TKSI
+// ==================================================
+
+const statusTksi = (item) => {
+
+    if (
+        isSelesai(item.tksi?.selesai) ||
+        isSelesai(item.tksi_selesai)
+    ) {
+        return 'Selesai'
+    }
+
+    return 'Belum Tes'
+}
+
+
+// ==================================================
+// JUMLAH KUNJUNGAN SISWA
+// ==================================================
+
+const jumlahKunjunganSiswa = (item) => {
+
+    return Number(
+        item.jumlah_kunjungan ??
+        item.kunjungan_klinik ??
+        0
+    )
+}
 
 
 // ==================================================
@@ -149,9 +284,11 @@ const breadcrumbs = [
         :title="`Detail ${periode.nama_periode}`"
     />
 
+
     <AdminLayout :breadcrumbs="breadcrumbs">
 
         <div class="space-y-6">
+
 
             <!-- ==================================================
                  HEADER
@@ -197,8 +334,6 @@ const breadcrumbs = [
                 </div>
 
 
-                <!-- EDIT -->
-
                 <Link
                     :href="route(
                         'admin.periode.edit',
@@ -216,6 +351,7 @@ const breadcrumbs = [
                 </Link>
 
             </div>
+
 
 
             <!-- ==================================================
@@ -322,13 +458,11 @@ const breadcrumbs = [
                 </div>
 
 
-                <!-- INFO -->
+                <!-- INFO PERIODE -->
 
                 <div
                     class="grid grid-cols-1 border-t border-slate-100 sm:grid-cols-3"
                 >
-
-                    <!-- MULAI -->
 
                     <div
                         class="border-b border-slate-100 px-5 py-4 sm:border-b-0 sm:border-r"
@@ -349,8 +483,6 @@ const breadcrumbs = [
                     </div>
 
 
-                    <!-- SELESAI -->
-
                     <div
                         class="border-b border-slate-100 px-5 py-4 sm:border-b-0 sm:border-r"
                     >
@@ -369,8 +501,6 @@ const breadcrumbs = [
 
                     </div>
 
-
-                    <!-- DURASI -->
 
                     <div
                         class="px-5 py-4"
@@ -397,12 +527,13 @@ const breadcrumbs = [
             </div>
 
 
+
             <!-- ==================================================
                  SUMMARY
             ================================================== -->
 
             <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+                class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5"
             >
 
                 <!-- SISWA -->
@@ -429,6 +560,12 @@ const breadcrumbs = [
                                 {{ jumlahSiswa }}
                             </p>
 
+                            <p
+                                class="mt-1 text-[11px] text-slate-400"
+                            >
+                                Siswa dalam periode
+                            </p>
+
                         </div>
 
 
@@ -447,7 +584,7 @@ const breadcrumbs = [
                 </div>
 
 
-                <!-- PEMERIKSAAN -->
+                <!-- B1 -->
 
                 <div
                     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -462,13 +599,27 @@ const breadcrumbs = [
                             <p
                                 class="text-xs font-semibold text-slate-400"
                             >
-                                Pemeriksaan
+                                Berkala 1
                             </p>
 
                             <p
                                 class="mt-1 text-2xl font-bold text-slate-800"
                             >
-                                {{ jumlahPemeriksaan }}
+
+                                {{ jumlahBerkala1 }}
+
+                                <span
+                                    class="text-sm font-medium text-slate-400"
+                                >
+                                    / {{ jumlahSiswa }}
+                                </span>
+
+                            </p>
+
+                            <p
+                                class="mt-1 text-[11px] text-slate-400"
+                            >
+                                {{ persenBerkala1 }}% siswa selesai
                             </p>
 
                         </div>
@@ -480,6 +631,118 @@ const breadcrumbs = [
 
                             <HeartIcon
                                 class="h-5 w-5 text-emerald-700"
+                            />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- B2 -->
+
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                >
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <p
+                                class="text-xs font-semibold text-slate-400"
+                            >
+                                Berkala 2
+                            </p>
+
+                            <p
+                                class="mt-1 text-2xl font-bold text-slate-800"
+                            >
+
+                                {{ jumlahBerkala2 }}
+
+                                <span
+                                    class="text-sm font-medium text-slate-400"
+                                >
+                                    / {{ jumlahSiswa }}
+                                </span>
+
+                            </p>
+
+                            <p
+                                class="mt-1 text-[11px] text-slate-400"
+                            >
+                                {{ persenBerkala2 }}% siswa selesai
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100"
+                        >
+
+                            <HeartIcon
+                                class="h-5 w-5 text-indigo-700"
+                            />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TKSI -->
+
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                >
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <p
+                                class="text-xs font-semibold text-slate-400"
+                            >
+                                TKSI
+                            </p>
+
+                            <p
+                                class="mt-1 text-2xl font-bold text-slate-800"
+                            >
+
+                                {{ jumlahTksi }}
+
+                                <span
+                                    class="text-sm font-medium text-slate-400"
+                                >
+                                    / {{ jumlahSiswa }}
+                                </span>
+
+                            </p>
+
+                            <p
+                                class="mt-1 text-[11px] text-slate-400"
+                            >
+                                {{ persenTksi }}% siswa selesai
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100"
+                        >
+
+                            <ClockIcon
+                                class="h-5 w-5 text-amber-700"
                             />
 
                         </div>
@@ -513,6 +776,12 @@ const breadcrumbs = [
                                 {{ jumlahKunjungan }}
                             </p>
 
+                            <p
+                                class="mt-1 text-[11px] text-slate-400"
+                            >
+                                Total kunjungan periode
+                            </p>
+
                         </div>
 
 
@@ -525,6 +794,159 @@ const breadcrumbs = [
                             />
 
                         </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================================
+                 PROGRESS
+            ================================================== -->
+
+            <div
+                class="grid grid-cols-1 gap-4 md:grid-cols-3"
+            >
+
+                <!-- B1 -->
+
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                >
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <h3
+                                class="text-sm font-bold text-slate-800"
+                            >
+                                Pemeriksaan Berkala 1
+                            </h3>
+
+                            <p
+                                class="mt-1 text-xs text-slate-400"
+                            >
+                                Siswa yang sudah menjalani pemeriksaan
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="text-sm font-bold text-emerald-700"
+                        >
+                            {{ persenBerkala1 }}%
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"
+                    >
+
+                        <div
+                            class="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                            :style="{
+                                width: `${persenBerkala1}%`
+                            }"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        class="mt-3 flex justify-between text-xs"
+                    >
+
+                        <span
+                            class="text-slate-400"
+                        >
+                            Selesai
+                        </span>
+
+                        <span
+                            class="font-semibold text-slate-700"
+                        >
+                            {{ jumlahBerkala1 }} / {{ jumlahSiswa }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- B2 -->
+
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                >
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <h3
+                                class="text-sm font-bold text-slate-800"
+                            >
+                                Pemeriksaan Berkala 2
+                            </h3>
+
+                            <p
+                                class="mt-1 text-xs text-slate-400"
+                            >
+                                Siswa yang sudah menjalani pemeriksaan
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="text-sm font-bold text-indigo-700"
+                        >
+                            {{ persenBerkala2 }}%
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"
+                    >
+
+                        <div
+                            class="h-full rounded-full bg-indigo-500 transition-all duration-500"
+                            :style="{
+                                width: `${persenBerkala2}%`
+                            }"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        class="mt-3 flex justify-between text-xs"
+                    >
+
+                        <span
+                            class="text-slate-400"
+                        >
+                            Selesai
+                        </span>
+
+                        <span
+                            class="font-semibold text-slate-700"
+                        >
+                            {{ jumlahBerkala2 }} / {{ jumlahSiswa }}
+                        </span>
 
                     </div>
 
@@ -543,36 +965,66 @@ const breadcrumbs = [
 
                         <div>
 
-                            <p
-                                class="text-xs font-semibold text-slate-400"
+                            <h3
+                                class="text-sm font-bold text-slate-800"
                             >
-                                Batch TKSI
-                            </p>
+                                Tes Kebugaran (TKSI)
+                            </h3>
 
                             <p
-                                class="mt-1 text-2xl font-bold text-slate-800"
+                                class="mt-1 text-xs text-slate-400"
                             >
-                                {{ jumlahTksi }}
+                                Siswa yang sudah menyelesaikan tes
                             </p>
 
                         </div>
 
+
+                        <span
+                            class="text-sm font-bold text-amber-700"
+                        >
+                            {{ persenTksi }}%
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"
+                    >
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100"
+                            class="h-full rounded-full bg-amber-500 transition-all duration-500"
+                            :style="{
+                                width: `${persenTksi}%`
+                            }"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        class="mt-3 flex justify-between text-xs"
+                    >
+
+                        <span
+                            class="text-slate-400"
                         >
+                            Selesai
+                        </span>
 
-                            <ClockIcon
-                                class="h-5 w-5 text-amber-700"
-                            />
-
-                        </div>
+                        <span
+                            class="font-semibold text-slate-700"
+                        >
+                            {{ jumlahTksi }} / {{ jumlahSiswa }}
+                        </span>
 
                     </div>
 
                 </div>
 
             </div>
+
 
 
             <!-- ==================================================
@@ -609,13 +1061,13 @@ const breadcrumbs = [
                             <h2
                                 class="text-sm font-bold text-slate-800"
                             >
-                                Siswa Peserta Periode
+                                Status Pemeriksaan Siswa
                             </h2>
 
                             <p
                                 class="mt-0.5 text-xs text-slate-400"
                             >
-                                Daftar siswa yang mengikuti periode ini.
+                                Status pemeriksaan setiap siswa dalam periode ini.
                             </p>
 
                         </div>
@@ -626,15 +1078,16 @@ const breadcrumbs = [
                     <span
                         class="w-fit rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
                     >
-
                         {{ jumlahSiswa }} siswa
-
                     </span>
 
                 </div>
 
 
-                <!-- DESKTOP -->
+
+                <!-- ==================================================
+                     DESKTOP TABLE
+                ================================================== -->
 
                 <div
                     v-if="siswa.length > 0"
@@ -642,7 +1095,7 @@ const breadcrumbs = [
                 >
 
                     <table
-                        class="min-w-full"
+                        class="min-w-[1100px] w-full"
                     >
 
                         <thead>
@@ -681,6 +1134,30 @@ const breadcrumbs = [
                                     Jurusan
                                 </th>
 
+                                <th
+                                    class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
+                                >
+                                    Berkala 1
+                                </th>
+
+                                <th
+                                    class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
+                                >
+                                    Berkala 2
+                                </th>
+
+                                <th
+                                    class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
+                                >
+                                    Kunjungan Klinik
+                                </th>
+
+                                <th
+                                    class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
+                                >
+                                    TKSI
+                                </th>
+
                             </tr>
 
                         </thead>
@@ -696,12 +1173,16 @@ const breadcrumbs = [
                                 class="transition hover:bg-slate-50"
                             >
 
+                                <!-- NO -->
+
                                 <td
                                     class="px-5 py-4 text-sm text-slate-500"
                                 >
                                     {{ index + 1 }}
                                 </td>
 
+
+                                <!-- SISWA -->
 
                                 <td
                                     class="px-5 py-4"
@@ -736,12 +1217,16 @@ const breadcrumbs = [
                                 </td>
 
 
+                                <!-- NISN -->
+
                                 <td
                                     class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
                                 >
                                     {{ item.nisn || '-' }}
                                 </td>
 
+
+                                <!-- KELAS -->
 
                                 <td
                                     class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
@@ -750,13 +1235,157 @@ const breadcrumbs = [
                                 </td>
 
 
+                                <!-- JURUSAN -->
+
                                 <td
                                     class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
                                 >
+
                                     {{
                                         item.kelas?.jurusan?.nama_jurusan
                                         || '-'
                                     }}
+
+                                </td>
+
+
+                                <!-- ==================================================
+                                     BERKALA 1
+                                ================================================== -->
+
+                                <td
+                                    class="px-5 py-4 text-center"
+                                >
+
+                                    <span
+                                        v-if="statusBerkala1(item) === 'Selesai'"
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700"
+                                    >
+
+                                        <CheckCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Selesai
+
+                                    </span>
+
+
+                                    <span
+                                        v-else
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-500"
+                                    >
+
+                                        <XCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Belum Tes
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ==================================================
+                                     BERKALA 2
+                                ================================================== -->
+
+                                <td
+                                    class="px-5 py-4 text-center"
+                                >
+
+                                    <span
+                                        v-if="statusBerkala2(item) === 'Selesai'"
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700"
+                                    >
+
+                                        <CheckCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Selesai
+
+                                    </span>
+
+
+                                    <span
+                                        v-else
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-500"
+                                    >
+
+                                        <XCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Belum Tes
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ==================================================
+                                     KUNJUNGAN KLINIK
+                                ================================================== -->
+
+                                <td
+                                    class="px-5 py-4 text-center"
+                                >
+
+                                    <span
+                                        v-if="jumlahKunjunganSiswa(item) > 0"
+                                        class="inline-flex items-center rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700"
+                                    >
+                                        {{ jumlahKunjunganSiswa(item) }} kali
+                                    </span>
+
+
+                                    <span
+                                        v-else
+                                        class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-500"
+                                    >
+                                        0 kali
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ==================================================
+                                     TKSI
+                                ================================================== -->
+
+                                <td
+                                    class="px-5 py-4 text-center"
+                                >
+
+                                    <span
+                                        v-if="statusTksi(item) === 'Selesai'"
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700"
+                                    >
+
+                                        <CheckCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Selesai
+
+                                    </span>
+
+
+                                    <span
+                                        v-else
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-500"
+                                    >
+
+                                        <XCircleIcon
+                                            class="h-4 w-4"
+                                        />
+
+                                        Belum Tes
+
+                                    </span>
+
                                 </td>
 
                             </tr>
@@ -768,7 +1397,10 @@ const breadcrumbs = [
                 </div>
 
 
-                <!-- MOBILE -->
+
+                <!-- ==================================================
+                     MOBILE
+                ================================================== -->
 
                 <div
                     v-if="siswa.length > 0"
@@ -780,6 +1412,8 @@ const breadcrumbs = [
                         :key="item.id"
                         class="p-4"
                     >
+
+                        <!-- SISWA -->
 
                         <div
                             class="flex items-center gap-3"
@@ -799,7 +1433,9 @@ const breadcrumbs = [
                             </div>
 
 
-                            <div class="min-w-0 flex-1">
+                            <div
+                                class="min-w-0 flex-1"
+                            >
 
                                 <p
                                     class="truncate text-sm font-bold text-slate-800"
@@ -811,6 +1447,17 @@ const breadcrumbs = [
                                     class="mt-0.5 text-xs text-slate-400"
                                 >
                                     NISN: {{ item.nisn || '-' }}
+                                </p>
+
+                                <p
+                                    class="mt-0.5 text-xs text-slate-400"
+                                >
+                                    {{ item.kelas?.nama_kelas || '-' }}
+                                    ·
+                                    {{
+                                        item.kelas?.jurusan?.nama_jurusan
+                                        || '-'
+                                    }}
                                 </p>
 
                             </div>
@@ -825,43 +1472,155 @@ const breadcrumbs = [
                         </div>
 
 
+
+                        <!-- STATUS -->
+
                         <div
-                            class="mt-3 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3"
+                            class="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3"
                         >
+
+                            <!-- B1 -->
 
                             <div>
 
                                 <p
                                     class="text-[11px] text-slate-400"
                                 >
-                                    Kelas
+                                    Berkala 1
+                                </p>
+
+
+                                <span
+                                    v-if="statusBerkala1(item) === 'Selesai'"
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700"
+                                >
+
+                                    <CheckCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Selesai
+
+                                </span>
+
+
+                                <span
+                                    v-else
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-500"
+                                >
+
+                                    <XCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Belum Tes
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- B2 -->
+
+                            <div>
+
+                                <p
+                                    class="text-[11px] text-slate-400"
+                                >
+                                    Berkala 2
+                                </p>
+
+
+                                <span
+                                    v-if="statusBerkala2(item) === 'Selesai'"
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-[11px] font-bold text-indigo-700"
+                                >
+
+                                    <CheckCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Selesai
+
+                                </span>
+
+
+                                <span
+                                    v-else
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-500"
+                                >
+
+                                    <XCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Belum Tes
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- KUNJUNGAN -->
+
+                            <div>
+
+                                <p
+                                    class="text-[11px] text-slate-400"
+                                >
+                                    Kunjungan Klinik
                                 </p>
 
                                 <p
-                                    class="mt-0.5 text-xs font-semibold text-slate-700"
+                                    class="mt-1 text-xs font-bold text-rose-600"
                                 >
-                                    {{ item.kelas?.nama_kelas || '-' }}
+
+                                    {{ jumlahKunjunganSiswa(item) }}
+
+                                    kunjungan
+
                                 </p>
 
                             </div>
 
 
+                            <!-- TKSI -->
+
                             <div>
 
                                 <p
                                     class="text-[11px] text-slate-400"
                                 >
-                                    Jurusan
+                                    TKSI
                                 </p>
 
-                                <p
-                                    class="mt-0.5 text-xs font-semibold text-slate-700"
+
+                                <span
+                                    v-if="statusTksi(item) === 'Selesai'"
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700"
                                 >
-                                    {{
-                                        item.kelas?.jurusan?.nama_jurusan
-                                        || '-'
-                                    }}
-                                </p>
+
+                                    <CheckCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Selesai
+
+                                </span>
+
+
+                                <span
+                                    v-else
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-500"
+                                >
+
+                                    <XCircleIcon
+                                        class="h-3.5 w-3.5"
+                                    />
+
+                                    Belum Tes
+
+                                </span>
 
                             </div>
 
@@ -872,7 +1631,10 @@ const breadcrumbs = [
                 </div>
 
 
-                <!-- EMPTY -->
+
+                <!-- ==================================================
+                     EMPTY
+                ================================================== -->
 
                 <div
                     v-if="siswa.length === 0"
@@ -906,143 +1668,6 @@ const breadcrumbs = [
                 </div>
 
             </div>
-
-
-            <!-- ==================================================
-                 RELATED DATA
-            ================================================== -->
-
-            <div
-                class="grid grid-cols-1 gap-4 md:grid-cols-3"
-            >
-
-                <!-- PEMERIKSAAN -->
-
-                <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-
-                    <div
-                        class="flex items-center gap-3"
-                    >
-
-                        <div
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100"
-                        >
-
-                            <HeartIcon
-                                class="h-5 w-5 text-emerald-700"
-                            />
-
-                        </div>
-
-
-                        <div>
-
-                            <h3
-                                class="text-sm font-bold text-slate-800"
-                            >
-                                Pemeriksaan Berkala
-                            </h3>
-
-                            <p
-                                class="text-xs text-slate-400"
-                            >
-                                {{ jumlahPemeriksaan }} data
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- KUNJUNGAN -->
-
-                <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-
-                    <div
-                        class="flex items-center gap-3"
-                    >
-
-                        <div
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100"
-                        >
-
-                            <ClipboardDocumentCheckIcon
-                                class="h-5 w-5 text-rose-600"
-                            />
-
-                        </div>
-
-
-                        <div>
-
-                            <h3
-                                class="text-sm font-bold text-slate-800"
-                            >
-                                Kunjungan Klinik
-                            </h3>
-
-                            <p
-                                class="text-xs text-slate-400"
-                            >
-                                {{ jumlahKunjungan }} data
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TKSI -->
-
-                <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-
-                    <div
-                        class="flex items-center gap-3"
-                    >
-
-                        <div
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100"
-                        >
-
-                            <ClockIcon
-                                class="h-5 w-5 text-amber-700"
-                            />
-
-                        </div>
-
-
-                        <div>
-
-                            <h3
-                                class="text-sm font-bold text-slate-800"
-                            >
-                                Batch TKSI
-                            </h3>
-
-                            <p
-                                class="text-xs text-slate-400"
-                            >
-                                {{ jumlahTksi }} data
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
 
         </div>
 

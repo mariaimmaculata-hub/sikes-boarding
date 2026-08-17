@@ -1159,10 +1159,17 @@ const clearFlash = () => {
                             >
 
                                 <p
-                                    class="text-sm text-slate-600"
-                                >
-                                    {{ truncate(item.diagnosis) }}
-                                </p>
+    class="text-sm font-medium text-slate-700"
+>
+    {{ item.penyakit?.nama_penyakit ?? '-' }}
+</p>
+
+<p
+    v-if="item.penyakit?.kategori"
+    class="mt-0.5 text-xs text-slate-400"
+>
+    {{ item.penyakit.kategori }}
+</p>
 
                             </td>
 
@@ -1502,9 +1509,9 @@ const clearFlash = () => {
                     <!-- DIAGNOSIS -->
 
                     <div
-                        v-if="item.diagnosis"
-                        class="mt-3 rounded-xl bg-blue-50 p-3"
-                    >
+    v-if="item.penyakit"
+    class="mt-3 rounded-xl bg-blue-50 p-3"
+>
 
                         <p
                             class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
@@ -1513,11 +1520,18 @@ const clearFlash = () => {
                         </p>
 
 
-                        <p
-                            class="mt-1 text-xs leading-5 text-blue-800"
-                        >
-                            {{ item.diagnosis }}
-                        </p>
+                       <p
+    class="mt-1 text-xs font-semibold text-blue-800"
+>
+    {{ item.penyakit?.nama_penyakit ?? '-' }}
+</p>
+
+<p
+    v-if="item.penyakit?.kategori"
+    class="mt-1 text-[11px] text-blue-600"
+>
+    {{ item.penyakit.kategori }}
+</p>
 
                     </div>
 
@@ -1937,10 +1951,10 @@ const clearFlash = () => {
                                 <p
                                     class="whitespace-pre-line text-sm leading-6 text-slate-700"
                                 >
-                                    {{
-                                        selectedKunjungan.diagnosis
-                                        || '-'
-                                    }}
+                                   {{ 
+    selectedKunjungan.penyakit?.nama_penyakit
+    || '-'
+}}
                                 </p>
 
                             </div>

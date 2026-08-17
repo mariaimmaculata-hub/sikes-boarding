@@ -8,6 +8,7 @@ use App\Models\KunjunganObat;
 use App\Models\Obat;
 use App\Models\Periode;
 use App\Models\Siswa;
+use App\Models\Penyakit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -26,6 +27,7 @@ class KunjunganController extends Controller
                 'siswa.kelas.jurusan',
                 'pemeriksa',
                 'periode',
+                'penyakit',
                 'kunjunganObat.obat',
             ]);
 
@@ -84,17 +86,42 @@ class KunjunganController extends Controller
                     'tanggal' =>
                         $item->tanggal_kunjungan?->format('Y-m-d'),
 
-                    'keluhan' => $item->keluhan,
+                    'keluhan' =>
+                        $item->keluhan,
 
-                    'pemeriksaan' => $item->pemeriksaan,
+                    'pemeriksaan' =>
+                        $item->pemeriksaan,
 
-                    'diagnosis' => $item->diagnosis,
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PENYAKIT / DIAGNOSIS
+                    |--------------------------------------------------------------------------
+                    */
+                   'penyakit' => $item->penyakit
+    ? [
+        'id' => $item->penyakit->id,
+        'nama_penyakit' => $item->penyakit->nama_penyakit,
+        'kategori' => $item->penyakit->kategori,
+        'keterangan' => $item->penyakit->keterangan,
+    ]
+    : null,
 
-                    'tindakan' => $item->tindakan,
+// Diagnosis yang ditampilkan di tabel
+'diagnosis' => $item->penyakit?->nama_penyakit,
 
-                    'status' => $item->status,
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TINDAKAN
+                    |--------------------------------------------------------------------------
+                    */
+                    'tindakan' =>
+                        $item->tindakan,
 
-                    'catatan' => $item->catatan,
+                    'status' =>
+                        $item->status,
+
+                    'catatan' =>
+                        $item->catatan,
 
                     /*
                     |--------------------------------------------------------------------------
@@ -103,27 +130,36 @@ class KunjunganController extends Controller
                     */
                     'siswa' => $item->siswa
                         ? [
-                            'id' => $item->siswa->id,
-                            'nisn' => $item->siswa->nisn,
-                            'nama' => $item->siswa->nama,
+                            'id' =>
+                                $item->siswa->id,
 
-                            'kelas' => $item->siswa->kelas
-                                ? [
-                                    'id' => $item->siswa->kelas->id,
-                                    'nama_kelas' =>
-                                        $item->siswa->kelas->nama_kelas,
-                                ]
-                                : null,
+                            'nisn' =>
+                                $item->siswa->nisn,
 
-                            'jurusan' => $item->siswa->kelas?->jurusan
-                                ? [
-                                    'id' =>
-                                        $item->siswa->kelas->jurusan->id,
+                            'nama' =>
+                                $item->siswa->nama,
 
-                                    'nama_jurusan' =>
-                                        $item->siswa->kelas->jurusan->nama_jurusan,
-                                ]
-                                : null,
+                            'kelas' =>
+                                $item->siswa->kelas
+                                    ? [
+                                        'id' =>
+                                            $item->siswa->kelas->id,
+
+                                        'nama_kelas' =>
+                                            $item->siswa->kelas->nama_kelas,
+                                    ]
+                                    : null,
+
+                            'jurusan' =>
+                                $item->siswa->kelas?->jurusan
+                                    ? [
+                                        'id' =>
+                                            $item->siswa->kelas->jurusan->id,
+
+                                        'nama_jurusan' =>
+                                            $item->siswa->kelas->jurusan->nama_jurusan,
+                                    ]
+                                    : null,
                         ]
                         : null,
 
@@ -134,8 +170,11 @@ class KunjunganController extends Controller
                     */
                     'pemeriksa' => $item->pemeriksa
                         ? [
-                            'id' => $item->pemeriksa->id,
-                            'name' => $item->pemeriksa->name,
+                            'id' =>
+                                $item->pemeriksa->id,
+
+                            'name' =>
+                                $item->pemeriksa->name,
                         ]
                         : null,
 
@@ -146,7 +185,9 @@ class KunjunganController extends Controller
                     */
                     'periode' => $item->periode
                         ? [
-                            'id' => $item->periode->id,
+                            'id' =>
+                                $item->periode->id,
+
                             'nama_periode' =>
                                 $item->periode->nama_periode,
                         ]
@@ -157,25 +198,29 @@ class KunjunganController extends Controller
                     | OBAT
                     |--------------------------------------------------------------------------
                     */
-                    'obat' => $item->kunjunganObat->map(function ($itemObat) {
-                        return [
-                            'id' => $itemObat->id,
+                    'obat' => $item->kunjunganObat
+                        ->map(function ($itemObat) {
+                            return [
+                                'id' =>
+                                    $itemObat->id,
 
-                            'obat_id' => $itemObat->obat_id,
+                                'obat_id' =>
+                                    $itemObat->obat_id,
 
-                            'nama_obat' =>
-                                $itemObat->obat?->nama_obat,
+                                'nama_obat' =>
+                                    $itemObat->obat?->nama_obat,
 
-                            'satuan' =>
-                                $itemObat->obat?->satuan,
+                                'satuan' =>
+                                    $itemObat->obat?->satuan,
 
-                            'jumlah' =>
-                                $itemObat->jumlah,
+                                'jumlah' =>
+                                    $itemObat->jumlah,
 
-                            'keterangan' =>
-                                $itemObat->keterangan,
-                        ];
-                    })->values(),
+                                'keterangan' =>
+                                    $itemObat->keterangan,
+                            ];
+                        })
+                        ->values(),
                 ];
             });
 
@@ -189,7 +234,8 @@ class KunjunganController extends Controller
             ->get()
             ->map(function ($periode) {
                 return [
-                    'id' => $periode->id,
+                    'id' =>
+                        $periode->id,
 
                     'nama_periode' =>
                         $periode->nama_periode,
@@ -233,9 +279,11 @@ class KunjunganController extends Controller
         return Inertia::render(
             'Klinik/Kesehatan/Kunjungan/Index',
             [
-                'kunjungan' => $kunjungan,
+                'kunjungan' =>
+                    $kunjungan,
 
-                'periodeList' => $periodeList,
+                'periodeList' =>
+                    $periodeList,
 
                 'statistik' => [
                     'total' =>
@@ -265,7 +313,7 @@ class KunjunganController extends Controller
 
     /**
      * ============================================================
-     * FORM INPUT
+     * FORM INPUT KUNJUNGAN
      * ============================================================
      */
     public function create()
@@ -327,6 +375,31 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | DATA PENYAKIT
+        |--------------------------------------------------------------------------
+        */
+        $penyakitList = Penyakit::query()
+            ->orderBy('nama_penyakit')
+            ->get()
+            ->map(function ($penyakit) {
+                return [
+                    'id' =>
+                        $penyakit->id,
+
+                    'nama_penyakit' =>
+                        $penyakit->nama_penyakit,
+
+                    'kategori' =>
+                        $penyakit->kategori,
+
+                    'keterangan' =>
+                        $penyakit->keterangan,
+                ];
+            })
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
         | DATA OBAT
         |--------------------------------------------------------------------------
         */
@@ -351,7 +424,8 @@ class KunjunganController extends Controller
                     'keterangan' =>
                         $obat->keterangan,
                 ];
-            });
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -373,6 +447,9 @@ class KunjunganController extends Controller
 
                 'siswas' =>
                     $siswas,
+
+                'penyakitList' =>
+                    $penyakitList,
 
                 'obatList' =>
                     $obatList,
@@ -419,9 +496,14 @@ class KunjunganController extends Controller
                 'string',
             ],
 
-            'diagnosis' => [
+            /*
+            |--------------------------------------------------------------------------
+            | PENYAKIT
+            |--------------------------------------------------------------------------
+            */
+            'penyakit_id' => [
                 'nullable',
-                'string',
+                'exists:penyakits,id',
             ],
 
             'tindakan' => [
@@ -475,10 +557,10 @@ class KunjunganController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | PEMERIKSA OTOMATIS
+            | SIMPAN KUNJUNGAN
             |--------------------------------------------------------------------------
             */
-            $validatedKunjungan = [
+            $kunjungan = KunjunganKlinik::create([
                 'periode_id' =>
                     $validated['periode_id'],
 
@@ -494,8 +576,8 @@ class KunjunganController extends Controller
                 'pemeriksaan' =>
                     $validated['pemeriksaan'] ?? null,
 
-                'diagnosis' =>
-                    $validated['diagnosis'] ?? null,
+                'penyakit_id' =>
+                    $validated['penyakit_id'] ?? null,
 
                 'tindakan' =>
                     $validated['tindakan'] ?? null,
@@ -508,53 +590,33 @@ class KunjunganController extends Controller
 
                 'pemeriksa_id' =>
                     auth()->id(),
-            ];
+            ]);
 
             /*
             |--------------------------------------------------------------------------
-            | SIMPAN KUNJUNGAN
-            |--------------------------------------------------------------------------
-            */
-            $kunjungan =
-                KunjunganKlinik::create(
-                    $validatedKunjungan
-                );
-
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN OBAT
+            | SIMPAN OBAT DAN KURANGI STOK
             |--------------------------------------------------------------------------
             */
             if (!empty($validated['obat'])) {
 
-                foreach (
-                    $validated['obat']
-                    as $item
-                ) {
+                foreach ($validated['obat'] as $item) {
 
                     /*
                     |--------------------------------------------------------------------------
-                    | AMBIL OBAT
+                    | LOCK STOK OBAT
                     |--------------------------------------------------------------------------
                     */
                     $obat = Obat::lockForUpdate()
-                        ->findOrFail(
-                            $item['obat_id']
-                        );
+                        ->findOrFail($item['obat_id']);
 
                     /*
                     |--------------------------------------------------------------------------
                     | CEK STOK
                     |--------------------------------------------------------------------------
                     */
-                    if (
-                        $obat->stok
-                        <
-                        $item['jumlah']
-                    ) {
-
+                    if ($obat->stok < $item['jumlah']) {
                         throw new \Exception(
-                            "Stok obat {$obat->nama_obat} tidak mencukupi."
+                            "Stok obat {$obat->nama_obat} tidak mencukupi. Stok tersedia: {$obat->stok}."
                         );
                     }
 
@@ -574,8 +636,7 @@ class KunjunganController extends Controller
                             $item['jumlah'],
 
                         'keterangan' =>
-                            $item['keterangan']
-                            ?? null,
+                            $item['keterangan'] ?? null,
                     ]);
 
                     /*
@@ -593,7 +654,7 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | KEMBALI KE INDEX
+        | REDIRECT
         |--------------------------------------------------------------------------
         */
         return redirect()
@@ -619,6 +680,7 @@ class KunjunganController extends Controller
             'siswa.kelas.jurusan',
             'pemeriksa',
             'periode',
+            'penyakit',
             'kunjunganObat.obat',
         ]);
 
@@ -626,7 +688,6 @@ class KunjunganController extends Controller
             'Klinik/Kesehatan/Kunjungan/Show',
             [
                 'kunjungan' => [
-
                     'id' =>
                         $kunjungan->id,
 
@@ -640,8 +701,27 @@ class KunjunganController extends Controller
                     'pemeriksaan' =>
                         $kunjungan->pemeriksaan,
 
-                    'diagnosis' =>
-                        $kunjungan->diagnosis,
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PENYAKIT
+                    |--------------------------------------------------------------------------
+                    */
+                    'penyakit' =>
+                        $kunjungan->penyakit
+                            ? [
+                                'id' =>
+                                    $kunjungan->penyakit->id,
+
+                                'nama_penyakit' =>
+                                    $kunjungan->penyakit->nama_penyakit,
+
+                                'kategori' =>
+                                    $kunjungan->penyakit->kategori,
+
+                                'keterangan' =>
+                                    $kunjungan->penyakit->keterangan,
+                            ]
+                            : null,
 
                     'tindakan' =>
                         $kunjungan->tindakan,
@@ -770,6 +850,7 @@ class KunjunganController extends Controller
     ) {
         $kunjungan->load([
             'siswa.kelas.jurusan',
+            'penyakit',
             'kunjunganObat.obat',
         ]);
 
@@ -784,7 +865,6 @@ class KunjunganController extends Controller
             ->orderBy('nama')
             ->get()
             ->map(function ($siswa) {
-
                 return [
                     'id' =>
                         $siswa->id,
@@ -821,6 +901,31 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | DATA PENYAKIT
+        |--------------------------------------------------------------------------
+        */
+        $penyakitList = Penyakit::query()
+            ->orderBy('nama_penyakit')
+            ->get()
+            ->map(function ($penyakit) {
+                return [
+                    'id' =>
+                        $penyakit->id,
+
+                    'nama_penyakit' =>
+                        $penyakit->nama_penyakit,
+
+                    'kategori' =>
+                        $penyakit->kategori,
+
+                    'keterangan' =>
+                        $penyakit->keterangan,
+                ];
+            })
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
         | DATA OBAT
         |--------------------------------------------------------------------------
         */
@@ -828,7 +933,6 @@ class KunjunganController extends Controller
             ->orderBy('nama_obat')
             ->get()
             ->map(function ($obat) {
-
                 return [
                     'id' =>
                         $obat->id,
@@ -845,7 +949,8 @@ class KunjunganController extends Controller
                     'keterangan' =>
                         $obat->keterangan,
                 ];
-            });
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -860,6 +965,9 @@ class KunjunganController extends Controller
 
                 'siswas' =>
                     $siswas,
+
+                'penyakitList' =>
+                    $penyakitList,
 
                 'obatList' =>
                     $obatList,
@@ -908,9 +1016,9 @@ class KunjunganController extends Controller
                 'string',
             ],
 
-            'diagnosis' => [
+            'penyakit_id' => [
                 'nullable',
-                'string',
+                'exists:penyakits,id',
             ],
 
             'tindakan' => [
@@ -931,14 +1039,41 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | UPDATE
+        | UPDATE DATA KUNJUNGAN
         |--------------------------------------------------------------------------
         */
-        $kunjungan->update($validated);
+        $kunjungan->update([
+            'periode_id' =>
+                $validated['periode_id'],
+
+            'siswa_id' =>
+                $validated['siswa_id'],
+
+            'tanggal_kunjungan' =>
+                $validated['tanggal_kunjungan'],
+
+            'keluhan' =>
+                $validated['keluhan'] ?? null,
+
+            'pemeriksaan' =>
+                $validated['pemeriksaan'] ?? null,
+
+            'penyakit_id' =>
+                $validated['penyakit_id'] ?? null,
+
+            'tindakan' =>
+                $validated['tindakan'] ?? null,
+
+            'status' =>
+                $validated['status'],
+
+            'catatan' =>
+                $validated['catatan'] ?? null,
+        ]);
 
         /*
         |--------------------------------------------------------------------------
-        | REDIRECT INDEX
+        | REDIRECT
         |--------------------------------------------------------------------------
         */
         return redirect()
@@ -960,7 +1095,41 @@ class KunjunganController extends Controller
     public function destroy(
         KunjunganKlinik $kunjungan
     ) {
-        $kunjungan->delete();
+        /*
+        |--------------------------------------------------------------------------
+        | KEMBALIKAN STOK OBAT SEBELUM KUNJUNGAN DIHAPUS
+        |--------------------------------------------------------------------------
+        */
+        DB::transaction(function () use ($kunjungan) {
+
+            $kunjungan->load('kunjunganObat');
+
+            foreach ($kunjungan->kunjunganObat as $item) {
+                $obat = Obat::lockForUpdate()
+                    ->find($item->obat_id);
+
+                if ($obat) {
+                    $obat->increment(
+                        'stok',
+                        $item->jumlah
+                    );
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS DETAIL OBAT
+            |--------------------------------------------------------------------------
+            */
+            $kunjungan->kunjunganObat()->delete();
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS KUNJUNGAN
+            |--------------------------------------------------------------------------
+            */
+            $kunjungan->delete();
+        });
 
         return redirect()
             ->route(
@@ -968,7 +1137,7 @@ class KunjunganController extends Controller
             )
             ->with(
                 'success',
-                'Data kunjungan berhasil dihapus.'
+                'Data kunjungan berhasil dihapus dan stok obat dikembalikan.'
             );
     }
 }

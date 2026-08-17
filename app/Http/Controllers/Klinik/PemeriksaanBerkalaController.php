@@ -17,16 +17,25 @@ class PemeriksaanBerkalaController extends Controller
      * DAFTAR PEMERIKSAAN BERKALA
      * ============================================================
      *
-     * Menampilkan semua siswa pada periode aktif.
+     * Aturan:
      *
-     * Setiap siswa memiliki:
-     * - Berkala 1
-     * - Berkala 2
+     * BULAN 1 - 3
+     * - Berkala 1 : OPEN
+     * - Berkala 2 : CLOSED
+     *
+     * BULAN 4 - 6
+     * - Berkala 1 : VIEW ONLY
+     * - Berkala 2 : OPEN
      */
     public function index()
     {
         $periodeAktif = Periode::where('status', 'aktif')->first();
 
+        /**
+         * ----------------------------------------------------------
+         * Belum ada periode aktif
+         * ----------------------------------------------------------
+         */
         if (!$periodeAktif) {
             return Inertia::render(
                 'Klinik/Kesehatan/PemeriksaanBerkala/Index',
@@ -37,11 +46,24 @@ class PemeriksaanBerkalaController extends Controller
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil siswa dari periode aktif
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * ----------------------------------------------------------
+         * Ambil status akses pemeriksaan
+         * ----------------------------------------------------------
+         */
+        $fasePemeriksaan = $periodeAktif->fasePemeriksaan();
+
+        $aksesBerkala1 = $periodeAktif
+            ->statusAksesPemeriksaan('berkala_1');
+
+        $aksesBerkala2 = $periodeAktif
+            ->statusAksesPemeriksaan('berkala_2');
+
+        /**
+         * ----------------------------------------------------------
+         * Ambil siswa pada periode aktif
+         * ----------------------------------------------------------
+         */
         $siswas = $periodeAktif->siswa()
             ->with([
                 'kelas.jurusan',
@@ -52,45 +74,33 @@ class PemeriksaanBerkalaController extends Controller
                         ->whereIn('jenis_pemeriksaan', [
                             'berkala_1',
                             'berkala_2',
-                            'Berkala 1',
-                            'Berkala 2',
                         ])
+                        ->with('pemeriksa')
                         ->latest('tanggal_pemeriksaan');
                 },
             ])
             ->orderBy('nama')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Bentuk data agar Vue lebih mudah
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * ----------------------------------------------------------
+         * Bentuk data untuk Vue
+         * ----------------------------------------------------------
+         */
         $siswas = $siswas->map(function ($siswa) {
 
             $berkala1 = $siswa->pemeriksaanBerkala
-                ->first(function ($pemeriksaan) {
-                    return in_array(
-                        strtolower(trim($pemeriksaan->jenis_pemeriksaan)),
-                        [
-                            'berkala_1',
-                            'berkala 1',
-                        ]
-                    );
-                });
+                ->firstWhere('jenis_pemeriksaan', 'berkala_1');
 
             $berkala2 = $siswa->pemeriksaanBerkala
-                ->first(function ($pemeriksaan) {
-                    return in_array(
-                        strtolower(trim($pemeriksaan->jenis_pemeriksaan)),
-                        [
-                            'berkala_2',
-                            'berkala 2',
-                        ]
-                    );
-                });
+                ->firstWhere('jenis_pemeriksaan', 'berkala_2');
 
             return [
+
+                // ==================================================
+                // DATA SISWA
+                // ==================================================
+
                 'id' => $siswa->id,
                 'nisn' => $siswa->nisn,
                 'nama' => $siswa->nama,
@@ -101,52 +111,255 @@ class PemeriksaanBerkalaController extends Controller
                 'jenis_kelamin' => $siswa->jenis_kelamin,
                 'agama' => $siswa->agama,
 
+                // ==================================================
+                // KELAS
+                // ==================================================
+
                 'kelas' => $siswa->kelas
                     ? [
                         'id' => $siswa->kelas->id,
                         'nama_kelas' => $siswa->kelas->nama_kelas,
+                        'tingkat' => $siswa->kelas->tingkat ?? null,
+
                         'jurusan' => $siswa->kelas->jurusan
                             ? [
                                 'id' => $siswa->kelas->jurusan->id,
-                                'nama_jurusan' => $siswa->kelas->jurusan->nama_jurusan,
+                                'nama_jurusan' =>
+                                    $siswa->kelas->jurusan->nama_jurusan,
                             ]
                             : null,
                     ]
                     : null,
 
+                // ==================================================
+                // BERKALA 1
+                // ==================================================
+
                 'berkala_1' => $berkala1
                     ? [
+
                         'id' => $berkala1->id,
-                        'jenis_pemeriksaan' => $berkala1->jenis_pemeriksaan,
-                        'tanggal_pemeriksaan' => $berkala1->tanggal_pemeriksaan,
-                        'status' => $berkala1->status,
-                        'hasil' => $berkala1->hasil,
-                        'catatan' => $berkala1->catatan,
+
+                        'jenis_pemeriksaan' =>
+                            $berkala1->jenis_pemeriksaan,
+
+                        'tanggal_pemeriksaan' =>
+                            $berkala1->tanggal_pemeriksaan,
+
+                        'status' =>
+                            $berkala1->status,
+
+                        // ------------------------------
+                        // ANTROPOMETRI
+                        // ------------------------------
+
+                        'berat_badan' =>
+                            $berkala1->berat_badan,
+
+                        'tinggi_badan' =>
+                            $berkala1->tinggi_badan,
+
+                        'imt' =>
+                            $berkala1->imt,
+
+                        // ------------------------------
+                        // TANDA VITAL
+                        // ------------------------------
+
+                        'tekanan_darah' =>
+                            $berkala1->tekanan_darah,
+
+                        'denyut_nadi' =>
+                            $berkala1->denyut_nadi,
+
+                        'suhu_tubuh' =>
+                            $berkala1->suhu_tubuh,
+
+                        // ------------------------------
+                        // PEMERIKSAAN FISIK
+                        // ------------------------------
+
+                        'mata' =>
+                            $berkala1->mata,
+
+                        'telinga' =>
+                            $berkala1->telinga,
+
+                        'gigi_mulut' =>
+                            $berkala1->gigi_mulut,
+
+                        'kondisi_umum' =>
+                            $berkala1->kondisi_umum,
+
+                        // ------------------------------
+                        // HASIL PEMERIKSAAN
+                        // ------------------------------
+
+                        'keluhan' =>
+                            $berkala1->keluhan,
+
+                        'hasil_pemeriksaan' =>
+                            $berkala1->hasil_pemeriksaan,
+
+                        'rekomendasi' =>
+                            $berkala1->rekomendasi,
+
+                        // ------------------------------
+                        // CATATAN
+                        // ------------------------------
+
+                        'catatan' =>
+                            $berkala1->catatan,
+
+                        'pemeriksa' => $berkala1->pemeriksa
+    ? [
+        'id' => $berkala1->pemeriksa->id,
+        'name' => $berkala1->pemeriksa->name,
+    ]
+    : null,
                     ]
                     : null,
 
+                // ==================================================
+                // BERKALA 2
+                // ==================================================
+
                 'berkala_2' => $berkala2
                     ? [
+
                         'id' => $berkala2->id,
-                        'jenis_pemeriksaan' => $berkala2->jenis_pemeriksaan,
-                        'tanggal_pemeriksaan' => $berkala2->tanggal_pemeriksaan,
-                        'status' => $berkala2->status,
-                        'hasil' => $berkala2->hasil,
-                        'catatan' => $berkala2->catatan,
+
+                        'jenis_pemeriksaan' =>
+                            $berkala2->jenis_pemeriksaan,
+
+                        'tanggal_pemeriksaan' =>
+                            $berkala2->tanggal_pemeriksaan,
+
+                        'status' =>
+                            $berkala2->status,
+
+                        // ------------------------------
+                        // ANTROPOMETRI
+                        // ------------------------------
+
+                        'berat_badan' =>
+                            $berkala2->berat_badan,
+
+                        'tinggi_badan' =>
+                            $berkala2->tinggi_badan,
+
+                        'imt' =>
+                            $berkala2->imt,
+
+                        // ------------------------------
+                        // TANDA VITAL
+                        // ------------------------------
+
+                        'tekanan_darah' =>
+                            $berkala2->tekanan_darah,
+
+                        'denyut_nadi' =>
+                            $berkala2->denyut_nadi,
+
+                        'suhu_tubuh' =>
+                            $berkala2->suhu_tubuh,
+
+                        // ------------------------------
+                        // PEMERIKSAAN FISIK
+                        // ------------------------------
+
+                        'mata' =>
+                            $berkala2->mata,
+
+                        'telinga' =>
+                            $berkala2->telinga,
+
+                        'gigi_mulut' =>
+                            $berkala2->gigi_mulut,
+
+                        'kondisi_umum' =>
+                            $berkala2->kondisi_umum,
+
+                        // ------------------------------
+                        // HASIL PEMERIKSAAN
+                        // ------------------------------
+
+                        'keluhan' =>
+                            $berkala2->keluhan,
+
+                        'hasil_pemeriksaan' =>
+                            $berkala2->hasil_pemeriksaan,
+
+                        'rekomendasi' =>
+                            $berkala2->rekomendasi,
+
+                        // ------------------------------
+                        // CATATAN
+                        // ------------------------------
+
+                        'catatan' =>
+                            $berkala2->catatan,
+
+                            'pemeriksa' => $berkala2->pemeriksa
+    ? [
+        'id' => $berkala2->pemeriksa->id,
+        'name' => $berkala2->pemeriksa->name,
+    ]
+    : null,
                     ]
+
                     : null,
             ];
         });
 
+        /**
+         * ----------------------------------------------------------
+         * Kirim data ke Vue
+         * ----------------------------------------------------------
+         */
         return Inertia::render(
             'Klinik/Kesehatan/PemeriksaanBerkala/Index',
             [
                 'periode' => [
-                    'id' => $periodeAktif->id,
-                    'nama_periode' => $periodeAktif->nama_periode,
-                    'tanggal_mulai' => $periodeAktif->tanggal_mulai,
-                    'tanggal_selesai' => $periodeAktif->tanggal_selesai,
-                    'status' => $periodeAktif->status,
+                    'id' =>
+                        $periodeAktif->id,
+
+                    'nama_periode' =>
+                        $periodeAktif->nama_periode,
+
+                    'tanggal_mulai' =>
+                        $periodeAktif->tanggal_mulai,
+
+                    'tanggal_selesai' =>
+                        $periodeAktif->tanggal_selesai,
+
+                    'status' =>
+                        $periodeAktif->status,
+
+                    /**
+                     * Fase:
+                     *
+                     * 1 = bulan 1-3
+                     * 2 = bulan 4-6
+                     */
+                    'fase_pemeriksaan' =>
+                        $fasePemeriksaan,
+
+                    /**
+                     * Akses Berkala 1
+                     */
+                    'berkala_1' => [
+                        'akses' =>
+                            $aksesBerkala1,
+                    ],
+
+                    /**
+                     * Akses Berkala 2
+                     */
+                    'berkala_2' => [
+                        'akses' =>
+                            $aksesBerkala2,
+                    ],
                 ],
 
                 'siswas' => $siswas,
@@ -159,23 +372,24 @@ class PemeriksaanBerkalaController extends Controller
      * ============================================================
      * FORM TAMBAH PEMERIKSAAN
      * ============================================================
-     *
-     * URL:
-     * /klinik/kesehatan/pemeriksaan-berkala/{siswa}/{jenis}
-     *
-     * Contoh:
-     * /klinik/kesehatan/pemeriksaan-berkala/12/berkala_1
      */
-    public function create(Siswa $siswa, string $jenis)
-    {
+    public function create(
+        Siswa $siswa,
+        string $jenis
+    ) {
+        /**
+         * ----------------------------------------------------------
+         * Ambil periode aktif
+         * ----------------------------------------------------------
+         */
         $periodeAktif = Periode::where('status', 'aktif')
             ->firstOrFail();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pastikan siswa memang terdaftar pada periode aktif
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * ----------------------------------------------------------
+         * Pastikan siswa terdaftar pada periode aktif
+         * ----------------------------------------------------------
+         */
         $siswa = $periodeAktif->siswa()
             ->where('siswas.id', $siswa->id)
             ->with([
@@ -183,40 +397,84 @@ class PemeriksaanBerkalaController extends Controller
             ])
             ->firstOrFail();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Normalisasi jenis pemeriksaan
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * ----------------------------------------------------------
+         * Normalisasi jenis
+         * ----------------------------------------------------------
+         */
         $jenis = $this->normalizeJenis($jenis);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Cek apakah pemeriksaan sudah pernah dibuat
-        |--------------------------------------------------------------------------
-        */
+        /**
+         * ----------------------------------------------------------
+         * Cek akses
+         * ----------------------------------------------------------
+         */
+        $akses = $periodeAktif
+            ->statusAksesPemeriksaan($jenis);
+
+        if ($akses !== 'open') {
+
+            abort(
+                403,
+                $jenis === 'berkala_1'
+                    ? 'Berkala 1 sudah tidak dapat diisi.'
+                    : 'Berkala 2 belum dibuka.'
+            );
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Cek pemeriksaan yang sudah ada
+         * ----------------------------------------------------------
+         */
         $pemeriksaan = PemeriksaanBerkala::where(
             'periode_id',
             $periodeAktif->id
         )
-            ->where('siswa_id', $siswa->id)
-            ->where('jenis_pemeriksaan', $jenis)
+            ->where(
+                'siswa_id',
+                $siswa->id
+            )
+            ->where(
+                'jenis_pemeriksaan',
+                $jenis
+            )
             ->latest()
             ->first();
 
+        /**
+         * ----------------------------------------------------------
+         * Kirim ke Vue
+         * ----------------------------------------------------------
+         */
         return Inertia::render(
             'Klinik/Kesehatan/PemeriksaanBerkala/Create',
             [
-                'siswa' => $siswa,
+                'siswa' =>
+                    $siswa,
 
                 'periode' => [
-                    'id' => $periodeAktif->id,
-                    'nama_periode' => $periodeAktif->nama_periode,
+                    'id' =>
+                        $periodeAktif->id,
+
+                    'nama_periode' =>
+                        $periodeAktif->nama_periode,
+
+                    'tanggal_mulai' =>
+                        $periodeAktif->tanggal_mulai,
+
+                    'tanggal_selesai' =>
+                        $periodeAktif->tanggal_selesai,
+
+                    'fase_pemeriksaan' =>
+                        $periodeAktif->fasePemeriksaan(),
                 ],
 
-                'jenis' => $jenis,
+                'jenis' =>
+                    $jenis,
 
-                'pemeriksaan' => $pemeriksaan,
+                'pemeriksaan' =>
+                    $pemeriksaan,
             ]
         );
     }
@@ -228,145 +486,561 @@ class PemeriksaanBerkalaController extends Controller
      * ============================================================
      */
     public function store(
-    Request $request,
-    Siswa $siswa,
-    string $jenis
-) {
-    $periodeAktif = Periode::where('status', 'aktif')
-        ->firstOrFail();
+        Request $request,
+        Siswa $siswa,
+        string $jenis
+    ) {
+        /**
+         * ----------------------------------------------------------
+         * Periode aktif
+         * ----------------------------------------------------------
+         */
+        $periodeAktif = Periode::where(
+            'status',
+            'aktif'
+        )->firstOrFail();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Pastikan siswa ada pada periode aktif
-    |--------------------------------------------------------------------------
-    */
-    $siswa = $periodeAktif->siswa()
-        ->where('siswas.id', $siswa->id)
-        ->firstOrFail();
+        /**
+         * ----------------------------------------------------------
+         * Pastikan siswa ada pada periode aktif
+         * ----------------------------------------------------------
+         */
+        $siswa = $periodeAktif->siswa()
+            ->where(
+                'siswas.id',
+                $siswa->id
+            )
+            ->firstOrFail();
 
-    $jenis = $this->normalizeJenis($jenis);
+        /**
+         * ----------------------------------------------------------
+         * Normalisasi jenis
+         * ----------------------------------------------------------
+         */
+        $jenis = $this->normalizeJenis($jenis);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validasi
-    |--------------------------------------------------------------------------
-    */
-    $validated = $request->validate([
+        /**
+         * ----------------------------------------------------------
+         * Cek akses
+         * ----------------------------------------------------------
+         */
+        $akses = $periodeAktif
+            ->statusAksesPemeriksaan($jenis);
 
-        // IDENTITAS
-        'tanggal_pemeriksaan' => [
-            'required',
-            'date',
-        ],
+        if ($akses !== 'open') {
 
-        // ANTROPOMETRI
-        'berat_badan' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
+            abort(
+                403,
+                $jenis === 'berkala_1'
+                    ? 'Berkala 1 sudah tidak dapat diisi.'
+                    : 'Berkala 2 belum dibuka.'
+            );
+        }
 
-        'tinggi_badan' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
+        /**
+         * ----------------------------------------------------------
+         * Validasi
+         * ----------------------------------------------------------
+         */
+        $validated = $request->validate([
 
-        'imt' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            'max:999',
-        ],
+            // IDENTITAS
+            'tanggal_pemeriksaan' => [
+                'required',
+                'date',
+            ],
 
-        // TANDA VITAL
-        'tekanan_darah' => [
-            'nullable',
-            'string',
-            'max:20',
-        ],
+            // ANTROPOMETRI
+            'berat_badan' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
 
-        'denyut_nadi' => [
-            'nullable',
-            'integer',
-            'min:0',
-        ],
+            'tinggi_badan' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
 
-        'suhu_tubuh' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
+            'imt' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:999',
+            ],
 
-        // PEMERIKSAAN FISIK
-        'mata' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
+            // TANDA VITAL
+            'tekanan_darah' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
 
-        'telinga' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
+            'denyut_nadi' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
 
-        'gigi_mulut' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
+            'suhu_tubuh' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
 
-        'kondisi_umum' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
+            // PEMERIKSAAN FISIK
+            'mata' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
 
-        // HASIL
-        'keluhan' => [
-            'nullable',
-            'string',
-        ],
+            'telinga' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
 
-        'hasil_pemeriksaan' => [
-            'nullable',
-            'string',
-        ],
+            'gigi_mulut' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
 
-        'rekomendasi' => [
-            'nullable',
-            'string',
-        ],
+            'kondisi_umum' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
 
-        // STATUS
-        'status' => [
-            'required',
-            'in:belum,selesai',
-        ],
+            // HASIL
+            'keluhan' => [
+                'nullable',
+                'string',
+            ],
 
-        'catatan' => [
-            'nullable',
-            'string',
-        ],
-    ]);
+            'hasil_pemeriksaan' => [
+                'nullable',
+                'string',
+            ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Simpan / Update
-    |--------------------------------------------------------------------------
-    */
-    PemeriksaanBerkala::updateOrCreate(
-        [
-            'periode_id' => $periodeAktif->id,
-            'siswa_id' => $siswa->id,
-            'jenis_pemeriksaan' => $jenis,
-        ],
-        [
+            'rekomendasi' => [
+                'nullable',
+                'string',
+            ],
+
+            // STATUS
+            'status' => [
+                'required',
+                'in:belum,selesai',
+            ],
+
+            'catatan' => [
+                'nullable',
+                'string',
+            ],
+        ]);
+
+        /**
+         * ----------------------------------------------------------
+         * Simpan / Update
+         * ----------------------------------------------------------
+         */
+        PemeriksaanBerkala::updateOrCreate(
+            [
+                'periode_id' =>
+                    $periodeAktif->id,
+
+                'siswa_id' =>
+                    $siswa->id,
+
+                'jenis_pemeriksaan' =>
+                    $jenis,
+            ],
+            [
+
+                'tanggal_pemeriksaan' =>
+                    $validated['tanggal_pemeriksaan'],
+
+                // ANTROPOMETRI
+
+                'berat_badan' =>
+                    $validated['berat_badan'] ?? null,
+
+                'tinggi_badan' =>
+                    $validated['tinggi_badan'] ?? null,
+
+                'imt' =>
+                    $validated['imt'] ?? null,
+
+                // TANDA VITAL
+
+                'tekanan_darah' =>
+                    $validated['tekanan_darah'] ?? null,
+
+                'denyut_nadi' =>
+                    $validated['denyut_nadi'] ?? null,
+
+                'suhu_tubuh' =>
+                    $validated['suhu_tubuh'] ?? null,
+
+                // PEMERIKSAAN FISIK
+
+                'mata' =>
+                    $validated['mata'] ?? null,
+
+                'telinga' =>
+                    $validated['telinga'] ?? null,
+
+                'gigi_mulut' =>
+                    $validated['gigi_mulut'] ?? null,
+
+                'kondisi_umum' =>
+                    $validated['kondisi_umum'] ?? null,
+
+                // HASIL
+
+                'keluhan' =>
+                    $validated['keluhan'] ?? null,
+
+                'hasil_pemeriksaan' =>
+                    $validated['hasil_pemeriksaan'] ?? null,
+
+                'rekomendasi' =>
+                    $validated['rekomendasi'] ?? null,
+
+                // STATUS
+
+                'status' =>
+                    $validated['status'],
+
+                'catatan' =>
+                    $validated['catatan'] ?? null,
+
+                // PEMERIKSA
+
+                'pemeriksa_id' =>
+                    Auth::id(),
+            ]
+        );
+
+        /**
+         * ----------------------------------------------------------
+         * Redirect
+         * ----------------------------------------------------------
+         */
+        return redirect()
+            ->route(
+                'klinik.kesehatan.pemeriksaan.index'
+            )
+            ->with(
+                'success',
+                'Pemeriksaan ' .
+                $this->labelJenis($jenis) .
+                ' berhasil disimpan.'
+            );
+    }
+
+
+    /**
+     * ============================================================
+     * DETAIL PEMERIKSAAN
+     * ============================================================
+     */
+    public function show(
+        PemeriksaanBerkala $pemeriksaanBerkala
+    ) {
+        /**
+         * ----------------------------------------------------------
+         * Periode aktif
+         * ----------------------------------------------------------
+         */
+        $periodeAktif = Periode::where(
+            'status',
+            'aktif'
+        )->firstOrFail();
+
+        /**
+         * ----------------------------------------------------------
+         * Pastikan pemeriksaan milik periode aktif
+         * ----------------------------------------------------------
+         */
+        if (
+            $pemeriksaanBerkala->periode_id !==
+            $periodeAktif->id
+        ) {
+            abort(404);
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Load relasi
+         * ----------------------------------------------------------
+         */
+        $pemeriksaanBerkala->load([
+            'siswa.kelas.jurusan',
+            'periode',
+            'pemeriksa',
+        ]);
+
+        /**
+         * ----------------------------------------------------------
+         * Kirim ke Vue
+         * ----------------------------------------------------------
+         */
+        return Inertia::render(
+            'Klinik/Kesehatan/PemeriksaanBerkala/Show',
+            [
+                'pemeriksaan' =>
+                    $pemeriksaanBerkala,
+            ]
+        );
+    }
+
+
+    /**
+     * ============================================================
+     * FORM EDIT
+     * ============================================================
+     */
+    public function edit(
+        PemeriksaanBerkala $pemeriksaanBerkala
+    ) {
+        /**
+         * ----------------------------------------------------------
+         * Periode aktif
+         * ----------------------------------------------------------
+         */
+        $periodeAktif = Periode::where(
+            'status',
+            'aktif'
+        )->firstOrFail();
+
+        /**
+         * ----------------------------------------------------------
+         * Pastikan pemeriksaan milik periode aktif
+         * ----------------------------------------------------------
+         */
+        if (
+            $pemeriksaanBerkala->periode_id !==
+            $periodeAktif->id
+        ) {
+            abort(404);
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Cek akses edit
+         * ----------------------------------------------------------
+         */
+        $akses = $periodeAktif
+            ->statusAksesPemeriksaan(
+                $pemeriksaanBerkala->jenis_pemeriksaan
+            );
+
+        if ($akses !== 'open') {
+
+            abort(
+                403,
+                'Pemeriksaan ' .
+                $this->labelJenis(
+                    $pemeriksaanBerkala->jenis_pemeriksaan
+                ) .
+                ' sudah tidak dapat diedit.'
+            );
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Load relasi
+         * ----------------------------------------------------------
+         */
+        $pemeriksaanBerkala->load([
+            'siswa.kelas.jurusan',
+            'periode',
+            'pemeriksa',
+        ]);
+
+        return Inertia::render(
+            'Klinik/Kesehatan/PemeriksaanBerkala/Edit',
+            [
+                'pemeriksaan' =>
+                    $pemeriksaanBerkala,
+            ]
+        );
+    }
+
+
+    /**
+     * ============================================================
+     * UPDATE PEMERIKSAAN
+     * ============================================================
+     */
+    public function update(
+        Request $request,
+        PemeriksaanBerkala $pemeriksaanBerkala
+    ) {
+        /**
+         * ----------------------------------------------------------
+         * Periode aktif
+         * ----------------------------------------------------------
+         */
+        $periodeAktif = Periode::where(
+            'status',
+            'aktif'
+        )->firstOrFail();
+
+        /**
+         * ----------------------------------------------------------
+         * Pastikan pemeriksaan milik periode aktif
+         * ----------------------------------------------------------
+         */
+        if (
+            $pemeriksaanBerkala->periode_id !==
+            $periodeAktif->id
+        ) {
+            abort(404);
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Cek akses update
+         * ----------------------------------------------------------
+         */
+        $akses = $periodeAktif
+            ->statusAksesPemeriksaan(
+                $pemeriksaanBerkala->jenis_pemeriksaan
+            );
+
+        if ($akses !== 'open') {
+
+            abort(
+                403,
+                'Pemeriksaan ' .
+                $this->labelJenis(
+                    $pemeriksaanBerkala->jenis_pemeriksaan
+                ) .
+                ' sudah tidak dapat diperbarui.'
+            );
+        }
+
+        /**
+         * ----------------------------------------------------------
+         * Validasi
+         * ----------------------------------------------------------
+         */
+        $validated = $request->validate([
+
+            // IDENTITAS
+            'tanggal_pemeriksaan' => [
+                'required',
+                'date',
+            ],
+
+            // ANTROPOMETRI
+            'berat_badan' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'tinggi_badan' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            'imt' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            // TANDA VITAL
+            'tekanan_darah' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+
+            'denyut_nadi' => [
+                'nullable',
+                'integer',
+                'min:0',
+            ],
+
+            'suhu_tubuh' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
+            // PEMERIKSAAN FISIK
+            'mata' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'telinga' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'gigi_mulut' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kondisi_umum' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            // HASIL
+            'keluhan' => [
+                'nullable',
+                'string',
+            ],
+
+            'hasil_pemeriksaan' => [
+                'nullable',
+                'string',
+            ],
+
+            'rekomendasi' => [
+                'nullable',
+                'string',
+            ],
+
+            // STATUS
+            'status' => [
+                'required',
+                'in:belum,selesai',
+            ],
+
+            'catatan' => [
+                'nullable',
+                'string',
+            ],
+        ]);
+
+        /**
+         * ----------------------------------------------------------
+         * Update
+         * ----------------------------------------------------------
+         */
+        $pemeriksaanBerkala->update([
+
             'tanggal_pemeriksaan' =>
                 $validated['tanggal_pemeriksaan'],
 
             // ANTROPOMETRI
+
             'berat_badan' =>
                 $validated['berat_badan'] ?? null,
 
@@ -377,6 +1051,7 @@ class PemeriksaanBerkalaController extends Controller
                 $validated['imt'] ?? null,
 
             // TANDA VITAL
+
             'tekanan_darah' =>
                 $validated['tekanan_darah'] ?? null,
 
@@ -387,6 +1062,7 @@ class PemeriksaanBerkalaController extends Controller
                 $validated['suhu_tubuh'] ?? null,
 
             // PEMERIKSAAN FISIK
+
             'mata' =>
                 $validated['mata'] ?? null,
 
@@ -400,6 +1076,7 @@ class PemeriksaanBerkalaController extends Controller
                 $validated['kondisi_umum'] ?? null,
 
             // HASIL
+
             'keluhan' =>
                 $validated['keluhan'] ?? null,
 
@@ -410,6 +1087,7 @@ class PemeriksaanBerkalaController extends Controller
                 $validated['rekomendasi'] ?? null,
 
             // STATUS
+
             'status' =>
                 $validated['status'],
 
@@ -417,309 +1095,56 @@ class PemeriksaanBerkalaController extends Controller
                 $validated['catatan'] ?? null,
 
             // PEMERIKSA
+
             'pemeriksa_id' =>
                 Auth::id(),
-        ]
-    );
-
-    return redirect()
-        ->route('klinik.kesehatan.pemeriksaan.index')
-        ->with(
-            'success',
-            'Pemeriksaan ' .
-            $this->labelJenis($jenis) .
-            ' berhasil disimpan.'
-        );
-}
-
-    /**
-     * ============================================================
-     * DETAIL PEMERIKSAAN
-     * ============================================================
-     */
-    public function show(PemeriksaanBerkala $pemeriksaanBerkala)
-    {
-        $periodeAktif = Periode::where('status', 'aktif')
-            ->firstOrFail();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pastikan pemeriksaan milik periode aktif
-        |--------------------------------------------------------------------------
-        */
-        if (
-            $pemeriksaanBerkala->periode_id !== $periodeAktif->id
-        ) {
-            abort(404);
-        }
-
-        $pemeriksaanBerkala->load([
-            'siswa.kelas.jurusan',
-            'periode',
-            'pemeriksa',
         ]);
 
-        return Inertia::render(
-            'Klinik/Kesehatan/PemeriksaanBerkala/Show',
-            [
-                'pemeriksaan' => $pemeriksaanBerkala,
-            ]
-        );
+        return redirect()
+            ->route(
+                'klinik.kesehatan.pemeriksaan.show',
+                $pemeriksaanBerkala
+            )
+            ->with(
+                'success',
+                'Data pemeriksaan berhasil diperbarui.'
+            );
     }
 
-
-    /**
-     * ============================================================
-     * FORM EDIT
-     * ============================================================
-     */
-    public function edit(PemeriksaanBerkala $pemeriksaanBerkala)
-    {
-        $periodeAktif = Periode::where('status', 'aktif')
-            ->firstOrFail();
-
-        if (
-            $pemeriksaanBerkala->periode_id !== $periodeAktif->id
-        ) {
-            abort(404);
-        }
-
-        $pemeriksaanBerkala->load([
-            'siswa.kelas.jurusan',
-            'periode',
-        ]);
-
-        return Inertia::render(
-            'Klinik/Kesehatan/PemeriksaanBerkala/Edit',
-            [
-                'pemeriksaan' => $pemeriksaanBerkala,
-            ]
-        );
-    }
-
-
-    /**
-     * ============================================================
-     * UPDATE PEMERIKSAAN
-     * ============================================================
-     */
-    public function update(
-    Request $request,
-    PemeriksaanBerkala $pemeriksaanBerkala
-) {
-    $periodeAktif = Periode::where('status', 'aktif')
-        ->firstOrFail();
-
-    if (
-        $pemeriksaanBerkala->periode_id !==
-        $periodeAktif->id
-    ) {
-        abort(404);
-    }
-
-    $validated = $request->validate([
-
-        // IDENTITAS
-        'tanggal_pemeriksaan' => [
-            'required',
-            'date',
-        ],
-
-        // ANTROPOMETRI
-        'berat_badan' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
-
-        'tinggi_badan' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
-
-        'imt' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
-
-        // TANDA VITAL
-        'tekanan_darah' => [
-            'nullable',
-            'string',
-            'max:20',
-        ],
-
-        'denyut_nadi' => [
-            'nullable',
-            'integer',
-            'min:0',
-        ],
-
-        'suhu_tubuh' => [
-            'nullable',
-            'numeric',
-            'min:0',
-        ],
-
-        // PEMERIKSAAN FISIK
-        'mata' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
-
-        'telinga' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
-
-        'gigi_mulut' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
-
-        'kondisi_umum' => [
-            'nullable',
-            'string',
-            'max:50',
-        ],
-
-        // HASIL
-        'keluhan' => [
-            'nullable',
-            'string',
-        ],
-
-        'hasil_pemeriksaan' => [
-            'nullable',
-            'string',
-        ],
-
-        'rekomendasi' => [
-            'nullable',
-            'string',
-        ],
-
-        // STATUS
-        'status' => [
-            'required',
-            'in:belum,selesai',
-        ],
-
-        'catatan' => [
-            'nullable',
-            'string',
-        ],
-    ]);
-
-    $pemeriksaanBerkala->update([
-
-        'tanggal_pemeriksaan' =>
-            $validated['tanggal_pemeriksaan'],
-
-        // ANTROPOMETRI
-        'berat_badan' =>
-            $validated['berat_badan'] ?? null,
-
-        'tinggi_badan' =>
-            $validated['tinggi_badan'] ?? null,
-
-        'imt' =>
-            $validated['imt'] ?? null,
-
-        // TANDA VITAL
-        'tekanan_darah' =>
-            $validated['tekanan_darah'] ?? null,
-
-        'denyut_nadi' =>
-            $validated['denyut_nadi'] ?? null,
-
-        'suhu_tubuh' =>
-            $validated['suhu_tubuh'] ?? null,
-
-        // PEMERIKSAAN FISIK
-        'mata' =>
-            $validated['mata'] ?? null,
-
-        'telinga' =>
-            $validated['telinga'] ?? null,
-
-        'gigi_mulut' =>
-            $validated['gigi_mulut'] ?? null,
-
-        'kondisi_umum' =>
-            $validated['kondisi_umum'] ?? null,
-
-        // HASIL
-        'keluhan' =>
-            $validated['keluhan'] ?? null,
-
-        'hasil_pemeriksaan' =>
-            $validated['hasil_pemeriksaan'] ?? null,
-
-        'rekomendasi' =>
-            $validated['rekomendasi'] ?? null,
-
-        // STATUS
-        'status' =>
-            $validated['status'],
-
-        'catatan' =>
-            $validated['catatan'] ?? null,
-
-        // PEMERIKSA
-        'pemeriksa_id' =>
-            Auth::id(),
-    ]);
-
-    return redirect()
-        ->route(
-            'klinik.kesehatan.pemeriksaan.show',
-            $pemeriksaanBerkala
-        )
-        ->with(
-            'success',
-            'Data pemeriksaan berhasil diperbarui.'
-        );
-}
 
     /**
      * ============================================================
      * NORMALISASI JENIS
      * ============================================================
-     *
-     * Semua variasi:
-     * berkala1
-     * berkala_1
-     * Berkala 1
-     *
-     * akan disimpan sebagai:
-     * berkala_1
      */
-    private function normalizeJenis(string $jenis): string
-{
-    $jenis = strtolower(trim($jenis));
+    private function normalizeJenis(
+        string $jenis
+    ): string {
 
-    return match ($jenis) {
-        '1',
-        'berkala1',
-        'berkala-1',
-        'berkala 1',
-        'berkala_1' => 'berkala_1',
+        $jenis = strtolower(
+            trim($jenis)
+        );
 
-        '2',
-        'berkala2',
-        'berkala-2',
-        'berkala 2',
-        'berkala_2' => 'berkala_2',
+        return match ($jenis) {
 
-        default => abort(404),
-    };
-}
+            '1',
+            'berkala1',
+            'berkala-1',
+            'berkala 1',
+            'berkala_1'
+                => 'berkala_1',
+
+            '2',
+            'berkala2',
+            'berkala-2',
+            'berkala 2',
+            'berkala_2'
+                => 'berkala_2',
+
+            default =>
+                abort(404),
+        };
+    }
 
 
     /**
@@ -727,12 +1152,20 @@ class PemeriksaanBerkalaController extends Controller
      * LABEL JENIS
      * ============================================================
      */
-    private function labelJenis(string $jenis): string
-    {
+    private function labelJenis(
+        string $jenis
+    ): string {
+
         return match ($jenis) {
-            'berkala_1' => 'Berkala 1',
-            'berkala_2' => 'Berkala 2',
-            default => ucfirst($jenis),
+
+            'berkala_1'
+                => 'Berkala 1',
+
+            'berkala_2'
+                => 'Berkala 2',
+
+            default =>
+                ucfirst($jenis),
         };
     }
 }

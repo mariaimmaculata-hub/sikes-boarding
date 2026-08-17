@@ -18,4 +18,8 @@ class Obat extends Model
     {
         return $this->hasMany(KunjunganObat::class);
     }
+    public function kunjunganKlinik()
+{
+    return $this->hasMany(KunjunganKlinik::class);
+}
 }

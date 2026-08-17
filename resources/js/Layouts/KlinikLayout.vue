@@ -261,10 +261,10 @@ const breadcrumbs = computed(() => {
     // NOTIFIKASI
     // ========================================================
 
-    if (path.startsWith('/klinik/notifikasi')) {
+    if (path.startsWith('/notifikasi')) {
         items.push({
             name: 'Notifikasi',
-            url: '/klinik/notifikasi',
+            url: '/notifikasi',
         })
 
         return items
@@ -369,7 +369,7 @@ const breadcrumbs = computed(() => {
                 <!-- NOTIFICATION -->
 
                 <Link
-                    href="/klinik/notifikasi"
+                    href="/notifikasi"
                     class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
                     aria-label="Notifikasi"
                 >
@@ -824,10 +824,10 @@ const breadcrumbs = computed(() => {
                         ================================================== -->
 
                         <Link
-                            href="/klinik/notifikasi"
+                            href="/notifikasi"
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                isActive('/klinik/notifikasi')
+                                isActive('/notifikasi')
                                     ? 'bg-blue-700 text-white shadow-md'
                                     : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
                             ]"
@@ -1192,11 +1192,11 @@ const breadcrumbs = computed(() => {
                                 <!-- NOTIFIKASI -->
 
                                 <Link
-                                    href="/klinik/notifikasi"
+                                    href="/notifikasi"
                                     @click="toggleMobileSidebar"
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                        isActive('/klinik/notifikasi')
+                                        isActive('/notifikasi')
                                             ? 'bg-blue-700 text-white'
                                             : 'text-blue-100 hover:bg-blue-900/50'
                                     ]"

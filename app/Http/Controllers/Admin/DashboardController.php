@@ -1,143 +1,241 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\User;
 use App\Models\PemeriksaanBerkala;
 use App\Models\KunjunganKlinik;
-use App\Models\Penyakit;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // =========================
-        // STATISTIK
-        // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | STATISTIK UTAMA
+        |--------------------------------------------------------------------------
+        */
 
+        // Total siswa aktif
         $totalSiswa = Siswa::where('status', 'aktif')->count();
 
+        // Total kelas
         $totalKelas = Kelas::count();
 
+        // Total pegawai klinik
         $pegawaiKlinik = User::where('role', 'klinik')->count();
 
-        $pendamping = User::where('role', 'tksi')->count();
+        // Total petugas TKSI
+        $petugasTksi = User::where('role', 'tksi')->count();
 
+        // Total pemeriksaan berkala hari ini
         $pemeriksaanHariIni = PemeriksaanBerkala::whereDate(
             'tanggal_pemeriksaan',
             today()
         )->count();
 
 
-        // =========================
-        // 5 PENYAKIT TERBANYAK
-        // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | 5 PENYAKIT TERBANYAK BULAN INI
+        |--------------------------------------------------------------------------
+        */
 
         $penyakitTerbanyak = KunjunganKlinik::query()
-    ->select('diagnosis')
-    ->selectRaw('COUNT(*) as jumlah_kasus')
-    ->whereNotNull('diagnosis')
-    ->where('diagnosis', '!=', '')
-    ->whereMonth('tanggal_kunjungan', now()->month)
-    ->whereYear('tanggal_kunjungan', now()->year)
-    ->groupBy('diagnosis')
-    ->orderByDesc('jumlah_kasus')
-    ->limit(5)
-    ->get()
-    ->map(function ($item) {
-        return [
-            'name' => $item->diagnosis,
-            'total' => $item->jumlah_kasus,
-        ];
-    });
+            ->select('diagnosis')
+            ->selectRaw('COUNT(*) as jumlah_kasus')
+            ->whereNotNull('diagnosis')
+            ->where('diagnosis', '!=', '')
+            ->whereMonth(
+                'tanggal_kunjungan',
+                now()->month
+            )
+            ->whereYear(
+                'tanggal_kunjungan',
+                now()->year
+            )
+            ->groupBy('diagnosis')
+            ->orderByDesc('jumlah_kasus')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->diagnosis,
+                    'count' => (int) $item->jumlah_kasus,
+                ];
+            })
+            ->values();
 
 
-        // =========================
-        // GRAFIK PEMERIKSAAN
-        // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | GRAFIK PEMERIKSAAN BERKALA
+        | 3 BULAN TERAKHIR
+        |--------------------------------------------------------------------------
+        */
 
-        $pemeriksaanBulanan = collect(range(2, 0))->map(function ($i) {
+        $pemeriksaanBulanan = collect(range(2, 0))
+            ->map(function ($i) {
 
-            $date = now()->subMonths($i);
+                $date = Carbon::now()
+                    ->copy()
+                    ->subMonths($i);
 
-            return [
-                'label' => $date->translatedFormat('F'),
-                'value' => PemeriksaanBerkala::whereMonth(
-                    'tanggal_pemeriksaan',
-                    $date->month
-                )
-                ->whereYear(
-                    'tanggal_pemeriksaan',
-                    $date->year
-                )
-                ->count(),
-            ];
-        });
+                $jumlah = PemeriksaanBerkala::query()
+                    ->whereMonth(
+                        'tanggal_pemeriksaan',
+                        $date->month
+                    )
+                    ->whereYear(
+                        'tanggal_pemeriksaan',
+                        $date->year
+                    )
+                    ->count();
 
-
-        // =========================
-        // GRAFIK KUNJUNGAN KLINIK
-        // =========================
-
-        $kunjunganBulanan = collect(range(2, 0))->map(function ($i) {
-
-            $date = now()->subMonths($i);
-
-            return [
-                'label' => $date->translatedFormat('F'),
-                'value' => KunjunganKlinik::whereMonth(
-                    'tanggal_kunjungan',
-                    $date->month
-                )
-                ->whereYear(
-                    'tanggal_kunjungan',
-                    $date->year
-                )
-                ->count(),
-            ];
-        });
+                return [
+                    'label' => $date->translatedFormat('M'),
+                    'value' => (int) $jumlah,
+                ];
+            })
+            ->values();
 
 
-        return Inertia::render('Admin/Dashboard/Index', [
+        /*
+        |--------------------------------------------------------------------------
+        | GRAFIK KUNJUNGAN KLINIK
+        | 3 BULAN TERAKHIR
+        |--------------------------------------------------------------------------
+        */
 
-            'stats' => [
-                [
-                    'name' => 'Total Siswa',
-                    'value' => $totalSiswa,
-                    'type' => 'siswa',
+        $kunjunganBulanan = collect(range(2, 0))
+            ->map(function ($i) {
+
+                $date = Carbon::now()
+                    ->copy()
+                    ->subMonths($i);
+
+                $jumlah = KunjunganKlinik::query()
+                    ->whereMonth(
+                        'tanggal_kunjungan',
+                        $date->month
+                    )
+                    ->whereYear(
+                        'tanggal_kunjungan',
+                        $date->year
+                    )
+                    ->count();
+
+                return [
+                    'label' => $date->translatedFormat('M'),
+                    'value' => (int) $jumlah,
+                ];
+            })
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA TAMBAHAN
+        |--------------------------------------------------------------------------
+        |
+        | Sementara dikosongkan karena belum ada sumber tabel/model
+        | yang digunakan untuk data tersebut.
+        |
+        */
+
+        $jadwalHariIni = [];
+
+        $siswaPemantauan = [];
+
+        $notifications = [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN INERTIA
+        |--------------------------------------------------------------------------
+        */
+
+        return Inertia::render(
+            'Admin/Dashboard/Index',
+            [
+
+                /*
+                |--------------------------------------------------------------------------
+                | STATISTICS
+                |--------------------------------------------------------------------------
+                */
+
+                'stats' => [
+
+                    [
+                        'name' => 'Total Siswa',
+                        'value' => $totalSiswa,
+                        'type' => 'siswa',
+                    ],
+
+                    [
+                        'name' => 'Total Kelas',
+                        'value' => $totalKelas,
+                        'type' => 'kelas',
+                    ],
+
+                    [
+                        'name' => 'Pegawai Klinik',
+                        'value' => $pegawaiKlinik,
+                        'type' => 'klinik',
+                    ],
+
+                    [
+                        'name' => 'Petugas TKSI',
+                        'value' => $petugasTksi,
+                        'type' => 'pendamping',
+                    ],
+
+                    [
+                        'name' => 'Pemeriksaan Hari Ini',
+                        'value' => $pemeriksaanHariIni,
+                        'type' => 'pemeriksaan',
+                    ],
+
                 ],
-                [
-                    'name' => 'Total Kelas',
-                    'value' => $totalKelas,
-                    'type' => 'kelas',
-                ],
-                [
-                    'name' => 'Pegawai Klinik',
-                    'value' => $pegawaiKlinik,
-                    'type' => 'klinik',
-                ],
-                [
-                    'name' => 'Pendamping Siswa',
-                    'value' => $pendamping,
-                    'type' => 'pendamping',
-                ],
-                [
-                    'name' => 'Pemeriksaan Hari Ini',
-                    'value' => $pemeriksaanHariIni,
-                    'type' => 'pemeriksaan',
-                ],
-            ],
 
-            'penyakitTerbanyak' => $penyakitTerbanyak,
+                /*
+                |--------------------------------------------------------------------------
+                | PENYAKIT
+                |--------------------------------------------------------------------------
+                */
 
-            'pemeriksaanBulanan' => $pemeriksaanBulanan,
+                'penyakitTerbanyak' => $penyakitTerbanyak,
 
-            'kunjunganBulanan' => $kunjunganBulanan,
-        ]);
+                /*
+                |--------------------------------------------------------------------------
+                | GRAFIK
+                |--------------------------------------------------------------------------
+                */
+
+                'pemeriksaanBulanan' => $pemeriksaanBulanan,
+
+                'kunjunganBulanan' => $kunjunganBulanan,
+
+                /*
+                |--------------------------------------------------------------------------
+                | DATA TAMBAHAN
+                |--------------------------------------------------------------------------
+                */
+
+                'jadwalHariIni' => $jadwalHariIni,
+
+                'siswaPemantauan' => $siswaPemantauan,
+
+                'notifications' => $notifications,
+
+            ]
+        );
     }
 }

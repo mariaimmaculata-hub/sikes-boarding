@@ -200,20 +200,6 @@ const namaKelas = (siswa) => {
 
             <div>
 
-                <div class="mb-2">
-
-                    <Link
-                        :href="route('admin.dashboard')"
-                        class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-blue-600"
-                    >
-
-                        <ArrowLeftIcon class="h-4 w-4" />
-
-                        Kembali ke Dashboard
-
-                    </Link>
-
-                </div>
 
                 <h1 class="text-2xl font-bold text-slate-800">
                     Kunjungan Klinik

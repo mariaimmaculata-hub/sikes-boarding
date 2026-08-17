@@ -12,11 +12,9 @@ import {
 } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
 
-
 defineOptions({
     layout: KlinikLayout,
 })
-
 
 const props = defineProps({
     kunjungan: {
@@ -29,26 +27,41 @@ const props = defineProps({
         default: () => [],
     },
 
+    penyakitList: {
+        type: Array,
+        default: () => [],
+    },
+
     obatList: {
         type: Array,
         default: () => [],
     },
 })
 
-
 /*
 |--------------------------------------------------------------------------
-| DATA OBAT AWAL
+| OBAT AWAL
 |--------------------------------------------------------------------------
 */
 
-const initialObat = (props.kunjungan.obat ?? props.kunjungan.kunjungan_obat ?? [])
-    .map((item) => ({
-        obat_id: item.obat_id ?? item.obat?.id ?? '',
-        jumlah: item.jumlah ?? 1,
-        keterangan: item.keterangan ?? '',
-    }))
+const initialObat = (
+    props.kunjungan.obat ??
+    props.kunjungan.kunjungan_obat ??
+    []
+).map((item) => ({
+    obat_id:
+        item.obat_id ??
+        item.obat?.id ??
+        '',
 
+    jumlah:
+        item.jumlah ??
+        1,
+
+    keterangan:
+        item.keterangan ??
+        '',
+}))
 
 /*
 |--------------------------------------------------------------------------
@@ -58,39 +71,56 @@ const initialObat = (props.kunjungan.obat ?? props.kunjungan.kunjungan_obat ?? [
 
 const form = useForm({
     periode_id:
-        props.kunjungan.periode_id
-        ?? props.kunjungan.periode?.id
-        ?? '',
+        props.kunjungan.periode_id ??
+        props.kunjungan.periode?.id ??
+        '',
 
     siswa_id:
-        props.kunjungan.siswa_id
-        ?? props.kunjungan.siswa?.id
-        ?? '',
+        props.kunjungan.siswa_id ??
+        props.kunjungan.siswa?.id ??
+        '',
 
     tanggal_kunjungan:
-        formatDateTimeLocal(props.kunjungan.tanggal_kunjungan),
+        formatDateTimeLocal(
+            props.kunjungan.tanggal_kunjungan
+        ),
 
     keluhan:
-        props.kunjungan.keluhan ?? '',
+        props.kunjungan.keluhan ??
+        '',
 
     pemeriksaan:
-        props.kunjungan.pemeriksaan ?? '',
+        props.kunjungan.pemeriksaan ??
+        '',
 
-    diagnosis:
-        props.kunjungan.diagnosis ?? '',
+    /*
+    |--------------------------------------------------------------------------
+    | DIAGNOSIS / PENYAKIT
+    |--------------------------------------------------------------------------
+    |
+    | Gunakan penyakit_id, bukan diagnosis.
+    |
+    */
+
+    penyakit_id:
+        props.kunjungan.penyakit_id ??
+        props.kunjungan.penyakit?.id ??
+        '',
 
     tindakan:
-        props.kunjungan.tindakan ?? '',
+        props.kunjungan.tindakan ??
+        '',
 
     status:
-        props.kunjungan.status ?? 'selesai',
+        props.kunjungan.status ??
+        'selesai',
 
     catatan:
-        props.kunjungan.catatan ?? '',
+        props.kunjungan.catatan ??
+        '',
 
     obat: initialObat,
 })
-
 
 /*
 |--------------------------------------------------------------------------
@@ -100,34 +130,78 @@ const form = useForm({
 
 const selectedSiswa = computed(() => {
     return props.siswas.find(
-        (siswa) => Number(siswa.id) === Number(form.siswa_id)
+        (siswa) =>
+            Number(siswa.id) ===
+            Number(form.siswa_id)
     ) ?? null
 })
 
+/*
+|--------------------------------------------------------------------------
+| PENYAKIT TERPILIH
+|--------------------------------------------------------------------------
+*/
+
+const selectedPenyakit = computed(() => {
+    return props.penyakitList.find(
+        (penyakit) =>
+            Number(penyakit.id) ===
+            Number(form.penyakit_id)
+    ) ?? null
+})
 
 /*
 |--------------------------------------------------------------------------
 | FORMAT TANGGAL
 |--------------------------------------------------------------------------
 */
-
 function formatDateTimeLocal(value) {
     if (!value) {
         return ''
     }
 
-    const date = new Date(value)
+    const stringValue = String(value).trim()
 
-    if (Number.isNaN(date.getTime())) {
-        return value
+    // Format Laravel:
+    // YYYY-MM-DD HH:mm:ss
+    // atau YYYY-MM-DDTHH:mm:ss
+    const match = stringValue.match(
+        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
+    )
+
+    if (match) {
+        const [
+            ,
+            year,
+            month,
+            day,
+            hour,
+            minute,
+        ] = match
+
+        return `${year}-${month}-${day}T${hour}:${minute}`
     }
 
-    const pad = (number) =>
-        String(number).padStart(2, '0')
+    // Format DD/MM/YYYY HH:mm
+    const matchIndonesia = stringValue.match(
+        /^(\d{2})\/(\d{2})\/(\d{4})[ ](\d{2}):(\d{2})$/
+    )
 
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+    if (matchIndonesia) {
+        const [
+            ,
+            day,
+            month,
+            year,
+            hour,
+            minute,
+        ] = matchIndonesia
+
+        return `${year}-${month}-${day}T${hour}:${minute}`
+    }
+
+    return ''
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -143,18 +217,17 @@ function addObat() {
     })
 }
 
-
 function removeObat(index) {
     form.obat.splice(index, 1)
 }
 
-
 function getObat(obatId) {
     return props.obatList.find(
-        (obat) => Number(obat.id) === Number(obatId)
+        (obat) =>
+            Number(obat.id) ===
+            Number(obatId)
     ) ?? null
 }
-
 
 function getStok(obatId) {
     const obat = getObat(obatId)
@@ -162,13 +235,11 @@ function getStok(obatId) {
     return obat?.stok ?? 0
 }
 
-
 function getSatuan(obatId) {
     const obat = getObat(obatId)
 
     return obat?.satuan ?? ''
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -177,7 +248,8 @@ function getSatuan(obatId) {
 */
 
 function isDuplicateObat(index) {
-    const current = form.obat[index]?.obat_id
+    const current =
+        form.obat[index]?.obat_id
 
     if (!current) {
         return false
@@ -186,10 +258,27 @@ function isDuplicateObat(index) {
     return form.obat.some(
         (item, itemIndex) =>
             itemIndex !== index &&
-            Number(item.obat_id) === Number(current)
+            Number(item.obat_id) ===
+                Number(current)
     )
 }
 
+/*
+|--------------------------------------------------------------------------
+| VALIDASI JUMLAH OBAT
+|--------------------------------------------------------------------------
+*/
+
+function isJumlahMelebihiStok(index) {
+    const item = form.obat[index]
+
+    if (!item?.obat_id) {
+        return false
+    }
+
+    return Number(item.jumlah) >
+        Number(getStok(item.obat_id))
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -210,14 +299,11 @@ function submit() {
 }
 </script>
 
-
 <template>
 
     <Head title="Edit Kunjungan Klinik" />
 
-
     <div class="space-y-6">
-
 
         <!-- ==================================================
              HEADER
@@ -241,13 +327,11 @@ function submit() {
 
                 </div>
 
-
                 <h1
                     class="mt-1 text-2xl font-bold text-slate-800"
                 >
                     Edit Kunjungan Klinik
                 </h1>
-
 
                 <p
                     class="mt-1 text-sm text-slate-500"
@@ -256,7 +340,6 @@ function submit() {
                 </p>
 
             </div>
-
 
             <Link
                 :href="
@@ -277,7 +360,6 @@ function submit() {
 
         </div>
 
-
         <!-- ==================================================
              ERROR
         ================================================== -->
@@ -292,7 +374,6 @@ function submit() {
             >
                 Terdapat kesalahan pada data.
             </p>
-
 
             <ul
                 class="mt-2 list-inside list-disc space-y-1 text-xs text-rose-600"
@@ -309,7 +390,6 @@ function submit() {
 
         </div>
 
-
         <!-- ==================================================
              FORM
         ================================================== -->
@@ -318,7 +398,6 @@ function submit() {
             @submit.prevent="submit"
             class="space-y-6"
         >
-
 
             <!-- ==================================================
                  DATA KUNJUNGAN
@@ -344,7 +423,6 @@ function submit() {
 
                         </div>
 
-
                         <div>
 
                             <h2
@@ -365,11 +443,9 @@ function submit() {
 
                 </div>
 
-
                 <div
                     class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2"
                 >
-
 
                     <!-- SISWA -->
 
@@ -381,7 +457,6 @@ function submit() {
                             Siswa
                         </label>
 
-
                         <select
                             v-model="form.siswa_id"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
@@ -390,7 +465,6 @@ function submit() {
                             <option value="">
                                 Pilih siswa
                             </option>
-
 
                             <option
                                 v-for="siswa in siswas"
@@ -404,14 +478,12 @@ function submit() {
 
                         </select>
 
-
                         <p
                             v-if="form.errors.siswa_id"
                             class="mt-1 text-xs text-rose-500"
                         >
                             {{ form.errors.siswa_id }}
                         </p>
-
 
                         <!-- INFO SISWA -->
 
@@ -438,7 +510,6 @@ function submit() {
 
                                 </div>
 
-
                                 <div>
 
                                     <span class="text-blue-400">
@@ -455,7 +526,6 @@ function submit() {
                                     </p>
 
                                 </div>
-
 
                                 <div>
 
@@ -480,7 +550,6 @@ function submit() {
 
                     </div>
 
-
                     <!-- PERIODE -->
 
                     <div>
@@ -490,7 +559,6 @@ function submit() {
                         >
                             Periode
                         </label>
-
 
                         <input
                             :value="
@@ -504,7 +572,6 @@ function submit() {
 
                     </div>
 
-
                     <!-- TANGGAL -->
 
                     <div>
@@ -515,13 +582,11 @@ function submit() {
                             Tanggal Kunjungan
                         </label>
 
-
                         <input
                             v-model="form.tanggal_kunjungan"
                             type="datetime-local"
                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         />
-
 
                         <p
                             v-if="form.errors.tanggal_kunjungan"
@@ -535,7 +600,6 @@ function submit() {
                 </div>
 
             </div>
-
 
             <!-- ==================================================
                  PEMERIKSAAN
@@ -563,11 +627,9 @@ function submit() {
 
                 </div>
 
-
                 <div
                     class="grid grid-cols-1 gap-5 p-6"
                 >
-
 
                     <!-- KELUHAN -->
 
@@ -579,7 +641,6 @@ function submit() {
                             Keluhan
                         </label>
 
-
                         <textarea
                             v-model="form.keluhan"
                             rows="3"
@@ -587,8 +648,14 @@ function submit() {
                             class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         ></textarea>
 
-                    </div>
+                        <p
+                            v-if="form.errors.keluhan"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.keluhan }}
+                        </p>
 
+                    </div>
 
                     <!-- PEMERIKSAAN -->
 
@@ -600,7 +667,6 @@ function submit() {
                             Pemeriksaan
                         </label>
 
-
                         <textarea
                             v-model="form.pemeriksaan"
                             rows="4"
@@ -608,29 +674,129 @@ function submit() {
                             class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         ></textarea>
 
+                        <p
+                            v-if="form.errors.pemeriksaan"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.pemeriksaan }}
+                        </p>
+
                     </div>
 
-
-                    <!-- DIAGNOSIS -->
+                    <!-- ==================================================
+                         DIAGNOSIS / PENYAKIT
+                    ================================================== -->
 
                     <div>
 
                         <label
                             class="mb-1.5 block text-xs font-bold text-slate-600"
                         >
-                            Diagnosis
+                            Diagnosis / Penyakit
                         </label>
 
+                        <select
+                            v-model="form.penyakit_id"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        >
 
-                        <textarea
-                            v-model="form.diagnosis"
-                            rows="3"
-                            placeholder="Tuliskan diagnosis..."
-                            class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        ></textarea>
+                            <option value="">
+                                Tidak ada diagnosis / penyakit
+                            </option>
+
+                            <option
+                                v-for="penyakit in penyakitList"
+                                :key="penyakit.id"
+                                :value="penyakit.id"
+                            >
+
+                                {{ penyakit.nama_penyakit }}
+
+                                <template
+                                    v-if="penyakit.kategori"
+                                >
+                                    — {{ penyakit.kategori }}
+                                </template>
+
+                            </option>
+
+                        </select>
+
+                        <p
+                            v-if="form.errors.penyakit_id"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.penyakit_id }}
+                        </p>
+
+                        <!-- INFO PENYAKIT -->
+
+                        <div
+                            v-if="selectedPenyakit"
+                            class="mt-3 rounded-xl bg-amber-50 px-4 py-3"
+                        >
+
+                            <div
+                                class="flex flex-wrap gap-x-6 gap-y-2 text-xs"
+                            >
+
+                                <div>
+
+                                    <span class="text-amber-500">
+                                        Penyakit
+                                    </span>
+
+                                    <p
+                                        class="font-semibold text-amber-800"
+                                    >
+                                        {{
+                                            selectedPenyakit.nama_penyakit
+                                        }}
+                                    </p>
+
+                                </div>
+
+                                <div
+                                    v-if="selectedPenyakit.kategori"
+                                >
+
+                                    <span class="text-amber-500">
+                                        Kategori
+                                    </span>
+
+                                    <p
+                                        class="font-semibold text-amber-800"
+                                    >
+                                        {{
+                                            selectedPenyakit.kategori
+                                        }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <p
+                                v-if="selectedPenyakit.keterangan"
+                                class="mt-2 text-xs text-amber-700"
+                            >
+                                {{
+                                    selectedPenyakit.keterangan
+                                }}
+                            </p>
+
+                        </div>
+
+                        <!-- DATA PENYAKIT KOSONG -->
+
+                        <p
+                            v-if="!penyakitList.length"
+                            class="mt-2 text-xs text-slate-400"
+                        >
+                            Belum ada data penyakit yang tersedia.
+                        </p>
 
                     </div>
-
 
                     <!-- TINDAKAN -->
 
@@ -642,7 +808,6 @@ function submit() {
                             Tindakan
                         </label>
 
-
                         <textarea
                             v-model="form.tindakan"
                             rows="3"
@@ -650,8 +815,14 @@ function submit() {
                             class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         ></textarea>
 
-                    </div>
+                        <p
+                            v-if="form.errors.tindakan"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.tindakan }}
+                        </p>
 
+                    </div>
 
                     <!-- CATATAN -->
 
@@ -663,7 +834,6 @@ function submit() {
                             Catatan
                         </label>
 
-
                         <textarea
                             v-model="form.catatan"
                             rows="3"
@@ -671,8 +841,14 @@ function submit() {
                             class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         ></textarea>
 
-                    </div>
+                        <p
+                            v-if="form.errors.catatan"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.catatan }}
+                        </p>
 
+                    </div>
 
                     <!-- STATUS -->
 
@@ -683,7 +859,6 @@ function submit() {
                         >
                             Status
                         </label>
-
 
                         <select
                             v-model="form.status"
@@ -696,12 +871,18 @@ function submit() {
 
                         </select>
 
+                        <p
+                            v-if="form.errors.status"
+                            class="mt-1 text-xs text-rose-500"
+                        >
+                            {{ form.errors.status }}
+                        </p>
+
                     </div>
 
                 </div>
 
             </div>
-
 
             <!-- ==================================================
                  OBAT
@@ -727,7 +908,6 @@ function submit() {
 
                         </div>
 
-
                         <div>
 
                             <h2
@@ -746,7 +926,6 @@ function submit() {
 
                     </div>
 
-
                     <button
                         type="button"
                         @click="addObat"
@@ -763,9 +942,7 @@ function submit() {
 
                 </div>
 
-
                 <div class="p-6">
-
 
                     <!-- TIDAK ADA OBAT -->
 
@@ -792,7 +969,6 @@ function submit() {
 
                     </div>
 
-
                     <!-- LIST OBAT -->
 
                     <div
@@ -810,7 +986,6 @@ function submit() {
                                 class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_150px_auto]"
                             >
 
-
                                 <!-- OBAT -->
 
                                 <div>
@@ -821,7 +996,6 @@ function submit() {
                                         Nama Obat
                                     </label>
 
-
                                     <select
                                         v-model="item.obat_id"
                                         class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
@@ -830,7 +1004,6 @@ function submit() {
                                         <option value="">
                                             Pilih obat
                                         </option>
-
 
                                         <option
                                             v-for="obat in obatList"
@@ -844,14 +1017,15 @@ function submit() {
                                                 )
                                             "
                                         >
+
                                             {{ obat.nama_obat }}
                                             —
                                             Stok {{ obat.stok }}
                                             {{ obat.satuan }}
+
                                         </option>
 
                                     </select>
-
 
                                     <p
                                         v-if="isDuplicateObat(index)"
@@ -861,7 +1035,6 @@ function submit() {
                                     </p>
 
                                 </div>
-
 
                                 <!-- JUMLAH -->
 
@@ -873,7 +1046,6 @@ function submit() {
                                         Jumlah
                                     </label>
 
-
                                     <div class="relative">
 
                                         <input
@@ -884,15 +1056,17 @@ function submit() {
                                             class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 pr-16 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
                                         />
 
-
                                         <span
                                             class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400"
                                         >
-                                            {{ getSatuan(item.obat_id) }}
+                                            {{
+                                                getSatuan(
+                                                    item.obat_id
+                                                )
+                                            }}
                                         </span>
 
                                     </div>
-
 
                                     <p
                                         v-if="item.obat_id"
@@ -903,8 +1077,14 @@ function submit() {
                                         {{ getSatuan(item.obat_id) }}
                                     </p>
 
-                                </div>
+                                    <p
+                                        v-if="isJumlahMelebihiStok(index)"
+                                        class="mt-1 text-xs text-rose-500"
+                                    >
+                                        Jumlah melebihi stok tersedia.
+                                    </p>
 
+                                </div>
 
                                 <!-- HAPUS -->
 
@@ -929,7 +1109,6 @@ function submit() {
 
                             </div>
 
-
                             <!-- KETERANGAN -->
 
                             <div class="mt-4">
@@ -939,7 +1118,6 @@ function submit() {
                                 >
                                     Keterangan / Aturan Pakai
                                 </label>
-
 
                                 <input
                                     v-model="item.keterangan"
@@ -957,7 +1135,6 @@ function submit() {
                 </div>
 
             </div>
-
 
             <!-- ==================================================
                  FOOTER ACTION
@@ -978,10 +1155,16 @@ function submit() {
                     Batal
                 </Link>
 
-
                 <button
                     type="submit"
-                    :disabled="form.processing"
+                    :disabled="
+                        form.processing ||
+                        form.obat.some(
+                            (item, index) =>
+                                isDuplicateObat(index) ||
+                                isJumlahMelebihiStok(index)
+                        )
+                    "
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
@@ -1008,12 +1191,10 @@ function submit() {
 
                     </svg>
 
-
                     <CheckIcon
                         v-else
                         class="h-4 w-4"
                     />
-
 
                     {{
                         form.processing

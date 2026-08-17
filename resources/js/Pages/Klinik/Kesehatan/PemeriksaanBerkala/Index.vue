@@ -1,20 +1,24 @@
 <script setup>
 
-import { computed, ref } from 'vue';
-
-import KlinikLayout from '@/Layouts/KlinikLayout.vue';
-
-import { Link, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue'
+import KlinikLayout from '@/Layouts/KlinikLayout.vue'
+import { usePage, Link } from '@inertiajs/vue3'
 
 import {
     MagnifyingGlassIcon,
     FunnelIcon,
     XMarkIcon,
-    EyeIcon,
     ClipboardDocumentCheckIcon,
     ExclamationTriangleIcon,
     CheckCircleIcon,
-} from '@heroicons/vue/24/outline';
+    LockClosedIcon,
+    EyeIcon,
+    CalendarDaysIcon,
+    UserIcon,
+    HeartIcon,
+    ScaleIcon,
+    InformationCircleIcon,
+} from '@heroicons/vue/24/outline'
 
 
 // ======================================================
@@ -33,27 +37,33 @@ const props = defineProps({
         default: () => [],
     },
 
-});
+})
 
 
 // ======================================================
 // PAGE
 // ======================================================
 
-const page = usePage();
+const page = usePage()
 
 
 // ======================================================
 // STATE
 // ======================================================
 
-const search = ref('');
+const search = ref('')
+const showFilter = ref(false)
+const kelasFilter = ref('')
+const statusFilter = ref('')
 
-const showFilter = ref(false);
 
-const kelasFilter = ref('');
+// ======================================================
+// POPUP
+// ======================================================
 
-const statusFilter = ref('');
+const showResultModal = ref(false)
+const selectedPemeriksaan = ref(null)
+const selectedSiswa = ref(null)
 
 
 // ======================================================
@@ -61,16 +71,135 @@ const statusFilter = ref('');
 // ======================================================
 
 const flashSuccess = computed(() => {
-
-    return page.props.flash?.success ?? null;
-
-});
+    return page.props.flash?.success ?? null
+})
 
 const flashError = computed(() => {
+    return page.props.flash?.error ?? null
+})
 
-    return page.props.flash?.error ?? null;
 
-});
+// ======================================================
+// FASE PEMERIKSAAN
+// ======================================================
+
+const fasePemeriksaan = computed(() => {
+    return Number(props.periode?.fase_pemeriksaan ?? 0)
+})
+
+
+// ======================================================
+// AKSES BERKALA 1
+// ======================================================
+
+const aksesBerkala1 = computed(() => {
+    return props.periode?.berkala_1?.akses ?? 'closed'
+})
+
+
+// ======================================================
+// AKSES BERKALA 2
+// ======================================================
+
+const aksesBerkala2 = computed(() => {
+    return props.periode?.berkala_2?.akses ?? 'closed'
+})
+
+
+// ======================================================
+// STATUS AKTIF
+// ======================================================
+
+const berkala1Aktif = computed(() => {
+
+    return (
+        fasePemeriksaan.value === 1 &&
+        aksesBerkala1.value === 'open'
+    )
+
+})
+
+
+const berkala2Aktif = computed(() => {
+
+    return (
+        fasePemeriksaan.value === 2 &&
+        aksesBerkala2.value === 'open'
+    )
+
+})
+
+
+// ======================================================
+// VIEW ONLY
+// ======================================================
+
+/*
+|--------------------------------------------------------------------------
+| Berkala 1
+|--------------------------------------------------------------------------
+| Jika sudah masuk fase 2, Berkala 1 otomatis menjadi VIEW.
+|
+| Jadi meskipun akses dari backend tidak lagi "view",
+| user tetap bisa melihat hasil Berkala 1.
+*/
+
+const berkala1View = computed(() => {
+
+    if (fasePemeriksaan.value === 2) {
+        return true
+    }
+
+    return aksesBerkala1.value === 'view'
+})
+
+
+const berkala2View = computed(() => {
+
+    return aksesBerkala2.value === 'view'
+
+})
+
+
+// ======================================================
+// LABEL TAHAP
+// ======================================================
+
+const tahapLabel = computed(() => {
+
+    if (fasePemeriksaan.value === 1) {
+        return 'Berkala 1'
+    }
+
+    if (fasePemeriksaan.value === 2) {
+        return 'Berkala 2'
+    }
+
+    return '-'
+})
+
+
+// ======================================================
+// DESKRIPSI TAHAP
+// ======================================================
+
+const tahapDescription = computed(() => {
+
+    if (fasePemeriksaan.value === 1) {
+
+        return 'Pemeriksaan Berkala 1 sedang aktif dan dapat diisi pada fase pertama.'
+
+    }
+
+    if (fasePemeriksaan.value === 2) {
+
+        return 'Pemeriksaan Berkala 1 telah berakhir. Hasil Berkala 1 dapat dilihat, dan saat ini memasuki tahap Berkala 2.'
+
+    }
+
+    return 'Tahap pemeriksaan belum ditentukan.'
+
+})
 
 
 // ======================================================
@@ -82,15 +211,243 @@ const kelasOptions = computed(() => {
     return [
         ...new Set(
             props.siswas
-                .map(
-                    (siswa) =>
-                        siswa.kelas?.tingkat
-                )
+                .map(siswa => siswa.kelas?.tingkat)
                 .filter(Boolean)
         ),
-    ].sort();
+    ].sort()
 
-});
+})
+
+
+// ======================================================
+// STATUS SISWA
+// ======================================================
+
+const getStatus = (siswa) => {
+
+    /*
+    |--------------------------------------------------------------------------
+    | FASE 1
+    |--------------------------------------------------------------------------
+    */
+
+    if (fasePemeriksaan.value === 1) {
+
+        return siswa.berkala_1?.status === 'selesai'
+            ? 'selesai'
+            : 'belum'
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FASE 2
+    |--------------------------------------------------------------------------
+    */
+
+    if (fasePemeriksaan.value === 2) {
+
+        return siswa.berkala_2?.status === 'selesai'
+            ? 'selesai'
+            : 'belum'
+
+    }
+
+
+    return 'belum'
+
+}
+
+
+// ======================================================
+// STATUS LABEL
+// ======================================================
+
+const getStatusLabel = (siswa) => {
+
+    return getStatus(siswa) === 'selesai'
+        ? 'Selesai'
+        : 'Belum Selesai'
+
+}
+
+
+// ======================================================
+// STATUS CLASS
+// ======================================================
+
+const getStatusClass = (siswa) => {
+
+    return getStatus(siswa) === 'selesai'
+        ? 'bg-emerald-100 text-emerald-700'
+        : 'bg-rose-100 text-rose-700'
+
+}
+
+
+// ======================================================
+// BUKA POPUP HASIL
+// ======================================================
+
+const openResultModal = (siswa, jenis) => {
+
+    let pemeriksaan = null
+
+
+    if (jenis === 'berkala_1') {
+        pemeriksaan = siswa.berkala_1
+    }
+
+
+    if (jenis === 'berkala_2') {
+        pemeriksaan = siswa.berkala_2
+    }
+
+
+    // Tidak ada data
+
+    if (!pemeriksaan) {
+
+        console.warn(
+            'Data pemeriksaan tidak ditemukan:',
+            jenis,
+            siswa
+        )
+
+        return
+
+    }
+
+
+    // Simpan data siswa
+
+    selectedSiswa.value = siswa
+
+
+    // Simpan seluruh data pemeriksaan
+
+    selectedPemeriksaan.value = {
+
+        ...pemeriksaan,
+
+        jenis_pemeriksaan:
+            pemeriksaan.jenis_pemeriksaan ?? jenis,
+
+    }
+
+
+    // Buka modal
+
+    showResultModal.value = true
+
+}
+
+
+// ======================================================
+// TUTUP POPUP
+// ======================================================
+
+const closeResultModal = () => {
+
+    showResultModal.value = false
+
+    selectedPemeriksaan.value = null
+
+    selectedSiswa.value = null
+
+}
+
+
+// ======================================================
+// FORMAT NILAI
+// ======================================================
+
+const displayValue = (value) => {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ''
+    ) {
+        return '-'
+    }
+
+    return value
+
+}
+
+
+// ======================================================
+// FORMAT TANGGAL
+// ======================================================
+const formatTanggal = (tanggal) => {
+
+    if (!tanggal) {
+        return '-'
+    }
+
+    // Jika hanya tanggal: YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) {
+
+        const [tahun, bulan, hari] = tanggal.split('-')
+
+        return `${hari} ${[
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        ][Number(bulan) - 1]} ${tahun}`
+    }
+
+    // Jika berupa timestamp/datetime
+    const date = new Date(tanggal)
+
+    if (isNaN(date.getTime())) {
+        return tanggal
+    }
+
+    return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'Asia/Jakarta',
+    })
+
+}
+
+
+// ======================================================
+// LABEL JENIS
+// ======================================================
+
+const modalJenisLabel = computed(() => {
+
+    const jenis =
+        selectedPemeriksaan.value?.jenis_pemeriksaan
+
+
+    if (jenis === 'berkala_1') {
+        return 'Pemeriksaan Berkala 1'
+    }
+
+
+    if (jenis === 'berkala_2') {
+        return 'Pemeriksaan Berkala 2'
+    }
+
+
+    return 'Pemeriksaan Berkala'
+
+})
 
 
 // ======================================================
@@ -99,7 +456,7 @@ const kelasOptions = computed(() => {
 
 const filteredSiswas = computed(() => {
 
-    let data = props.siswas ?? [];
+    let data = props.siswas ?? []
 
 
     // ==================================================
@@ -111,23 +468,20 @@ const filteredSiswas = computed(() => {
         const keyword =
             search.value
                 .toLowerCase()
-                .trim();
+                .trim()
+
 
         data = data.filter((siswa) => {
 
             return (
 
-                String(
-                    siswa.nisn ?? ''
-                )
+                String(siswa.nisn ?? '')
                     .toLowerCase()
                     .includes(keyword)
 
                 ||
 
-                String(
-                    siswa.nama ?? ''
-                )
+                String(siswa.nama ?? '')
                     .toLowerCase()
                     .includes(keyword)
 
@@ -156,9 +510,9 @@ const filteredSiswas = computed(() => {
                     .toLowerCase()
                     .includes(keyword)
 
-            );
+            )
 
-        });
+        })
 
     }
 
@@ -170,14 +524,12 @@ const filteredSiswas = computed(() => {
     if (kelasFilter.value) {
 
         data = data.filter(
-            (siswa) =>
+            siswa =>
                 String(
-                    siswa.kelas?.tingkat
+                    siswa.kelas?.tingkat ?? ''
                 ) ===
-                String(
-                    kelasFilter.value
-                )
-        );
+                String(kelasFilter.value)
+        )
 
     }
 
@@ -188,69 +540,18 @@ const filteredSiswas = computed(() => {
 
     if (statusFilter.value) {
 
-        data = data.filter((siswa) => {
-
-            const berkala1 =
-                siswa.berkala_1?.selesai;
-
-            const berkala2 =
-                siswa.berkala_2?.selesai;
-
-
-            if (
-                statusFilter.value ===
-                'selesai'
-            ) {
-
-                return (
-                    berkala1 &&
-                    berkala2
-                );
-
-            }
-
-
-            if (
-                statusFilter.value ===
-                'belum'
-            ) {
-
-                return (
-                    !berkala1 ||
-                    !berkala2
-                );
-
-            }
-
-
-            if (
-                statusFilter.value ===
-                'sebagian'
-            ) {
-
-                return (
-                    (berkala1 &&
-                        !berkala2)
-
-                    ||
-
-                    (!berkala1 &&
-                        berkala2)
-                );
-
-            }
-
-
-            return true;
-
-        });
+        data = data.filter(
+            siswa =>
+                getStatus(siswa) ===
+                statusFilter.value
+        )
 
     }
 
 
-    return data;
+    return data
 
-});
+})
 
 
 // ======================================================
@@ -263,9 +564,9 @@ const hasActiveFilter = computed(() => {
         search.value ||
         kelasFilter.value ||
         statusFilter.value
-    );
+    )
 
-});
+})
 
 
 // ======================================================
@@ -274,121 +575,41 @@ const hasActiveFilter = computed(() => {
 
 const resetFilter = () => {
 
-    search.value = '';
+    search.value = ''
 
-    kelasFilter.value = '';
+    kelasFilter.value = ''
 
-    statusFilter.value = '';
+    statusFilter.value = ''
 
-};
-
-
-// ======================================================
-// STATUS SISWA
-// ======================================================
-
-const getStatus = (siswa) => {
-
-    const berkala1 =
-        siswa.berkala_1?.selesai;
-
-    const berkala2 =
-        siswa.berkala_2?.selesai;
-
-
-    if (
-        berkala1 &&
-        berkala2
-    ) {
-
-        return 'selesai';
-
-    }
-
-
-    if (
-        berkala1 ||
-        berkala2
-    ) {
-
-        return 'sebagian';
-
-    }
-
-
-    return 'belum';
-
-};
+}
 
 
 // ======================================================
-// STATUS LABEL
+// JUMLAH SELESAI
 // ======================================================
 
-const getStatusLabel = (siswa) => {
+const jumlahSelesai = computed(() => {
 
-    const status =
-        getStatus(siswa);
+    return props.siswas.filter(
+        siswa =>
+            getStatus(siswa) === 'selesai'
+    ).length
 
-
-    if (
-        status ===
-        'selesai'
-    ) {
-
-        return 'Selesai';
-
-    }
-
-
-    if (
-        status ===
-        'sebagian'
-    ) {
-
-        return 'Sebagian';
-
-    }
-
-
-    return 'Belum Lengkap';
-
-};
+})
 
 
 // ======================================================
-// STATUS CLASS
+// JUMLAH BELUM
 // ======================================================
 
-const getStatusClass = (siswa) => {
+const jumlahBelumSelesai = computed(() => {
 
-    const status =
-        getStatus(siswa);
+    return props.siswas.filter(
+        siswa =>
+            getStatus(siswa) === 'belum'
+    ).length
 
-
-    if (
-        status ===
-        'selesai'
-    ) {
-
-        return 'bg-emerald-100 text-emerald-700';
-
-    }
-
-
-    if (
-        status ===
-        'sebagian'
-    ) {
-
-        return 'bg-amber-100 text-amber-700';
-
-    }
-
-
-    return 'bg-rose-100 text-rose-700';
-
-};
+})
 
 
 // ======================================================
@@ -399,15 +620,13 @@ const clearFlash = () => {
 
     if (page.props.flash) {
 
-        page.props.flash.success =
-            null;
+        page.props.flash.success = null
 
-        page.props.flash.error =
-            null;
+        page.props.flash.error = null
 
     }
 
-};
+}
 
 </script>
 
@@ -429,18 +648,6 @@ const clearFlash = () => {
 
             <div>
 
-                <div
-                    class="flex items-center gap-2 text-xs font-semibold text-slate-400"
-                >
-
-                    <ClipboardDocumentCheckIcon
-                        class="h-4 w-4"
-                    />
-
-                    Kesehatan
-                </div>
-
-
                 <h1
                     class="mt-1 text-2xl font-bold text-slate-800"
                 >
@@ -452,7 +659,7 @@ const clearFlash = () => {
                     class="mt-1 text-sm text-slate-500"
                 >
                     Kelola pemeriksaan kesehatan berkala
-                    siswa pada periode aktif.
+                    siswa berdasarkan tahap periode.
                 </p>
 
             </div>
@@ -462,7 +669,7 @@ const clearFlash = () => {
 
             <div
                 v-if="periode"
-                class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-2.5"
+                class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
             >
 
                 <p
@@ -478,6 +685,100 @@ const clearFlash = () => {
                     {{ periode.nama_periode }}
                 </p>
 
+
+                <p
+                    v-if="
+                        periode.tanggal_mulai &&
+                        periode.tanggal_selesai
+                    "
+                    class="mt-1 text-xs text-blue-600"
+                >
+                    {{ formatTanggal(periode.tanggal_mulai) }}
+                    -
+                    {{ formatTanggal(periode.tanggal_selesai) }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             TAHAP
+        ================================================== -->
+
+        <div
+            v-if="periode"
+            class="rounded-2xl border p-5"
+            :class="
+                fasePemeriksaan === 1
+                    ? 'border-blue-200 bg-blue-50'
+                    : 'border-emerald-200 bg-emerald-50'
+            "
+        >
+
+            <div class="flex items-start gap-3">
+
+                <div
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                    :class="
+                        fasePemeriksaan === 1
+                            ? 'bg-blue-100'
+                            : 'bg-emerald-100'
+                    "
+                >
+
+                    <ClipboardDocumentCheckIcon
+                        class="h-5 w-5"
+                        :class="
+                            fasePemeriksaan === 1
+                                ? 'text-blue-600'
+                                : 'text-emerald-600'
+                        "
+                    />
+
+                </div>
+
+
+                <div>
+
+                    <p
+                        class="text-xs font-bold uppercase tracking-wide"
+                        :class="
+                            fasePemeriksaan === 1
+                                ? 'text-blue-600'
+                                : 'text-emerald-600'
+                        "
+                    >
+                        Tahap Pemeriksaan Aktif
+                    </p>
+
+
+                    <p
+                        class="mt-0.5 text-lg font-bold"
+                        :class="
+                            fasePemeriksaan === 1
+                                ? 'text-blue-800'
+                                : 'text-emerald-800'
+                        "
+                    >
+                        {{ tahapLabel }}
+                    </p>
+
+
+                    <p
+                        class="mt-1 text-xs"
+                        :class="
+                            fasePemeriksaan === 1
+                                ? 'text-blue-600'
+                                : 'text-emerald-600'
+                        "
+                    >
+                        {{ tahapDescription }}
+                    </p>
+
+                </div>
+
             </div>
 
         </div>
@@ -492,13 +793,9 @@ const clearFlash = () => {
             class="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
         >
 
-            <div
-                class="flex items-center gap-2"
-            >
+            <div class="flex items-center gap-2">
 
-                <CheckCircleIcon
-                    class="h-5 w-5"
-                />
+                <CheckCircleIcon class="h-5 w-5" />
 
                 <span>
                     {{ flashSuccess }}
@@ -513,9 +810,7 @@ const clearFlash = () => {
                 class="rounded-lg p-1 transition hover:bg-emerald-100"
             >
 
-                <XMarkIcon
-                    class="h-4 w-4"
-                />
+                <XMarkIcon class="h-4 w-4" />
 
             </button>
 
@@ -531,33 +826,19 @@ const clearFlash = () => {
             class="flex items-start justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
         >
 
-            <div
-                class="flex items-start gap-3"
-            >
+            <div class="flex items-start gap-3">
 
-                <div
-                    class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100"
-                >
-
-                    <ExclamationTriangleIcon
-                        class="h-4 w-4 text-rose-600"
-                    />
-
-                </div>
-
+                <ExclamationTriangleIcon
+                    class="mt-0.5 h-5 w-5 text-rose-600"
+                />
 
                 <div>
 
-                    <p
-                        class="font-bold text-rose-800"
-                    >
+                    <p class="font-bold text-rose-800">
                         Terjadi kesalahan
                     </p>
 
-
-                    <p
-                        class="mt-0.5 text-xs text-rose-600"
-                    >
+                    <p class="mt-0.5 text-xs text-rose-600">
                         {{ flashError }}
                     </p>
 
@@ -572,9 +853,7 @@ const clearFlash = () => {
                 class="rounded-lg p-1 text-rose-500 transition hover:bg-rose-100"
             >
 
-                <XMarkIcon
-                    class="h-4 w-4"
-                />
+                <XMarkIcon class="h-4 w-4" />
 
             </button>
 
@@ -590,30 +869,21 @@ const clearFlash = () => {
             class="rounded-2xl border border-amber-200 bg-amber-50 p-6"
         >
 
-            <div
-                class="flex items-start gap-3"
-            >
+            <div class="flex items-start gap-3">
 
                 <ExclamationTriangleIcon
                     class="h-5 w-5 shrink-0 text-amber-600"
                 />
 
-
                 <div>
 
-                    <p
-                        class="text-sm font-bold text-amber-800"
-                    >
+                    <p class="text-sm font-bold text-amber-800">
                         Belum ada periode aktif
                     </p>
 
-
-                    <p
-                        class="mt-1 text-xs text-amber-600"
-                    >
-                        Pemeriksaan berkala belum dapat
-                        dilakukan karena belum ada periode
-                        yang aktif.
+                    <p class="mt-1 text-xs text-amber-600">
+                        Pemeriksaan berkala belum dapat dilakukan
+                        karena belum ada periode yang aktif.
                     </p>
 
                 </div>
@@ -638,147 +908,53 @@ const clearFlash = () => {
                 class="grid grid-cols-1 gap-4 sm:grid-cols-3"
             >
 
-                <!-- TOTAL -->
-
                 <div
                     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
                 >
 
-                    <div
-                        class="flex items-center justify-between"
+                    <p class="text-xs font-semibold text-slate-400">
+                        Total Siswa
+                    </p>
+
+                    <p
+                        class="mt-1 text-2xl font-bold text-slate-800"
                     >
-
-                        <div>
-
-                            <p
-                                class="text-xs font-semibold text-slate-400"
-                            >
-                                Total Siswa
-                            </p>
-
-
-                            <p
-                                class="mt-1 text-2xl font-bold text-slate-800"
-                            >
-                                {{ siswas.length }}
-                            </p>
-
-                        </div>
-
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
-                        >
-
-                            <ClipboardDocumentCheckIcon
-                                class="h-5 w-5 text-blue-600"
-                            />
-
-                        </div>
-
-                    </div>
+                        {{ siswas.length }}
+                    </p>
 
                 </div>
 
 
-                <!-- SELESAI -->
-
                 <div
                     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
                 >
 
-                    <div
-                        class="flex items-center justify-between"
+                    <p class="text-xs font-semibold text-slate-400">
+                        {{ tahapLabel }} Selesai
+                    </p>
+
+                    <p
+                        class="mt-1 text-2xl font-bold text-emerald-600"
                     >
-
-                        <div>
-
-                            <p
-                                class="text-xs font-semibold text-slate-400"
-                            >
-                                Pemeriksaan Lengkap
-                            </p>
-
-
-                            <p
-                                class="mt-1 text-2xl font-bold text-emerald-600"
-                            >
-
-                                {{
-                                    siswas.filter(
-                                        siswa =>
-                                            siswa.berkala_1?.selesai &&
-                                            siswa.berkala_2?.selesai
-                                    ).length
-                                }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
-                        >
-
-                            <CheckCircleIcon
-                                class="h-5 w-5 text-emerald-600"
-                            />
-
-                        </div>
-
-                    </div>
+                        {{ jumlahSelesai }}
+                    </p>
 
                 </div>
 
 
-                <!-- BELUM -->
-
                 <div
                     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
                 >
 
-                    <div
-                        class="flex items-center justify-between"
+                    <p class="text-xs font-semibold text-slate-400">
+                        {{ tahapLabel }} Belum Selesai
+                    </p>
+
+                    <p
+                        class="mt-1 text-2xl font-bold text-rose-600"
                     >
-
-                        <div>
-
-                            <p
-                                class="text-xs font-semibold text-slate-400"
-                            >
-                                Perlu Dilengkapi
-                            </p>
-
-
-                            <p
-                                class="mt-1 text-2xl font-bold text-rose-600"
-                            >
-
-                                {{
-                                    siswas.filter(
-                                        siswa =>
-                                            !siswa.berkala_1?.selesai ||
-                                            !siswa.berkala_2?.selesai
-                                    ).length
-                                }}
-
-                            </p>
-
-                        </div>
-
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50"
-                        >
-
-                            <ExclamationTriangleIcon
-                                class="h-5 w-5 text-rose-600"
-                            />
-
-                        </div>
-
-                    </div>
+                        {{ jumlahBelumSelesai }}
+                    </p>
 
                 </div>
 
@@ -797,16 +973,11 @@ const clearFlash = () => {
                     class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[3fr_1fr_1fr]"
                 >
 
-                    <!-- SEARCH -->
-
-                    <div
-                        class="relative"
-                    >
+                    <div class="relative">
 
                         <MagnifyingGlassIcon
                             class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
                         />
-
 
                         <input
                             v-model="search"
@@ -818,11 +989,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- STATUS -->
-
                     <select
                         v-model="statusFilter"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none"
                     >
 
                         <option value="">
@@ -830,36 +999,23 @@ const clearFlash = () => {
                         </option>
 
                         <option value="selesai">
-                            Lengkap
-                        </option>
-
-                        <option value="sebagian">
-                            Sebagian
+                            Selesai
                         </option>
 
                         <option value="belum">
-                            Belum Lengkap
+                            Belum Selesai
                         </option>
 
                     </select>
 
 
-                    <!-- FILTER -->
-
                     <button
                         type="button"
                         @click="showFilter = !showFilter"
-                        :class="[
-                            'inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
-                            showFilter || kelasFilter
-                                ? 'border-blue-200 bg-blue-50 text-blue-700'
-                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                        ]"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
                     >
 
-                        <FunnelIcon
-                            class="h-4 w-4"
-                        />
+                        <FunnelIcon class="h-4 w-4" />
 
                         Filter Kelas
 
@@ -868,59 +1024,46 @@ const clearFlash = () => {
                 </div>
 
 
-                <!-- FILTER KELAS -->
-
                 <div
                     v-if="showFilter"
                     class="border-t border-slate-100 bg-slate-50/70 px-4 py-4"
                 >
 
-                    <div
-                        class="max-w-xs"
+                    <label
+                        class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                    >
+                        Tingkat Kelas
+                    </label>
+
+
+                    <select
+                        v-model="kelasFilter"
+                        class="w-full max-w-xs rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700"
                     >
 
-                        <label
-                            class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                        <option value="">
+                            Semua Kelas
+                        </option>
+
+                        <option
+                            v-for="kelas in kelasOptions"
+                            :key="kelas"
+                            :value="kelas"
                         >
-                            Tingkat Kelas
-                        </label>
+                            Kelas {{ kelas }}
+                        </option>
 
-
-                        <select
-                            v-model="kelasFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        >
-
-                            <option value="">
-                                Semua Kelas
-                            </option>
-
-
-                            <option
-                                v-for="kelas in kelasOptions"
-                                :key="kelas"
-                                :value="kelas"
-                            >
-
-                                Kelas {{ kelas }}
-
-                            </option>
-
-                        </select>
-
-                    </div>
+                    </select>
 
 
                     <button
                         v-if="hasActiveFilter"
                         type="button"
                         @click="resetFilter"
-                        class="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                        class="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-100"
                     >
 
-                        <XMarkIcon
-                            class="h-4 w-4"
-                        />
+                        <XMarkIcon class="h-4 w-4" />
 
                         Reset Filter
 
@@ -939,31 +1082,19 @@ const clearFlash = () => {
                 class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
 
-                <!-- TABLE HEADER -->
-
                 <div
-                    class="flex flex-col gap-1 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                    class="border-b border-slate-100 px-5 py-4"
                 >
 
-                    <div>
+                    <h2 class="text-sm font-bold text-slate-800">
+                        Daftar Pemeriksaan Siswa
+                    </h2>
 
-                        <h2
-                            class="text-sm font-bold text-slate-800"
-                        >
-                            Daftar Pemeriksaan Siswa
-                        </h2>
-
-
-                        <p
-                            class="mt-0.5 text-xs text-slate-400"
-                        >
-                            Menampilkan
-                            {{ filteredSiswas.length }}
-                            siswa pada periode
-                            {{ periode.nama_periode }}.
-                        </p>
-
-                    </div>
+                    <p class="mt-0.5 text-xs text-slate-400">
+                        Menampilkan {{ filteredSiswas.length }}
+                        siswa pada periode
+                        {{ periode.nama_periode }}.
+                    </p>
 
                 </div>
 
@@ -972,72 +1103,43 @@ const clearFlash = () => {
                      DESKTOP
                 ================================================== -->
 
-                <div
-                    class="hidden overflow-x-auto lg:block"
-                >
+                <div class="hidden overflow-x-auto lg:block">
 
-                    <table
-                        class="min-w-full"
-                    >
+                    <table class="min-w-full">
 
                         <thead>
 
-                            <tr
-                                class="border-b border-slate-200 bg-slate-50"
-                            >
+                            <tr class="border-b border-slate-200 bg-slate-50">
 
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     No
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     NISN
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     Nama Siswa
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     Kelas
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     Jurusan
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">
                                     Berkala 1
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">
                                     Berkala 2
                                 </th>
 
-
-                                <th
-                                    class="whitespace-nowrap px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                                >
+                                <th class="px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">
                                     Status
                                 </th>
 
@@ -1046,9 +1148,7 @@ const clearFlash = () => {
                         </thead>
 
 
-                        <tbody
-                            class="divide-y divide-slate-100"
-                        >
+                        <tbody class="divide-y divide-slate-100">
 
                             <tr
                                 v-for="(siswa, index) in filteredSiswas"
@@ -1058,52 +1158,33 @@ const clearFlash = () => {
 
                                 <!-- NO -->
 
-                                <td
-                                    class="whitespace-nowrap px-5 py-4 text-sm text-slate-500"
-                                >
+                                <td class="px-5 py-4 text-sm text-slate-500">
                                     {{ index + 1 }}
                                 </td>
 
 
                                 <!-- NISN -->
 
-                                <td
-                                    class="whitespace-nowrap px-5 py-4 text-sm font-semibold text-slate-700"
-                                >
+                                <td class="px-5 py-4 text-sm font-semibold text-slate-700">
                                     {{ siswa.nisn }}
                                 </td>
 
 
                                 <!-- NAMA -->
 
-                                <td
-                                    class="px-5 py-4"
-                                >
+                                <td class="px-5 py-4">
 
-                                    <div
-                                        class="flex items-center gap-3"
-                                    >
+                                    <div class="flex items-center gap-3">
 
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                            class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
                                         >
-                                            {{
-                                                siswa.nama
-                                                    ?.charAt(0)
-                                                    ?.toUpperCase()
-                                            }}
+                                            {{ siswa.nama?.charAt(0)?.toUpperCase() }}
                                         </div>
 
-
-                                        <div>
-
-                                            <p
-                                                class="whitespace-nowrap text-sm font-semibold text-slate-800"
-                                            >
-                                                {{ siswa.nama }}
-                                            </p>
-
-                                        </div>
+                                        <p class="text-sm font-semibold text-slate-800">
+                                            {{ siswa.nama }}
+                                        </p>
 
                                     </div>
 
@@ -1112,199 +1193,262 @@ const clearFlash = () => {
 
                                 <!-- KELAS -->
 
-                                <td
-                                    class="whitespace-nowrap px-5 py-4 text-sm font-medium text-slate-700"
-                                >
+                                <td class="px-5 py-4 text-sm font-medium text-slate-700">
+
                                     {{
                                         siswa.kelas?.nama_kelas ||
                                         siswa.kelas?.tingkat ||
                                         '-'
                                     }}
+
                                 </td>
 
 
                                 <!-- JURUSAN -->
 
-                                <td
-                                    class="whitespace-nowrap px-5 py-4 text-sm text-slate-600"
-                                >
+                                <td class="px-5 py-4 text-sm text-slate-600">
+
                                     {{
-                                        siswa.kelas?.jurusan
-                                            ?.nama_jurusan ||
+                                        siswa.kelas?.jurusan?.nama_jurusan ||
                                         '-'
                                     }}
+
                                 </td>
 
 
-                                <!-- BERKALA 1 -->
+                                <!-- ==================================================
+                                     BERKALA 1
+                                ================================================== -->
 
-                                <td
-                                    class="px-5 py-4 text-center"
-                                >
+                                <td class="px-5 py-4 text-center">
 
-                                    <Link
-                                        v-if="siswa.berkala_1?.selesai"
-                                        :href="route(
-                                            'klinik.kesehatan.pemeriksaan.show',
-                                            siswa.berkala_1.id
-                                        )"
-                                        class="group inline-flex min-w-[110px] flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 transition hover:border-emerald-300 hover:bg-emerald-100"
+
+                                    <!-- SELESAI -->
+
+                                    <button
+                                        v-if="siswa.berkala_1?.status === 'selesai'"
+                                        type="button"
+                                        @click="openResultModal(siswa, 'berkala_1')"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 hover:bg-emerald-100"
                                     >
 
                                         <span
                                             class="flex items-center gap-1.5 text-xs font-bold text-emerald-700"
                                         >
 
-                                            <CheckCircleIcon
-                                                class="h-4 w-4"
-                                            />
+                                            <CheckCircleIcon class="h-4 w-4" />
 
                                             Selesai
 
                                         </span>
 
-
-                                        <span
-                                            v-if="siswa.berkala_1.tanggal"
-                                            class="mt-0.5 text-[10px] text-emerald-600"
-                                        >
-
-                                            {{
-                                                new Date(
-                                                    siswa.berkala_1.tanggal
-                                                ).toLocaleDateString(
-                                                    'id-ID'
-                                                )
-                                            }}
-
+                                        <span class="mt-0.5 text-[10px] text-emerald-600">
+                                            Klik untuk melihat hasil
                                         </span>
 
-                                    </Link>
+                                    </button>
 
+
+                                    <!-- AKTIF -->
 
                                     <Link
-                                        v-else
-                                        :href="route(
-                                            'klinik.kesehatan.pemeriksaan.create',
-                                            {
-                                                siswa: siswa.id,
-                                                jenis: 1
-                                            }
-                                        )"
-                                        class="inline-flex min-w-[110px] flex-col items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 transition hover:border-rose-300 hover:bg-rose-100"
+                                        v-else-if="berkala1Aktif"
+                                        :href="
+                                            route(
+                                                'klinik.kesehatan.pemeriksaan.create',
+                                                {
+                                                    siswa: siswa.id,
+                                                    jenis: 1
+                                                }
+                                            )
+                                        "
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 hover:bg-blue-100"
                                     >
 
                                         <span
-                                            class="flex items-center gap-1.5 text-xs font-bold text-rose-700"
+                                            class="flex items-center gap-1.5 text-xs font-bold text-blue-700"
                                         >
 
-                                            <ExclamationTriangleIcon
-                                                class="h-4 w-4"
-                                            />
+                                            <ClipboardDocumentCheckIcon class="h-4 w-4" />
 
                                             Lengkapi
 
                                         </span>
 
-
-                                        <span
-                                            class="mt-0.5 text-[10px] text-rose-500"
-                                        >
-                                            Belum diisi
+                                        <span class="mt-0.5 text-[10px] text-blue-500">
+                                            Bisa diisi
                                         </span>
 
                                     </Link>
 
+
+                                    <!-- VIEW -->
+
+                                    <button
+                                        v-else-if="siswa.berkala_1 && berkala1View"
+                                        type="button"
+                                        @click="openResultModal(siswa, 'berkala_1')"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 hover:bg-slate-100"
+                                    >
+
+                                        <span
+                                            class="flex items-center gap-1.5 text-xs font-bold text-slate-600"
+                                        >
+
+                                            <EyeIcon class="h-4 w-4" />
+
+                                            Lihat
+
+                                        </span>
+
+                                        <span class="mt-0.5 text-[10px] text-slate-400">
+                                            Hasil Berkala 1
+                                        </span>
+
+                                    </button>
+
+
+                                    <!-- DITUTUP -->
+
+                                    <div
+                                        v-else
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                                    >
+
+                                        <span
+                                            class="flex items-center gap-1.5 text-xs font-bold text-slate-500"
+                                        >
+
+                                            <LockClosedIcon class="h-4 w-4" />
+
+                                            Ditutup
+
+                                        </span>
+
+                                    </div>
+
                                 </td>
 
 
-                                <!-- BERKALA 2 -->
+                                <!-- ==================================================
+                                     BERKALA 2
+                                ================================================== -->
 
-                                <td
-                                    class="px-5 py-4 text-center"
-                                >
+                                <td class="px-5 py-4 text-center">
 
-                                    <Link
-                                        v-if="siswa.berkala_2?.selesai"
-                                        :href="route(
-                                            'klinik.kesehatan.pemeriksaan.show',
-                                            siswa.berkala_2.id
-                                        )"
-                                        class="group inline-flex min-w-[110px] flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 transition hover:border-emerald-300 hover:bg-emerald-100"
+
+                                    <!-- SELESAI -->
+
+                                    <button
+                                        v-if="siswa.berkala_2?.status === 'selesai'"
+                                        type="button"
+                                        @click="openResultModal(siswa, 'berkala_2')"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 hover:bg-emerald-100"
                                     >
 
                                         <span
                                             class="flex items-center gap-1.5 text-xs font-bold text-emerald-700"
                                         >
 
-                                            <CheckCircleIcon
-                                                class="h-4 w-4"
-                                            />
+                                            <CheckCircleIcon class="h-4 w-4" />
 
                                             Selesai
 
                                         </span>
 
-
-                                        <span
-                                            v-if="siswa.berkala_2.tanggal"
-                                            class="mt-0.5 text-[10px] text-emerald-600"
-                                        >
-
-                                            {{
-                                                new Date(
-                                                    siswa.berkala_2.tanggal
-                                                ).toLocaleDateString(
-                                                    'id-ID'
-                                                )
-                                            }}
-
+                                        <span class="mt-0.5 text-[10px] text-emerald-600">
+                                            Klik untuk melihat hasil
                                         </span>
 
-                                    </Link>
+                                    </button>
 
+
+                                    <!-- AKTIF -->
 
                                     <Link
-                                        v-else
-                                        :href="route(
-                                            'klinik.kesehatan.pemeriksaan.create',
-                                            {
-                                                siswa: siswa.id,
-                                                jenis: 2
-                                            }
-                                        )"
-                                        class="inline-flex min-w-[110px] flex-col items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 transition hover:border-rose-300 hover:bg-rose-100"
+                                        v-else-if="berkala2Aktif"
+                                        :href="
+                                            route(
+                                                'klinik.kesehatan.pemeriksaan.create',
+                                                {
+                                                    siswa: siswa.id,
+                                                    jenis: 2
+                                                }
+                                            )
+                                        "
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 hover:bg-emerald-100"
                                     >
 
                                         <span
-                                            class="flex items-center gap-1.5 text-xs font-bold text-rose-700"
+                                            class="flex items-center gap-1.5 text-xs font-bold text-emerald-700"
                                         >
 
-                                            <ExclamationTriangleIcon
-                                                class="h-4 w-4"
-                                            />
+                                            <ClipboardDocumentCheckIcon class="h-4 w-4" />
 
                                             Lengkapi
 
                                         </span>
 
-
-                                        <span
-                                            class="mt-0.5 text-[10px] text-rose-500"
-                                        >
-                                            Belum diisi
+                                        <span class="mt-0.5 text-[10px] text-emerald-600">
+                                            Bisa diisi
                                         </span>
 
                                     </Link>
 
+
+                                    <!-- VIEW -->
+
+                                    <button
+                                        v-else-if="siswa.berkala_2 && berkala2View"
+                                        type="button"
+                                        @click="openResultModal(siswa, 'berkala_2')"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 hover:bg-slate-100"
+                                    >
+
+                                        <span
+                                            class="flex items-center gap-1.5 text-xs font-bold text-slate-600"
+                                        >
+
+                                            <EyeIcon class="h-4 w-4" />
+
+                                            Lihat
+
+                                        </span>
+
+                                        <span class="mt-0.5 text-[10px] text-slate-400">
+                                            Hasil Berkala 2
+                                        </span>
+
+                                    </button>
+
+
+                                    <!-- DITUTUP -->
+
+                                    <div
+                                        v-else
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                                    >
+
+                                        <span
+                                            class="flex items-center gap-1.5 text-xs font-bold text-slate-500"
+                                        >
+
+                                            <LockClosedIcon class="h-4 w-4" />
+
+                                            Ditutup
+
+                                        </span>
+
+                                    </div>
+
                                 </td>
 
 
-                                <!-- STATUS -->
+                                <!-- ==================================================
+                                     STATUS
+                                ================================================== -->
 
-                                <td
-                                    class="whitespace-nowrap px-5 py-4 text-center"
-                                >
+                                <td class="px-5 py-4 text-center">
 
                                     <span
                                         :class="[
@@ -1324,45 +1468,24 @@ const clearFlash = () => {
 
                             <!-- EMPTY -->
 
-                            <tr
-                                v-if="filteredSiswas.length === 0"
-                            >
+                            <tr v-if="filteredSiswas.length === 0">
 
                                 <td
                                     colspan="8"
                                     class="px-5 py-16 text-center"
                                 >
 
-                                    <div
-                                        class="mx-auto flex max-w-sm flex-col items-center"
-                                    >
+                                    <MagnifyingGlassIcon
+                                        class="mx-auto h-6 w-6 text-slate-400"
+                                    />
 
-                                        <div
-                                            class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100"
-                                        >
+                                    <p class="mt-3 text-sm font-bold text-slate-700">
+                                        Data siswa tidak ditemukan
+                                    </p>
 
-                                            <MagnifyingGlassIcon
-                                                class="h-6 w-6 text-slate-400"
-                                            />
-
-                                        </div>
-
-
-                                        <p
-                                            class="text-sm font-bold text-slate-700"
-                                        >
-                                            Data siswa tidak ditemukan
-                                        </p>
-
-
-                                        <p
-                                            class="mt-1 text-xs text-slate-400"
-                                        >
-                                            Coba ubah kata pencarian
-                                            atau filter.
-                                        </p>
-
-                                    </div>
+                                    <p class="mt-1 text-xs text-slate-400">
+                                        Coba ubah kata pencarian atau filter.
+                                    </p>
 
                                 </td>
 
@@ -1379,53 +1502,37 @@ const clearFlash = () => {
                      MOBILE
                 ================================================== -->
 
-                <div
-                    class="divide-y divide-slate-100 lg:hidden"
-                >
+                <div class="divide-y divide-slate-100 lg:hidden">
 
                     <div
-                        v-for="(siswa, index) in filteredSiswas"
+                        v-for="siswa in filteredSiswas"
                         :key="siswa.id"
                         class="p-4"
                     >
 
-                        <!-- SISWA -->
+                        <!-- IDENTITAS -->
 
-                        <div
-                            class="flex items-start justify-between gap-3"
-                        >
+                        <div class="flex items-start justify-between gap-3">
 
-                            <div
-                                class="flex min-w-0 items-center gap-3"
-                            >
+                            <div class="flex items-center gap-3">
 
                                 <div
-                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
                                 >
-                                    {{
-                                        siswa.nama
-                                            ?.charAt(0)
-                                            ?.toUpperCase()
-                                    }}
+
+                                    {{ siswa.nama?.charAt(0)?.toUpperCase() }}
+
                                 </div>
 
 
-                                <div
-                                    class="min-w-0"
-                                >
+                                <div>
 
-                                    <p
-                                        class="truncate text-sm font-bold text-slate-800"
-                                    >
+                                    <p class="text-sm font-bold text-slate-800">
                                         {{ siswa.nama }}
                                     </p>
 
-
-                                    <p
-                                        class="text-xs text-slate-400"
-                                    >
-                                        NISN:
-                                        {{ siswa.nisn }}
+                                    <p class="text-xs text-slate-400">
+                                        NISN: {{ siswa.nisn }}
                                     </p>
 
                                 </div>
@@ -1435,39 +1542,36 @@ const clearFlash = () => {
 
                             <span
                                 :class="[
-                                    'shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold',
+                                    'rounded-full px-2.5 py-1 text-[10px] font-bold',
                                     getStatusClass(siswa)
                                 ]"
                             >
+
                                 {{ getStatusLabel(siswa) }}
+
                             </span>
 
                         </div>
 
 
-                        <!-- INFO -->
+                        <!-- KELAS JURUSAN -->
 
-                        <div
-                            class="mt-4 grid grid-cols-2 gap-3 text-xs"
-                        >
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
 
                             <div>
 
-                                <p
-                                    class="text-slate-400"
-                                >
+                                <p class="text-slate-400">
                                     Kelas
                                 </p>
 
+                                <p class="mt-0.5 font-semibold text-slate-700">
 
-                                <p
-                                    class="mt-0.5 font-semibold text-slate-700"
-                                >
                                     {{
                                         siswa.kelas?.nama_kelas ||
                                         siswa.kelas?.tingkat ||
                                         '-'
                                     }}
+
                                 </p>
 
                             </div>
@@ -1475,21 +1579,17 @@ const clearFlash = () => {
 
                             <div>
 
-                                <p
-                                    class="text-slate-400"
-                                >
+                                <p class="text-slate-400">
                                     Jurusan
                                 </p>
 
+                                <p class="mt-0.5 font-semibold text-slate-700">
 
-                                <p
-                                    class="mt-0.5 font-semibold text-slate-700"
-                                >
                                     {{
-                                        siswa.kelas?.jurusan
-                                            ?.nama_jurusan ||
+                                        siswa.kelas?.jurusan?.nama_jurusan ||
                                         '-'
                                     }}
+
                                 </p>
 
                             </div>
@@ -1497,164 +1597,257 @@ const clearFlash = () => {
                         </div>
 
 
-                        <!-- BERKALA -->
+                        <!-- ==================================================
+                             BERKALA
+                        ================================================== -->
 
-                        <div
-                            class="mt-4 grid grid-cols-2 gap-3"
-                        >
+                        <div class="mt-4 grid grid-cols-2 gap-3">
 
-                            <!-- BERKALA 1 -->
 
-                            <Link
-                                v-if="siswa.berkala_1?.selesai"
-                                :href="route(
-                                    'klinik.kesehatan.pemeriksaan.show',
-                                    siswa.berkala_1.id
-                                )"
-                                class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 transition hover:bg-emerald-100"
+                            <!-- ==================================================
+                                 BERKALA 1 SELESAI
+                            ================================================== -->
+
+                            <button
+                                v-if="siswa.berkala_1?.status === 'selesai'"
+                                type="button"
+                                @click="openResultModal(siswa, 'berkala_1')"
+                                class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-left hover:bg-emerald-100"
                             >
 
-                                <p
-                                    class="text-[10px] font-bold uppercase tracking-wide text-emerald-600"
-                                >
+                                <p class="text-[10px] font-bold uppercase text-emerald-600">
                                     Berkala 1
                                 </p>
 
+                                <div class="mt-1 flex items-center gap-1.5">
 
-                                <div
-                                    class="mt-1 flex items-center gap-1.5"
-                                >
+                                    <CheckCircleIcon class="h-4 w-4 text-emerald-600" />
 
-                                    <CheckCircleIcon
-                                        class="h-4 w-4 text-emerald-600"
-                                    />
-
-
-                                    <span
-                                        class="text-xs font-bold text-emerald-700"
-                                    >
+                                    <span class="text-xs font-bold text-emerald-700">
                                         Selesai
                                     </span>
 
                                 </div>
 
-                            </Link>
+                                <p class="mt-1 text-[10px] text-emerald-600">
+                                    Klik untuk melihat
+                                </p>
 
+                            </button>
+
+
+                            <!-- B1 AKTIF -->
 
                             <Link
-                                v-else
-                                :href="route(
-                                    'klinik.kesehatan.pemeriksaan.create',
-                                    {
-                                        siswa: siswa.id,
-                                        jenis: 1
-                                    }
-                                )"
-                                class="rounded-xl border border-rose-200 bg-rose-50 p-3 transition hover:bg-rose-100"
+                                v-else-if="berkala1Aktif"
+                                :href="
+                                    route(
+                                        'klinik.kesehatan.pemeriksaan.create',
+                                        {
+                                            siswa: siswa.id,
+                                            jenis: 1
+                                        }
+                                    )
+                                "
+                                class="rounded-xl border border-blue-200 bg-blue-50 p-3"
                             >
 
-                                <p
-                                    class="text-[10px] font-bold uppercase tracking-wide text-rose-600"
-                                >
+                                <p class="text-[10px] font-bold uppercase text-blue-600">
                                     Berkala 1
                                 </p>
 
+                                <div class="mt-1 flex items-center gap-1.5">
 
-                                <div
-                                    class="mt-1 flex items-center gap-1.5"
-                                >
+                                    <ClipboardDocumentCheckIcon class="h-4 w-4 text-blue-600" />
 
-                                    <ExclamationTriangleIcon
-                                        class="h-4 w-4 text-rose-600"
-                                    />
-
-
-                                    <span
-                                        class="text-xs font-bold text-rose-700"
-                                    >
+                                    <span class="text-xs font-bold text-blue-700">
                                         Lengkapi
                                     </span>
 
                                 </div>
 
+                                <p class="mt-1 text-[10px] text-blue-500">
+                                    Bisa diisi
+                                </p>
+
                             </Link>
 
 
-                            <!-- BERKALA 2 -->
+                            <!-- B1 VIEW -->
 
-                            <Link
-                                v-if="siswa.berkala_2?.selesai"
-                                :href="route(
-                                    'klinik.kesehatan.pemeriksaan.show',
-                                    siswa.berkala_2.id
-                                )"
-                                class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 transition hover:bg-emerald-100"
+                            <button
+                                v-else-if="siswa.berkala_1 && berkala1View"
+                                type="button"
+                                @click="openResultModal(siswa, 'berkala_1')"
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-left hover:bg-slate-100"
                             >
 
-                                <p
-                                    class="text-[10px] font-bold uppercase tracking-wide text-emerald-600"
-                                >
+                                <p class="text-[10px] font-bold uppercase text-slate-500">
+                                    Berkala 1
+                                </p>
+
+                                <div class="mt-1 flex items-center gap-1.5">
+
+                                    <EyeIcon class="h-4 w-4 text-slate-500" />
+
+                                    <span class="text-xs font-bold text-slate-600">
+                                        Lihat
+                                    </span>
+
+                                </div>
+
+                                <p class="mt-1 text-[10px] text-slate-400">
+                                    Hasil Berkala 1
+                                </p>
+
+                            </button>
+
+
+                            <!-- B1 DITUTUP -->
+
+                            <div
+                                v-else
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                            >
+
+                                <p class="text-[10px] font-bold uppercase text-slate-400">
+                                    Berkala 1
+                                </p>
+
+                                <div class="mt-1 flex items-center gap-1.5">
+
+                                    <LockClosedIcon class="h-4 w-4 text-slate-400" />
+
+                                    <span class="text-xs font-bold text-slate-500">
+                                        Ditutup
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ==================================================
+                                 BERKALA 2 SELESAI
+                            ================================================== -->
+
+                            <button
+                                v-if="siswa.berkala_2?.status === 'selesai'"
+                                type="button"
+                                @click="openResultModal(siswa, 'berkala_2')"
+                                class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-left hover:bg-emerald-100"
+                            >
+
+                                <p class="text-[10px] font-bold uppercase text-emerald-600">
                                     Berkala 2
                                 </p>
 
+                                <div class="mt-1 flex items-center gap-1.5">
 
-                                <div
-                                    class="mt-1 flex items-center gap-1.5"
-                                >
+                                    <CheckCircleIcon class="h-4 w-4 text-emerald-600" />
 
-                                    <CheckCircleIcon
-                                        class="h-4 w-4 text-emerald-600"
-                                    />
-
-
-                                    <span
-                                        class="text-xs font-bold text-emerald-700"
-                                    >
+                                    <span class="text-xs font-bold text-emerald-700">
                                         Selesai
                                     </span>
 
                                 </div>
 
-                            </Link>
+                                <p class="mt-1 text-[10px] text-emerald-600">
+                                    Klik untuk melihat
+                                </p>
 
+                            </button>
+
+
+                            <!-- B2 AKTIF -->
 
                             <Link
-                                v-else
-                                :href="route(
-                                    'klinik.kesehatan.pemeriksaan.create',
-                                    {
-                                        siswa: siswa.id,
-                                        jenis: 2
-                                    }
-                                )"
-                                class="rounded-xl border border-rose-200 bg-rose-50 p-3 transition hover:bg-rose-100"
+                                v-else-if="berkala2Aktif"
+                                :href="
+                                    route(
+                                        'klinik.kesehatan.pemeriksaan.create',
+                                        {
+                                            siswa: siswa.id,
+                                            jenis: 2
+                                        }
+                                    )
+                                "
+                                class="rounded-xl border border-emerald-200 bg-emerald-50 p-3"
                             >
 
-                                <p
-                                    class="text-[10px] font-bold uppercase tracking-wide text-rose-600"
-                                >
+                                <p class="text-[10px] font-bold uppercase text-emerald-600">
                                     Berkala 2
                                 </p>
 
+                                <div class="mt-1 flex items-center gap-1.5">
 
-                                <div
-                                    class="mt-1 flex items-center gap-1.5"
-                                >
+                                    <ClipboardDocumentCheckIcon class="h-4 w-4 text-emerald-600" />
 
-                                    <ExclamationTriangleIcon
-                                        class="h-4 w-4 text-rose-600"
-                                    />
-
-
-                                    <span
-                                        class="text-xs font-bold text-rose-700"
-                                    >
+                                    <span class="text-xs font-bold text-emerald-700">
                                         Lengkapi
                                     </span>
 
                                 </div>
 
+                                <p class="mt-1 text-[10px] text-emerald-600">
+                                    Bisa diisi
+                                </p>
+
                             </Link>
+
+
+                            <!-- B2 VIEW -->
+
+                            <button
+                                v-else-if="siswa.berkala_2 && berkala2View"
+                                type="button"
+                                @click="openResultModal(siswa, 'berkala_2')"
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-left hover:bg-slate-100"
+                            >
+
+                                <p class="text-[10px] font-bold uppercase text-slate-500">
+                                    Berkala 2
+                                </p>
+
+                                <div class="mt-1 flex items-center gap-1.5">
+
+                                    <EyeIcon class="h-4 w-4 text-slate-500" />
+
+                                    <span class="text-xs font-bold text-slate-600">
+                                        Lihat
+                                    </span>
+
+                                </div>
+
+                                <p class="mt-1 text-[10px] text-slate-400">
+                                    Hasil Berkala 2
+                                </p>
+
+                            </button>
+
+
+                            <!-- B2 DITUTUP -->
+
+                            <div
+                                v-else
+                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                            >
+
+                                <p class="text-[10px] font-bold uppercase text-slate-400">
+                                    Berkala 2
+                                </p>
+
+                                <div class="mt-1 flex items-center gap-1.5">
+
+                                    <LockClosedIcon class="h-4 w-4 text-slate-400" />
+
+                                    <span class="text-xs font-bold text-slate-500">
+                                        Ditutup
+                                    </span>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
@@ -1668,18 +1861,16 @@ const clearFlash = () => {
                         class="px-5 py-16 text-center"
                     >
 
-                        <p
-                            class="text-sm font-bold text-slate-700"
-                        >
+                        <MagnifyingGlassIcon
+                            class="mx-auto h-6 w-6 text-slate-400"
+                        />
+
+                        <p class="mt-3 text-sm font-bold text-slate-700">
                             Data siswa tidak ditemukan
                         </p>
 
-
-                        <p
-                            class="mt-1 text-xs text-slate-400"
-                        >
-                            Coba ubah kata pencarian atau
-                            filter.
+                        <p class="mt-1 text-xs text-slate-400">
+                            Coba ubah kata pencarian atau filter.
                         </p>
 
                     </div>
@@ -1691,6 +1882,811 @@ const clearFlash = () => {
         </template>
 
     </div>
+
+
+    <!-- ==========================================================
+         POPUP DETAIL PEMERIKSAAN
+    =========================================================== -->
+
+    <Teleport to="body">
+
+        <div
+            v-if="showResultModal"
+            class="fixed inset-0 z-[999] flex items-center justify-center p-4"
+        >
+
+            <!-- BACKDROP -->
+
+            <div
+                class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+                @click="closeResultModal"
+            ></div>
+
+
+            <!-- MODAL -->
+
+            <div
+                class="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            >
+
+
+                <!-- ==================================================
+                     HEADER
+                ================================================== -->
+
+                <div
+                    class="flex items-start justify-between border-b border-slate-100 px-6 py-5"
+                >
+
+                    <div class="flex items-center gap-3">
+
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100"
+                        >
+
+                            <CheckCircleIcon
+                                class="h-5 w-5 text-emerald-600"
+                            />
+
+                        </div>
+
+
+                        <div>
+
+                            <p
+                                class="text-xs font-bold uppercase tracking-wide text-emerald-600"
+                            >
+                                Pemeriksaan Selesai
+                            </p>
+
+                            <h2
+                                class="mt-0.5 text-lg font-bold text-slate-800"
+                            >
+                                {{ modalJenisLabel }}
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        @click="closeResultModal"
+                        class="rounded-xl p-2 text-slate-400 hover:bg-slate-100"
+                    >
+
+                        <XMarkIcon class="h-6 w-6" />
+
+                    </button>
+
+                </div>
+
+
+                <!-- ==================================================
+                     CONTENT
+                ================================================== -->
+
+                <div
+                    v-if="selectedPemeriksaan && selectedSiswa"
+                    class="overflow-y-auto px-6 py-6"
+                >
+
+
+                    <!-- ==================================================
+                         IDENTITAS SISWA
+                    ================================================== -->
+
+                    <div
+                        class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                    >
+
+                        <div class="flex items-start gap-4">
+
+                            <div
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-700"
+                            >
+
+                                {{
+                                    selectedSiswa.nama
+                                        ?.charAt(0)
+                                        ?.toUpperCase()
+                                }}
+
+                            </div>
+
+
+                            <div class="min-w-0">
+
+                                <h3
+                                    class="text-base font-bold text-slate-800"
+                                >
+                                    {{ selectedSiswa.nama }}
+                                </h3>
+
+
+                                <div
+                                    class="mt-2 grid grid-cols-1 gap-x-6 gap-y-2 text-xs text-slate-600 sm:grid-cols-2"
+                                >
+
+                                    <p>
+                                        <b>NISN:</b>
+                                        {{ displayValue(selectedSiswa.nisn) }}
+                                    </p>
+
+
+                                    <p>
+                                        <b>Kelas:</b>
+
+                                        {{
+                                            selectedSiswa.kelas?.nama_kelas ||
+                                            selectedSiswa.kelas?.tingkat ||
+                                            '-'
+                                        }}
+
+                                    </p>
+
+
+                                    <p>
+                                        <b>Jurusan:</b>
+
+                                        {{
+                                            selectedSiswa.kelas?.jurusan?.nama_jurusan ||
+                                            '-'
+                                        }}
+
+                                    </p>
+
+
+                                    <p>
+                                        <b>Jenis Kelamin:</b>
+
+                                        {{
+                                            displayValue(
+                                                selectedSiswa.jenis_kelamin
+                                            )
+                                        }}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TANGGAL & STATUS
+                    ================================================== -->
+
+                    <div
+                        class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
+                    >
+
+                        <div
+                            class="rounded-xl border border-slate-200 bg-white p-4"
+                        >
+
+                            <div class="flex items-center gap-3">
+
+                                <CalendarDaysIcon
+                                    class="h-5 w-5 text-blue-500"
+                                />
+
+                                <div>
+
+                                    <p
+                                        class="text-[10px] font-bold uppercase tracking-wide text-slate-400"
+                                    >
+                                        Tanggal Pemeriksaan
+                                    </p>
+
+                                    <p
+                                        class="mt-0.5 text-sm font-bold text-slate-700"
+                                    >
+
+                                        {{
+                                            formatTanggal(
+                                                selectedPemeriksaan.tanggal_pemeriksaan
+                                            )
+                                        }}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="rounded-xl border border-emerald-200 bg-emerald-50 p-4"
+                        >
+
+                            <div class="flex items-center gap-3">
+
+                                <CheckCircleIcon
+                                    class="h-5 w-5 text-emerald-600"
+                                />
+
+                                <div>
+
+                                    <p
+                                        class="text-[10px] font-bold uppercase tracking-wide text-emerald-500"
+                                    >
+                                        Status
+                                    </p>
+
+                                    <p
+                                        class="mt-0.5 text-sm font-bold text-emerald-700"
+                                    >
+
+                                        {{
+                                            selectedPemeriksaan.status === 'selesai'
+                                                ? 'Selesai'
+                                                : 'Belum Selesai'
+                                        }}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         ANTROPOMETRI
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <ScaleIcon
+                                class="h-5 w-5 text-blue-600"
+                            />
+
+                            <h3 class="text-sm font-bold text-slate-800">
+                                Antropometri
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                        >
+
+                            <!-- BERAT -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Berat Badan
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.berat_badan
+                                        )
+                                    }}
+
+                                    <span
+                                        v-if="
+                                            selectedPemeriksaan.berat_badan !== null &&
+                                            selectedPemeriksaan.berat_badan !== ''
+                                        "
+                                        class="text-xs font-normal text-slate-400"
+                                    >
+                                        kg
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- TINGGI -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Tinggi Badan
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.tinggi_badan
+                                        )
+                                    }}
+
+                                    <span
+                                        v-if="
+                                            selectedPemeriksaan.tinggi_badan !== null &&
+                                            selectedPemeriksaan.tinggi_badan !== ''
+                                        "
+                                        class="text-xs font-normal text-slate-400"
+                                    >
+                                        cm
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- IMT -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    IMT
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.imt
+                                        )
+                                    }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TANDA VITAL
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <HeartIcon
+                                class="h-5 w-5 text-rose-500"
+                            />
+
+                            <h3 class="text-sm font-bold text-slate-800">
+                                Tanda Vital
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="grid grid-cols-1 gap-3 sm:grid-cols-3"
+                        >
+
+                            <!-- TEKANAN DARAH -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Tekanan Darah
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.tekanan_darah
+                                        )
+                                    }}
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- NADI -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Denyut Nadi
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.denyut_nadi
+                                        )
+                                    }}
+
+                                    <span
+                                        v-if="
+                                            selectedPemeriksaan.denyut_nadi !== null &&
+                                            selectedPemeriksaan.denyut_nadi !== ''
+                                        "
+                                        class="text-xs font-normal text-slate-400"
+                                    >
+                                        bpm
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- SUHU -->
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Suhu Tubuh
+                                </p>
+
+                                <p
+                                    class="mt-1 text-base font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.suhu_tubuh
+                                        )
+                                    }}
+
+                                    <span
+                                        v-if="
+                                            selectedPemeriksaan.suhu_tubuh !== null &&
+                                            selectedPemeriksaan.suhu_tubuh !== ''
+                                        "
+                                        class="text-xs font-normal text-slate-400"
+                                    >
+                                        °C
+                                    </span>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         PEMERIKSAAN FISIK
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <InformationCircleIcon
+                                class="h-5 w-5 text-purple-600"
+                            />
+
+                            <h3 class="text-sm font-bold text-slate-800">
+                                Pemeriksaan Fisik
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                        >
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Mata
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                    {{ displayValue(selectedPemeriksaan.mata) }}
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Telinga
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                    {{ displayValue(selectedPemeriksaan.telinga) }}
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Gigi & Mulut
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-700">
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.gigi_mulut
+                                        )
+                                    }}
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="rounded-xl border border-slate-200 p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Kondisi Umum
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-700">
+
+                                    {{
+                                        displayValue(
+                                            selectedPemeriksaan.kondisi_umum
+                                        )
+                                    }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         KELUHAN
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <h3 class="mb-3 text-sm font-bold text-slate-800">
+                            Keluhan
+                        </h3>
+
+
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+
+                            <p
+                                class="whitespace-pre-line text-sm leading-6 text-slate-700"
+                            >
+
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.keluhan
+                                    )
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         HASIL
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <h3 class="mb-3 text-sm font-bold text-slate-800">
+                            Hasil Pemeriksaan
+                        </h3>
+
+
+                        <div
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        >
+
+                            <p
+                                class="whitespace-pre-line text-sm leading-6 text-slate-700"
+                            >
+
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.hasil_pemeriksaan
+                                    )
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         REKOMENDASI
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <h3 class="mb-3 text-sm font-bold text-slate-800">
+                            Rekomendasi
+                        </h3>
+
+
+                        <div
+                            class="rounded-xl border border-blue-100 bg-blue-50 p-4"
+                        >
+
+                            <p
+                                class="whitespace-pre-line text-sm leading-6 text-blue-800"
+                            >
+
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.rekomendasi
+                                    )
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         CATATAN
+                    ================================================== -->
+
+                    <div class="mt-6">
+
+                        <h3 class="mb-3 text-sm font-bold text-slate-800">
+                            Catatan
+                        </h3>
+
+
+                        <div
+                            class="rounded-xl border border-amber-100 bg-amber-50 p-4"
+                        >
+
+                            <p
+                                class="whitespace-pre-line text-sm leading-6 text-amber-800"
+                            >
+
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.catatan
+                                    )
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         PEMERIKSA
+                    ================================================== -->
+
+                    <div
+                        class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4"
+                    >
+
+                        <div class="flex items-center gap-3">
+
+                            <div
+                                class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-200"
+                            >
+
+                                <UserIcon
+                                    class="h-5 w-5 text-slate-500"
+                                />
+
+                            </div>
+
+
+                            <div>
+
+                                <p
+                                    class="text-[10px] font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Diperiksa Oleh
+                                </p>
+
+
+                                <p
+                                    class="mt-0.5 text-sm font-bold text-slate-700"
+                                >
+
+                                    {{
+                                        selectedPemeriksaan.pemeriksa?.name ||
+                                        selectedPemeriksaan.pemeriksa?.nama ||
+                                        'Tidak diketahui'
+                                    }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     FOOTER
+                ================================================== -->
+
+                <div
+                    class="flex items-center justify-end border-t border-slate-100 bg-slate-50 px-6 py-4"
+                >
+
+                    <button
+                        type="button"
+                        @click="closeResultModal"
+                        class="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700"
+                    >
+                        Tutup
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </Teleport>
 
 </KlinikLayout>
 

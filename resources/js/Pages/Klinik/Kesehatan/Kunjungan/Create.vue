@@ -15,6 +15,7 @@ import {
     TrashIcon,
     UserIcon,
     BeakerIcon,
+    MagnifyingGlassIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -31,6 +32,11 @@ const props = defineProps({
     },
 
     siswas: {
+        type: Array,
+        default: () => [],
+    },
+
+    penyakitList: {
         type: Array,
         default: () => [],
     },
@@ -68,7 +74,7 @@ const form = useForm({
 
     pemeriksaan: '',
 
-    diagnosis: '',
+    penyakit_id: null,
 
     tindakan: '',
 
@@ -149,6 +155,83 @@ function clearSiswa() {
 function closeDropdown() {
     setTimeout(() => {
         showSiswaDropdown.value = false
+    }, 150)
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| PENYAKIT
+|--------------------------------------------------------------------------
+*/
+
+const searchPenyakit = ref('')
+
+const showPenyakitDropdown = ref(false)
+
+
+const selectedPenyakit = computed(() => {
+    if (!form.penyakit_id) {
+        return null
+    }
+
+    return props.penyakitList.find(
+        penyakit =>
+            Number(penyakit.id) ===
+            Number(form.penyakit_id)
+    ) ?? null
+})
+
+
+const filteredPenyakit = computed(() => {
+    const keyword = searchPenyakit.value
+        .toLowerCase()
+        .trim()
+
+    if (!keyword) {
+        return props.penyakitList.slice(0, 30)
+    }
+
+    return props.penyakitList
+        .filter(penyakit => {
+            const nama =
+                penyakit.nama_penyakit?.toLowerCase() ?? ''
+
+            const kategori =
+                penyakit.kategori?.toLowerCase() ?? ''
+
+            return (
+                nama.includes(keyword) ||
+                kategori.includes(keyword)
+            )
+        })
+        .slice(0, 30)
+})
+
+
+function selectPenyakit(penyakit) {
+    form.penyakit_id = penyakit.id
+
+    searchPenyakit.value = ''
+
+    showPenyakitDropdown.value = false
+
+    form.clearErrors('penyakit_id')
+}
+
+
+function clearPenyakit() {
+    form.penyakit_id = null
+
+    searchPenyakit.value = ''
+
+    showPenyakitDropdown.value = false
+}
+
+
+function closePenyakitDropdown() {
+    setTimeout(() => {
+        showPenyakitDropdown.value = false
     }, 150)
 }
 
@@ -407,20 +490,7 @@ function submit() {
             preserveScroll: true,
 
             onSuccess: () => {
-                /*
-                 * Redirect dilakukan oleh controller.
-                 *
-                 * Contoh controller:
-                 *
-                 * return redirect()
-                 *     ->route(
-                 *         'klinik.kesehatan.kunjungan.index'
-                 *     )
-                 *     ->with(
-                 *         'success',
-                 *         'Kunjungan berhasil disimpan.'
-                 *     );
-                 */
+                // Redirect dilakukan controller.
             },
 
             onError: errors => {
@@ -462,15 +532,7 @@ function submit() {
 
                         Kesehatan
 
-                        <span>/</span>
-
-                        Kunjungan Klinik
-
-                        <span>/</span>
-
-                        <span class="text-slate-500">
-                            Kunjungan Baru
-                        </span>
+                        <
 
                     </div>
 
@@ -491,8 +553,6 @@ function submit() {
 
                 </div>
 
-
-                <!-- KEMBALI -->
 
                 <Link
                     :href="
@@ -793,7 +853,7 @@ function submit() {
 
                                             <span
                                                 v-if="
-                                                    selectedSiswa.kelas?.jurusan
+                                                    selectedSiswa.jurusan
                                                         ?.nama_jurusan
                                                 "
                                             >
@@ -801,7 +861,7 @@ function submit() {
                                                 ·
 
                                                 {{
-                                                    selectedSiswa.kelas.jurusan
+                                                    selectedSiswa.jurusan
                                                         .nama_jurusan
                                                 }}
 
@@ -868,8 +928,6 @@ function submit() {
 
                             </div>
 
-
-                            <!-- DROPDOWN -->
 
                             <div
                                 v-if="showSiswaDropdown"
@@ -1177,7 +1235,7 @@ function submit() {
                                 <p
                                     class="mt-0.5 text-xs text-slate-400"
                                 >
-                                    Catat keluhan dan hasil pemeriksaan siswa.
+                                    Catat keluhan, penyakit, dan hasil pemeriksaan siswa.
                                 </p>
 
                             </div>
@@ -1225,6 +1283,261 @@ function submit() {
                         </div>
 
 
+                        <!-- ==================================================
+                             PENYAKIT
+                        ================================================== -->
+
+                        <div>
+
+                            <label
+                                class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                            >
+                                Penyakit / Diagnosis
+                            </label>
+
+
+                            <!-- BELUM ADA DATA PENYAKIT -->
+
+                            <div
+                                v-if="props.penyakitList.length === 0"
+                                class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+                            >
+
+                                <div class="flex items-start gap-3">
+
+                                    <ExclamationTriangleIcon
+                                        class="mt-0.5 h-5 w-5 shrink-0 text-amber-600"
+                                    />
+
+                                    <div>
+
+                                        <p
+                                            class="text-sm font-semibold text-amber-800"
+                                        >
+                                            Belum ada data penyakit
+                                        </p>
+
+                                        <p
+                                            class="mt-1 text-xs text-amber-700"
+                                        >
+                                            Tambahkan data penyakit terlebih dahulu
+                                            pada menu Data Penyakit.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- SEARCH PENYAKIT -->
+
+                            <div
+                                v-else
+                                class="relative"
+                            >
+
+                                <MagnifyingGlassIcon
+                                    class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                />
+
+
+                                <input
+                                    v-model="searchPenyakit"
+                                    @focus="
+                                        showPenyakitDropdown = true
+                                    "
+                                    @blur="
+                                        closePenyakitDropdown
+                                    "
+                                    type="text"
+                                    placeholder="Cari nama penyakit atau kategori..."
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                />
+
+
+                                <!-- DROPDOWN -->
+
+                                <div
+                                    v-if="showPenyakitDropdown"
+                                    class="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+                                >
+
+                                    <button
+                                        v-for="penyakit in filteredPenyakit"
+                                        :key="penyakit.id"
+                                        type="button"
+                                        @mousedown.prevent="
+                                            selectPenyakit(penyakit)
+                                        "
+                                        class="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
+                                    >
+
+                                        <div
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+                                        >
+
+                                            <HeartIcon
+                                                class="h-5 w-5"
+                                            />
+
+                                        </div>
+
+
+                                        <div
+                                            class="min-w-0 flex-1"
+                                        >
+
+                                            <p
+                                                class="truncate text-sm font-semibold text-slate-800"
+                                            >
+                                                {{ penyakit.nama_penyakit }}
+                                            </p>
+
+
+                                            <p
+                                                v-if="penyakit.kategori"
+                                                class="mt-0.5 text-xs text-slate-400"
+                                            >
+                                                Kategori:
+                                                {{ penyakit.kategori }}
+                                            </p>
+
+
+                                            <p
+                                                v-if="penyakit.keterangan"
+                                                class="mt-1 line-clamp-2 text-xs text-slate-400"
+                                            >
+                                                {{ penyakit.keterangan }}
+                                            </p>
+
+                                        </div>
+
+                                    </button>
+
+
+                                    <div
+                                        v-if="
+                                            filteredPenyakit.length === 0
+                                        "
+                                        class="px-4 py-6 text-center"
+                                    >
+
+                                        <p
+                                            class="text-sm font-semibold text-slate-600"
+                                        >
+                                            Penyakit tidak ditemukan
+                                        </p>
+
+                                        <p
+                                            class="mt-1 text-xs text-slate-400"
+                                        >
+                                            Coba gunakan nama penyakit
+                                            atau kategori yang berbeda.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PENYAKIT TERPILIH -->
+
+                            <div
+                                v-if="selectedPenyakit"
+                                class="mt-3 rounded-xl border border-rose-200 bg-rose-50/60 p-4"
+                            >
+
+                                <div
+                                    class="flex items-start justify-between gap-3"
+                                >
+
+                                    <div
+                                        class="flex items-start gap-3"
+                                    >
+
+                                        <div
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100"
+                                        >
+
+                                            <HeartIcon
+                                                class="h-5 w-5 text-rose-600"
+                                            />
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <p
+                                                class="text-sm font-bold text-slate-800"
+                                            >
+                                                {{ selectedPenyakit.nama_penyakit }}
+                                            </p>
+
+
+                                            <p
+                                                v-if="
+                                                    selectedPenyakit.kategori
+                                                "
+                                                class="mt-0.5 text-xs text-slate-500"
+                                            >
+                                                {{
+                                                    selectedPenyakit.kategori
+                                                }}
+                                            </p>
+
+
+                                            <p
+                                                v-if="
+                                                    selectedPenyakit.keterangan
+                                                "
+                                                class="mt-1 text-xs text-slate-500"
+                                            >
+                                                {{
+                                                    selectedPenyakit.keterangan
+                                                }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <button
+                                        type="button"
+                                        @click="clearPenyakit"
+                                        class="shrink-0 rounded-lg px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
+                                    >
+                                        Ganti
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <p
+                                v-if="form.errors.penyakit_id"
+                                class="mt-1.5 text-xs font-medium text-rose-600"
+                            >
+                                {{ form.errors.penyakit_id }}
+                            </p>
+
+                            <p
+                                v-if="props.penyakitList.length > 0"
+                                class="mt-1.5 text-[11px] text-slate-400"
+                            >
+                                Pilih penyakit dari data master yang telah
+                                tersedia.
+                            </p>
+
+                        </div>
+
+
                         <!-- PEMERIKSAAN -->
 
                         <div>
@@ -1249,35 +1562,6 @@ function submit() {
                                 class="mt-1.5 text-xs font-medium text-rose-600"
                             >
                                 {{ form.errors.pemeriksaan }}
-                            </p>
-
-                        </div>
-
-
-                        <!-- DIAGNOSIS -->
-
-                        <div>
-
-                            <label
-                                class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                Diagnosis
-                            </label>
-
-
-                            <textarea
-                                v-model="form.diagnosis"
-                                rows="3"
-                                placeholder="Tuliskan diagnosis berdasarkan hasil pemeriksaan..."
-                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                            ></textarea>
-
-
-                            <p
-                                v-if="form.errors.diagnosis"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{ form.errors.diagnosis }}
                             </p>
 
                         </div>
@@ -1352,8 +1636,6 @@ function submit() {
                 <div
                     class="rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
-
-                    <!-- HEADER -->
 
                     <div
                         class="border-b border-slate-100 px-5 py-4"
@@ -1532,8 +1814,6 @@ function submit() {
                             </div>
 
 
-                            <!-- ERROR OBAT -->
-
                             <p
                                 v-if="obatError"
                                 class="mt-3 text-xs font-medium text-rose-600"
@@ -1595,8 +1875,6 @@ function submit() {
                                     class="flex flex-col gap-4 p-4 md:flex-row md:items-center"
                                 >
 
-                                    <!-- ICON -->
-
                                     <div
                                         class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50"
                                     >
@@ -1607,8 +1885,6 @@ function submit() {
 
                                     </div>
 
-
-                                    <!-- NAMA -->
 
                                     <div
                                         class="min-w-0 flex-1"
@@ -1643,8 +1919,6 @@ function submit() {
 
                                     </div>
 
-
-                                    <!-- JUMLAH -->
 
                                     <div
                                         class="flex items-center gap-2"
@@ -1681,8 +1955,6 @@ function submit() {
 
                                     </div>
 
-
-                                    <!-- DELETE -->
 
                                     <button
                                         type="button"
@@ -1734,8 +2006,6 @@ function submit() {
 
                         </div>
 
-
-                        <!-- SERVER ERROR OBAT -->
 
                         <p
                             v-if="form.errors['obat']"

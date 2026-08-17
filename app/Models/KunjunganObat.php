@@ -16,6 +16,9 @@ class KunjunganObat extends Model
         'keterangan',
     ];
 
+    /**
+     * Kunjungan klinik
+     */
     public function kunjungan(): BelongsTo
     {
         return $this->belongsTo(
@@ -24,8 +27,14 @@ class KunjunganObat extends Model
         );
     }
 
+    /**
+     * Data obat
+     */
     public function obat(): BelongsTo
     {
-        return $this->belongsTo(Obat::class);
+        return $this->belongsTo(
+            Obat::class,
+            'obat_id'
+        );
     }
 }

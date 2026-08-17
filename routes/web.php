@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WelcomeController;
 //admin
 // ADMIN
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -26,11 +27,8 @@ use App\Http\Controllers\Tksi\TksiController as TksiTksiController;
 use App\Http\Controllers\Tksi\TksiReportController;
 
 
-
-use App\Http\Controllers\KlinikController;
-use App\Http\Controllers\PemeriksaanController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\KelasController;
-// use App\Http\Controllers\SiswaBoardingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -41,10 +39,10 @@ use Inertia\Inertia;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-});
 
+
+Route::get('/', [WelcomeController::class, 'index'])
+    ->name('welcome');
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +68,15 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/notifikasi', [
+        NotificationController::class,
+        'index'
+    ])->name('notifikasi.index');
+
+});
 /*
 |--------------------------------------------------------------------------
 | ADMIN
@@ -206,15 +213,8 @@ Route::get('/kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])
 
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Notifikasi
-        |--------------------------------------------------------------------------
-        */
+      
 
-        Route::get('/notifikasi', function () {
-            return Inertia::render('Admin/Notifikasi/Index');
-        })->name('notifikasi.index');
     });
 
 
@@ -390,33 +390,76 @@ Route::delete(
     });
 
 
-    //obat
- Route::get('/klinik/obat', [KlinikObatController::class, 'index'])
-            ->name('klinik.obat.index');
+// ==================================================
+// OBAT
+// ==================================================
 
-        Route::get('/klinik/obat/create', [KlinikObatController::class, 'create'])
-            ->name('klinik.obat.create');
+Route::get('/klinik/obat', [
+    KlinikObatController::class,
+    'index'
+])->name('klinik.obat.index');
 
-        Route::post('/klinik/obat', [KlinikObatController::class, 'store'])
-            ->name('klinik.obat.store');
+Route::get('/klinik/obat/create', [
+    KlinikObatController::class,
+    'create'
+])->name('klinik.obat.create');
 
-        Route::get('/klinik/obat/{obat}/edit', [KlinikObatController::class, 'edit'])
-            ->name('klinik.obat.edit');
+Route::post('/klinik/obat', [
+    KlinikObatController::class,
+    'store'
+])->name('klinik.obat.store');
 
-        Route::put('/klinik/obat/{obat}', [KlinikObatController::class, 'update'])
-            ->name('klinik.obat.update');
+Route::get('/klinik/obat/{obat}/edit', [
+    KlinikObatController::class,
+    'edit'
+])->name('klinik.obat.edit');
 
-        Route::delete('/klinik/obat/{obat}', [KlinikObatController::class, 'destroy'])
-            ->name('klinik.obat.destroy');
+Route::put('/klinik/obat/{obat}', [
+    KlinikObatController::class,
+    'update'
+])->name('klinik.obat.update');
 
-        //penyakit
-        Route::get('/klinik/penyakit', [KlinikPenyakitController::class, 'index'])
-        ->name('klinik.penyakit.index');
-    
-        // Notifikasi
-        Route::get('/notifikasi', function () {
-            return Inertia::render('Klinik/Notifikasi/Index');
-        })->name('notifikasi.index');
+Route::delete('/klinik/obat/{obat}', [
+    KlinikObatController::class,
+    'destroy'
+])->name('klinik.obat.destroy');
+
+
+// ==================================================
+// PENYAKIT
+// ==================================================
+
+Route::get('/klinik/penyakit', [
+    KlinikPenyakitController::class,
+    'index'
+])->name('klinik.penyakit.index');
+
+Route::get('/klinik/penyakit/create', [
+    KlinikPenyakitController::class,
+    'create'
+])->name('klinik.penyakit.create');
+Route::get('/klinik/penyakit/{penyakit}', [KlinikPenyakitController::class, 'show'])
+    ->name('klinik.penyakit.show');
+
+Route::post('/klinik/penyakit', [
+    KlinikPenyakitController::class,
+    'store'
+])->name('klinik.penyakit.store');
+
+Route::get('/klinik/penyakit/{penyakit}/edit', [
+    KlinikPenyakitController::class,
+    'edit'
+])->name('klinik.penyakit.edit');
+
+Route::put('/klinik/penyakit/{penyakit}', [
+    KlinikPenyakitController::class,
+    'update'
+])->name('klinik.penyakit.update');
+
+Route::delete('/klinik/penyakit/{penyakit}', [
+    KlinikPenyakitController::class,
+    'destroy'
+])->name('klinik.penyakit.destroy');
 
 
 /*
@@ -463,6 +506,8 @@ Route::get('/input/create/{siswa}', [TksiTksiController::class, 'create'])
 
 Route::post('/input', [TksiTksiController::class, 'store'])
     ->name('input.store');
+    Route::patch('/input/{tksiHasil}', [TksiTksiController::class, 'update'])
+    ->name('input.update');
 
 
     //report tksi
@@ -474,7 +519,7 @@ Route::get('/report/excel',
  Route::get('/report/pdf', [ TksiReportController::class, 'exportPdf' ])
  ->name('report.pdf');
 
-
+});
 
         /*
         |--------------------------------------------------------------------------
@@ -553,15 +598,7 @@ Route::get('/report/excel',
     //     Route::get('/report-periode', [TksiController::class, 'reportPeriode'])
     // ->name('report.periode');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Notifikasi
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/notifikasi', [TksiController::class, 'notifikasi'])
-    ->name('notifikasi.index');
-    });
+      
 
 
 /*

@@ -7,13 +7,9 @@ use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Siswa;
 use App\Models\Periode;
-use App\Models\PeriodeSiswa;
 use App\Models\PemeriksaanBerkala;
-use App\Models\Obat;
-use App\Models\Penyakit;
-use App\Models\KunjunganKlinik;
-use App\Models\KunjunganObat;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,415 +19,487 @@ class DatabaseSeeder extends Seeder
         // USER
         // =====================================================
 
-        $admin = User::create([
-            'name' => 'Administrator',
-            'email' => 'admin@sikes.test',
-            'role' => 'admin',
-            'password' => 'password',
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@sikes.test'],
+            [
+                'name' => 'Administrator',
+                'role' => 'admin',
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        $klinik = User::create([
-            'name' => 'Petugas Klinik',
-            'email' => 'klinik@sikes.test',
-            'role' => 'klinik',
-            'password' => 'password',
-        ]);
+        $klinik = User::updateOrCreate(
+            ['email' => 'klinik@sikes.test'],
+            [
+                'name' => 'Petugas Klinik',
+                'role' => 'klinik',
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        $tksi = User::create([
-            'name' => 'Petugas TKSI',
-            'email' => 'tksi@sikes.test',
-            'role' => 'tksi',
-            'password' => 'password',
-        ]);
+        $tksi = User::updateOrCreate(
+            ['email' => 'tksi@sikes.test'],
+            [
+                'name' => 'Petugas TKSI',
+                'role' => 'tksi',
+                'password' => Hash::make('password'),
+            ]
+        );
 
 
         // =====================================================
         // JURUSAN
         // =====================================================
 
-        $tkj = Jurusan::create([
-            'kode' => 'TKJ',
-            'nama_jurusan' => 'Teknik Komputer dan Jaringan',
-        ]);
+        $titl = Jurusan::updateOrCreate(
+            ['kode' => 'TITL'],
+            [
+                'nama_jurusan' =>
+                    'Teknik Instalasi Tenaga Listrik',
+            ]
+        );
 
-        $rpl = Jurusan::create([
-            'kode' => 'RPL',
-            'nama_jurusan' => 'Rekayasa Perangkat Lunak',
-        ]);
+        $tei = Jurusan::updateOrCreate(
+            ['kode' => 'TEI'],
+            [
+                'nama_jurusan' =>
+                    'Teknik Elektronika Industri',
+            ]
+        );
+
+        $tkr = Jurusan::updateOrCreate(
+            ['kode' => 'TKR'],
+            [
+                'nama_jurusan' =>
+                    'Teknik Kendaraan Ringan',
+            ]
+        );
+
+        $tkp = Jurusan::updateOrCreate(
+            ['kode' => 'TKP'],
+            [
+                'nama_jurusan' =>
+                    'Teknik Konstruksi dan Perumahan',
+            ]
+        );
+
+        $tp = Jurusan::updateOrCreate(
+            ['kode' => 'TP'],
+            [
+                'nama_jurusan' =>
+                    'Teknik Pemesinan',
+            ]
+        );
 
 
         // =====================================================
         // KELAS
         // =====================================================
 
-        $x_tkj = Kelas::create([
-            'nama_kelas' => 'X TKJ 1',
-            'tingkat' => 10,
-            'jurusan_id' => $tkj->id,
-        ]);
+        $kelasData = [
 
-        $xi_tkj = Kelas::create([
-            'nama_kelas' => 'XI TKJ 1',
-            'tingkat' => 11,
-            'jurusan_id' => $tkj->id,
-        ]);
+            // X
+            [
+                'nama_kelas' => 'X TITL',
+                'tingkat' => 10,
+                'jurusan_id' => $titl->id,
+            ],
+            [
+                'nama_kelas' => 'X TEI',
+                'tingkat' => 10,
+                'jurusan_id' => $tei->id,
+            ],
+            [
+                'nama_kelas' => 'X TKR',
+                'tingkat' => 10,
+                'jurusan_id' => $tkr->id,
+            ],
+            [
+                'nama_kelas' => 'X TKP',
+                'tingkat' => 10,
+                'jurusan_id' => $tkp->id,
+            ],
+            [
+                'nama_kelas' => 'X TP',
+                'tingkat' => 10,
+                'jurusan_id' => $tp->id,
+            ],
 
-        $x_rpl = Kelas::create([
-            'nama_kelas' => 'X RPL 1',
-            'tingkat' => 10,
-            'jurusan_id' => $rpl->id,
-        ]);
+            // XI
+            [
+                'nama_kelas' => 'XI TITL',
+                'tingkat' => 11,
+                'jurusan_id' => $titl->id,
+            ],
+            [
+                'nama_kelas' => 'XI TEI',
+                'tingkat' => 11,
+                'jurusan_id' => $tei->id,
+            ],
+            [
+                'nama_kelas' => 'XI TKR',
+                'tingkat' => 11,
+                'jurusan_id' => $tkr->id,
+            ],
+            [
+                'nama_kelas' => 'XI TKP',
+                'tingkat' => 11,
+                'jurusan_id' => $tkp->id,
+            ],
+            [
+                'nama_kelas' => 'XI TP',
+                'tingkat' => 11,
+                'jurusan_id' => $tp->id,
+            ],
+
+            // XII
+            [
+                'nama_kelas' => 'XII TITL',
+                'tingkat' => 12,
+                'jurusan_id' => $titl->id,
+            ],
+            [
+                'nama_kelas' => 'XII TEI',
+                'tingkat' => 12,
+                'jurusan_id' => $tei->id,
+            ],
+            [
+                'nama_kelas' => 'XII TKR',
+                'tingkat' => 12,
+                'jurusan_id' => $tkr->id,
+            ],
+            [
+                'nama_kelas' => 'XII TKP',
+                'tingkat' => 12,
+                'jurusan_id' => $tkp->id,
+            ],
+            [
+                'nama_kelas' => 'XII TP',
+                'tingkat' => 12,
+                'jurusan_id' => $tp->id,
+            ],
+        ];
+
+
+        $kelas = [];
+
+        foreach ($kelasData as $data) {
+
+            $kelas[] = Kelas::updateOrCreate(
+                [
+                    'nama_kelas' => $data['nama_kelas'],
+                ],
+                [
+                    'tingkat' => $data['tingkat'],
+                    'jurusan_id' => $data['jurusan_id'],
+                ]
+            );
+        }
 
 
         // =====================================================
         // SISWA
         // =====================================================
+        //
+        // Membuat 30 siswa.
+        // 10 siswa X
+        // 10 siswa XI
+        // 10 siswa XII
+        //
+        // =====================================================
 
-        $siswa1 = Siswa::create([
-            'nisn' => '0012345678',
-            'nama' => 'Ahmad Fauzan',
-            'tempat_lahir' => 'Semarang',
-            'tanggal_lahir' => '2010-05-12',
-            'jenis_kelamin' => 'L',
-            'kelas_id' => $x_tkj->id,
-            'angkatan' => 2026,
-            'alamat' => 'Semarang',
-            'no_hp' => '081234567890',
-            'nama_orang_tua' => 'Budi Fauzan',
-            'no_hp_orang_tua' => '081234567891',
-            'status' => 'aktif',
-        ]);
+        $namaSiswa = [
 
-        $siswa2 = Siswa::create([
-            'nisn' => '0012345679',
-            'nama' => 'Siti Aisyah',
-            'tempat_lahir' => 'Semarang',
-            'tanggal_lahir' => '2010-08-20',
-            'jenis_kelamin' => 'P',
-            'kelas_id' => $x_tkj->id,
-            'angkatan' => 2026,
-            'alamat' => 'Semarang',
-            'no_hp' => '081234567892',
-            'nama_orang_tua' => 'Ahmad',
-            'no_hp_orang_tua' => '081234567893',
-            'status' => 'aktif',
-        ]);
+            'Ahmad Fauzan',
+            'Budi Santoso',
+            'Cahyo Pratama',
+            'Dimas Saputra',
+            'Eko Setiawan',
+            'Fajar Nugroho',
+            'Galih Ramadhan',
+            'Hendra Wijaya',
+            'Ilham Maulana',
+            'Joko Susanto',
 
-        $siswa3 = Siswa::create([
-            'nisn' => '0012345680',
-            'nama' => 'Rizky Pratama',
-            'tempat_lahir' => 'Pemalang',
-            'tanggal_lahir' => '2009-03-15',
-            'jenis_kelamin' => 'L',
-            'kelas_id' => $xi_tkj->id,
-            'angkatan' => 2025,
-            'alamat' => 'Pemalang',
-            'no_hp' => '081234567894',
-            'nama_orang_tua' => 'Agus Pratama',
-            'no_hp_orang_tua' => '081234567895',
-            'status' => 'aktif',
-        ]);
+            'Andi Kurniawan',
+            'Bagas Firmansyah',
+            'Candra Wijaya',
+            'Dani Ramadhan',
+            'Erwin Saputra',
+            'Farhan Akbar',
+            'Gilang Pratama',
+            'Hafiz Maulana',
+            'Iqbal Ramadhan',
+            'Jefri Setiawan',
 
-        $siswa4 = Siswa::create([
-            'nisn' => '0012345681',
-            'nama' => 'Dinda Permata',
-            'tempat_lahir' => 'Semarang',
-            'tanggal_lahir' => '2010-11-10',
-            'jenis_kelamin' => 'P',
-            'kelas_id' => $x_rpl->id,
-            'angkatan' => 2026,
-            'alamat' => 'Semarang',
-            'no_hp' => '081234567896',
-            'nama_orang_tua' => 'Dedi Permata',
-            'no_hp_orang_tua' => '081234567897',
-            'status' => 'aktif',
-        ]);
+            'Krisna Putra',
+            'Lukman Hakim',
+            'M. Rizky',
+            'Nanda Pratama',
+            'Oki Setiawan',
+            'Putra Ramadhan',
+            'Rian Saputra',
+            'Satria Nugraha',
+            'Taufik Hidayat',
+            'Yoga Pratama',
+        ];
+
+
+        $siswas = [];
+
+        foreach ($namaSiswa as $index => $nama) {
+
+            /*
+            |--------------------------------------------------
+            | Tentukan kelas
+            |--------------------------------------------------
+            |
+            | 0 - 9   = X
+            | 10 - 19 = XI
+            | 20 - 29 = XII
+            |
+            */
+
+            if ($index < 10) {
+
+                $tingkat = 10;
+
+            } elseif ($index < 20) {
+
+                $tingkat = 11;
+
+            } else {
+
+                $tingkat = 12;
+            }
+
+
+            /*
+            |--------------------------------------------------
+            | Ambil kelas
+            |--------------------------------------------------
+            */
+
+            $kelasSiswa = collect($kelas)
+                ->where('tingkat', $tingkat)
+                ->values()
+                ->get($index % 5);
+
+
+            /*
+            |--------------------------------------------------
+            | NISN
+            |--------------------------------------------------
+            */
+
+            $nisn = '0062026' . str_pad(
+                $index + 1,
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
+
+
+            /*
+            |--------------------------------------------------
+            | Buat siswa
+            |--------------------------------------------------
+            */
+
+            $siswa = Siswa::updateOrCreate(
+                [
+                    'nisn' => $nisn,
+                ],
+                [
+                    'nama' => $nama,
+                    'kelas_id' => $kelasSiswa->id,
+                ]
+            );
+
+
+            $siswas[] = $siswa;
+        }
 
 
         // =====================================================
-        // PERIODE
+        // PERIODE AKTIF
+        // =====================================================
+        //
+        // FASE 2
+        //
+        // Berkala 1 = VIEW
+        // Berkala 2 = OPEN
+        //
         // =====================================================
 
-        $periode1 = Periode::create([
-            'nama_periode' => 'Semester Ganjil 2026/2027',
-            'tanggal_mulai' => '2026-07-01',
-            'tanggal_selesai' => '2026-12-31',
-            'status' => 'aktif',
-            'created_by' => $admin->id,
-        ]);
-
-        $periode2 = Periode::create([
-            'nama_periode' => 'Semester Genap 2026/2027',
-            'tanggal_mulai' => '2027-01-01',
-            'tanggal_selesai' => '2027-06-30',
-            'status' => 'draft',
-            'created_by' => $admin->id,
-        ]);
+        Periode::where('status', 'aktif')
+            ->update([
+                'status' => 'nonaktif',
+            ]);
 
 
-        // =====================================================
-        // PERIODE SISWA
-        // =====================================================
-
-        // Periode 1
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa1->id,
-        ]);
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa2->id,
-        ]);
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa3->id,
-        ]);
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa4->id,
-        ]);
-
-
-        // Periode 2
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode2->id,
-            'siswa_id' => $siswa1->id,
-        ]);
-
-        PeriodeSiswa::create([
-            'periode_id' => $periode2->id,
-            'siswa_id' => $siswa2->id,
-        ]);
+        $periode = Periode::updateOrCreate(
+            [
+                'nama_periode' => 'Periode 2026 Fase 2',
+            ],
+            [
+                'tanggal_mulai' => '2026-04-01',
+                'tanggal_selesai' => '2026-09-30',
+                'status' => 'aktif',
+            ]
+        );
 
 
         // =====================================================
-        // PEMERIKSAAN BERKALA
-        // PERIODE 1
+        // DAFTARKAN SEMUA SISWA KE PERIODE
         // =====================================================
 
-        // -----------------------------------------------------
-        // Ahmad - Berkala 1
-        // -----------------------------------------------------
+        foreach ($siswas as $siswa) {
 
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa1->id,
-            'jenis_pemeriksaan' => 'berkala_1',
-            'tanggal_pemeriksaan' => '2026-08-05',
-            'status' => 'selesai',
-            'hasil' => 'Kondisi kesehatan baik.',
-            'catatan' => 'Tidak ditemukan keluhan.',
-            'pemeriksa_id' => $klinik->id,
-        ]);
-
-        // Ahmad - Berkala 2
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa1->id,
-            'jenis_pemeriksaan' => 'berkala_2',
-            'tanggal_pemeriksaan' => null,
-            'status' => 'belum',
-            'hasil' => null,
-            'catatan' => null,
-            'pemeriksa_id' => null,
-        ]);
-
-
-        // -----------------------------------------------------
-        // Siti - Berkala 1
-        // -----------------------------------------------------
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa2->id,
-            'jenis_pemeriksaan' => 'berkala_1',
-            'tanggal_pemeriksaan' => '2026-08-06',
-            'status' => 'selesai',
-            'hasil' => 'Kondisi kesehatan baik.',
-            'catatan' => 'Tidak ditemukan keluhan.',
-            'pemeriksa_id' => $klinik->id,
-        ]);
-
-        // Siti - Berkala 2
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa2->id,
-            'jenis_pemeriksaan' => 'berkala_2',
-            'tanggal_pemeriksaan' => null,
-            'status' => 'belum',
-            'hasil' => null,
-            'catatan' => null,
-            'pemeriksa_id' => null,
-        ]);
-
-
-        // -----------------------------------------------------
-        // Rizky - Berkala 1
-        // -----------------------------------------------------
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa3->id,
-            'jenis_pemeriksaan' => 'berkala_1',
-            'tanggal_pemeriksaan' => '2026-08-05',
-            'status' => 'selesai',
-            'hasil' => 'Kondisi kesehatan baik.',
-            'catatan' => 'Berat badan perlu dipantau.',
-            'pemeriksa_id' => $klinik->id,
-        ]);
-
-        // Rizky - Berkala 2
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa3->id,
-            'jenis_pemeriksaan' => 'berkala_2',
-            'tanggal_pemeriksaan' => null,
-            'status' => 'belum',
-            'hasil' => null,
-            'catatan' => null,
-            'pemeriksa_id' => null,
-        ]);
-
-
-        // -----------------------------------------------------
-        // Dinda - Berkala 1
-        // -----------------------------------------------------
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa4->id,
-            'jenis_pemeriksaan' => 'berkala_1',
-            'tanggal_pemeriksaan' => '2026-08-07',
-            'status' => 'selesai',
-            'hasil' => 'Kondisi kesehatan baik.',
-            'catatan' => 'Tidak ditemukan keluhan.',
-            'pemeriksa_id' => $klinik->id,
-        ]);
-
-        // Dinda - Berkala 2
-
-        PemeriksaanBerkala::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa4->id,
-            'jenis_pemeriksaan' => 'berkala_2',
-            'tanggal_pemeriksaan' => null,
-            'status' => 'belum',
-            'hasil' => null,
-            'catatan' => null,
-            'pemeriksa_id' => null,
-        ]);
+            $periode->siswa()->syncWithoutDetaching([
+                $siswa->id,
+            ]);
+        }
 
 
         // =====================================================
-        // OBAT
+        // PEMERIKSAAN BERKALA 1
+        // =====================================================
+        //
+        // Semua siswa sudah menyelesaikan Berkala 1.
+        //
+        // Karena sekarang fase 2:
+        //
+        // Berkala 1
+        // -> VIEW
+        // -> bisa melihat hasil
+        //
+        // Berkala 2
+        // -> OPEN
+        // -> bisa mengisi
+        //
         // =====================================================
 
-        $paracetamol = Obat::create([
-            'nama_obat' => 'Paracetamol',
-            'satuan' => 'Tablet',
-            'stok' => 100,
-            'keterangan' => 'Untuk membantu meredakan demam dan nyeri.',
-        ]);
+        foreach ($siswas as $index => $siswa) {
 
-        $amoxicillin = Obat::create([
-            'nama_obat' => 'Amoxicillin',
-            'satuan' => 'Kapsul',
-            'stok' => 50,
-            'keterangan' => 'Antibiotik sesuai resep atau pemeriksaan petugas medis.',
-        ]);
+            PemeriksaanBerkala::updateOrCreate(
+                [
+                    'periode_id' => $periode->id,
+                    'siswa_id' => $siswa->id,
+                    'jenis_pemeriksaan' => 'berkala_1',
+                ],
+                [
 
-        $betadine = Obat::create([
-            'nama_obat' => 'Betadine',
-            'satuan' => 'Botol',
-            'stok' => 20,
-            'keterangan' => 'Antiseptik untuk membantu membersihkan luka.',
-        ]);
+                    // =========================================
+                    // TANGGAL
+                    // =========================================
 
-        $minyakKayuPutih = Obat::create([
-            'nama_obat' => 'Minyak Kayu Putih',
-            'satuan' => 'Botol',
-            'stok' => 30,
-            'keterangan' => 'Digunakan sesuai kebutuhan.',
-        ]);
+                    'tanggal_pemeriksaan' =>
+                        '2026-05-' .
+                        str_pad(
+                            (($index % 20) + 1),
+                            2,
+                            '0',
+                            STR_PAD_LEFT
+                        ),
+
+
+                    // =========================================
+                    // ANTROPOMETRI
+                    // =========================================
+
+                    'berat_badan' =>
+                        48 + ($index % 10) + 0.5,
+
+                    'tinggi_badan' =>
+                        158 + ($index % 10),
+
+                    'imt' =>
+                        19.20 + (($index % 5) * 0.15),
+
+
+                    // =========================================
+                    // TANDA VITAL
+                    // =========================================
+
+                    'tekanan_darah' => '110/70',
+
+                    'denyut_nadi' =>
+                        72 + ($index % 10),
+
+                    'suhu_tubuh' =>
+                        36.4 + (($index % 3) * 0.1),
+
+
+                    // =========================================
+                    // PEMERIKSAAN FISIK
+                    // =========================================
+
+                    'mata' => 'Normal',
+
+                    'telinga' => 'Normal',
+
+                    'gigi_mulut' => 'Baik',
+
+                    'kondisi_umum' => 'Sehat',
+
+
+                    // =========================================
+                    // HASIL
+                    // =========================================
+
+                    'keluhan' =>
+                        'Tidak ada keluhan',
+
+                    'hasil_pemeriksaan' =>
+                        'Kondisi kesehatan baik',
+
+                    'rekomendasi' =>
+                        'Pertahankan pola hidup sehat',
+
+
+                    // =========================================
+                    // STATUS
+                    // =========================================
+
+                    'status' => 'selesai',
+
+                    'catatan' =>
+                        'Pemeriksaan berkala 1 telah selesai.',
+
+
+                    // =========================================
+                    // PEMERIKSA
+                    // =========================================
+
+                    'pemeriksa_id' => $klinik->id,
+                ]
+            );
+        }
 
 
         // =====================================================
-        // KUNJUNGAN KLINIK
+        // SELESAI
         // =====================================================
 
-        $kunjungan1 = KunjunganKlinik::create([
-            'periode_id' => $periode1->id,
-            'siswa_id' => $siswa1->id,
-            'tanggal_kunjungan' => '2026-08-08 09:30:00',
-            'keluhan' => 'Demam dan sakit kepala.',
-            'pemeriksaan' => 'Suhu tubuh 38,2°C. Siswa terlihat lemas.',
-            'diagnosis' => 'Demam.',
-            'tindakan' => 'Pemeriksaan dan pemberian obat.',
-            'status' => 'selesai',
-            'catatan' => 'Dianjurkan istirahat dan minum air yang cukup.',
-            'pemeriksa_id' => $klinik->id,
-        ]);
+        $this->command->info(
+            'Seeder berhasil dibuat.'
+        );
 
+        $this->command->info(
+            '30 siswa berhasil dibuat.'
+        );
 
-        // =====================================================
-        // OBAT KUNJUNGAN
-        // =====================================================
+        $this->command->info(
+            'Periode 2026 Fase 2 aktif.'
+        );
 
-        KunjunganObat::create([
-            'kunjungan_id' => $kunjungan1->id,
-            'obat_id' => $paracetamol->id,
-            'jumlah' => 2,
-            'keterangan' => 'Diminum setelah makan.',
-        ]);
+        $this->command->info(
+            'Berkala 1 = VIEW.'
+        );
 
-        KunjunganObat::create([
-            'kunjungan_id' => $kunjungan1->id,
-            'obat_id' => $minyakKayuPutih->id,
-            'jumlah' => 1,
-            'keterangan' => 'Digunakan secukupnya.',
-        ]);
-
-
-        // =====================================================
-        // PENYAKIT
-        // =====================================================
-
-        Penyakit::create([
-            'nama_penyakit' => 'Demam',
-            'kategori' => 'Umum',
-            'keterangan' => 'Kondisi dengan peningkatan suhu tubuh.',
-        ]);
-
-        Penyakit::create([
-            'nama_penyakit' => 'Batuk',
-            'kategori' => 'Pernapasan',
-            'keterangan' => 'Keluhan berupa batuk yang dapat disertai gejala lain.',
-        ]);
-
-        Penyakit::create([
-            'nama_penyakit' => 'Flu',
-            'kategori' => 'Pernapasan',
-            'keterangan' => 'Keluhan yang dapat berupa pilek, batuk, dan demam.',
-        ]);
-
-        Penyakit::create([
-            'nama_penyakit' => 'Sakit Kepala',
-            'kategori' => 'Umum',
-            'keterangan' => 'Keluhan berupa rasa sakit atau tidak nyaman pada kepala.',
-        ]);
-
-        Penyakit::create([
-            'nama_penyakit' => 'Sakit Perut',
-            'kategori' => 'Pencernaan',
-            'keterangan' => 'Keluhan berupa rasa sakit atau tidak nyaman pada perut.',
-        ]);
+        $this->command->info(
+            'Berkala 2 = OPEN.'
+        );
     }
 }

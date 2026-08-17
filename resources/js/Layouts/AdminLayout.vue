@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
 
 import {
     HomeIcon,
@@ -15,31 +15,33 @@ import {
     ChevronRightIcon,
     Bars3Icon,
     XMarkIcon,
-} from '@heroicons/vue/24/outline';
+} from '@heroicons/vue/24/outline'
+
 
 // ======================================================
 // PAGE
 // ======================================================
 
-const page = usePage();
+const page = usePage()
 
-const currentUrl = computed(() => page.url);
+const currentUrl = computed(() => page.url)
 
 
 // ======================================================
 // STATE
 // ======================================================
 
-const isMobileSidebarOpen = ref(false);
-const isProfileDropdownOpen = ref(false);
+const isMobileSidebarOpen = ref(false)
+
+const isProfileDropdownOpen = ref(false)
 
 const isMasterAccordionOpen = ref(
     currentUrl.value.startsWith('/admin/master')
-);
+)
 
 const isPeriodeAccordionOpen = ref(
     currentUrl.value.startsWith('/admin/periode')
-);
+)
 
 
 // ======================================================
@@ -48,23 +50,23 @@ const isPeriodeAccordionOpen = ref(
 
 const toggleMobileSidebar = () => {
     isMobileSidebarOpen.value =
-        !isMobileSidebarOpen.value;
-};
+        !isMobileSidebarOpen.value
+}
 
 const toggleProfileDropdown = () => {
     isProfileDropdownOpen.value =
-        !isProfileDropdownOpen.value;
-};
+        !isProfileDropdownOpen.value
+}
 
 const toggleMasterAccordion = () => {
     isMasterAccordionOpen.value =
-        !isMasterAccordionOpen.value;
-};
+        !isMasterAccordionOpen.value
+}
 
 const togglePeriodeAccordion = () => {
     isPeriodeAccordionOpen.value =
-        !isPeriodeAccordionOpen.value;
-};
+        !isPeriodeAccordionOpen.value
+}
 
 
 // ======================================================
@@ -75,67 +77,170 @@ const isActive = (path) => {
     return (
         currentUrl.value === path ||
         currentUrl.value.startsWith(`${path}/`)
-    );
-};
+    )
+}
 
 
 // ======================================================
-// BREADCRUMB
+// BREADCRUMB MAP
+// ======================================================
+//
+// MASTER DATA TIDAK DITAMPILKAN
+//
+// /admin/dashboard
+// Dashboard
+//
+// /admin/master/siswa
+// Dashboard / Data Siswa
+//
+// /admin/master/user
+// Dashboard / Data User
+//
+// /admin/periode
+// Dashboard / Periode
+//
+// /admin/periode/siswa-aktif
+// Dashboard / Periode / Siswa Periode Aktif
+//
+// /admin/periode/report
+// Dashboard / Periode / Report Periode
+//
+// /admin/kunjungan
+// Dashboard / Kunjungan Klinik
+//
+// /notifikasi
+// Dashboard / Notifikasi
 // ======================================================
 
 const breadcrumbMap = {
-    admin: 'Admin',
-    dashboard: 'Dashboard',
 
-    master: 'Master Data',
+    // MASTER DATA
     siswa: 'Data Siswa',
     user: 'Data User',
+    'siswa-import': 'Import Siswa',
 
+    // PERIODE
     periode: 'Periode',
     'siswa-aktif': 'Siswa Periode Aktif',
     report: 'Report Periode',
 
+    // LAINNYA
     kunjungan: 'Kunjungan Klinik',
     notifikasi: 'Notifikasi',
 
+    // PEMERIKSAAN
+    pemeriksaan: 'Pemeriksaan Berkala',
+    'report-berkala': 'Report Berkala',
+
+    // TKSI
+    tksi: 'TKSI',
+    input: 'Input TKSI',
+
+    // ACTION
     create: 'Tambah',
     edit: 'Ubah',
-};
+    show: 'Detail',
+}
+
+
+// ======================================================
+// BUILD BREADCRUMB
+// ======================================================
 
 const breadcrumbs = computed(() => {
+
     const segments = currentUrl.value
         .split('/')
-        .filter(Boolean);
+        .filter(Boolean)
+
+    // ==================================================
+    // DASHBOARD SELALU MENJADI ROOT
+    // ==================================================
 
     const list = [
         {
-            name: 'Home',
-            url: '/',
+            name: 'Dashboard',
+            url: '/admin/dashboard',
         },
-    ];
+    ]
 
-    let currentPath = '';
+    let currentPath = ''
+
 
     segments.forEach((segment) => {
-        currentPath += `/${segment}`;
+
+        currentPath += `/${segment}`
+
+
+        // ==================================================
+        // JANGAN TAMPILKAN "admin"
+        // ==================================================
+
+        if (segment === 'admin') {
+            return
+        }
+
+
+        // ==================================================
+        // JANGAN TAMPILKAN "dashboard"
+        // Karena Dashboard sudah menjadi root
+        // ==================================================
+
+        if (segment === 'dashboard') {
+            return
+        }
+
+
+        // ==================================================
+        // JANGAN TAMPILKAN "master"
+        //
+        // /admin/master/siswa
+        // menjadi:
+        //
+        // Dashboard / Data Siswa
+        //
+        // bukan:
+        //
+        // Dashboard / Master / Data Siswa
+        // ==================================================
+
+        if (segment === 'master') {
+            return
+        }
+
+
+        // ==================================================
+        // NAMA BREADCRUMB
+        // ==================================================
 
         let name =
             breadcrumbMap[segment] ??
             segment.charAt(0).toUpperCase() +
-                segment.slice(1);
+            segment.slice(1)
+
+
+        // ==================================================
+        // JIKA SEGMENT BERUPA ID
+        // ==================================================
 
         if (!isNaN(segment)) {
-            name = `Detail #${segment}`;
+            name = `Detail #${segment}`
         }
+
+
+        // ==================================================
+        // TAMBAHKAN BREADCRUMB
+        // ==================================================
 
         list.push({
             name,
             url: currentPath,
-        });
-    });
+        })
 
-    return list;
-});
+    })
+
+    return list
+})
 </script>
 
 
@@ -157,16 +262,20 @@ const breadcrumbs = computed(() => {
             <div class="flex items-center space-x-3">
 
                 <!-- MOBILE MENU -->
+
                 <button
                     type="button"
                     @click="toggleMobileSidebar"
                     class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none"
                 >
+
                     <Bars3Icon class="w-6 h-6" />
+
                 </button>
 
 
                 <!-- LOGO -->
+
                 <div
                     class="flex items-center space-x-3 pl-2 lg:pl-0"
                 >
@@ -214,12 +323,13 @@ const breadcrumbs = computed(() => {
 
 
             <!-- RIGHT -->
+
             <div class="flex items-center space-x-4">
 
                 <!-- NOTIFICATION -->
 
                 <Link
-                    href="/admin/notifikasi"
+                    href="/notifikasi"
                     class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
                 >
 
@@ -341,7 +451,6 @@ const breadcrumbs = computed(() => {
         </header>
 
 
-
         <!-- ==================================================
              PAGE BODY
         ================================================== -->
@@ -406,7 +515,6 @@ const breadcrumbs = computed(() => {
                         </Link>
 
 
-
                         <!-- ==================================================
                              MASTER DATA
                         ================================================== -->
@@ -455,6 +563,8 @@ const breadcrumbs = computed(() => {
                                 class="mt-1 pl-10 pr-2 space-y-1"
                             >
 
+                                <!-- DATA SISWA -->
+
                                 <Link
                                     href="/admin/master/siswa"
                                     :class="[
@@ -475,6 +585,8 @@ const breadcrumbs = computed(() => {
 
                                 </Link>
 
+
+                                <!-- DATA USER -->
 
                                 <Link
                                     href="/admin/master/user"
@@ -499,7 +611,6 @@ const breadcrumbs = computed(() => {
                             </div>
 
                         </div>
-
 
 
                         <!-- ==================================================
@@ -545,10 +656,6 @@ const breadcrumbs = computed(() => {
                             </button>
 
 
-                            <!-- ==================================================
-                                 SUBMENU PERIODE
-                            ================================================== -->
-
                             <div
                                 v-show="isPeriodeAccordionOpen"
                                 class="mt-1 pl-10 pr-2 space-y-1"
@@ -560,9 +667,7 @@ const breadcrumbs = computed(() => {
                                     href="/admin/periode"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                        isActive('/admin/periode') &&
-                                        !isActive('/admin/periode/siswa-aktif') &&
-                                        !isActive('/admin/periode/report')
+                                        currentUrl === '/admin/periode'
                                             ? 'text-white bg-blue-900/70'
                                             : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
                                     ]"
@@ -629,7 +734,6 @@ const breadcrumbs = computed(() => {
                         </div>
 
 
-
                         <!-- ==================================================
                              KUNJUNGAN KLINIK
                         ================================================== -->
@@ -655,16 +759,15 @@ const breadcrumbs = computed(() => {
                         </Link>
 
 
-
                         <!-- ==================================================
                              NOTIFIKASI
                         ================================================== -->
 
                         <Link
-                            href="/admin/notifikasi"
+                            href="/notifikasi"
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                isActive('/admin/notifikasi')
+                                isActive('/notifikasi')
                                     ? 'bg-blue-700 text-white shadow-md'
                                     : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
                             ]"
@@ -707,7 +810,6 @@ const breadcrumbs = computed(() => {
                 </div>
 
             </aside>
-
 
 
             <!-- ==================================================
@@ -813,15 +915,19 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
 
-
-                                <!-- MASTER -->
+                                <!-- MASTER DATA -->
 
                                 <div>
 
                                     <button
                                         type="button"
                                         @click="toggleMasterAccordion"
-                                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-blue-100 hover:bg-blue-900/50"
+                                        :class="[
+                                            'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
+                                            isActive('/admin/master')
+                                                ? 'text-white bg-blue-900/40'
+                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                        ]"
                                     >
 
                                         <div
@@ -855,6 +961,8 @@ const breadcrumbs = computed(() => {
                                         class="mt-1 pl-10 pr-2 space-y-1"
                                     >
 
+                                        <!-- DATA SISWA -->
+
                                         <Link
                                             href="/admin/master/siswa"
                                             @click="toggleMobileSidebar"
@@ -876,6 +984,8 @@ const breadcrumbs = computed(() => {
 
                                         </Link>
 
+
+                                        <!-- DATA USER -->
 
                                         <Link
                                             href="/admin/master/user"
@@ -903,7 +1013,6 @@ const breadcrumbs = computed(() => {
                                 </div>
 
 
-
                                 <!-- PERIODE -->
 
                                 <div>
@@ -911,7 +1020,12 @@ const breadcrumbs = computed(() => {
                                     <button
                                         type="button"
                                         @click="togglePeriodeAccordion"
-                                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm text-blue-100 hover:bg-blue-900/50"
+                                        :class="[
+                                            'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
+                                            isActive('/admin/periode')
+                                                ? 'text-white bg-blue-900/40'
+                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                        ]"
                                     >
 
                                         <div
@@ -952,9 +1066,7 @@ const breadcrumbs = computed(() => {
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                                isActive('/admin/periode') &&
-                                                !isActive('/admin/periode/siswa-aktif') &&
-                                                !isActive('/admin/periode/report')
+                                                currentUrl === '/admin/periode'
                                                     ? 'text-white bg-blue-900/70'
                                                     : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
                                             ]"
@@ -971,7 +1083,7 @@ const breadcrumbs = computed(() => {
                                         </Link>
 
 
-                                        <!-- SISWA AKTIF -->
+                                        <!-- SISWA PERIODE AKTIF -->
 
                                         <Link
                                             href="/admin/periode/siswa-aktif"
@@ -995,7 +1107,7 @@ const breadcrumbs = computed(() => {
                                         </Link>
 
 
-                                        <!-- REPORT -->
+                                        <!-- REPORT PERIODE -->
 
                                         <Link
                                             href="/admin/periode/report"
@@ -1023,8 +1135,7 @@ const breadcrumbs = computed(() => {
                                 </div>
 
 
-
-                                <!-- KUNJUNGAN -->
+                                <!-- KUNJUNGAN KLINIK -->
 
                                 <Link
                                     href="/admin/kunjungan"
@@ -1048,15 +1159,14 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
 
-
                                 <!-- NOTIFIKASI -->
 
                                 <Link
-                                    href="/admin/notifikasi"
+                                    href="/notifikasi"
                                     @click="toggleMobileSidebar"
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                        isActive('/admin/notifikasi')
+                                        isActive('/notifikasi')
                                             ? 'bg-blue-700 text-white'
                                             : 'text-blue-100 hover:bg-blue-900/50'
                                     ]"
@@ -1105,7 +1215,6 @@ const breadcrumbs = computed(() => {
             </transition>
 
 
-
             <!-- ==================================================
                  MAIN CONTENT
             ================================================== -->
@@ -1118,7 +1227,9 @@ const breadcrumbs = computed(() => {
                     class="p-4 lg:p-6 space-y-6"
                 >
 
-                    <!-- BREADCRUMB -->
+                    <!-- ==================================================
+                         BREADCRUMB
+                    ================================================== -->
 
                     <nav
                         class="flex flex-wrap items-center text-xs font-semibold text-slate-500 gap-x-2 gap-y-1"
@@ -1130,6 +1241,8 @@ const breadcrumbs = computed(() => {
                             :key="idx"
                         >
 
+                            <!-- SEPARATOR -->
+
                             <span
                                 v-if="idx > 0"
                                 class="text-slate-300"
@@ -1138,23 +1251,28 @@ const breadcrumbs = computed(() => {
                             </span>
 
 
+                            <!-- CLICKABLE BREADCRUMB -->
+
                             <Link
-                                v-if="
-                                    idx <
-                                    breadcrumbs.length - 1
-                                "
+                                v-if="idx < breadcrumbs.length - 1"
                                 :href="crumb.url"
                                 class="hover:text-blue-600 transition"
                             >
+
                                 {{ crumb.name }}
+
                             </Link>
 
+
+                            <!-- CURRENT PAGE -->
 
                             <span
                                 v-else
                                 class="text-slate-800 font-bold"
                             >
+
                                 {{ crumb.name }}
+
                             </span>
 
                         </template>
@@ -1162,19 +1280,26 @@ const breadcrumbs = computed(() => {
                     </nav>
 
 
-                    <!-- PAGE CONTENT -->
+                    <!-- ==================================================
+                         PAGE CONTENT
+                    ================================================== -->
 
                     <slot />
 
                 </div>
 
 
-                <!-- FOOTER -->
+                <!-- ==================================================
+                     FOOTER
+                ================================================== -->
 
                 <footer
                     class="bg-white border-t border-slate-200 py-4 text-center text-xs font-semibold text-slate-400"
                 >
-                    &copy; 2026 SMKN Jateng Semarang. All rights reserved.
+
+                    &copy; 2026 SMKN Jateng Semarang.
+                    All rights reserved.
+
                 </footer>
 
             </main>
