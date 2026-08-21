@@ -53,67 +53,170 @@ const reminders = computed(
 
         <div class="space-y-6">
 
+
             <!-- =========================================================
-                 WELCOME
+                 WELCOME / INFORMASI TKSI
             ========================================================== -->
 
             <div
                 class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
             >
 
+                <!-- DEKORASI -->
+
                 <div
-                    class="pointer-events-none absolute bottom-0 right-0 top-0 hidden w-1/4 opacity-10 md:block"
+                    class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5"
+                ></div>
+
+                <div
+                    class="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10"
+                ></div>
+
+                <div
+                    class="pointer-events-none absolute bottom-0 right-0 hidden opacity-10 md:block"
                 >
+
                     <svg
-                        class="h-full w-full text-white"
+                        class="h-64 w-64"
                         viewBox="0 0 100 100"
                         fill="currentColor"
                     >
+
                         <circle
                             cx="70"
                             cy="50"
                             r="30"
                         />
+
                     </svg>
+
                 </div>
 
 
-                <div class="relative z-10 space-y-2">
+                <!-- CONTENT -->
+
+                <div
+                    class="relative z-10 max-w-5xl"
+                >
+
+                    <!-- LABEL -->
+
+                    <p
+                        class="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-200"
+                    >
+                        Instrumen Kebugaran Siswa Indonesia
+                    </p>
+
+
+                    <!-- TITLE -->
 
                     <h2
-                        class="text-2xl font-bold tracking-tight"
+                        class="mt-1 text-2xl font-extrabold tracking-tight md:text-3xl"
                     >
                         Dashboard TKSI
                     </h2>
 
 
-                    <p
-                        class="text-sm font-medium text-white/80"
-                    >
-
-                        Selamat datang,
-
-                        <span class="font-bold">
-                            {{ user?.name || 'Petugas TKSI' }}
-                        </span>
-
-                        😊
-
-                        Berikut ringkasan pelaksanaan TKSI siswa.
-
-                    </p>
-
+                    <!-- INFORMASI UTAMA -->
 
                     <div
-                        v-if="periode"
-                        class="pt-2"
+                        class="mt-5 max-w-4xl"
                     >
-                        <span
-                            class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white backdrop-blur"
+
+                        <p
+                            class="text-sm font-semibold leading-6 text-white/95 md:text-base"
                         >
-                            Periode:
-                            {{ periode.nama_periode }}
-                        </span>
+                            <span class="font-extrabold text-white">
+                                TKSI
+                            </span>
+
+                            merupakan singkatan dari
+
+                            <span class="font-extrabold text-white">
+                                Tes Kebugaran Siswa Indonesia.
+                            </span>
+                        </p>
+
+
+                        <p
+                            class="mt-1.5 text-xs leading-5 text-blue-100/80 md:text-sm md:leading-6"
+                        >
+                            Instrumen Kebugaran Siswa Indonesia merupakan
+                            satu paket rangkaian tes kebugaran siswa Indonesia
+                            yang harus dilakukan secara keseluruhan tanpa
+                            mengurangi dan menambahkan item tes lain.
+                        </p>
+
+
+                        <p
+                            class="mt-1.5 text-xs leading-5 text-blue-100/80 md:text-sm md:leading-6"
+                        >
+                            Instrumen ini digunakan bagi siswa
+                            <span class="font-semibold text-blue-100">
+                                SMA/SMK/MK/Madrasah Aliyah (MA)
+                            </span>
+                            pada fase EF.
+                        </p>
+
+                    </div>
+
+
+                    <!-- PEMBATAS -->
+
+                    <div
+                        class="my-5 h-px w-full bg-white/10"
+                    ></div>
+
+
+                    <!-- WELCOME USER + PERIODE -->
+
+                    <div
+                        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+                    >
+
+                        <!-- WELCOME -->
+
+                        <p
+                            class="text-sm font-medium leading-6 text-white/80"
+                        >
+
+                            Selamat datang,
+
+                            <span class="font-bold text-white">
+                                {{ user?.name || 'Petugas TKSI' }}
+                            </span>
+
+                            😊
+
+                            <br class="sm:hidden" />
+
+                            Kelola dan pantau pelaksanaan tes kebugaran
+                            siswa melalui dashboard ini.
+
+                        </p>
+
+
+                        <!-- PERIODE -->
+
+                        <div
+                            v-if="periode"
+                            class="shrink-0"
+                        >
+
+                            <span
+                                class="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm"
+                            >
+
+                                Periode:
+
+                                <span class="ml-1">
+                                    {{ periode.nama_periode }}
+                                </span>
+
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -126,7 +229,7 @@ const reminders = computed(
             ========================================================== -->
 
             <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+                class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
             >
 
                 <div
@@ -136,7 +239,11 @@ const reminders = computed(
                     :class="s.color"
                 >
 
-                    <div class="flex items-center justify-between">
+                    <!-- NAME -->
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
 
                         <span
                             class="text-[11px] font-bold uppercase tracking-wider text-slate-500"
@@ -147,7 +254,11 @@ const reminders = computed(
                     </div>
 
 
-                    <div class="mt-3 flex flex-col">
+                    <!-- VALUE -->
+
+                    <div
+                        class="mt-3 flex flex-col"
+                    >
 
                         <span
                             class="text-2xl font-extrabold leading-none tracking-tight text-slate-900"
@@ -177,15 +288,20 @@ const reminders = computed(
                 class="grid grid-cols-1 gap-6 lg:grid-cols-3"
             >
 
+
                 <!-- =====================================================
-                     PERLU PERHATIAN
+                     PESERTA TKSI PERLU PERHATIAN
                 ====================================================== -->
 
                 <div
                     class="flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-6 shadow-sm lg:col-span-2"
                 >
 
-                    <div class="space-y-4">
+                    <div
+                        class="space-y-4"
+                    >
+
+                        <!-- TITLE -->
 
                         <h3
                             class="flex items-center gap-1.5 border-b border-slate-100 pb-2 text-sm font-extrabold text-slate-800"
@@ -215,6 +331,8 @@ const reminders = computed(
                                 class="flex items-center justify-between gap-4 py-3 text-xs"
                             >
 
+                                <!-- SISWA -->
+
                                 <div
                                     class="min-w-0 space-y-0.5"
                                 >
@@ -234,6 +352,8 @@ const reminders = computed(
 
                                 </div>
 
+
+                                <!-- STATUS -->
 
                                 <div
                                     class="flex shrink-0 items-center gap-3"
@@ -270,6 +390,7 @@ const reminders = computed(
                                 class="mx-auto h-8 w-8 text-slate-300"
                             />
 
+
                             <p
                                 class="mt-2 text-sm font-semibold text-slate-400"
                             >
@@ -281,6 +402,8 @@ const reminders = computed(
                     </div>
 
 
+                    <!-- BUTTON -->
+
                     <Link
                         :href="route('tksi.tksi.index')"
                         class="mt-6 flex w-full items-center justify-center gap-1 rounded-xl border border-slate-200 py-2.5 text-center text-xs font-bold text-slate-700 transition hover:bg-slate-50"
@@ -289,6 +412,7 @@ const reminders = computed(
                         <span>
                             Lihat Data TKSI
                         </span>
+
 
                         <ArrowRightIcon
                             class="h-3.5 w-3.5"
@@ -303,18 +427,24 @@ const reminders = computed(
                      RIGHT COLUMN
                 ====================================================== -->
 
-                <div class="space-y-6">
+                <div
+                    class="space-y-6"
+                >
 
 
                     <!-- =================================================
-                         AKTIVITAS
+                         AKTIVITAS TERBARU
                     ================================================== -->
 
                     <div
                         class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
                     >
 
-                        <div class="space-y-4">
+                        <div
+                            class="space-y-4"
+                        >
+
+                            <!-- TITLE -->
 
                             <h3
                                 class="border-b border-slate-100 pb-2 text-sm font-extrabold text-slate-800"
@@ -322,6 +452,8 @@ const reminders = computed(
                                 Aktivitas Terbaru
                             </h3>
 
+
+                            <!-- ADA DATA -->
 
                             <div
                                 v-if="activities.length"
@@ -334,6 +466,8 @@ const reminders = computed(
                                     class="flex items-start gap-3"
                                 >
 
+                                    <!-- ICON -->
+
                                     <div
                                         class="mt-0.5 flex-shrink-0 rounded-lg bg-blue-50 p-1.5 text-blue-600"
                                     >
@@ -344,6 +478,8 @@ const reminders = computed(
 
                                     </div>
 
+
+                                    <!-- CONTENT -->
 
                                     <div
                                         class="min-w-0 space-y-0.5"
@@ -376,6 +512,8 @@ const reminders = computed(
                             </div>
 
 
+                            <!-- EMPTY -->
+
                             <div
                                 v-else
                                 class="py-6 text-center text-xs font-semibold text-slate-400"
@@ -389,14 +527,18 @@ const reminders = computed(
 
 
                     <!-- =================================================
-                         REMINDER
+                         JADWAL & PENGINGAT
                     ================================================== -->
 
                     <div
                         class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
                     >
 
-                        <div class="space-y-4">
+                        <div
+                            class="space-y-4"
+                        >
+
+                            <!-- TITLE -->
 
                             <h3
                                 class="border-b border-slate-100 pb-2 text-sm font-extrabold text-slate-800"
@@ -404,6 +546,8 @@ const reminders = computed(
                                 Jadwal & Pengingat
                             </h3>
 
+
+                            <!-- ADA DATA -->
 
                             <div
                                 v-if="reminders.length"
@@ -416,6 +560,8 @@ const reminders = computed(
                                     class="flex items-start gap-3.5"
                                 >
 
+                                    <!-- ICON -->
+
                                     <div
                                         class="mt-0.5 flex-shrink-0 rounded-lg bg-rose-50 p-1.5 text-rose-600"
                                     >
@@ -426,6 +572,8 @@ const reminders = computed(
 
                                     </div>
 
+
+                                    <!-- CONTENT -->
 
                                     <div
                                         class="min-w-0 space-y-0.5"
@@ -464,6 +612,8 @@ const reminders = computed(
 
                             </div>
 
+
+                            <!-- EMPTY -->
 
                             <div
                                 v-else

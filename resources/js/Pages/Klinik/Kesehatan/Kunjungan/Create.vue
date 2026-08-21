@@ -55,31 +55,38 @@ const props = defineProps({
 
 /*
 |--------------------------------------------------------------------------
+| TANGGAL SISTEM
+|--------------------------------------------------------------------------
+|
+| Hanya untuk tampilan.
+| Tidak dikirim dari form.
+|
+*/
+
+const tanggalHariIni = computed(() => {
+    return new Date().toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    })
+})
+
+
+/*
+|--------------------------------------------------------------------------
 | FORM
 |--------------------------------------------------------------------------
 */
 
 const form = useForm({
     periode_id: props.periode?.id ?? null,
-
     siswa_id: props.siswa?.id ?? null,
 
-    tanggal_kunjungan: new Date()
-        .toISOString()
-        .slice(0, 10),
-
-    status: 'selesai',
-
     keluhan: '',
-
     pemeriksaan: '',
-
     penyakit_id: null,
-
     tindakan: '',
-
     catatan: '',
-
     obat: [],
 })
 
@@ -234,21 +241,6 @@ function closePenyakitDropdown() {
         showPenyakitDropdown.value = false
     }, 150)
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| STATUS
-|--------------------------------------------------------------------------
-*/
-
-const statusOptions = [
-    {
-        value: 'selesai',
-        label: 'Selesai',
-        description: 'Pemeriksaan telah selesai dilakukan.',
-    },
-]
 
 
 /*
@@ -454,23 +446,6 @@ const totalJumlahObat = computed(() => {
 
 /*
 |--------------------------------------------------------------------------
-| CAN SUBMIT
-|--------------------------------------------------------------------------
-*/
-
-const canSubmit = computed(() => {
-    return (
-        !!form.periode_id &&
-        !!form.siswa_id &&
-        !!form.tanggal_kunjungan &&
-        !!form.status &&
-        !!form.keluhan?.trim()
-    )
-})
-
-
-/*
-|--------------------------------------------------------------------------
 | SUBMIT
 |--------------------------------------------------------------------------
 */
@@ -502,6 +477,22 @@ function submit() {
         }
     )
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| VALIDASI SUBMIT
+|--------------------------------------------------------------------------
+*/
+
+const canSubmit = computed(() => {
+    return (
+        !!form.periode_id &&
+        !!form.siswa_id &&
+        !!form.keluhan?.trim()
+    )
+})
+
 </script>
 
 
@@ -531,8 +522,6 @@ function submit() {
                         />
 
                         Kesehatan
-
-                        <
 
                     </div>
 
@@ -1071,7 +1060,7 @@ function submit() {
                                 <p
                                     class="mt-0.5 text-xs text-slate-400"
                                 >
-                                    Informasi dasar kunjungan siswa.
+                                    Tanggal kunjungan dibuat otomatis oleh sistem.
                                 </p>
 
                             </div>
@@ -1081,112 +1070,53 @@ function submit() {
                     </div>
 
 
-                    <div
-                        class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2"
-                    >
+                    <div class="p-5">
 
-                        <!-- TANGGAL -->
+                        <!-- TANGGAL OTOMATIS -->
 
                         <div>
 
                             <label
                                 class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-
                                 Tanggal Kunjungan
-
-                                <span class="text-rose-500">
-                                    *
-                                </span>
-
                             </label>
 
 
-                            <div class="relative">
+                            <div
+                                class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                            >
 
                                 <CalendarDaysIcon
-                                    class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                    class="h-5 w-5 shrink-0 text-blue-600"
                                 />
 
 
-                                <input
-                                    v-model="
-                                        form.tanggal_kunjungan
-                                    "
-                                    type="date"
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                                />
+                                <div>
+
+                                    <p
+                                        class="text-sm font-semibold text-slate-700"
+                                    >
+                                        {{ tanggalHariIni }}
+                                    </p>
+
+
+                                    <p
+                                        class="mt-0.5 text-[11px] text-slate-400"
+                                    >
+                                        Diisi otomatis berdasarkan tanggal
+                                        saat data disimpan.
+                                    </p>
+
+                                </div>
 
                             </div>
 
 
                             <p
-                                v-if="
-                                    form.errors.tanggal_kunjungan
-                                "
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{
-                                    form.errors.tanggal_kunjungan
-                                }}
-                            </p>
-
-                        </div>
-
-
-                        <!-- STATUS -->
-
-                        <div>
-
-                            <label
-                                class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-
-                                Status Pemeriksaan
-
-                                <span class="text-rose-500">
-                                    *
-                                </span>
-
-                            </label>
-
-
-                            <select
-                                v-model="form.status"
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
-                            >
-
-                                <option
-                                    v-for="option in statusOptions"
-                                    :key="option.value"
-                                    :value="option.value"
-                                >
-                                    {{ option.label }}
-                                </option>
-
-                            </select>
-
-
-                            <p
                                 class="mt-1.5 text-[11px] text-slate-400"
                             >
-
-                                {{
-                                    statusOptions.find(
-                                        option =>
-                                            option.value ===
-                                            form.status
-                                    )?.description
-                                }}
-
-                            </p>
-
-
-                            <p
-                                v-if="form.errors.status"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{ form.errors.status }}
+                                Tanggal tidak dapat diubah secara manual.
                             </p>
 
                         </div>
@@ -1283,9 +1213,7 @@ function submit() {
                         </div>
 
 
-                        <!-- ==================================================
-                             PENYAKIT
-                        ================================================== -->
+                        <!-- PENYAKIT -->
 
                         <div>
 
@@ -1295,8 +1223,6 @@ function submit() {
                                 Penyakit / Diagnosis
                             </label>
 
-
-                            <!-- BELUM ADA DATA PENYAKIT -->
 
                             <div
                                 v-if="props.penyakitList.length === 0"
@@ -1331,8 +1257,6 @@ function submit() {
                             </div>
 
 
-                            <!-- SEARCH PENYAKIT -->
-
                             <div
                                 v-else
                                 class="relative"
@@ -1356,8 +1280,6 @@ function submit() {
                                     class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                                 />
 
-
-                                <!-- DROPDOWN -->
 
                                 <div
                                     v-if="showPenyakitDropdown"
@@ -1443,8 +1365,6 @@ function submit() {
 
                             </div>
 
-
-                            <!-- PENYAKIT TERPILIH -->
 
                             <div
                                 v-if="selectedPenyakit"
@@ -1725,6 +1645,7 @@ function submit() {
                                             {{ obat.nama_obat }}
 
                                             —
+
                                             Stok:
                                             {{ obat.stok }}
                                             {{ obat.satuan }}

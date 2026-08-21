@@ -19,18 +19,33 @@ class PeriodeController extends Controller
      * DAFTAR PERIODE
      * ==========================================================
      */
-    public function index()
-    {
-        $periodes = Periode::with('pembuat')
-            ->withCount('siswa')
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+public function index()
+{
+    $periodes = Periode::with('pembuat')
+        ->withCount('siswa')
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
-        return Inertia::render('Admin/Periode/Index', [
-            'periodes' => $periodes,
-        ]);
-    }
+    // Cari periode yang sedang aktif
+    $periodeAktif = Periode::where('status', 'aktif')
+        ->latest('tanggal_mulai')
+        ->first();
+
+    return Inertia::render('Admin/Periode/Index', [
+        'periodes' => $periodes,
+
+        // Data periode aktif untuk kebutuhan popup
+        'periodeAktif' => $periodeAktif
+            ? [
+                'id' => $periodeAktif->id,
+                'nama_periode' => $periodeAktif->nama_periode,
+                'tanggal_mulai' => $periodeAktif->tanggal_mulai,
+                'tanggal_selesai' => $periodeAktif->tanggal_selesai,
+            ]
+            : null,
+    ]);
+}
 
     /**
      * ==========================================================
@@ -56,47 +71,91 @@ class PeriodeController extends Controller
      * SIMPAN PERIODE
      * ==========================================================
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_periode' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+   /**
+ * ==========================================================
+ * SIMPAN PERIODE
+ * ==========================================================
+ */
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nama_periode' => [
+            'required',
+            'string',
+            'max:100',
+        ],
 
-            'tanggal_mulai' => [
-                'required',
-                'date',
-            ],
+        'tanggal_mulai' => [
+            'required',
+            'date',
+        ],
 
-            'tanggal_selesai' => [
-                'required',
-                'date',
-                'after_or_equal:tanggal_mulai',
-            ],
+        'tanggal_selesai' => [
+            'required',
+            'date',
+            'after_or_equal:tanggal_mulai',
+        ],
 
-            'status' => [
-                'required',
-                'in:aktif,selesai,draft',
-            ],
+        'status' => [
+            'required',
+            'in:aktif,selesai,draft',
+        ],
 
-            'siswa_ids' => [
-                'nullable',
-                'array',
-            ],
+        'siswa_ids' => [
+            'nullable',
+            'array',
+        ],
 
-            'siswa_ids.*' => [
-                'integer',
-                'exists:siswas,id',
-            ],
-        ]);
+        'siswa_ids.*' => [
+            'integer',
+            'exists:siswas,id',
+        ],
+    ]);
+
+    try {
 
         DB::transaction(function () use (
             $validated,
             $request
         ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | CEK JIKA MAU MEMBUAT PERIODE AKTIF
+            |--------------------------------------------------------------------------
+            */
+
+            if ($validated['status'] === 'aktif') {
+
+                $periodeAktif = Periode::where(
+                    'status',
+                    'aktif'
+                )
+                    ->lockForUpdate()
+                    ->first();
+
+                /*
+                |--------------------------------------------------------------------------
+                | JIKA MASIH ADA PERIODE AKTIF
+                |--------------------------------------------------------------------------
+                */
+
+                if ($periodeAktif) {
+
+                    throw new \RuntimeException(
+                        'Masih terdapat periode aktif. Nonaktifkan periode tersebut terlebih dahulu sebelum membuat periode aktif baru.'
+                    );
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | BUAT PERIODE
+            |--------------------------------------------------------------------------
+            */
+
             $periode = Periode::create([
+
                 'nama_periode' =>
                     $validated['nama_periode'],
 
@@ -113,24 +172,38 @@ class PeriodeController extends Controller
                     $request->user()->id,
             ]);
 
+            /*
+            |--------------------------------------------------------------------------
+            | HUBUNGKAN SISWA
+            |--------------------------------------------------------------------------
+            */
+
             $periode->siswa()->sync(
                 $validated['siswa_ids'] ?? []
             );
         });
 
+    } catch (\RuntimeException $e) {
+
         return redirect()
-            ->route('admin.periode.index')
+            ->back()
+            ->withInput()
             ->with(
-                'success',
-                'Periode berhasil ditambahkan.'
+                'error',
+                $e->getMessage()
             );
     }
 
-    /**
-     * ==========================================================
-     * DETAIL PERIODE
-     * ==========================================================
-     */
+    return redirect()
+        ->route('admin.periode.index')
+        ->with(
+            'success',
+            'Periode berhasil ditambahkan.'
+        );
+}
+
+    
+//show
     public function show(Periode $periode)
     {
         $periode->load([
@@ -629,90 +702,134 @@ class PeriodeController extends Controller
      * UPDATE PERIODE
      * ==========================================================
      */
-    public function update(
-        Request $request,
-        Periode $periode
-    ) {
-        $validated = $request->validate([
-            'nama_periode' => [
-                'required',
-                'string',
-                'max:100',
-            ],
+   /**
+ * ==========================================================
+ * UPDATE PERIODE
+ * ==========================================================
+ */
+public function update(
+    Request $request,
+    Periode $periode
+) {
+    $validated = $request->validate([
+        'nama_periode' => [
+            'required',
+            'string',
+            'max:100',
+        ],
 
-            'tanggal_mulai' => [
-                'required',
-                'date',
-            ],
+        'tanggal_mulai' => [
+            'required',
+            'date',
+        ],
 
-            'tanggal_selesai' => [
-                'required',
-                'date',
-                'after_or_equal:tanggal_mulai',
-            ],
+        'tanggal_selesai' => [
+            'required',
+            'date',
+            'after_or_equal:tanggal_mulai',
+        ],
 
-            'status' => [
-                'required',
-                'in:aktif,selesai,draft',
-            ],
+        'status' => [
+            'required',
+            'in:aktif,selesai,draft',
+        ],
 
-            'siswa_ids' => [
-                'nullable',
-                'array',
-            ],
+        'siswa_ids' => [
+            'nullable',
+            'array',
+        ],
 
-            'siswa_ids.*' => [
-                'integer',
-                'exists:siswas,id',
-            ],
-        ]);
+        'siswa_ids.*' => [
+            'integer',
+            'exists:siswas,id',
+        ],
+    ]);
 
-        DB::transaction(
-            function () use (
-                $validated,
-                $periode
-            ) {
+    try {
 
-                $periode->update([
+        DB::transaction(function () use (
+            $validated,
+            $periode
+        ) {
 
-                    'nama_periode' =>
-                        $validated[
-                            'nama_periode'
-                        ],
+            /*
+            |--------------------------------------------------------------------------
+            | CEK PERIODE AKTIF
+            |--------------------------------------------------------------------------
+            */
 
-                    'tanggal_mulai' =>
-                        $validated[
-                            'tanggal_mulai'
-                        ],
+            if ($validated['status'] === 'aktif') {
 
-                    'tanggal_selesai' =>
-                        $validated[
-                            'tanggal_selesai'
-                        ],
+                $periodeAktifLain = Periode::where(
+                    'status',
+                    'aktif'
+                )
+                    ->where(
+                        'id',
+                        '!=',
+                        $periode->id
+                    )
+                    ->lockForUpdate()
+                    ->first();
 
-                    'status' =>
-                        $validated[
-                            'status'
-                        ],
-                ]);
+                if ($periodeAktifLain) {
 
-                $periode->siswa()->sync(
-                    $validated[
-                        'siswa_ids'
-                    ] ?? []
-                );
+                    throw new \RuntimeException(
+                        'Masih terdapat periode aktif lain. Nonaktifkan periode tersebut terlebih dahulu.'
+                    );
+                }
             }
-        );
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE PERIODE
+            |--------------------------------------------------------------------------
+            */
+
+            $periode->update([
+
+                'nama_periode' =>
+                    $validated['nama_periode'],
+
+                'tanggal_mulai' =>
+                    $validated['tanggal_mulai'],
+
+                'tanggal_selesai' =>
+                    $validated['tanggal_selesai'],
+
+                'status' =>
+                    $validated['status'],
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE SISWA
+            |--------------------------------------------------------------------------
+            */
+
+            $periode->siswa()->sync(
+                $validated['siswa_ids'] ?? []
+            );
+        });
+
+    } catch (\RuntimeException $e) {
 
         return redirect()
-            ->route(
-                'admin.periode.index'
-            )
+            ->back()
+            ->withInput()
             ->with(
-                'success',
-                'Periode berhasil diperbarui.'
+                'error',
+                $e->getMessage()
             );
     }
+
+    return redirect()
+        ->route('admin.periode.index')
+        ->with(
+            'success',
+            'Periode berhasil diperbarui.'
+        );
+}
 
     /**
      * ==========================================================
@@ -1499,4 +1616,33 @@ class PeriodeController extends Controller
             return $tanggal;
         }
     }
+
+    /**
+ * ==========================================================
+ * NONAKTIFKAN PERIODE AKTIF DAN BUAT PERIODE BARU
+ * ==========================================================
+ */
+public function deactivateActiveAndCreate()
+{
+    DB::transaction(function () {
+
+        $periodeAktif = Periode::where('status', 'aktif')
+            ->lockForUpdate()
+            ->first();
+
+        if ($periodeAktif) {
+
+            $periodeAktif->update([
+                'status' => 'selesai',
+            ]);
+        }
+    });
+
+    return redirect()
+        ->route('admin.periode.create')
+        ->with(
+            'success',
+            'Periode aktif sebelumnya telah dinonaktifkan. Silakan buat periode baru.'
+        );
+}
 }

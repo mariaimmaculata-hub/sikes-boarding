@@ -10,71 +10,52 @@ class KunjunganKlinik extends Model
 {
     protected $table = 'kunjungan_klinik';
 
-    /**
-     * ============================================================
-     * MASS ASSIGNMENT
-     * ============================================================
-     */
     protected $fillable = [
         'periode_id',
         'siswa_id',
+        'penyakit_id',
         'tanggal_kunjungan',
         'keluhan',
         'pemeriksaan',
-        'penyakit_id',
+        'diagnosis',
         'tindakan',
         'status',
         'catatan',
         'pemeriksa_id',
     ];
 
-    /**
-     * ============================================================
-     * CAST
-     * ============================================================
-     *
-     * Mengubah tanggal_kunjungan dari string database
-     * menjadi object Carbon.
-     */
     protected $casts = [
         'tanggal_kunjungan' => 'datetime',
     ];
 
-    /**
-     * ============================================================
-     * RELASI SISWA
-     * ============================================================
-     */
+    // ==========================================================
+    // RELASI
+    // ==========================================================
+
     public function siswa(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(
+            Siswa::class,
+            'siswa_id'
+        );
     }
 
-    /**
-     * ============================================================
-     * RELASI PERIODE
-     * ============================================================
-     */
     public function periode(): BelongsTo
     {
-        return $this->belongsTo(Periode::class);
+        return $this->belongsTo(
+            Periode::class,
+            'periode_id'
+        );
     }
 
-    /**
-     * ============================================================
-     * RELASI PENYAKIT
-     * ============================================================
-     */
     public function penyakit(): BelongsTo
     {
-        return $this->belongsTo(Penyakit::class);
+        return $this->belongsTo(
+            Penyakit::class,
+            'penyakit_id'
+        );
     }
 
-    /**
-     * ============================================================
-     * RELASI PEMERIKSA
-     * ============================================================
-     */
     public function pemeriksa(): BelongsTo
     {
         return $this->belongsTo(
@@ -83,16 +64,12 @@ class KunjunganKlinik extends Model
         );
     }
 
-    /**
-     * ============================================================
-     * RELASI OBAT
-     * ============================================================
-     */
     public function kunjunganObat(): HasMany
     {
         return $this->hasMany(
             KunjunganObat::class,
-            'kunjungan_id'
+            'kunjungan_id',
+            'id'
         );
     }
 }

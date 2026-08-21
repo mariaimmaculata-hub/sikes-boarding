@@ -1,10 +1,10 @@
 <script setup>
 
-import { computed, ref } from 'vue';
+import { computed, ref } from 'vue'
 
-import KlinikLayout from '@/Layouts/KlinikLayout.vue';
+import KlinikLayout from '@/Layouts/KlinikLayout.vue'
 
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3'
 
 import {
     MagnifyingGlassIcon,
@@ -17,7 +17,9 @@ import {
     ExclamationTriangleIcon,
     CheckCircleIcon,
     CalendarDaysIcon,
-} from '@heroicons/vue/24/outline';
+    PrinterIcon,
+    ArrowDownTrayIcon,
+} from '@heroicons/vue/24/outline'
 
 
 // ======================================================
@@ -41,6 +43,8 @@ const props = defineProps({
             total: 0,
             hari_ini: 0,
             selesai: 0,
+            trend_penyakit: [],
+            max_trend_penyakit: 0,
         }),
     },
 
@@ -58,14 +62,14 @@ const props = defineProps({
         }),
     },
 
-});
+})
 
 
 // ======================================================
 // PAGE
 // ======================================================
 
-const page = usePage();
+const page = usePage()
 
 
 // ======================================================
@@ -74,27 +78,27 @@ const page = usePage();
 
 const search = ref(
     props.filters?.search ?? ''
-);
+)
 
 const periodeId = ref(
     props.filters?.periode_id ?? ''
-);
+)
 
 const tanggal = ref(
     props.filters?.tanggal ?? ''
-);
+)
 
-const showFilter = ref(false);
+const showFilter = ref(false)
 
-const selectedKunjungan = ref(null);
+const selectedKunjungan = ref(null)
 
-const showDetail = ref(false);
+const showDetail = ref(false)
 
-const deleteTarget = ref(null);
+const deleteTarget = ref(null)
 
-const showDelete = ref(false);
+const showDelete = ref(false)
 
-const deleting = ref(false);
+const deleting = ref(false)
 
 
 // ======================================================
@@ -103,16 +107,16 @@ const deleting = ref(false);
 
 const flashSuccess = computed(() => {
 
-    return page.props.flash?.success ?? null;
+    return page.props.flash?.success ?? null
 
-});
+})
 
 
 const flashError = computed(() => {
 
-    return page.props.flash?.error ?? null;
+    return page.props.flash?.error ?? null
 
-});
+})
 
 
 // ======================================================
@@ -125,9 +129,9 @@ const hasActiveFilter = computed(() => {
         search.value ||
         periodeId.value ||
         tanggal.value
-    );
+    )
 
-});
+})
 
 
 // ======================================================
@@ -139,23 +143,18 @@ const applyFilter = () => {
     router.get(
         route('klinik.kesehatan.kunjungan.index'),
         {
-            search:
-                search.value || undefined,
-
-            periode_id:
-                periodeId.value || undefined,
-
-            tanggal:
-                tanggal.value || undefined,
+            search: search.value || undefined,
+            periode_id: periodeId.value || undefined,
+            tanggal: tanggal.value || undefined,
         },
         {
             preserveState: true,
             preserveScroll: true,
             replace: true,
         }
-    );
+    )
 
-};
+}
 
 
 // ======================================================
@@ -164,94 +163,34 @@ const applyFilter = () => {
 
 const resetFilter = () => {
 
-    search.value = '';
+    search.value = ''
 
-    periodeId.value = '';
+    periodeId.value = ''
 
-    tanggal.value = '';
+    tanggal.value = ''
 
-    applyFilter();
+    applyFilter()
 
-};
+}
 
 
 // ======================================================
 // SEARCH
 // ======================================================
 
-let searchTimeout = null;
+let searchTimeout = null
 
 const handleSearch = () => {
 
-    clearTimeout(searchTimeout);
+    clearTimeout(searchTimeout)
 
     searchTimeout = setTimeout(() => {
 
-        applyFilter();
+        applyFilter()
 
-    }, 400);
+    }, 400)
 
-};
-
-
-// ======================================================
-// STATUS
-// ======================================================
-
-const formatStatus = (status) => {
-
-    const labels = {
-
-        selesai: 'Selesai',
-
-        proses: 'Dalam Pemeriksaan',
-
-        diperiksa: 'Dalam Pemeriksaan',
-
-        menunggu: 'Menunggu',
-
-        batal: 'Dibatalkan',
-
-    };
-
-    return labels[status] ?? status ?? '-';
-
-};
-
-
-const statusClass = (status) => {
-
-    switch (status) {
-
-        case 'selesai':
-
-            return 'bg-emerald-100 text-emerald-700';
-
-
-        case 'proses':
-
-        case 'diperiksa':
-
-            return 'bg-blue-100 text-blue-700';
-
-
-        case 'menunggu':
-
-            return 'bg-amber-100 text-amber-700';
-
-
-        case 'batal':
-
-            return 'bg-rose-100 text-rose-700';
-
-
-        default:
-
-            return 'bg-slate-100 text-slate-600';
-
-    }
-
-};
+}
 
 
 // ======================================================
@@ -264,16 +203,20 @@ const truncate = (
 ) => {
 
     if (!text) {
-        return '-';
+
+        return '-'
+
     }
 
     if (text.length <= length) {
-        return text;
+
+        return text
+
     }
 
-    return `${text.substring(0, length)}...`;
+    return `${text.substring(0, length)}...`
 
-};
+}
 
 
 // ======================================================
@@ -282,20 +225,72 @@ const truncate = (
 
 const openDetail = (item) => {
 
-    selectedKunjungan.value = item;
+    selectedKunjungan.value = item
 
-    showDetail.value = true;
+    showDetail.value = true
 
-};
+}
 
 
 const closeDetail = () => {
 
-    showDetail.value = false;
+    showDetail.value = false
 
-    selectedKunjungan.value = null;
+    selectedKunjungan.value = null
 
-};
+}
+
+
+// ======================================================
+// PRINT DETAIL
+// ======================================================
+
+const printDetail = () => {
+
+    if (!selectedKunjungan.value?.id) {
+
+        return
+
+    }
+
+    const url = route(
+        'klinik.kesehatan.kunjungan.print',
+        selectedKunjungan.value.id
+    )
+
+    window.open(
+        url,
+        '_blank',
+        'width=900,height=700,noopener,noreferrer'
+    )
+
+}
+
+
+// ======================================================
+// DOWNLOAD PDF
+// ======================================================
+
+const downloadPdf = () => {
+
+    if (!selectedKunjungan.value?.id) {
+
+        return
+
+    }
+
+    const url = route(
+        'klinik.kesehatan.kunjungan.pdf',
+        selectedKunjungan.value.id
+    )
+
+    window.open(
+        url,
+        '_blank',
+        'noopener,noreferrer'
+    )
+
+}
 
 
 // ======================================================
@@ -304,24 +299,26 @@ const closeDetail = () => {
 
 const openDelete = (item) => {
 
-    deleteTarget.value = item;
+    deleteTarget.value = item
 
-    showDelete.value = true;
+    showDelete.value = true
 
-};
+}
 
 
 const closeDelete = () => {
 
     if (deleting.value) {
-        return;
+
+        return
+
     }
 
-    showDelete.value = false;
+    showDelete.value = false
 
-    deleteTarget.value = null;
+    deleteTarget.value = null
 
-};
+}
 
 
 const deleteKunjungan = () => {
@@ -330,10 +327,12 @@ const deleteKunjungan = () => {
         !deleteTarget.value ||
         deleting.value
     ) {
-        return;
+
+        return
+
     }
 
-    deleting.value = true;
+    deleting.value = true
 
     router.delete(
         route(
@@ -341,26 +340,27 @@ const deleteKunjungan = () => {
             deleteTarget.value.id
         ),
         {
+
             preserveScroll: true,
 
             onSuccess: () => {
 
-                showDelete.value = false;
+                showDelete.value = false
 
-                deleteTarget.value = null;
+                deleteTarget.value = null
 
             },
 
             onFinish: () => {
 
-                deleting.value = false;
+                deleting.value = false
 
             },
 
         }
-    );
+    )
 
-};
+}
 
 
 // ======================================================
@@ -369,15 +369,17 @@ const deleteKunjungan = () => {
 
 const paginationLinks = computed(() => {
 
-    return props.kunjungan?.links ?? [];
+    return props.kunjungan?.links ?? []
 
-});
+})
 
 
 const goToPage = (url) => {
 
     if (!url) {
-        return;
+
+        return
+
     }
 
     router.get(
@@ -387,9 +389,9 @@ const goToPage = (url) => {
             preserveState: true,
             preserveScroll: true,
         }
-    );
+    )
 
-};
+}
 
 
 // ======================================================
@@ -400,13 +402,193 @@ const clearFlash = () => {
 
     if (page.props.flash) {
 
-        page.props.flash.success = null;
+        page.props.flash.success = null
 
-        page.props.flash.error = null;
+        page.props.flash.error = null
 
     }
 
-};
+}
+
+
+// ======================================================
+// FORMAT TANGGAL
+// ======================================================
+
+const formatDateTime = (value) => {
+
+    if (!value) {
+
+        return '-'
+
+    }
+
+    const date = new Date(value)
+
+    if (isNaN(date.getTime())) {
+
+        return value
+
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(date)
+
+}
+
+
+const formatDate = (value) => {
+
+    if (!value) {
+
+        return '-'
+
+    }
+
+    const date = new Date(value)
+
+    if (isNaN(date.getTime())) {
+
+        return value
+
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    }).format(date)
+
+}
+
+
+// ======================================================
+// TREN PENYAKIT
+// ======================================================
+
+const trendPenyakit = computed(() => {
+
+    return props.statistik?.trend_penyakit ?? []
+
+})
+
+
+// ======================================================
+// TOP 3 PENYAKIT
+// ======================================================
+
+const top3Penyakit = computed(() => {
+
+    return [...trendPenyakit.value]
+        .sort(
+            (a, b) =>
+                Number(b.jumlah ?? 0) -
+                Number(a.jumlah ?? 0)
+        )
+        .slice(0, 3)
+
+})
+
+
+// ======================================================
+// MAX BAR
+// ======================================================
+
+const maxPenyakit = computed(() => {
+
+    const backendMax = Number(
+        props.statistik?.max_trend_penyakit ?? 0
+    )
+
+    const localMax = Math.max(
+        ...top3Penyakit.value.map(
+            item => Number(item.jumlah ?? 0)
+        ),
+        0
+    )
+
+    return Math.max(
+        backendMax,
+        localMax,
+        1
+    )
+
+})
+
+
+// ======================================================
+// BAR WIDTH
+// ======================================================
+
+const barWidth = (jumlah) => {
+
+    const value = Number(jumlah ?? 0)
+
+    if (!value) {
+
+        return 0
+
+    }
+
+    return Math.max(
+        8,
+        (value / maxPenyakit.value) * 100
+    )
+
+}
+
+
+// ======================================================
+// TOTAL TOP 3
+// ======================================================
+
+const totalTop3Penyakit = computed(() => {
+
+    return top3Penyakit.value.reduce(
+        (total, penyakit) =>
+            total + Number(penyakit.jumlah ?? 0),
+        0
+    )
+
+})
+
+
+// ======================================================
+// PERSENTASE PENYAKIT
+// ======================================================
+
+const persentasePenyakit = (jumlah) => {
+
+    if (!totalTop3Penyakit.value) {
+
+        return 0
+
+    }
+
+    return (
+        Number(jumlah ?? 0) /
+        totalTop3Penyakit.value
+    ) * 100
+
+}
+
+
+// ======================================================
+// TOP PENYAKIT
+// ======================================================
+
+const topPenyakit = computed(() => {
+
+    return top3Penyakit.value.length
+        ? top3Penyakit.value[0]
+        : null
+
+})
 
 </script>
 
@@ -458,7 +640,7 @@ const clearFlash = () => {
             </div>
 
 
-            <!-- TAMBAH -->
+            <!-- KUNJUNGAN BARU -->
 
             <Link
                 :href="route(
@@ -477,28 +659,6 @@ const clearFlash = () => {
 
         </div>
 
-<div
-    v-if="$page.props.flash?.success"
-    class="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4"
->
-    <div
-        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100"
-    >
-        <CheckCircleIcon
-            class="h-5 w-5 text-emerald-600"
-        />
-    </div>
-
-    <div>
-        <p class="text-sm font-bold text-emerald-800">
-            Berhasil
-        </p>
-
-        <p class="mt-0.5 text-xs text-emerald-600">
-            {{ $page.props.flash.success }}
-        </p>
-    </div>
-</div>
 
         <!-- ==================================================
              FLASH SUCCESS
@@ -599,22 +759,25 @@ const clearFlash = () => {
 
 
         <!-- ==================================================
-             SUMMARY
+             STATISTIK
+             3 CARD SAMA TINGGI
         ================================================== -->
 
         <div
-            class="grid grid-cols-1 gap-4 sm:grid-cols-3"
+            class="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3"
         >
 
 
-            <!-- TOTAL -->
+            <!-- ==================================================
+                 TOTAL KUNJUNGAN
+            ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
 
                 <div
-                    class="flex items-center justify-between"
+                    class="flex items-start justify-between"
                 >
 
                     <div>
@@ -625,18 +788,17 @@ const clearFlash = () => {
                             Total Kunjungan
                         </p>
 
-
                         <p
-                            class="mt-1 text-2xl font-bold text-slate-800"
+                            class="mt-8 text-5xl  font-bold text-slate-800"
                         >
-                            {{ statistik.total }}
+                            {{ statistik.total ?? 0 }}
                         </p>
 
                     </div>
 
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50"
                     >
 
                         <ClipboardDocumentCheckIcon
@@ -647,17 +809,52 @@ const clearFlash = () => {
 
                 </div>
 
+
+                <!-- KONTEN PENUH -->
+
+                <div
+                    class="mt-auto border-t border-slate-100 pt-4"
+                >
+
+                    <p
+                        class="text-xs font-medium text-slate-500"
+                    >
+                        Seluruh riwayat kunjungan
+                    </p>
+
+                    <div
+                        class="mt-2 flex items-center justify-between"
+                    >
+
+                        <span
+                            class="text-[11px] text-slate-400"
+                        >
+                            Data tercatat
+                        </span>
+
+                        <span
+                            class="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-600"
+                        >
+                            Semua Data
+                        </span>
+
+                    </div>
+
+                </div>
+
             </div>
 
 
-            <!-- HARI INI -->
+            <!-- ==================================================
+                 KUNJUNGAN HARI INI
+            ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
 
                 <div
-                    class="flex items-center justify-between"
+                    class="flex items-start justify-between"
                 >
 
                     <div>
@@ -668,18 +865,17 @@ const clearFlash = () => {
                             Kunjungan Hari Ini
                         </p>
 
-
                         <p
-                            class="mt-1 text-2xl font-bold text-amber-600"
+                            class="mt-8 text-5xl font-bold text-amber-600"
                         >
-                            {{ statistik.hari_ini }}
+                            {{ statistik.hari_ini ?? 0 }}
                         </p>
 
                     </div>
 
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50"
                     >
 
                         <CalendarDaysIcon
@@ -690,17 +886,54 @@ const clearFlash = () => {
 
                 </div>
 
+
+                <!-- KONTEN PENUH -->
+
+                <div
+                    class="mt-auto border-t border-slate-100 pt-4"
+                >
+
+                    <p
+                        class="text-xs font-medium text-slate-500"
+                    >
+                        Kunjungan pada hari ini
+                    </p>
+
+                    <div
+                        class="mt-2 flex items-center justify-between"
+                    >
+
+                        <span
+                            class="text-[11px] text-slate-400"
+                        >
+                            Aktivitas klinik
+                        </span>
+
+                        <span
+                            class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-600"
+                        >
+                            Hari Ini
+                        </span>
+
+                    </div>
+
+                </div>
+
             </div>
 
 
-            <!-- SELESAI -->
+            <!-- ==================================================
+                 DISTRIBUSI PENYAKIT
+            ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
 
+                <!-- HEADER -->
+
                 <div
-                    class="flex items-center justify-between"
+                    class="flex items-start justify-between"
                 >
 
                     <div>
@@ -708,26 +941,176 @@ const clearFlash = () => {
                         <p
                             class="text-xs font-semibold text-slate-400"
                         >
-                            Pemeriksaan Selesai
+                            Distribusi Penyakit
                         </p>
 
-
                         <p
-                            class="mt-1 text-2xl font-bold text-emerald-600"
+                            class="mt-1 text-sm font-bold text-slate-800"
                         >
-                            {{ statistik.selesai }}
+                            3 Penyakit Terbanyak
                         </p>
 
                     </div>
 
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50"
                     >
 
-                        <CheckCircleIcon
-                            class="h-5 w-5 text-emerald-600"
+                        <ClipboardDocumentCheckIcon
+                            class="h-5 w-5 text-blue-600"
                         />
+
+                    </div>
+
+                </div>
+
+
+                <!-- BAR CHART -->
+
+                <div
+                    v-if="top3Penyakit.length"
+                    class="mt-4 flex-1 space-y-3"
+                >
+
+                    <div
+                        v-for="(penyakit, index) in top3Penyakit"
+                        :key="penyakit.id ?? index"
+                    >
+
+                        <!-- LABEL -->
+
+                        <div
+                            class="mb-1 flex items-center justify-between gap-3"
+                        >
+
+                            <div
+                                class="flex min-w-0 items-center gap-2"
+                            >
+
+                                <span
+                                    class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    :class="
+                                        index === 0
+                                            ? 'bg-blue-500'
+                                            : index === 1
+                                                ? 'bg-sky-400'
+                                                : 'bg-slate-400'
+                                    "
+                                ></span>
+
+
+                                <p
+                                    class="truncate text-[11px] font-semibold text-slate-700"
+                                >
+                                    {{ penyakit.nama_penyakit }}
+                                </p>
+
+                            </div>
+
+
+                            <span
+                                class="shrink-0 text-[10px] font-bold text-slate-500"
+                            >
+                                {{ penyakit.jumlah ?? 0 }}
+                            </span>
+
+                        </div>
+
+
+                        <!-- BAR -->
+
+                        <div
+                            class="h-2.5 w-full overflow-hidden rounded-full bg-slate-100"
+                        >
+
+                            <div
+                                class="h-full rounded-full transition-all duration-500"
+                                :class="
+                                    index === 0
+                                        ? 'bg-blue-500'
+                                        : index === 1
+                                            ? 'bg-sky-400'
+                                            : 'bg-slate-400'
+                                "
+                                :style="{
+                                    width: `${barWidth(penyakit.jumlah)}%`
+                                }"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EMPTY -->
+
+                <div
+                    v-else
+                    class="mt-4 flex flex-1 items-center rounded-xl bg-slate-50 p-3"
+                >
+
+                    <div
+                        class="flex items-center gap-3"
+                    >
+
+                        <div
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
+                        >
+
+                            <ClipboardDocumentCheckIcon
+                                class="h-4 w-4 text-slate-300"
+                            />
+
+                        </div>
+
+
+                        <div>
+
+                            <p
+                                class="text-xs font-semibold text-slate-500"
+                            >
+                                Belum ada data
+                            </p>
+
+
+                            <p
+                                class="mt-0.5 text-[10px] text-slate-400"
+                            >
+                                Belum ada diagnosis penyakit.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div
+                    v-if="top3Penyakit.length"
+                    class="mt-auto border-t border-slate-100 pt-3"
+                >
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <span
+                            class="text-[10px] text-slate-400"
+                        >
+                            Total 3 penyakit
+                        </span>
+
+                        <span
+                            class="text-xs font-bold text-slate-700"
+                        >
+                            {{ totalTop3Penyakit }} kasus
+                        </span>
 
                     </div>
 
@@ -749,7 +1132,6 @@ const clearFlash = () => {
             <div
                 class="grid grid-cols-1 gap-3 p-4 lg:grid-cols-[3fr_1fr_auto]"
             >
-
 
                 <!-- SEARCH -->
 
@@ -886,7 +1268,6 @@ const clearFlash = () => {
             class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
 
-
             <!-- HEADER -->
 
             <div
@@ -982,13 +1363,6 @@ const clearFlash = () => {
 
 
                             <th
-                                class="px-5 py-3 text-center text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                Status
-                            </th>
-
-
-                            <th
                                 class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
                                 Pemeriksa
@@ -1016,9 +1390,6 @@ const clearFlash = () => {
                             class="transition hover:bg-slate-50"
                         >
 
-
-                            <!-- NO -->
-
                             <td
                                 class="px-5 py-4 text-center text-sm text-slate-500"
                             >
@@ -1033,8 +1404,6 @@ const clearFlash = () => {
 
                             </td>
 
-
-                            <!-- SISWA -->
 
                             <td
                                 class="px-5 py-4"
@@ -1082,8 +1451,6 @@ const clearFlash = () => {
                             </td>
 
 
-                            <!-- KELAS -->
-
                             <td
                                 class="px-5 py-4"
                             >
@@ -1110,8 +1477,6 @@ const clearFlash = () => {
                             </td>
 
 
-                            <!-- TANGGAL -->
-
                             <td
                                 class="whitespace-nowrap px-5 py-4"
                             >
@@ -1124,20 +1489,29 @@ const clearFlash = () => {
                                         class="h-4 w-4 text-slate-400"
                                     />
 
-                                    <span
-                                        class="text-sm font-medium text-slate-700"
-                                    >
-                                        {{
-                                            item.tanggal_kunjungan ?? '-'
-                                        }}
-                                    </span>
+
+                                    <div>
+
+                                        <p
+                                            class="text-sm font-medium text-slate-700"
+                                        >
+                                            {{ formatDate(item.created_at) }}
+                                        </p>
+
+
+                                        <p
+                                            class="mt-0.5 text-xs text-slate-400"
+                                        >
+                                            Diperbarui:
+                                            {{ formatDateTime(item.updated_at) }}
+                                        </p>
+
+                                    </div>
 
                                 </div>
 
                             </td>
 
-
-                            <!-- KELUHAN -->
 
                             <td
                                 class="max-w-[220px] px-5 py-4"
@@ -1152,56 +1526,26 @@ const clearFlash = () => {
                             </td>
 
 
-                            <!-- DIAGNOSIS -->
-
                             <td
                                 class="max-w-[220px] px-5 py-4"
                             >
 
                                 <p
-    class="text-sm font-medium text-slate-700"
->
-    {{ item.penyakit?.nama_penyakit ?? '-' }}
-</p>
-
-<p
-    v-if="item.penyakit?.kategori"
-    class="mt-0.5 text-xs text-slate-400"
->
-    {{ item.penyakit.kategori }}
-</p>
-
-                            </td>
-
-
-                            <!-- STATUS -->
-
-                            <td
-                                class="whitespace-nowrap px-5 py-4 text-center"
-                            >
-
-                                <span
-                                    :class="[
-
-                                        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold',
-
-                                        statusClass(item.status)
-
-                                    ]"
+                                    class="text-sm font-medium text-slate-700"
                                 >
+                                    {{ item.penyakit?.nama_penyakit ?? '-' }}
+                                </p>
 
-                                    <span
-                                        class="h-1.5 w-1.5 rounded-full bg-current"
-                                    ></span>
 
-                                    {{ formatStatus(item.status) }}
-
-                                </span>
+                                <p
+                                    v-if="item.penyakit?.kategori"
+                                    class="mt-0.5 text-xs text-slate-400"
+                                >
+                                    {{ item.penyakit.kategori }}
+                                </p>
 
                             </td>
 
-
-                            <!-- PEMERIKSA -->
 
                             <td
                                 class="px-5 py-4"
@@ -1237,8 +1581,6 @@ const clearFlash = () => {
                             </td>
 
 
-                            <!-- AKSI -->
-
                             <td
                                 class="px-5 py-4"
                             >
@@ -1246,9 +1588,6 @@ const clearFlash = () => {
                                 <div
                                     class="flex items-center justify-center gap-1"
                                 >
-
-
-                                    <!-- DETAIL -->
 
                                     <button
                                         type="button"
@@ -1263,8 +1602,6 @@ const clearFlash = () => {
 
                                     </button>
 
-
-                                    <!-- EDIT -->
 
                                     <Link
                                         :href="route(
@@ -1281,8 +1618,6 @@ const clearFlash = () => {
 
                                     </Link>
 
-
-                                    <!-- DELETE -->
 
                                     <button
                                         type="button"
@@ -1311,7 +1646,7 @@ const clearFlash = () => {
                         >
 
                             <td
-                                colspan="9"
+                                colspan="8"
                                 class="px-5 py-16 text-center"
                             >
 
@@ -1371,9 +1706,6 @@ const clearFlash = () => {
                     class="p-4"
                 >
 
-
-                    <!-- SISWA -->
-
                     <div
                         class="flex items-start justify-between gap-3"
                     >
@@ -1417,25 +1749,8 @@ const clearFlash = () => {
 
                         </div>
 
-
-                        <span
-                            :class="[
-
-                                'shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold',
-
-                                statusClass(item.status)
-
-                            ]"
-                        >
-
-                            {{ formatStatus(item.status) }}
-
-                        </span>
-
                     </div>
 
-
-                    <!-- INFO -->
 
                     <div
                         class="mt-4 grid grid-cols-2 gap-3 text-xs"
@@ -1474,17 +1789,21 @@ const clearFlash = () => {
                             <p
                                 class="mt-0.5 font-semibold text-slate-700"
                             >
-                                {{
-                                    item.tanggal_kunjungan ?? '-'
-                                }}
+                                {{ formatDate(item.created_at) }}
+                            </p>
+
+
+                            <p
+                                class="mt-0.5 text-[11px] text-slate-400"
+                            >
+                                Diperbarui:
+                                {{ formatDateTime(item.updated_at) }}
                             </p>
 
                         </div>
 
                     </div>
 
-
-                    <!-- KELUHAN -->
 
                     <div
                         class="mt-4 rounded-xl bg-slate-50 p-3"
@@ -1506,12 +1825,10 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- DIAGNOSIS -->
-
                     <div
-    v-if="item.penyakit"
-    class="mt-3 rounded-xl bg-blue-50 p-3"
->
+                        v-if="item.penyakit"
+                        class="mt-3 rounded-xl bg-blue-50 p-3"
+                    >
 
                         <p
                             class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
@@ -1520,23 +1837,22 @@ const clearFlash = () => {
                         </p>
 
 
-                       <p
-    class="mt-1 text-xs font-semibold text-blue-800"
->
-    {{ item.penyakit?.nama_penyakit ?? '-' }}
-</p>
+                        <p
+                            class="mt-1 text-xs font-semibold text-blue-800"
+                        >
+                            {{ item.penyakit?.nama_penyakit ?? '-' }}
+                        </p>
 
-<p
-    v-if="item.penyakit?.kategori"
-    class="mt-1 text-[11px] text-blue-600"
->
-    {{ item.penyakit.kategori }}
-</p>
+
+                        <p
+                            v-if="item.penyakit?.kategori"
+                            class="mt-1 text-[11px] text-blue-600"
+                        >
+                            {{ item.penyakit.kategori }}
+                        </p>
 
                     </div>
 
-
-                    <!-- AKSI -->
 
                     <div
                         class="mt-4 flex gap-2"
@@ -1590,7 +1906,7 @@ const clearFlash = () => {
                 </div>
 
 
-                <!-- MOBILE EMPTY -->
+                <!-- EMPTY -->
 
                 <div
                     v-if="!kunjungan.data?.length"
@@ -1644,7 +1960,7 @@ const clearFlash = () => {
                     <span
                         class="font-bold text-slate-700"
                     >
-                        {{ kunjungan.meta?.from ?? 0 }}
+                        {{ kunjungan.from ?? 0 }}
                     </span>
 
                     -
@@ -1652,7 +1968,7 @@ const clearFlash = () => {
                     <span
                         class="font-bold text-slate-700"
                     >
-                        {{ kunjungan.meta?.to ?? 0 }}
+                        {{ kunjungan.to ?? 0 }}
                     </span>
 
                     dari
@@ -1660,7 +1976,7 @@ const clearFlash = () => {
                     <span
                         class="font-bold text-slate-700"
                     >
-                        {{ kunjungan.meta?.total ?? 0 }}
+                        {{ kunjungan.total ?? 0 }}
                     </span>
 
                     kunjungan
@@ -1711,7 +2027,7 @@ const clearFlash = () => {
 
             <div
                 v-if="showDetail && selectedKunjungan"
-                class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
             >
 
                 <!-- OVERLAY -->
@@ -1725,14 +2041,13 @@ const clearFlash = () => {
                 <!-- MODAL -->
 
                 <div
-                    class="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+                    class="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
                 >
-
 
                     <!-- HEADER -->
 
                     <div
-                        class="flex items-start justify-between border-b border-slate-200 px-6 py-5"
+                        class="flex shrink-0 items-start justify-between border-b border-slate-200 px-6 py-5"
                     >
 
                         <div>
@@ -1757,6 +2072,7 @@ const clearFlash = () => {
                             <p
                                 class="mt-1 text-sm text-slate-500"
                             >
+
                                 NISN:
                                 {{
                                     selectedKunjungan.siswa?.nisn
@@ -1769,6 +2085,7 @@ const clearFlash = () => {
                                     selectedKunjungan.siswa?.kelas
                                         ?.nama_kelas ?? '-'
                                 }}
+
                             </p>
 
                         </div>
@@ -1792,14 +2109,13 @@ const clearFlash = () => {
                     <!-- BODY -->
 
                     <div
-                        class="overflow-y-auto px-6 py-6"
+                        class="min-h-0 flex-1 overflow-y-auto px-6 py-6"
                     >
-
 
                         <!-- META -->
 
                         <div
-                            class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3"
+                            class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
                         >
 
                             <div
@@ -1817,44 +2133,23 @@ const clearFlash = () => {
                                     class="mt-1 text-sm font-semibold text-slate-800"
                                 >
                                     {{
-                                        selectedKunjungan.tanggal_kunjungan
-                                        ?? '-'
+                                        formatDate(
+                                            selectedKunjungan.created_at
+                                        )
                                     }}
                                 </p>
 
-                            </div>
-
-
-                            <div
-                                class="rounded-xl bg-slate-50 p-4"
-                            >
 
                                 <p
-                                    class="text-xs font-medium text-slate-400"
+                                    class="mt-1 text-xs text-slate-400"
                                 >
-                                    Status
-                                </p>
-
-
-                                <span
-                                    :class="[
-
-                                        'mt-2 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold',
-
-                                        statusClass(
-                                            selectedKunjungan.status
-                                        )
-
-                                    ]"
-                                >
-
+                                    Diperbarui:
                                     {{
-                                        formatStatus(
-                                            selectedKunjungan.status
+                                        formatDateTime(
+                                            selectedKunjungan.updated_at
                                         )
                                     }}
-
-                                </span>
+                                </p>
 
                             </div>
 
@@ -1889,7 +2184,6 @@ const clearFlash = () => {
                         <div
                             class="space-y-5"
                         >
-
 
                             <!-- KELUHAN -->
 
@@ -1951,162 +2245,167 @@ const clearFlash = () => {
                                 <p
                                     class="whitespace-pre-line text-sm leading-6 text-slate-700"
                                 >
-                                   {{ 
-    selectedKunjungan.penyakit?.nama_penyakit
-    || '-'
-}}
+                                    {{
+                                        selectedKunjungan.penyakit?.nama_penyakit
+                                        || '-'
+                                    }}
                                 </p>
 
                             </div>
 
-<!-- TINDAKAN -->
 
-<div>
+                            <!-- TINDAKAN -->
 
-    <p
-        class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-400"
-    >
-        Tindakan
-    </p>
+                            <div>
 
-    <p
-        class="whitespace-pre-line text-sm leading-6 text-slate-700"
-    >
-        {{
-            selectedKunjungan.tindakan
-            || '-'
-        }}
-    </p>
-
-</div>
+                                <p
+                                    class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Tindakan
+                                </p>
 
 
-<!-- OBAT -->
+                                <p
+                                    class="whitespace-pre-line text-sm leading-6 text-slate-700"
+                                >
+                                    {{
+                                        selectedKunjungan.tindakan
+                                        || '-'
+                                    }}
+                                </p>
 
-<div>
-
-    <p
-        class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400"
-    >
-        Obat yang Diberikan
-    </p>
-
-
-    <!-- ADA OBAT -->
-
-    <div
-        v-if="selectedKunjungan.obat?.length"
-        class="space-y-2"
-    >
-
-        <div
-            v-for="(obat, index) in selectedKunjungan.obat"
-            :key="obat.id ?? index"
-            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
-        >
-
-            <div
-                class="flex items-start justify-between gap-4"
-            >
-
-                <div class="min-w-0">
-
-                    <p
-                        class="text-sm font-bold text-slate-800"
-                    >
-                        {{ obat.nama_obat ?? '-' }}
-                    </p>
+                            </div>
 
 
-                    <p
-                        class="mt-1 text-xs text-slate-500"
-                    >
-                        Jumlah:
-                        <span class="font-semibold text-slate-700">
-                            {{ obat.jumlah ?? 0 }}
-                            {{ obat.satuan ?? '' }}
-                        </span>
-                    </p>
+                            <!-- OBAT -->
 
-                </div>
+                            <div>
+
+                                <p
+                                    class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Obat yang Diberikan
+                                </p>
 
 
-                <div
-                    class="shrink-0 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-blue-600"
-                >
-                    {{ obat.jumlah ?? 0 }}
-                    {{ obat.satuan ?? '' }}
-                </div>
+                                <div
+                                    v-if="selectedKunjungan.obat?.length"
+                                    class="space-y-2"
+                                >
 
-            </div>
+                                    <div
+                                        v-for="(obat, index) in selectedKunjungan.obat"
+                                        :key="obat.id ?? index"
+                                        class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                    >
 
+                                        <div
+                                            class="flex items-start justify-between gap-4"
+                                        >
 
-            <!-- KETERANGAN OBAT -->
+                                            <div
+                                                class="min-w-0"
+                                            >
 
-            <div
-                v-if="obat.keterangan"
-                class="mt-3 border-t border-slate-200 pt-3"
-            >
-
-                <p
-                    class="text-[10px] font-bold uppercase tracking-wide text-slate-400"
-                >
-                    Keterangan
-                </p>
-
-                <p
-                    class="mt-1 whitespace-pre-line text-xs leading-5 text-slate-600"
-                >
-                    {{ obat.keterangan }}
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
+                                                <p
+                                                    class="text-sm font-bold text-slate-800"
+                                                >
+                                                    {{ obat.nama_obat ?? '-' }}
+                                                </p>
 
 
-    <!-- TIDAK ADA OBAT -->
+                                                <p
+                                                    class="mt-1 text-xs text-slate-500"
+                                                >
 
-    <div
-        v-else
-        class="rounded-xl bg-slate-50 p-4"
-    >
+                                                    Jumlah:
 
-        <p
-            class="text-sm text-slate-400"
-        >
-            Tidak ada obat yang diberikan.
-        </p>
+                                                    <span
+                                                        class="font-semibold text-slate-700"
+                                                    >
+                                                        {{ obat.jumlah ?? 0 }}
+                                                        {{ obat.satuan ?? '' }}
+                                                    </span>
 
-    </div>
+                                                </p>
 
-</div>
-
-
-<!-- CATATAN -->
-
-<div>
-
-    <p
-        class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-400"
-    >
-        Catatan
-    </p>
-
-    <p
-        class="whitespace-pre-line text-sm leading-6 text-slate-700"
-    >
-        {{
-            selectedKunjungan.catatan
-            || '-'
-        }}
-    </p>
-
-</div>
+                                            </div>
 
 
+                                            <div
+                                                class="shrink-0 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-blue-600"
+                                            >
+
+                                                {{ obat.jumlah ?? 0 }}
+                                                {{ obat.satuan ?? '' }}
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div
+                                            v-if="obat.keterangan"
+                                            class="mt-3 border-t border-slate-200 pt-3"
+                                        >
+
+                                            <p
+                                                class="text-[10px] font-bold uppercase tracking-wide text-slate-400"
+                                            >
+                                                Keterangan
+                                            </p>
+
+
+                                            <p
+                                                class="mt-1 whitespace-pre-line text-xs leading-5 text-slate-600"
+                                            >
+                                                {{ obat.keterangan }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div
+                                    v-else
+                                    class="rounded-xl bg-slate-50 p-4"
+                                >
+
+                                    <p
+                                        class="text-sm text-slate-400"
+                                    >
+                                        Tidak ada obat yang diberikan.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- CATATAN -->
+
+                            <div>
+
+                                <p
+                                    class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Catatan
+                                </p>
+
+
+                                <p
+                                    class="whitespace-pre-line text-sm leading-6 text-slate-700"
+                                >
+                                    {{
+                                        selectedKunjungan.catatan
+                                        || '-'
+                                    }}
+                                </p>
+
+                            </div>
 
                         </div>
 
@@ -2116,27 +2415,73 @@ const clearFlash = () => {
                     <!-- FOOTER -->
 
                     <div
-                        class="flex justify-end gap-2 border-t border-slate-200 px-6 py-4"
+                        class="relative z-20 flex shrink-0 flex-col gap-2 border-t border-slate-200 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
                     >
 
-                        <button
-                            type="button"
-                            @click="closeDetail"
-                            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                        <div
+                            class="flex flex-wrap gap-2"
                         >
-                            Tutup
-                        </button>
+
+                            <!-- PRINT -->
+
+                            <button
+                                type="button"
+                                @click.stop="printDetail"
+                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+                            >
+
+                                <PrinterIcon
+                                    class="h-4 w-4"
+                                />
+
+                                Print
+
+                            </button>
 
 
-                        <Link
-                            :href="route(
-                                'klinik.kesehatan.kunjungan.edit',
-                                selectedKunjungan.id
-                            )"
-                            class="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                            <!-- PDF -->
+
+                            <button
+                                type="button"
+                                @click.stop="downloadPdf"
+                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                            >
+
+                                <ArrowDownTrayIcon
+                                    class="h-4 w-4"
+                                />
+
+                                Unduh PDF
+
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="flex gap-2"
                         >
-                            Edit Data
-                        </Link>
+
+                            <button
+                                type="button"
+                                @click="closeDetail"
+                                class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                            >
+                                Tutup
+                            </button>
+
+
+                            <Link
+                                :href="route(
+                                    'klinik.kesehatan.kunjungan.edit',
+                                    selectedKunjungan.id
+                                )"
+                                class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                            >
+                                Edit Data
+                            </Link>
+
+                        </div>
 
                     </div>
 
@@ -2159,17 +2504,21 @@ const clearFlash = () => {
 
             <div
                 v-if="showDelete && deleteTarget"
-                class="fixed inset-0 z-[60] flex items-center justify-center p-4"
+                class="fixed inset-0 z-[10000] flex items-center justify-center p-4"
             >
 
+                <!-- OVERLAY -->
+
                 <div
-                    class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                    class="absolute inset-0 z-0 bg-slate-900/50 backdrop-blur-sm"
                     @click="closeDelete"
                 ></div>
 
 
+                <!-- MODAL -->
+
                 <div
-                    class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+                    class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
                 >
 
                     <div
@@ -2245,6 +2594,7 @@ const clearFlash = () => {
                                     stroke-width="3"
                                     class="opacity-30"
                                 />
+
 
                                 <path
                                     d="M21 12a9 9 0 00-9-9"

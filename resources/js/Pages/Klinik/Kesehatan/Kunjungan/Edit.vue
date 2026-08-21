@@ -9,12 +9,21 @@ import {
     UserIcon,
     ClipboardDocumentCheckIcon,
     BeakerIcon,
+    CalendarDaysIcon,
+    ExclamationTriangleIcon,
+    HeartIcon,
 } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
 
 defineOptions({
     layout: KlinikLayout,
 })
+
+/*
+|--------------------------------------------------------------------------
+| PROPS
+|--------------------------------------------------------------------------
+*/
 
 const props = defineProps({
     kunjungan: {
@@ -40,6 +49,99 @@ const props = defineProps({
 
 /*
 |--------------------------------------------------------------------------
+| FORMAT TANGGAL
+|--------------------------------------------------------------------------
+| created_at digunakan sebagai tanggal kunjungan.
+|
+*/
+
+function formatTanggal(value) {
+    if (!value) {
+        return '-'
+    }
+
+    const date = new Date(value)
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value)
+    }
+
+    return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    })
+}
+
+function formatTanggalWaktu(value) {
+    if (!value) {
+        return '-'
+    }
+
+    const date = new Date(value)
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value)
+    }
+
+    return date.toLocaleString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+}
+
+/*
+|--------------------------------------------------------------------------
+| PERIODE
+|--------------------------------------------------------------------------
+| Ambil periode dari data kunjungan yang sudah tersimpan.
+|
+*/
+
+const periode = computed(() => {
+    return (
+        props.kunjungan.periode ??
+        null
+    )
+})
+
+/*
+|--------------------------------------------------------------------------
+| SISWA
+|--------------------------------------------------------------------------
+*/
+
+const selectedSiswa = computed(() => {
+    return (
+        props.siswas.find(
+            siswa =>
+                Number(siswa.id) ===
+                Number(form.siswa_id)
+        ) ?? null
+    )
+})
+
+/*
+|--------------------------------------------------------------------------
+| PENYAKIT
+|--------------------------------------------------------------------------
+*/
+
+const selectedPenyakit = computed(() => {
+    return (
+        props.penyakitList.find(
+            penyakit =>
+                Number(penyakit.id) ===
+                Number(form.penyakit_id)
+        ) ?? null
+    )
+})
+
+/*
+|--------------------------------------------------------------------------
 | OBAT AWAL
 |--------------------------------------------------------------------------
 */
@@ -48,42 +150,54 @@ const initialObat = (
     props.kunjungan.obat ??
     props.kunjungan.kunjungan_obat ??
     []
-).map((item) => ({
+).map(item => ({
     obat_id:
         item.obat_id ??
         item.obat?.id ??
         '',
 
     jumlah:
-        item.jumlah ??
-        1,
+        Number(item.jumlah ?? 1),
 
     keterangan:
-        item.keterangan ??
-        '',
+        item.keterangan ?? '',
 }))
 
 /*
 |--------------------------------------------------------------------------
 | FORM
 |--------------------------------------------------------------------------
+| PERHATIKAN:
+|
+| periode_id tidak perlu diubah oleh user.
+| tanggal_kunjungan juga tidak diedit.
+|
+| Kita tetap menyimpan nilai lama di form agar jika controller
+| masih melakukan validasi field tersebut, nilainya tetap tersedia.
+|
 */
 
 const form = useForm({
-    periode_id:
-        props.kunjungan.periode_id ??
-        props.kunjungan.periode?.id ??
-        '',
-
     siswa_id:
         props.kunjungan.siswa_id ??
         props.kunjungan.siswa?.id ??
         '',
 
+    periode_id:
+        props.kunjungan.periode_id ??
+        props.kunjungan.periode?.id ??
+        '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tanggal kunjungan = created_at
+    |--------------------------------------------------------------------------
+    */
+
     tanggal_kunjungan:
-        formatDateTimeLocal(
-            props.kunjungan.tanggal_kunjungan
-        ),
+        props.kunjungan.created_at ??
+        props.kunjungan.tanggal_kunjungan ??
+        '',
 
     keluhan:
         props.kunjungan.keluhan ??
@@ -92,15 +206,6 @@ const form = useForm({
     pemeriksaan:
         props.kunjungan.pemeriksaan ??
         '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | DIAGNOSIS / PENYAKIT
-    |--------------------------------------------------------------------------
-    |
-    | Gunakan penyakit_id, bukan diagnosis.
-    |
-    */
 
     penyakit_id:
         props.kunjungan.penyakit_id ??
@@ -111,97 +216,12 @@ const form = useForm({
         props.kunjungan.tindakan ??
         '',
 
-    status:
-        props.kunjungan.status ??
-        'selesai',
-
     catatan:
         props.kunjungan.catatan ??
         '',
 
     obat: initialObat,
 })
-
-/*
-|--------------------------------------------------------------------------
-| SISWA TERPILIH
-|--------------------------------------------------------------------------
-*/
-
-const selectedSiswa = computed(() => {
-    return props.siswas.find(
-        (siswa) =>
-            Number(siswa.id) ===
-            Number(form.siswa_id)
-    ) ?? null
-})
-
-/*
-|--------------------------------------------------------------------------
-| PENYAKIT TERPILIH
-|--------------------------------------------------------------------------
-*/
-
-const selectedPenyakit = computed(() => {
-    return props.penyakitList.find(
-        (penyakit) =>
-            Number(penyakit.id) ===
-            Number(form.penyakit_id)
-    ) ?? null
-})
-
-/*
-|--------------------------------------------------------------------------
-| FORMAT TANGGAL
-|--------------------------------------------------------------------------
-*/
-function formatDateTimeLocal(value) {
-    if (!value) {
-        return ''
-    }
-
-    const stringValue = String(value).trim()
-
-    // Format Laravel:
-    // YYYY-MM-DD HH:mm:ss
-    // atau YYYY-MM-DDTHH:mm:ss
-    const match = stringValue.match(
-        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/
-    )
-
-    if (match) {
-        const [
-            ,
-            year,
-            month,
-            day,
-            hour,
-            minute,
-        ] = match
-
-        return `${year}-${month}-${day}T${hour}:${minute}`
-    }
-
-    // Format DD/MM/YYYY HH:mm
-    const matchIndonesia = stringValue.match(
-        /^(\d{2})\/(\d{2})\/(\d{4})[ ](\d{2}):(\d{2})$/
-    )
-
-    if (matchIndonesia) {
-        const [
-            ,
-            day,
-            month,
-            year,
-            hour,
-            minute,
-        ] = matchIndonesia
-
-        return `${year}-${month}-${day}T${hour}:${minute}`
-    }
-
-    return ''
-}
 
 /*
 |--------------------------------------------------------------------------
@@ -222,17 +242,19 @@ function removeObat(index) {
 }
 
 function getObat(obatId) {
-    return props.obatList.find(
-        (obat) =>
-            Number(obat.id) ===
-            Number(obatId)
-    ) ?? null
+    return (
+        props.obatList.find(
+            obat =>
+                Number(obat.id) ===
+                Number(obatId)
+        ) ?? null
+    )
 }
 
 function getStok(obatId) {
     const obat = getObat(obatId)
 
-    return obat?.stok ?? 0
+    return Number(obat?.stok ?? 0)
 }
 
 function getSatuan(obatId) {
@@ -243,7 +265,7 @@ function getSatuan(obatId) {
 
 /*
 |--------------------------------------------------------------------------
-| CEGAH OBAT SAMA
+| CEGAH OBAT DUPLIKAT
 |--------------------------------------------------------------------------
 */
 
@@ -265,7 +287,7 @@ function isDuplicateObat(index) {
 
 /*
 |--------------------------------------------------------------------------
-| VALIDASI JUMLAH OBAT
+| CEGAH JUMLAH MELEBIHI STOK
 |--------------------------------------------------------------------------
 */
 
@@ -276,9 +298,27 @@ function isJumlahMelebihiStok(index) {
         return false
     }
 
-    return Number(item.jumlah) >
+    return (
+        Number(item.jumlah) >
         Number(getStok(item.obat_id))
+    )
 }
+
+/*
+|--------------------------------------------------------------------------
+| VALIDASI OBAT
+|--------------------------------------------------------------------------
+*/
+
+const obatTidakValid = computed(() => {
+    return form.obat.some(
+        (item, index) =>
+            !item.obat_id ||
+            Number(item.jumlah) < 1 ||
+            isDuplicateObat(index) ||
+            isJumlahMelebihiStok(index)
+    )
+})
 
 /*
 |--------------------------------------------------------------------------
@@ -287,6 +327,25 @@ function isJumlahMelebihiStok(index) {
 */
 
 function submit() {
+    if (obatTidakValid.value) {
+        return
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Yang dikirim:
+    |
+    | - siswa_id
+    | - periode_id (nilai lama, tidak diedit)
+    | - tanggal_kunjungan (nilai lama / created_at)
+    | - data pemeriksaan
+    | - obat
+    |
+    | updated_at TIDAK dikirim dari Vue.
+    | Laravel akan otomatis mengisinya ketika update().
+    |
+    */
+
     form.put(
         route(
             'klinik.kesehatan.kunjungan.update',
@@ -294,6 +353,17 @@ function submit() {
         ),
         {
             preserveScroll: true,
+
+            onSuccess: () => {
+                // Controller melakukan redirect.
+            },
+
+            onError: errors => {
+                console.error(
+                    'Gagal memperbarui kunjungan:',
+                    errors
+                )
+            },
         }
     )
 }
@@ -305,9 +375,9 @@ function submit() {
 
     <div class="space-y-6">
 
-        <!-- ==================================================
+        <!-- =========================================================
              HEADER
-        ================================================== -->
+        ========================================================= -->
 
         <div
             class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
@@ -336,7 +406,8 @@ function submit() {
                 <p
                     class="mt-1 text-sm text-slate-500"
                 >
-                    Perbarui data pemeriksaan dan obat yang diberikan.
+                    Perbarui hasil pemeriksaan dan obat yang diberikan
+                    kepada siswa.
                 </p>
 
             </div>
@@ -360,239 +431,46 @@ function submit() {
 
         </div>
 
-        <!-- ==================================================
+
+        <!-- =========================================================
              ERROR
-        ================================================== -->
+        ========================================================= -->
 
         <div
             v-if="Object.keys(form.errors).length"
-            class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3"
+            class="rounded-2xl border border-rose-200 bg-rose-50 p-4"
         >
 
-            <p
-                class="text-sm font-bold text-rose-800"
-            >
-                Terdapat kesalahan pada data.
-            </p>
-
-            <ul
-                class="mt-2 list-inside list-disc space-y-1 text-xs text-rose-600"
-            >
-
-                <li
-                    v-for="(error, key) in form.errors"
-                    :key="key"
-                >
-                    {{ error }}
-                </li>
-
-            </ul>
-
-        </div>
-
-        <!-- ==================================================
-             FORM
-        ================================================== -->
-
-        <form
-            @submit.prevent="submit"
-            class="space-y-6"
-        >
-
-            <!-- ==================================================
-                 DATA KUNJUNGAN
-            ================================================== -->
-
-            <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-            >
+            <div class="flex items-start gap-3">
 
                 <div
-                    class="border-b border-slate-100 px-6 py-5"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100"
                 >
 
-                    <div class="flex items-center gap-3">
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
-                        >
-
-                            <UserIcon
-                                class="h-5 w-5 text-blue-600"
-                            />
-
-                        </div>
-
-                        <div>
-
-                            <h2
-                                class="text-sm font-bold text-slate-800"
-                            >
-                                Data Kunjungan
-                            </h2>
-
-                            <p
-                                class="mt-0.5 text-xs text-slate-400"
-                            >
-                                Informasi dasar kunjungan siswa.
-                            </p>
-
-                        </div>
-
-                    </div>
+                    <ExclamationTriangleIcon
+                        class="h-5 w-5 text-rose-600"
+                    />
 
                 </div>
 
-                <div
-                    class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2"
-                >
+                <div>
 
-                    <!-- SISWA -->
+                    <p
+                        class="text-sm font-bold text-rose-800"
+                    >
+                        Terdapat kesalahan pada data.
+                    </p>
 
-                    <div class="md:col-span-2">
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Siswa
-                        </label>
-
-                        <select
-                            v-model="form.siswa_id"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        >
-
-                            <option value="">
-                                Pilih siswa
-                            </option>
-
-                            <option
-                                v-for="siswa in siswas"
-                                :key="siswa.id"
-                                :value="siswa.id"
-                            >
-                                {{ siswa.nama }}
-                                —
-                                {{ siswa.nisn }}
-                            </option>
-
-                        </select>
+                    <div
+                        class="mt-2 space-y-1"
+                    >
 
                         <p
-                            v-if="form.errors.siswa_id"
-                            class="mt-1 text-xs text-rose-500"
+                            v-for="(error, key) in form.errors"
+                            :key="key"
+                            class="text-xs text-rose-600"
                         >
-                            {{ form.errors.siswa_id }}
-                        </p>
-
-                        <!-- INFO SISWA -->
-
-                        <div
-                            v-if="selectedSiswa"
-                            class="mt-3 rounded-xl bg-blue-50 px-4 py-3"
-                        >
-
-                            <div
-                                class="flex flex-wrap gap-x-6 gap-y-2 text-xs"
-                            >
-
-                                <div>
-
-                                    <span class="text-blue-400">
-                                        NISN
-                                    </span>
-
-                                    <p
-                                        class="font-semibold text-blue-800"
-                                    >
-                                        {{ selectedSiswa.nisn }}
-                                    </p>
-
-                                </div>
-
-                                <div>
-
-                                    <span class="text-blue-400">
-                                        Kelas
-                                    </span>
-
-                                    <p
-                                        class="font-semibold text-blue-800"
-                                    >
-                                        {{
-                                            selectedSiswa.kelas?.nama_kelas
-                                            ?? '-'
-                                        }}
-                                    </p>
-
-                                </div>
-
-                                <div>
-
-                                    <span class="text-blue-400">
-                                        Jurusan
-                                    </span>
-
-                                    <p
-                                        class="font-semibold text-blue-800"
-                                    >
-                                        {{
-                                            selectedSiswa.jurusan?.nama_jurusan
-                                            ?? '-'
-                                        }}
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- PERIODE -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Periode
-                        </label>
-
-                        <input
-                            :value="
-                                kunjungan.periode?.nama_periode
-                                ?? '-'
-                            "
-                            type="text"
-                            readonly
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-600 outline-none"
-                        />
-
-                    </div>
-
-                    <!-- TANGGAL -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Tanggal Kunjungan
-                        </label>
-
-                        <input
-                            v-model="form.tanggal_kunjungan"
-                            type="datetime-local"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        />
-
-                        <p
-                            v-if="form.errors.tanggal_kunjungan"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.tanggal_kunjungan }}
+                            • {{ error }}
                         </p>
 
                     </div>
@@ -601,612 +479,970 @@ function submit() {
 
             </div>
 
-            <!-- ==================================================
-                 PEMERIKSAAN
-            ================================================== -->
+        </div>
+
+
+        <!-- =========================================================
+             INFORMASI KUNJUNGAN
+        ========================================================= -->
+
+        <div
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
 
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="border-b border-slate-100 px-6 py-5"
             >
 
-                <div
-                    class="border-b border-slate-100 px-6 py-5"
-                >
+                <div class="flex items-center gap-3">
 
-                    <h2
-                        class="text-sm font-bold text-slate-800"
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
                     >
-                        Pemeriksaan
-                    </h2>
+
+                        <CalendarDaysIcon
+                            class="h-5 w-5 text-blue-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <h2
+                            class="text-sm font-bold text-slate-800"
+                        >
+                            Informasi Kunjungan
+                        </h2>
+
+                        <p
+                            class="mt-0.5 text-xs text-slate-400"
+                        >
+                            Periode dan tanggal kunjungan otomatis mengikuti
+                            data yang tersimpan.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2"
+            >
+
+                <!-- =====================================================
+                     SISWA
+                ===================================================== -->
+
+                <div class="md:col-span-2">
+
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Siswa
+                    </label>
+
+                    <select
+                        v-model="form.siswa_id"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
+
+                        <option value="">
+                            Pilih siswa
+                        </option>
+
+                        <option
+                            v-for="siswa in siswas"
+                            :key="siswa.id"
+                            :value="siswa.id"
+                        >
+
+                            {{ siswa.nama }}
+
+                            —
+                            {{ siswa.nisn }}
+
+                        </option>
+
+                    </select>
 
                     <p
-                        class="mt-0.5 text-xs text-slate-400"
+                        v-if="form.errors.siswa_id"
+                        class="mt-1 text-xs text-rose-500"
                     >
-                        Hasil pemeriksaan kesehatan siswa.
+                        {{ form.errors.siswa_id }}
+                    </p>
+
+
+                    <!-- INFO SISWA -->
+
+                    <div
+                        v-if="selectedSiswa"
+                        class="mt-3 rounded-xl bg-blue-50 px-4 py-3"
+                    >
+
+                        <div
+                            class="flex flex-wrap gap-x-6 gap-y-2 text-xs"
+                        >
+
+                            <div>
+
+                                <span class="text-blue-400">
+                                    NISN
+                                </span>
+
+                                <p
+                                    class="font-semibold text-blue-800"
+                                >
+                                    {{ selectedSiswa.nisn }}
+                                </p>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="text-blue-400">
+                                    Kelas
+                                </span>
+
+                                <p
+                                    class="font-semibold text-blue-800"
+                                >
+                                    {{
+                                        selectedSiswa.kelas?.nama_kelas
+                                        ?? '-'
+                                    }}
+                                </p>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="text-blue-400">
+                                    Jurusan
+                                </span>
+
+                                <p
+                                    class="font-semibold text-blue-800"
+                                >
+                                    {{
+                                        selectedSiswa.jurusan?.nama_jurusan
+                                        ?? '-'
+                                    }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+           <!-- =====================================================
+     PERIODE
+===================================================== -->
+
+<div class="md:col-span-2">
+
+    <label
+        class="mb-1.5 block text-xs font-bold text-slate-600"
+    >
+        Periode
+    </label>
+
+    <div
+        class="flex min-h-[66px] items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+    >
+
+        <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white"
+        >
+            <CalendarDaysIcon
+                class="h-5 w-5 text-blue-600"
+            />
+        </div>
+
+        <div class="min-w-0">
+
+            <p
+                class="text-sm font-bold text-blue-800"
+            >
+                {{
+                    periode?.nama_periode
+                    ??
+                    props.kunjungan.periode?.nama_periode
+                    ??
+                    '-'
+                }}
+            </p>
+
+            <p
+                class="mt-0.5 text-[11px] text-blue-500"
+            >
+                Periode tersimpan pada kunjungan
+            </p>
+
+        </div>
+
+    </div>
+
+    <p
+        v-if="form.errors.periode_id"
+        class="mt-1 text-xs text-rose-500"
+    >
+        {{ form.errors.periode_id }}
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     TANGGAL & INFORMASI WAKTU
+===================================================== -->
+
+<div
+    class="md:col-span-2 grid grid-cols-1 gap-5 sm:grid-cols-2"
+>
+
+    <!-- =================================================
+         TANGGAL KUNJUNGAN
+    ================================================= -->
+
+    <div>
+
+        <label
+            class="mb-1.5 block text-xs font-bold text-slate-600"
+        >
+            Tanggal Kunjungan
+        </label>
+
+        <div
+            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+        >
+
+            <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white"
+            >
+
+                <CalendarDaysIcon
+                    class="h-5 w-5 text-slate-400"
+                />
+
+            </div>
+
+            <div class="min-w-0">
+
+                <p
+                    class="text-sm font-bold text-slate-700"
+                >
+                    {{
+                        formatTanggal(
+                            kunjungan.created_at
+                        )
+                    }}
+                </p>
+
+                <p
+                    class="mt-0.5 text-[11px] text-slate-400"
+                >
+                    Diambil dari waktu data dibuat
+                </p>
+
+            </div>
+
+        </div>
+
+        <p
+            v-if="form.errors.tanggal_kunjungan"
+            class="mt-1 text-xs text-rose-500"
+        >
+            {{ form.errors.tanggal_kunjungan }}
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         TERAKHIR DIPERBARUI
+    ================================================= -->
+
+    <div>
+
+        <label
+            class="mb-1.5 block text-xs font-bold text-slate-600"
+        >
+            Terakhir Diperbarui
+        </label>
+
+        <div
+            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+        >
+
+            <div
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white"
+            >
+
+                <CalendarDaysIcon
+                    class="h-5 w-5 text-slate-400"
+                />
+
+            </div>
+
+            <div class="min-w-0">
+
+                <p
+                    class="text-sm font-bold text-slate-700"
+                >
+                    {{
+                        formatTanggalWaktu(
+                            kunjungan.updated_at
+                        )
+                    }}
+                </p>
+
+                <p
+                    class="mt-0.5 text-[11px] text-slate-400"
+                >
+                    Waktu terakhir data diperbarui
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+              
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             PEMERIKSAAN
+        ========================================================= -->
+
+        <div
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
+
+            <div
+                class="border-b border-slate-100 px-6 py-5"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
+                    >
+
+                        <HeartIcon
+                            class="h-5 w-5 text-emerald-600"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <h2
+                            class="text-sm font-bold text-slate-800"
+                        >
+                            Pemeriksaan
+                        </h2>
+
+                        <p
+                            class="mt-0.5 text-xs text-slate-400"
+                        >
+                            Perbarui hasil pemeriksaan kesehatan siswa.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="grid grid-cols-1 gap-5 p-6"
+            >
+
+                <!-- KELUHAN -->
+
+                <div>
+
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Keluhan
+                    </label>
+
+                    <textarea
+                        v-model="form.keluhan"
+                        rows="3"
+                        placeholder="Tuliskan keluhan siswa..."
+                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    ></textarea>
+
+                    <p
+                        v-if="form.errors.keluhan"
+                        class="mt-1 text-xs text-rose-500"
+                    >
+                        {{ form.errors.keluhan }}
                     </p>
 
                 </div>
 
-                <div
-                    class="grid grid-cols-1 gap-5 p-6"
-                >
 
-                    <!-- KELUHAN -->
+                <!-- PEMERIKSAAN -->
 
-                    <div>
+                <div>
 
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Keluhan
-                        </label>
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Pemeriksaan
+                    </label>
 
-                        <textarea
-                            v-model="form.keluhan"
-                            rows="3"
-                            placeholder="Tuliskan keluhan siswa..."
-                            class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        ></textarea>
+                    <textarea
+                        v-model="form.pemeriksaan"
+                        rows="4"
+                        placeholder="Tuliskan hasil pemeriksaan..."
+                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    ></textarea>
 
-                        <p
-                            v-if="form.errors.keluhan"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.keluhan }}
-                        </p>
+                    <p
+                        v-if="form.errors.pemeriksaan"
+                        class="mt-1 text-xs text-rose-500"
+                    >
+                        {{ form.errors.pemeriksaan }}
+                    </p>
 
-                    </div>
+                </div>
 
-                    <!-- PEMERIKSAAN -->
 
-                    <div>
+                <!-- PENYAKIT -->
 
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Pemeriksaan
-                        </label>
+                <div>
 
-                        <textarea
-                            v-model="form.pemeriksaan"
-                            rows="4"
-                            placeholder="Tuliskan hasil pemeriksaan..."
-                            class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        ></textarea>
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Diagnosis / Penyakit
+                    </label>
 
-                        <p
-                            v-if="form.errors.pemeriksaan"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.pemeriksaan }}
-                        </p>
+                    <select
+                        v-model="form.penyakit_id"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    >
 
-                    </div>
+                        <option value="">
+                            Tidak ada diagnosis / penyakit
+                        </option>
 
-                    <!-- ==================================================
-                         DIAGNOSIS / PENYAKIT
-                    ================================================== -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Diagnosis / Penyakit
-                        </label>
-
-                        <select
-                            v-model="form.penyakit_id"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        <option
+                            v-for="penyakit in penyakitList"
+                            :key="penyakit.id"
+                            :value="penyakit.id"
                         >
 
-                            <option value="">
-                                Tidak ada diagnosis / penyakit
-                            </option>
+                            {{ penyakit.nama_penyakit }}
 
-                            <option
-                                v-for="penyakit in penyakitList"
-                                :key="penyakit.id"
-                                :value="penyakit.id"
+                            <template
+                                v-if="penyakit.kategori"
                             >
+                                — {{ penyakit.kategori }}
+                            </template>
 
-                                {{ penyakit.nama_penyakit }}
+                        </option>
 
-                                <template
-                                    v-if="penyakit.kategori"
-                                >
-                                    — {{ penyakit.kategori }}
-                                </template>
+                    </select>
 
-                            </option>
+                    <p
+                        v-if="form.errors.penyakit_id"
+                        class="mt-1 text-xs text-rose-500"
+                    >
+                        {{ form.errors.penyakit_id }}
+                    </p>
 
-                        </select>
 
-                        <p
-                            v-if="form.errors.penyakit_id"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.penyakit_id }}
-                        </p>
-
-                        <!-- INFO PENYAKIT -->
+                    <div
+                        v-if="selectedPenyakit"
+                        class="mt-3 rounded-xl bg-amber-50 px-4 py-3"
+                    >
 
                         <div
-                            v-if="selectedPenyakit"
-                            class="mt-3 rounded-xl bg-amber-50 px-4 py-3"
+                            class="flex flex-wrap gap-x-6 gap-y-2 text-xs"
                         >
 
-                            <div
-                                class="flex flex-wrap gap-x-6 gap-y-2 text-xs"
-                            >
+                            <div>
 
-                                <div>
+                                <span class="text-amber-500">
+                                    Penyakit
+                                </span>
 
-                                    <span class="text-amber-500">
-                                        Penyakit
-                                    </span>
-
-                                    <p
-                                        class="font-semibold text-amber-800"
-                                    >
-                                        {{
-                                            selectedPenyakit.nama_penyakit
-                                        }}
-                                    </p>
-
-                                </div>
-
-                                <div
-                                    v-if="selectedPenyakit.kategori"
+                                <p
+                                    class="font-semibold text-amber-800"
                                 >
-
-                                    <span class="text-amber-500">
-                                        Kategori
-                                    </span>
-
-                                    <p
-                                        class="font-semibold text-amber-800"
-                                    >
-                                        {{
-                                            selectedPenyakit.kategori
-                                        }}
-                                    </p>
-
-                                </div>
+                                    {{
+                                        selectedPenyakit.nama_penyakit
+                                    }}
+                                </p>
 
                             </div>
 
-                            <p
-                                v-if="selectedPenyakit.keterangan"
-                                class="mt-2 text-xs text-amber-700"
+
+                            <div
+                                v-if="selectedPenyakit.kategori"
                             >
-                                {{
-                                    selectedPenyakit.keterangan
-                                }}
-                            </p>
+
+                                <span class="text-amber-500">
+                                    Kategori
+                                </span>
+
+                                <p
+                                    class="font-semibold text-amber-800"
+                                >
+                                    {{
+                                        selectedPenyakit.kategori
+                                    }}
+                                </p>
+
+                            </div>
 
                         </div>
 
-                        <!-- DATA PENYAKIT KOSONG -->
 
                         <p
-                            v-if="!penyakitList.length"
-                            class="mt-2 text-xs text-slate-400"
+                            v-if="selectedPenyakit.keterangan"
+                            class="mt-2 text-xs text-amber-700"
                         >
-                            Belum ada data penyakit yang tersedia.
-                        </p>
-
-                    </div>
-
-                    <!-- TINDAKAN -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Tindakan
-                        </label>
-
-                        <textarea
-                            v-model="form.tindakan"
-                            rows="3"
-                            placeholder="Tuliskan tindakan yang dilakukan..."
-                            class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        ></textarea>
-
-                        <p
-                            v-if="form.errors.tindakan"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.tindakan }}
-                        </p>
-
-                    </div>
-
-                    <!-- CATATAN -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Catatan
-                        </label>
-
-                        <textarea
-                            v-model="form.catatan"
-                            rows="3"
-                            placeholder="Catatan tambahan..."
-                            class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        ></textarea>
-
-                        <p
-                            v-if="form.errors.catatan"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.catatan }}
-                        </p>
-
-                    </div>
-
-                    <!-- STATUS -->
-
-                    <div>
-
-                        <label
-                            class="mb-1.5 block text-xs font-bold text-slate-600"
-                        >
-                            Status
-                        </label>
-
-                        <select
-                            v-model="form.status"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        >
-
-                            <option value="selesai">
-                                Selesai
-                            </option>
-
-                        </select>
-
-                        <p
-                            v-if="form.errors.status"
-                            class="mt-1 text-xs text-rose-500"
-                        >
-                            {{ form.errors.status }}
+                            {{
+                                selectedPenyakit.keterangan
+                            }}
                         </p>
 
                     </div>
 
                 </div>
 
+
+                <!-- TINDAKAN -->
+
+                <div>
+
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Tindakan
+                    </label>
+
+                    <textarea
+                        v-model="form.tindakan"
+                        rows="3"
+                        placeholder="Tuliskan tindakan yang dilakukan..."
+                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    ></textarea>
+
+                    <p
+                        v-if="form.errors.tindakan"
+                        class="mt-1 text-xs text-rose-500"
+                    >
+                        {{ form.errors.tindakan }}
+                    </p>
+
+                </div>
+
+
+                <!-- CATATAN -->
+
+                <div>
+
+                    <label
+                        class="mb-1.5 block text-xs font-bold text-slate-600"
+                    >
+                        Catatan
+                    </label>
+
+                    <textarea
+                        v-model="form.catatan"
+                        rows="3"
+                        placeholder="Catatan tambahan..."
+                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                    ></textarea>
+
+                    <p
+                        v-if="form.errors.catatan"
+                        class="mt-1 text-xs text-rose-500"
+                    >
+                        {{ form.errors.catatan }}
+                    </p>
+
+                </div>
+
+
+           
             </div>
 
-            <!-- ==================================================
-                 OBAT
-            ================================================== -->
+        </div>
+
+
+        <!-- =========================================================
+             OBAT
+        ========================================================= -->
+
+        <div
+            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
 
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
             >
 
-                <div
-                    class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
-                >
-
-                    <div class="flex items-center gap-3">
-
-                        <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
-                        >
-
-                            <BeakerIcon
-                                class="h-5 w-5 text-emerald-600"
-                            />
-
-                        </div>
-
-                        <div>
-
-                            <h2
-                                class="text-sm font-bold text-slate-800"
-                            >
-                                Obat yang Diberikan
-                            </h2>
-
-                            <p
-                                class="mt-0.5 text-xs text-slate-400"
-                            >
-                                Kelola obat yang diberikan kepada siswa.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        @click="addObat"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-700"
-                    >
-
-                        <PlusIcon
-                            class="h-4 w-4"
-                        />
-
-                        Tambah Obat
-
-                    </button>
-
-                </div>
-
-                <div class="p-6">
-
-                    <!-- TIDAK ADA OBAT -->
+                <div class="flex items-center gap-3">
 
                     <div
-                        v-if="!form.obat.length"
-                        class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
                     >
 
                         <BeakerIcon
-                            class="mx-auto h-8 w-8 text-slate-300"
+                            class="h-5 w-5 text-emerald-600"
                         />
-
-                        <p
-                            class="mt-2 text-sm font-semibold text-slate-600"
-                        >
-                            Belum ada obat
-                        </p>
-
-                        <p
-                            class="mt-1 text-xs text-slate-400"
-                        >
-                            Klik "Tambah Obat" jika ada obat yang diberikan.
-                        </p>
 
                     </div>
 
-                    <!-- LIST OBAT -->
+                    <div>
 
-                    <div
-                        v-else
-                        class="space-y-4"
-                    >
-
-                        <div
-                            v-for="(item, index) in form.obat"
-                            :key="index"
-                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        <h2
+                            class="text-sm font-bold text-slate-800"
                         >
+                            Obat yang Diberikan
+                        </h2>
 
-                            <div
-                                class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_150px_auto]"
-                            >
-
-                                <!-- OBAT -->
-
-                                <div>
-
-                                    <label
-                                        class="mb-1.5 block text-xs font-bold text-slate-600"
-                                    >
-                                        Nama Obat
-                                    </label>
-
-                                    <select
-                                        v-model="item.obat_id"
-                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                                    >
-
-                                        <option value="">
-                                            Pilih obat
-                                        </option>
-
-                                        <option
-                                            v-for="obat in obatList"
-                                            :key="obat.id"
-                                            :value="obat.id"
-                                            :disabled="
-                                                form.obat.some(
-                                                    (other, otherIndex) =>
-                                                        otherIndex !== index &&
-                                                        Number(other.obat_id) === Number(obat.id)
-                                                )
-                                            "
-                                        >
-
-                                            {{ obat.nama_obat }}
-                                            —
-                                            Stok {{ obat.stok }}
-                                            {{ obat.satuan }}
-
-                                        </option>
-
-                                    </select>
-
-                                    <p
-                                        v-if="isDuplicateObat(index)"
-                                        class="mt-1 text-xs text-rose-500"
-                                    >
-                                        Obat ini sudah dipilih.
-                                    </p>
-
-                                </div>
-
-                                <!-- JUMLAH -->
-
-                                <div>
-
-                                    <label
-                                        class="mb-1.5 block text-xs font-bold text-slate-600"
-                                    >
-                                        Jumlah
-                                    </label>
-
-                                    <div class="relative">
-
-                                        <input
-                                            v-model.number="item.jumlah"
-                                            type="number"
-                                            min="1"
-                                            :max="getStok(item.obat_id)"
-                                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 pr-16 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                                        />
-
-                                        <span
-                                            class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400"
-                                        >
-                                            {{
-                                                getSatuan(
-                                                    item.obat_id
-                                                )
-                                            }}
-                                        </span>
-
-                                    </div>
-
-                                    <p
-                                        v-if="item.obat_id"
-                                        class="mt-1 text-[11px] text-slate-400"
-                                    >
-                                        Stok tersedia:
-                                        {{ getStok(item.obat_id) }}
-                                        {{ getSatuan(item.obat_id) }}
-                                    </p>
-
-                                    <p
-                                        v-if="isJumlahMelebihiStok(index)"
-                                        class="mt-1 text-xs text-rose-500"
-                                    >
-                                        Jumlah melebihi stok tersedia.
-                                    </p>
-
-                                </div>
-
-                                <!-- HAPUS -->
-
-                                <div
-                                    class="flex items-end"
-                                >
-
-                                    <button
-                                        type="button"
-                                        @click="removeObat(index)"
-                                        class="inline-flex h-[42px] items-center justify-center rounded-xl border border-rose-200 bg-white px-3 text-rose-500 transition hover:bg-rose-50"
-                                        title="Hapus obat"
-                                    >
-
-                                        <TrashIcon
-                                            class="h-5 w-5"
-                                        />
-
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                            <!-- KETERANGAN -->
-
-                            <div class="mt-4">
-
-                                <label
-                                    class="mb-1.5 block text-xs font-bold text-slate-600"
-                                >
-                                    Keterangan / Aturan Pakai
-                                </label>
-
-                                <input
-                                    v-model="item.keterangan"
-                                    type="text"
-                                    placeholder="Contoh: 2x sehari setelah makan"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-                                />
-
-                            </div>
-
-                        </div>
+                        <p
+                            class="mt-0.5 text-xs text-slate-400"
+                        >
+                            Kelola obat yang diberikan kepada siswa.
+                        </p>
 
                     </div>
 
                 </div>
 
-            </div>
-
-            <!-- ==================================================
-                 FOOTER ACTION
-            ================================================== -->
-
-            <div
-                class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end"
-            >
-
-                <Link
-                    :href="
-                        route(
-                            'klinik.kesehatan.kunjungan.index'
-                        )
-                    "
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
-                >
-                    Batal
-                </Link>
 
                 <button
-                    type="submit"
-                    :disabled="
-                        form.processing ||
-                        form.obat.some(
-                            (item, index) =>
-                                isDuplicateObat(index) ||
-                                isJumlahMelebihiStok(index)
-                        )
-                    "
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    type="button"
+                    @click="addObat"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-700"
                 >
 
-                    <svg
-                        v-if="form.processing"
-                        class="h-4 w-4 animate-spin"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                    >
-
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="9"
-                            stroke-width="3"
-                            class="opacity-30"
-                        />
-
-                        <path
-                            d="M21 12a9 9 0 00-9-9"
-                            stroke-width="3"
-                        />
-
-                    </svg>
-
-                    <CheckIcon
-                        v-else
+                    <PlusIcon
                         class="h-4 w-4"
                     />
 
-                    {{
-                        form.processing
-                            ? 'Menyimpan...'
-                            : 'Simpan Perubahan'
-                    }}
+                    Tambah Obat
 
                 </button>
 
             </div>
 
-        </form>
+
+            <div class="p-6">
+
+                <!-- EMPTY -->
+
+                <div
+                    v-if="!form.obat.length"
+                    class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center"
+                >
+
+                    <BeakerIcon
+                        class="mx-auto h-8 w-8 text-slate-300"
+                    />
+
+                    <p
+                        class="mt-2 text-sm font-semibold text-slate-600"
+                    >
+                        Belum ada obat
+                    </p>
+
+                    <p
+                        class="mt-1 text-xs text-slate-400"
+                    >
+                        Klik "Tambah Obat" jika ada obat yang diberikan.
+                    </p>
+
+                </div>
+
+
+                <!-- LIST -->
+
+                <div
+                    v-else
+                    class="space-y-4"
+                >
+
+                    <div
+                        v-for="(item, index) in form.obat"
+                        :key="index"
+                        class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                    >
+
+                        <div
+                            class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_150px_auto]"
+                        >
+
+                            <!-- OBAT -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-600"
+                                >
+                                    Nama Obat
+                                </label>
+
+                                <select
+                                    v-model="item.obat_id"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                                >
+
+                                    <option value="">
+                                        Pilih obat
+                                    </option>
+
+                                    <option
+                                        v-for="obat in obatList"
+                                        :key="obat.id"
+                                        :value="obat.id"
+                                        :disabled="
+                                            form.obat.some(
+                                                (other, otherIndex) =>
+                                                    otherIndex !== index &&
+                                                    Number(other.obat_id) === Number(obat.id)
+                                            )
+                                        "
+                                    >
+
+                                        {{ obat.nama_obat }}
+
+                                        —
+                                        Stok {{ obat.stok }}
+                                        {{ obat.satuan }}
+
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="isDuplicateObat(index)"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    Obat ini sudah dipilih.
+                                </p>
+
+                            </div>
+
+
+                            <!-- JUMLAH -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-600"
+                                >
+                                    Jumlah
+                                </label>
+
+                                <div class="relative">
+
+                                    <input
+                                        v-model.number="item.jumlah"
+                                        type="number"
+                                        min="1"
+                                        :max="
+                                            getStok(
+                                                item.obat_id
+                                            )
+                                        "
+                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 pr-16 text-sm text-slate-700 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                                    />
+
+                                    <span
+                                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400"
+                                    >
+                                        {{
+                                            getSatuan(
+                                                item.obat_id
+                                            )
+                                        }}
+                                    </span>
+
+                                </div>
+
+                                <p
+                                    v-if="item.obat_id"
+                                    class="mt-1 text-[11px] text-slate-400"
+                                >
+                                    Stok tersedia:
+                                    {{
+                                        getStok(
+                                            item.obat_id
+                                        )
+                                    }}
+                                    {{
+                                        getSatuan(
+                                            item.obat_id
+                                        )
+                                    }}
+                                </p>
+
+                                <p
+                                    v-if="
+                                        isJumlahMelebihiStok(
+                                            index
+                                        )
+                                    "
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    Jumlah melebihi stok tersedia.
+                                </p>
+
+                            </div>
+
+
+                            <!-- HAPUS -->
+
+                            <div
+                                class="flex items-end"
+                            >
+
+                                <button
+                                    type="button"
+                                    @click="
+                                        removeObat(index)
+                                    "
+                                    class="inline-flex h-[42px] items-center justify-center rounded-xl border border-rose-200 bg-white px-3 text-rose-500 transition hover:bg-rose-50"
+                                    title="Hapus obat"
+                                >
+
+                                    <TrashIcon
+                                        class="h-5 w-5"
+                                    />
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- KETERANGAN -->
+
+                        <div class="mt-4">
+
+                            <label
+                                class="mb-1.5 block text-xs font-bold text-slate-600"
+                            >
+                                Keterangan / Aturan Pakai
+                            </label>
+
+                            <input
+                                v-model="item.keterangan"
+                                type="text"
+                                placeholder="Contoh: 2x sehari setelah makan"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                            />
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             FOOTER
+        ========================================================= -->
+
+        <div
+            class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end"
+        >
+
+            <Link
+                :href="
+                    route(
+                        'klinik.kesehatan.kunjungan.index'
+                    )
+                "
+                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+            >
+                Batal
+            </Link>
+
+
+            <button
+                type="submit"
+                @click="submit"
+                :disabled="
+                    form.processing ||
+                    obatTidakValid
+                "
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+
+                <svg
+                    v-if="form.processing"
+                    class="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                >
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke-width="3"
+                        class="opacity-30"
+                    />
+
+                    <path
+                        d="M21 12a9 9 0 0 0-9-9"
+                        stroke-width="3"
+                    />
+
+                </svg>
+
+
+                <CheckIcon
+                    v-else
+                    class="h-4 w-4"
+                />
+
+
+                {{
+                    form.processing
+                        ? 'Menyimpan...'
+                        : 'Simpan Perubahan'
+                }}
+
+            </button>
+
+        </div>
 
     </div>
 

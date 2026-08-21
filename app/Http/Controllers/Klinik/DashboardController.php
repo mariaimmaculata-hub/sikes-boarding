@@ -26,6 +26,7 @@ class DashboardController extends Controller
             ->with('siswa.kelas.jurusan')
             ->first();
 
+
         /*
         |--------------------------------------------------------------------------
         | SISWA PADA PERIODE AKTIF
@@ -37,6 +38,7 @@ class DashboardController extends Controller
         $totalSiswa = 0;
 
         if ($periodeAktif) {
+
             $siswaPeriodeIds = $periodeAktif
                 ->siswa()
                 ->pluck('siswas.id');
@@ -44,20 +46,43 @@ class DashboardController extends Controller
             $totalSiswa = $siswaPeriodeIds->count();
         }
 
+
         /*
         |--------------------------------------------------------------------------
         | PEMERIKSAAN BERKALA
         |--------------------------------------------------------------------------
+        |
+        | Setiap siswa memiliki:
+        | - Pemeriksaan berkala 1
+        | - Pemeriksaan berkala 2
+        |
+        | Card dashboard akan menghitung:
+        | jumlah siswa yang sudah menyelesaikan KEDUANYA.
+        |
         */
 
         $totalPemeriksaan = 0;
+
         $pemeriksaanSelesai = 0;
+
         $pemeriksaanBelum = 0;
 
         if ($periodeAktif) {
 
-            // Setiap siswa memiliki 2 pemeriksaan berkala
+            /*
+            |--------------------------------------------------------------
+            | Total target pemeriksaan
+            |--------------------------------------------------------------
+            */
+
             $totalPemeriksaan = $totalSiswa * 2;
+
+
+            /*
+            |--------------------------------------------------------------
+            | Jumlah record pemeriksaan
+            |--------------------------------------------------------------
+            */
 
             $pemeriksaanSelesai = PemeriksaanBerkala::where(
                     'periode_id',
@@ -66,11 +91,50 @@ class DashboardController extends Controller
                 ->whereIn('siswa_id', $siswaPeriodeIds)
                 ->count();
 
+
+            /*
+            |--------------------------------------------------------------
+            | Pemeriksaan yang belum dilakukan
+            |--------------------------------------------------------------
+            */
+
             $pemeriksaanBelum = max(
                 0,
                 $totalPemeriksaan - $pemeriksaanSelesai
             );
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SISWA YANG SUDAH MENYELESAIKAN BERKALA 1 & 2
+        |--------------------------------------------------------------------------
+        |
+        | Hanya siswa yang memiliki:
+        | - pemeriksaan berkala 1
+        | - pemeriksaan berkala 2
+        |
+        | yang dihitung sebagai "sudah melakukan pemeriksaan berkala 1 & 2".
+        |
+        */
+
+        $totalSiswaBerkalaSelesai = 0;
+
+        if ($periodeAktif) {
+
+            $totalSiswaBerkalaSelesai = PemeriksaanBerkala::where(
+                    'periode_id',
+                    $periodeAktif->id
+                )
+                ->whereIn('siswa_id', $siswaPeriodeIds)
+                ->whereIn('jenis_pemeriksaan', [1, 2])
+                ->select('siswa_id')
+                ->groupBy('siswa_id')
+                ->havingRaw('COUNT(DISTINCT jenis_pemeriksaan) = 2')
+                ->get()
+                ->count();
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -81,6 +145,7 @@ class DashboardController extends Controller
         $totalKunjungan = 0;
 
         if ($periodeAktif) {
+
             $totalKunjungan = KunjunganKlinik::where(
                     'periode_id',
                     $periodeAktif->id
@@ -88,6 +153,7 @@ class DashboardController extends Controller
                 ->whereIn('siswa_id', $siswaPeriodeIds)
                 ->count();
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -110,6 +176,7 @@ class DashboardController extends Controller
                 ->map(function ($kunjungan) {
 
                     return [
+
                         'id' => $kunjungan->siswa?->id,
 
                         'name' => $kunjungan->siswa?->nama ?? '-',
@@ -127,6 +194,7 @@ class DashboardController extends Controller
                     ];
                 });
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -147,6 +215,7 @@ class DashboardController extends Controller
                 ->map(function ($kunjungan) {
 
                     return [
+
                         'text' => 'Kunjungan klinik ' .
                             ($kunjungan->siswa?->nama ?? 'siswa'),
 
@@ -159,6 +228,7 @@ class DashboardController extends Controller
                 });
         }
 
+
         /*
         |--------------------------------------------------------------------------
         | PENGINGAT
@@ -170,6 +240,7 @@ class DashboardController extends Controller
         if ($pemeriksaanBelum > 0) {
 
             $reminders[] = [
+
                 'title' => 'Pemeriksaan berkala belum selesai',
 
                 'date' => $periodeAktif?->nama_periode ?? '-',
@@ -180,6 +251,7 @@ class DashboardController extends Controller
             ];
         }
 
+
         /*
         |--------------------------------------------------------------------------
         | USER
@@ -188,91 +260,145 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
+
         /*
         |--------------------------------------------------------------------------
         | RESPONSE
         |--------------------------------------------------------------------------
         */
 
-        return Inertia::render('Klinik/Dashboard/Index', [
+        return Inertia::render(
+            'Klinik/Dashboard/Index',
+            [
 
-            'user' => $user,
+                'user' => $user,
 
-            'periode' => $periodeAktif
-                ? [
-                    'id' => $periodeAktif->id,
-                    'nama_periode' => $periodeAktif->nama_periode,
-                    'tanggal_mulai' => $periodeAktif->tanggal_mulai,
-                    'tanggal_selesai' => $periodeAktif->tanggal_selesai,
-                    'status' => $periodeAktif->status,
-                ]
-                : null,
+                'periode' => $periodeAktif
+                    ? [
+                        'id' => $periodeAktif->id,
 
-            'stats' => [
+                        'nama_periode' =>
+                            $periodeAktif->nama_periode,
 
-                [
-                    'name' => 'Total Siswa',
+                        'tanggal_mulai' =>
+                            $periodeAktif->tanggal_mulai,
 
-                    'value' => $totalSiswa,
+                        'tanggal_selesai' =>
+                            $periodeAktif->tanggal_selesai,
 
-                    'sub' => $periodeAktif
-                        ? 'Siswa pada periode aktif'
-                        : 'Belum ada periode aktif',
+                        'status' =>
+                            $periodeAktif->status,
+                    ]
+                    : null,
 
-                    'link' => false,
 
-                    'color' => 'border-blue-600 text-blue-600',
+                /*
+                |--------------------------------------------------------------------------
+                | STATISTICS
+                |--------------------------------------------------------------------------
+                */
+
+                'stats' => [
+
+                    /*
+                    |--------------------------------------------------------------
+                    | CARD 1
+                    |--------------------------------------------------------------
+                    */
+
+                    [
+                        'name' => 'Total Siswa',
+
+                        'value' => $totalSiswa,
+
+                        'sub' => $periodeAktif
+                            ? 'Siswa pada periode aktif'
+                            : 'Belum ada periode aktif',
+
+                        'link' => false,
+
+                        'color' =>
+                            'border-blue-600 text-blue-600',
+                    ],
+
+
+                    /*
+                    |--------------------------------------------------------------
+                    | CARD 2 - PEMERIKSAAN BERKALA
+                    |--------------------------------------------------------------
+                    */
+
+                    [
+                        'name' => 'Pemeriksaan Berkala',
+
+                        'value' => $totalSiswaBerkalaSelesai,
+
+                        'sub' =>
+                            'Total siswa yang sudah melakukan pemeriksaan berkala 1 & 2',
+
+                        'link' => false,
+
+                        'color' =>
+                            'border-rose-500 text-rose-500',
+                    ],
+
+
+                    /*
+                    |--------------------------------------------------------------
+                    | CARD 3
+                    |--------------------------------------------------------------
+                    */
+
+                    [
+                        'name' => 'Kunjungan Klinik',
+
+                        'value' => $totalKunjungan,
+
+                        'sub' => $periodeAktif
+                            ? 'Pada periode aktif'
+                            : 'Belum ada periode aktif',
+
+                        'link' => false,
+
+                        'color' =>
+                            'border-orange-500 text-orange-500',
+                    ],
+
+
+                    /*
+                    |--------------------------------------------------------------
+                    | CARD 4
+                    |--------------------------------------------------------------
+                    */
+
+                    [
+                        'name' => 'Periode Aktif',
+
+                        'value' => $periodeAktif
+                            ? $periodeAktif->nama_periode
+                            : '-',
+
+                        'sub' => $periodeAktif
+                            ? 'Sedang berjalan'
+                            : 'Belum ada periode',
+
+                        'link' => false,
+
+                        'color' =>
+                            'border-purple-500 text-purple-500',
+                    ],
                 ],
 
-                [
-                    'name' => 'Pemeriksaan',
 
-                    'value' => $pemeriksaanSelesai,
+                'attentionStudents' =>
+                    $attentionStudents,
 
-                    'sub' => $pemeriksaanBelum . ' belum selesai',
+                'activities' =>
+                    $activities,
 
-                    'link' => true,
-
-                    'color' => 'border-rose-500 text-rose-500',
-                ],
-
-                [
-                    'name' => 'Kunjungan Klinik',
-
-                    'value' => $totalKunjungan,
-
-                    'sub' => $periodeAktif
-                        ? 'Pada periode aktif'
-                        : 'Belum ada periode aktif',
-
-                    'link' => false,
-
-                    'color' => 'border-orange-500 text-orange-500',
-                ],
-
-                [
-                    'name' => 'Periode Aktif',
-
-                    'value' => $periodeAktif
-                        ? $periodeAktif->nama_periode
-                        : '-',
-
-                    'sub' => $periodeAktif
-                        ? 'Sedang berjalan'
-                        : 'Belum ada periode',
-
-                    'link' => false,
-
-                    'color' => 'border-purple-500 text-purple-500',
-                ],
-            ],
-
-            'attentionStudents' => $attentionStudents,
-
-            'activities' => $activities,
-
-            'reminders' => $reminders,
-        ]);
+                'reminders' =>
+                    $reminders,
+            ]
+        );
     }
 }
-

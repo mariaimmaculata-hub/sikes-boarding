@@ -16,32 +16,35 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
-    /**
-     * ============================================================
-     * REPORT PEMERIKSAAN BERKALA
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | REPORT PEMERIKSAAN BERKALA
+    |--------------------------------------------------------------------------
+    */
+
     public function berkala(Request $request)
     {
-        $periodeId = $request->input('periode_id');
+        /*
+        |--------------------------------------------------------------------------
+        | PERIODE
+        |--------------------------------------------------------------------------
+        */
 
-        $periode = $periodeId
-            ? Periode::find($periodeId)
-            : Periode::where('status', 'aktif')->first();
+        $periode = $this->getPeriode($request);
 
-        $periodeList = Periode::query()
-            ->orderByDesc('tanggal_mulai')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama_periode' => $item->nama_periode,
-                    'tanggal_mulai' => $item->tanggal_mulai,
-                    'tanggal_selesai' => $item->tanggal_selesai,
-                    'status' => $item->status,
-                ];
-            })
-            ->values();
+        /*
+        |--------------------------------------------------------------------------
+        | DAFTAR PERIODE
+        |--------------------------------------------------------------------------
+        */
+
+        $periodeList = $this->getPeriodeList();
+
+        /*
+        |--------------------------------------------------------------------------
+        | JIKA BELUM ADA PERIODE
+        |--------------------------------------------------------------------------
+        */
 
         if (!$periode) {
             return Inertia::render(
@@ -50,16 +53,7 @@ class ReportController extends Controller
                     'periode' => null,
                     'periodeList' => $periodeList,
                     'siswa' => [],
-                    'statistik' => [
-                        'total_siswa' => 0,
-                        'berkala_1_selesai' => 0,
-                        'berkala_1_belum' => 0,
-                        'berkala_2_selesai' => 0,
-                        'berkala_2_belum' => 0,
-                        'lengkap' => 0,
-                        'belum_lengkap' => 0,
-                        'belum_diperiksa' => 0,
-                    ],
+                    'statistik' => $this->emptyBerkalaStatistik(),
                     'kelas' => [],
                     'filter' => [
                         'kelas_id' => $request->input('kelas_id'),
@@ -86,13 +80,26 @@ class ReportController extends Controller
                             'jenis_pemeriksaan',
                             ['berkala_1', 'berkala_2']
                         )
-                        ->with('pemeriksa');
+                        ->with('pemeriksa')
+                        ->orderByDesc('id');
                 },
             ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER KELAS
+        |--------------------------------------------------------------------------
+        */
 
         if ($kelasId) {
             $querySiswa->where('kelas_id', $kelasId);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL DATA
+        |--------------------------------------------------------------------------
+        */
 
         $siswas = $querySiswa
             ->orderBy('nama')
@@ -100,73 +107,78 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | FORMAT DATA SISWA
+        | FORMAT DATA
         |--------------------------------------------------------------------------
         */
 
-        $dataSiswa = $siswas->map(function ($siswa) {
+        $dataSiswa = $siswas
+            ->map(function ($siswa) {
+                $berkala1 = $siswa->pemeriksaanBerkala
+                    ->where('jenis_pemeriksaan', 'berkala_1')
+                    ->sortByDesc('id')
+                    ->first();
 
-            $berkala1 = $siswa->pemeriksaanBerkala
-                ->where('jenis_pemeriksaan', 'berkala_1')
-                ->sortByDesc('id')
-                ->first();
+                $berkala2 = $siswa->pemeriksaanBerkala
+                    ->where('jenis_pemeriksaan', 'berkala_2')
+                    ->sortByDesc('id')
+                    ->first();
 
-            $berkala2 = $siswa->pemeriksaanBerkala
-                ->where('jenis_pemeriksaan', 'berkala_2')
-                ->sortByDesc('id')
-                ->first();
+                /*
+                |--------------------------------------------------------------------------
+                | STATUS KESELURUHAN
+                |--------------------------------------------------------------------------
+                */
 
-            if (
-                $berkala1 &&
-                $berkala1->status === 'selesai' &&
-                $berkala2 &&
-                $berkala2->status === 'selesai'
-            ) {
-                $statusKeseluruhan = 'lengkap';
-            } elseif ($berkala1 || $berkala2) {
-                $statusKeseluruhan = 'belum_lengkap';
-            } else {
-                $statusKeseluruhan = 'belum_diperiksa';
-            }
+                if (
+                    $berkala1?->status === 'selesai' &&
+                    $berkala2?->status === 'selesai'
+                ) {
+                    $statusKeseluruhan = 'lengkap';
+                } elseif ($berkala1 || $berkala2) {
+                    $statusKeseluruhan = 'belum_lengkap';
+                } else {
+                    $statusKeseluruhan = 'belum_diperiksa';
+                }
 
-            return [
-                'id' => $siswa->id,
-
-                'siswa' => [
+                return [
                     'id' => $siswa->id,
-                    'nisn' => $siswa->nisn,
-                    'nama' => $siswa->nama,
 
-                    'kelas' => $siswa->kelas
-                        ? [
-                            'id' => $siswa->kelas->id,
-                            'nama_kelas' => $siswa->kelas->nama_kelas,
-                        ]
+                    'siswa' => [
+                        'id' => $siswa->id,
+                        'nisn' => $siswa->nisn,
+                        'nama' => $siswa->nama,
+
+                        'kelas' => $siswa->kelas
+                            ? [
+                                'id' => $siswa->kelas->id,
+                                'nama_kelas' => $siswa->kelas->nama_kelas,
+                            ]
+                            : null,
+
+                        'jurusan' => $siswa->kelas?->jurusan
+                            ? [
+                                'id' => $siswa->kelas->jurusan->id,
+                                'nama_jurusan' =>
+                                    $siswa->kelas->jurusan->nama_jurusan,
+                            ]
+                            : null,
+                    ],
+
+                    'berkala_1' => $berkala1
+                        ? $this->formatPemeriksaan($berkala1)
                         : null,
 
-                    'jurusan' => $siswa->kelas?->jurusan
-                        ? [
-                            'id' => $siswa->kelas->jurusan->id,
-                            'nama_jurusan' =>
-                                $siswa->kelas->jurusan->nama_jurusan,
-                        ]
+                    'berkala_2' => $berkala2
+                        ? $this->formatPemeriksaan($berkala2)
                         : null,
-                ],
 
-                'berkala_1' => $berkala1
-                    ? $this->formatPemeriksaan($berkala1)
-                    : null,
+                    'status_keseluruhan' => $statusKeseluruhan,
 
-                'berkala_2' => $berkala2
-                    ? $this->formatPemeriksaan($berkala2)
-                    : null,
-
-                'status_keseluruhan' => $statusKeseluruhan,
-
-                'kondisi_b1' => $berkala1?->kondisi_umum,
-                'kondisi_b2' => $berkala2?->kondisi_umum,
-            ];
-        })->values();
+                    'kondisi_b1' => $berkala1?->kondisi_umum,
+                    'kondisi_b2' => $berkala2?->kondisi_umum,
+                ];
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -224,41 +236,22 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | KELAS
+        | DAFTAR KELAS
         |--------------------------------------------------------------------------
         */
 
-        $kelas = Kelas::with('jurusan')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas')
-            ->get()
-            ->map(function ($kelas) {
-                return [
-                    'id' => $kelas->id,
-                    'nama_kelas' => $kelas->nama_kelas,
-                    'tingkat' => $kelas->tingkat,
+        $kelas = $this->getKelas();
 
-                    'jurusan' => $kelas->jurusan
-                        ? [
-                            'id' => $kelas->jurusan->id,
-                            'nama_jurusan' =>
-                                $kelas->jurusan->nama_jurusan,
-                        ]
-                        : null,
-                ];
-            })
-            ->values();
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN INERTIA
+        |--------------------------------------------------------------------------
+        */
 
         return Inertia::render(
             'Klinik/Kesehatan/Report/Berkala',
             [
-                'periode' => [
-                    'id' => $periode->id,
-                    'nama_periode' => $periode->nama_periode,
-                    'tanggal_mulai' => $periode->tanggal_mulai,
-                    'tanggal_selesai' => $periode->tanggal_selesai,
-                    'status' => $periode->status,
-                ],
+                'periode' => $this->formatPeriode($periode),
 
                 'periodeList' => $periodeList,
 
@@ -275,11 +268,12 @@ class ReportController extends Controller
         );
     }
 
-    /**
-     * ============================================================
-     * FORMAT PEMERIKSAAN
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT PEMERIKSAAN BERKALA
+    |--------------------------------------------------------------------------
+    */
+
     private function formatPemeriksaan($item)
     {
         return [
@@ -287,7 +281,8 @@ class ReportController extends Controller
 
             'jenis_pemeriksaan' => $item->jenis_pemeriksaan,
 
-            'tanggal_pemeriksaan' => $item->tanggal_pemeriksaan,
+            'tanggal_pemeriksaan' =>
+                $item->tanggal_pemeriksaan,
 
             'status' => $item->status,
 
@@ -297,27 +292,36 @@ class ReportController extends Controller
 
             'imt' => $item->imt,
 
-            'tekanan_darah' => $item->tekanan_darah,
+            'tekanan_darah' =>
+                $item->tekanan_darah,
 
-            'denyut_nadi' => $item->denyut_nadi,
+            'denyut_nadi' =>
+                $item->denyut_nadi,
 
-            'suhu_tubuh' => $item->suhu_tubuh,
+            'suhu_tubuh' =>
+                $item->suhu_tubuh,
 
             'mata' => $item->mata,
 
             'telinga' => $item->telinga,
 
-            'gigi_mulut' => $item->gigi_mulut,
+            'gigi_mulut' =>
+                $item->gigi_mulut,
 
-            'kondisi_umum' => $item->kondisi_umum,
+            'kondisi_umum' =>
+                $item->kondisi_umum,
 
-            'keluhan' => $item->keluhan,
+            'keluhan' =>
+                $item->keluhan,
 
-            'hasil_pemeriksaan' => $item->hasil_pemeriksaan,
+            'hasil_pemeriksaan' =>
+                $item->hasil_pemeriksaan,
 
-            'rekomendasi' => $item->rekomendasi,
+            'rekomendasi' =>
+                $item->rekomendasi,
 
-            'catatan' => $item->catatan,
+            'catatan' =>
+                $item->catatan,
 
             'pemeriksa' => $item->pemeriksa
                 ? [
@@ -328,11 +332,12 @@ class ReportController extends Controller
         ];
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD DETAIL PEMERIKSAAN BERKALA
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD DETAIL PEMERIKSAAN BERKALA
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadDetailPdf(
         PemeriksaanBerkala $pemeriksaan
     ) {
@@ -349,53 +354,36 @@ class ReportController extends Controller
             ]
         );
 
-        $namaSiswa = str_replace(
-            ' ',
-            '-',
-            strtolower(
-                $pemeriksaan->siswa?->nama ?? 'siswa'
-            )
+        $namaSiswa = $this->sanitizeFileName(
+            $pemeriksaan->siswa?->nama ?? 'siswa'
         );
 
         return $pdf->download(
             'pemeriksaan-' .
-            $pemeriksaan->jenis_pemeriksaan .
-            '-' .
-            $namaSiswa .
-            '.pdf'
+                $pemeriksaan->jenis_pemeriksaan .
+                '-' .
+                $namaSiswa .
+                '.pdf'
         );
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD REKAP PEMERIKSAAN BERKALA - EXCEL
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD REKAP BERKALA - EXCEL
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadExcel(Request $request)
     {
-        $periodeId = $request->input('periode_id');
-
-        $periode = $periodeId
-            ? Periode::findOrFail($periodeId)
-            : Periode::where('status', 'aktif')->first();
+        $periode = $this->getPeriode($request);
 
         if (!$periode) {
             abort(404, 'Tidak ada periode aktif.');
         }
 
-        $namaPeriode = preg_replace(
-            '/[\\\\\/:*?"<>|]+/',
-            '-',
+        $namaPeriode = $this->sanitizeFileName(
             $periode->nama_periode
         );
-
-        $namaPeriode = preg_replace(
-            '/\s+/',
-            '-',
-            trim($namaPeriode)
-        );
-
-        $namaPeriode = strtolower($namaPeriode);
 
         return Excel::download(
             new ReportBerkalaExport(
@@ -408,22 +396,25 @@ class ReportController extends Controller
         );
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD REKAP PEMERIKSAAN BERKALA - PDF
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD REKAP BERKALA - PDF
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadPdf(Request $request)
     {
-        $periodeId = $request->input('periode_id');
-
-        $periode = $periodeId
-            ? Periode::findOrFail($periodeId)
-            : Periode::where('status', 'aktif')->first();
+        $periode = $this->getPeriode($request);
 
         if (!$periode) {
             abort(404, 'Tidak ada periode aktif.');
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SISWA DALAM PERIODE
+        |--------------------------------------------------------------------------
+        */
 
         $querySiswa = $periode->siswa()
             ->with([
@@ -439,6 +430,12 @@ class ReportController extends Controller
                 },
             ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER KELAS
+        |--------------------------------------------------------------------------
+        */
+
         if ($request->filled('kelas_id')) {
             $querySiswa->where(
                 'kelas_id',
@@ -450,43 +447,66 @@ class ReportController extends Controller
             ->orderBy('nama')
             ->get();
 
-        $data = $siswas->map(function ($siswa) {
+        /*
+        |--------------------------------------------------------------------------
+        | FORMAT DATA PDF
+        |--------------------------------------------------------------------------
+        */
 
-            $b1 = $siswa->pemeriksaanBerkala
-                ->where('jenis_pemeriksaan', 'berkala_1')
-                ->sortByDesc('id')
-                ->first();
+        $data = $siswas
+            ->map(function ($siswa) {
+                $b1 = $siswa->pemeriksaanBerkala
+                    ->where('jenis_pemeriksaan', 'berkala_1')
+                    ->sortByDesc('id')
+                    ->first();
 
-            $b2 = $siswa->pemeriksaanBerkala
-                ->where('jenis_pemeriksaan', 'berkala_2')
-                ->sortByDesc('id')
-                ->first();
+                $b2 = $siswa->pemeriksaanBerkala
+                    ->where('jenis_pemeriksaan', 'berkala_2')
+                    ->sortByDesc('id')
+                    ->first();
 
-            if (
-                $b1?->status === 'selesai' &&
-                $b2?->status === 'selesai'
-            ) {
-                $status = 'Lengkap';
-            } elseif ($b1 || $b2) {
-                $status = 'Belum Lengkap';
-            } else {
-                $status = 'Belum Diperiksa';
-            }
+                if (
+                    $b1?->status === 'selesai' &&
+                    $b2?->status === 'selesai'
+                ) {
+                    $status = 'Lengkap';
+                } elseif ($b1 || $b2) {
+                    $status = 'Belum Lengkap';
+                } else {
+                    $status = 'Belum Diperiksa';
+                }
 
-            return [
-                'nama' => $siswa->nama,
-                'nisn' => $siswa->nisn,
-                'kelas' => $siswa->kelas?->nama_kelas ?? '-',
+                return [
+                    'nama' => $siswa->nama,
 
-                'b1_status' => $b1?->status ?? 'belum',
-                'b1_kondisi' => $b1?->kondisi_umum ?? '-',
+                    'nisn' =>
+                        $siswa->nisn ?? '-',
 
-                'b2_status' => $b2?->status ?? 'belum',
-                'b2_kondisi' => $b2?->kondisi_umum ?? '-',
+                    'kelas' =>
+                        $siswa->kelas?->nama_kelas ?? '-',
 
-                'status' => $status,
-            ];
-        });
+                    'b1_status' =>
+                        $b1?->status ?? 'belum',
+
+                    'b1_kondisi' =>
+                        $b1?->kondisi_umum ?? '-',
+
+                    'b2_status' =>
+                        $b2?->status ?? 'belum',
+
+                    'b2_kondisi' =>
+                        $b2?->kondisi_umum ?? '-',
+
+                    'status' => $status,
+                ];
+            })
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | GENERATE PDF
+        |--------------------------------------------------------------------------
+        */
 
         $pdf = Pdf::loadView(
             'klinik.report.berkala-rekap',
@@ -494,18 +514,28 @@ class ReportController extends Controller
                 'periode' => $periode,
                 'data' => $data,
             ]
-        )->setPaper('a4', 'landscape');
+        )->setPaper(
+            'a4',
+            'landscape'
+        );
+
+        $namaPeriode = $this->sanitizeFileName(
+            $periode->nama_periode
+        );
 
         return $pdf->download(
-            'rekap-pemeriksaan-berkala.pdf'
+            'rekap-pemeriksaan-berkala-' .
+                $namaPeriode .
+                '.pdf'
         );
     }
 
-    /**
-     * ============================================================
-     * REPORT KUNJUNGAN KLINIK
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | REPORT KUNJUNGAN KLINIK
+    |--------------------------------------------------------------------------
+    */
+
     public function kunjungan(Request $request)
     {
         /*
@@ -514,11 +544,7 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $periodeId = $request->input('periode_id');
-
-        $periode = $periodeId
-            ? Periode::find($periodeId)
-            : Periode::where('status', 'aktif')->first();
+        $periode = $this->getPeriode($request);
 
         /*
         |--------------------------------------------------------------------------
@@ -526,23 +552,11 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $periodeList = Periode::query()
-            ->orderByDesc('tanggal_mulai')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama_periode' => $item->nama_periode,
-                    'tanggal_mulai' => $item->tanggal_mulai,
-                    'tanggal_selesai' => $item->tanggal_selesai,
-                    'status' => $item->status,
-                ];
-            })
-            ->values();
+        $periodeList = $this->getPeriodeList();
 
         /*
         |--------------------------------------------------------------------------
-        | TIDAK ADA PERIODE
+        | JIKA TIDAK ADA PERIODE
         |--------------------------------------------------------------------------
         */
 
@@ -551,15 +565,17 @@ class ReportController extends Controller
                 'Klinik/Kesehatan/Report/Kunjungan',
                 [
                     'periode' => null,
-                    'periodeList' => $periodeList,
+
+                    'periodeList' =>
+                        $periodeList,
+
                     'siswa' => [],
-                    'statistik' => [
-                        'total_kunjungan' => 0,
-                        'total_siswa' => 0,
-                        'selesai' => 0,
-                        'rujuk' => 0,
-                    ],
+
+                    'statistik' =>
+                        $this->emptyKunjunganStatistik(),
+
                     'kelas' => [],
+
                     'filter' => [
                         'kelas_id' =>
                             $request->input('kelas_id'),
@@ -574,11 +590,6 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         | QUERY KUNJUNGAN
         |--------------------------------------------------------------------------
-        |
-        | Report ini memang mengambil data dari KunjunganKlinik.
-        | Jadi hanya siswa yang mempunyai kunjungan pada periode
-        | tersebut yang ditampilkan.
-        |
         */
 
         $query = KunjunganKlinik::query()
@@ -612,7 +623,7 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | DATA
+        | AMBIL DATA
         |--------------------------------------------------------------------------
         */
 
@@ -655,26 +666,7 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $kelas = Kelas::with('jurusan')
-            ->orderBy('tingkat')
-            ->orderBy('nama_kelas')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'nama_kelas' => $item->nama_kelas,
-                    'tingkat' => $item->tingkat,
-
-                    'jurusan' => $item->jurusan
-                        ? [
-                            'id' => $item->jurusan->id,
-                            'nama_jurusan' =>
-                                $item->jurusan->nama_jurusan,
-                        ]
-                        : null,
-                ];
-            })
-            ->values();
+        $kelas = $this->getKelas();
 
         /*
         |--------------------------------------------------------------------------
@@ -684,13 +676,15 @@ class ReportController extends Controller
 
         $dataKunjungan = $kunjungan
             ->map(function ($item) {
-
                 return [
-                    'id' => $item->id,
+                    'id' =>
+                        $item->id,
 
-                    'siswa_id' => $item->siswa_id,
+                    'siswa_id' =>
+                        $item->siswa_id,
 
-                    'periode_id' => $item->periode_id,
+                    'periode_id' =>
+                        $item->periode_id,
 
                     'tanggal_kunjungan' =>
                         $item->tanggal_kunjungan,
@@ -714,9 +708,9 @@ class ReportController extends Controller
                         $item->catatan,
 
                     /*
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     | SISWA
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     */
 
                     'siswa' => $item->siswa
@@ -745,7 +739,10 @@ class ReportController extends Controller
                                 $item->siswa->kelas?->jurusan
                                     ? [
                                         'id' =>
-                                            $item->siswa->kelas->jurusan->id,
+                                            $item->siswa
+                                                ->kelas
+                                                ->jurusan
+                                                ->id,
 
                                         'nama_jurusan' =>
                                             $item->siswa
@@ -758,9 +755,9 @@ class ReportController extends Controller
                         : null,
 
                     /*
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     | PEMERIKSA
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     */
 
                     'pemeriksa' =>
@@ -778,15 +775,14 @@ class ReportController extends Controller
                             : null,
 
                     /*
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     | OBAT
-                    |----------------------------------------------------------
+                    |--------------------------------------------------------------------------
                     */
 
                     'kunjunganObat' =>
                         $item->kunjunganObat
                             ->map(function ($obat) {
-
                                 return [
                                     'id' =>
                                         $obat->id,
@@ -826,22 +822,8 @@ class ReportController extends Controller
         return Inertia::render(
             'Klinik/Kesehatan/Report/Kunjungan',
             [
-                'periode' => [
-                    'id' =>
-                        $periode->id,
-
-                    'nama_periode' =>
-                        $periode->nama_periode,
-
-                    'tanggal_mulai' =>
-                        $periode->tanggal_mulai,
-
-                    'tanggal_selesai' =>
-                        $periode->tanggal_selesai,
-
-                    'status' =>
-                        $periode->status,
-                ],
+                'periode' =>
+                    $this->formatPeriode($periode),
 
                 'periodeList' =>
                     $periodeList,
@@ -863,88 +845,54 @@ class ReportController extends Controller
         );
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD REPORT KUNJUNGAN - EXCEL
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD REPORT KUNJUNGAN - EXCEL
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadKunjunganExcel(
         Request $request
     ) {
-        $periodeId =
-            $request->input('periode_id');
-
-        $periode = $periodeId
-            ? Periode::findOrFail($periodeId)
-            : Periode::where(
-                'status',
-                'aktif'
-            )->first();
+        $periode = $this->getPeriode($request);
 
         if (!$periode) {
-            abort(
-                404,
-                'Tidak ada periode aktif.'
-            );
+            abort(404, 'Tidak ada periode aktif.');
         }
 
-        $namaPeriode = preg_replace(
-            '/[\\\\\/:*?"<>|]+/',
-            '-',
+        $namaPeriode = $this->sanitizeFileName(
             $periode->nama_periode
         );
-
-        $namaPeriode = preg_replace(
-            '/\s+/',
-            '-',
-            trim($namaPeriode)
-        );
-
-        $namaPeriode =
-            strtolower($namaPeriode);
-
-        $namaFile =
-            'rekap-kunjungan-klinik-' .
-            $namaPeriode .
-            '.xlsx';
 
         return Excel::download(
             new ReportKunjunganExport(
                 $periode,
                 $request->input('kelas_id')
             ),
-            $namaFile
+            'rekap-kunjungan-klinik-' .
+                $namaPeriode .
+                '.xlsx'
         );
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD REPORT KUNJUNGAN - PDF
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD REPORT KUNJUNGAN - PDF
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadKunjunganPdf(
         Request $request
     ) {
-        $periodeId =
-            $request->input('periode_id');
-
-        $periode = $periodeId
-            ? Periode::findOrFail($periodeId)
-            : Periode::where(
-                'status',
-                'aktif'
-            )->first();
+        $periode = $this->getPeriode($request);
 
         if (!$periode) {
-            abort(
-                404,
-                'Tidak ada periode aktif.'
-            );
+            abort(404, 'Tidak ada periode aktif.');
         }
 
         /*
         |--------------------------------------------------------------------------
-        | AMBIL SISWA DALAM PERIODE
+        | SISWA DALAM PERIODE
         |--------------------------------------------------------------------------
         */
 
@@ -964,9 +912,16 @@ class ReportController extends Controller
                         ])
                         ->orderByDesc(
                             'tanggal_kunjungan'
-                        );
+                        )
+                        ->orderByDesc('id');
                 },
             ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER KELAS
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->filled('kelas_id')) {
             $query->where(
@@ -975,34 +930,42 @@ class ReportController extends Controller
             );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL SISWA
+        |--------------------------------------------------------------------------
+        */
+
         $siswas = $query
             ->orderBy('nama')
             ->get();
 
         /*
         |--------------------------------------------------------------------------
-        | FLATTEN KUNJUNGAN
+        | FLATTEN DATA KUNJUNGAN
         |--------------------------------------------------------------------------
         */
 
         $data = $siswas
             ->flatMap(function ($siswa) {
-
                 return $siswa->kunjunganKlinik
                     ->map(function ($kunjungan) use ($siswa) {
+                        /*
+                        |--------------------------------------------------------------------------
+                        | OBAT
+                        |--------------------------------------------------------------------------
+                        */
 
-                        $obat =
-                            $kunjungan
-                                ->kunjunganObat
-                                ->map(function ($item) {
-
-                                    return
-                                        ($item->obat?->nama_obat ?? '-')
-                                        . ' (' .
-                                        ($item->jumlah ?? 0)
-                                        . ')';
-                                })
-                                ->implode(', ');
+                        $obat = $kunjungan
+                            ->kunjunganObat
+                            ->map(function ($item) {
+                                return
+                                    ($item->obat?->nama_obat ?? '-')
+                                    . ' ('
+                                    . ($item->jumlah ?? 0)
+                                    . ')';
+                            })
+                            ->implode(', ');
 
                         return [
                             'nama' =>
@@ -1053,34 +1016,38 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | PDF
+        | GENERATE PDF
         |--------------------------------------------------------------------------
         */
 
         $pdf = Pdf::loadView(
             'klinik.report.kunjungan-rekap',
             [
-                'periode' =>
-                    $periode,
-
-                'data' =>
-                    $data,
+                'periode' => $periode,
+                'data' => $data,
             ]
         )->setPaper(
             'a4',
             'landscape'
         );
 
+        $namaPeriode = $this->sanitizeFileName(
+            $periode->nama_periode
+        );
+
         return $pdf->download(
-            'rekap-kunjungan-klinik.pdf'
+            'rekap-kunjungan-klinik-' .
+                $namaPeriode .
+                '.pdf'
         );
     }
 
-    /**
-     * ============================================================
-     * DOWNLOAD DETAIL KUNJUNGAN - PDF
-     * ============================================================
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | DOWNLOAD DETAIL KUNJUNGAN - PDF
+    |--------------------------------------------------------------------------
+    */
+
     public function downloadKunjunganDetailPdf(
         KunjunganKlinik $kunjungan
     ) {
@@ -1094,27 +1061,214 @@ class ReportController extends Controller
         $pdf = Pdf::loadView(
             'klinik.report.kunjungan-detail',
             [
-                'kunjungan' =>
-                    $kunjungan,
+                'kunjungan' => $kunjungan,
             ]
         );
 
-        $namaSiswa = str_replace(
-            ' ',
-            '-',
-            strtolower(
-                $kunjungan
-                    ->siswa
-                    ?->nama ?? 'siswa'
-            )
+        $namaSiswa = $this->sanitizeFileName(
+            $kunjungan->siswa?->nama ?? 'siswa'
         );
 
         return $pdf->download(
             'kunjungan-klinik-' .
-            $namaSiswa .
-            '-' .
-            $kunjungan->id .
-            '.pdf'
+                $namaSiswa .
+                '-' .
+                $kunjungan->id .
+                '.pdf'
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - AMBIL PERIODE
+    |--------------------------------------------------------------------------
+    |
+    | Jika periode_id dikirim:
+    |     gunakan periode tersebut.
+    |
+    | Jika tidak dikirim:
+    |     gunakan periode aktif.
+    |
+    */
+
+    private function getPeriode(Request $request)
+    {
+        $periodeId = $request->input('periode_id');
+
+        if ($periodeId) {
+            return Periode::find($periodeId);
+        }
+
+        return Periode::where(
+            'status',
+            'aktif'
+        )->first();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - DAFTAR PERIODE
+    |--------------------------------------------------------------------------
+    */
+
+    private function getPeriodeList()
+    {
+        return Periode::query()
+            ->orderByDesc('tanggal_mulai')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' =>
+                        $item->id,
+
+                    'nama_periode' =>
+                        $item->nama_periode,
+
+                    'tanggal_mulai' =>
+                        $item->tanggal_mulai,
+
+                    'tanggal_selesai' =>
+                        $item->tanggal_selesai,
+
+                    'status' =>
+                        $item->status,
+                ];
+            })
+            ->values();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - FORMAT PERIODE
+    |--------------------------------------------------------------------------
+    */
+
+    private function formatPeriode($periode)
+    {
+        return [
+            'id' =>
+                $periode->id,
+
+            'nama_periode' =>
+                $periode->nama_periode,
+
+            'tanggal_mulai' =>
+                $periode->tanggal_mulai,
+
+            'tanggal_selesai' =>
+                $periode->tanggal_selesai,
+
+            'status' =>
+                $periode->status,
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - DAFTAR KELAS
+    |--------------------------------------------------------------------------
+    */
+
+    private function getKelas()
+    {
+        return Kelas::with('jurusan')
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get()
+            ->map(function ($kelas) {
+                return [
+                    'id' =>
+                        $kelas->id,
+
+                    'nama_kelas' =>
+                        $kelas->nama_kelas,
+
+                    'tingkat' =>
+                        $kelas->tingkat,
+
+                    'jurusan' =>
+                        $kelas->jurusan
+                            ? [
+                                'id' =>
+                                    $kelas->jurusan->id,
+
+                                'nama_jurusan' =>
+                                    $kelas
+                                        ->jurusan
+                                        ->nama_jurusan,
+                            ]
+                            : null,
+                ];
+            })
+            ->values();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - STATISTIK BERKALA KOSONG
+    |--------------------------------------------------------------------------
+    */
+
+    private function emptyBerkalaStatistik()
+    {
+        return [
+            'total_siswa' => 0,
+
+            'berkala_1_selesai' => 0,
+
+            'berkala_1_belum' => 0,
+
+            'berkala_2_selesai' => 0,
+
+            'berkala_2_belum' => 0,
+
+            'lengkap' => 0,
+
+            'belum_lengkap' => 0,
+
+            'belum_diperiksa' => 0,
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - STATISTIK KUNJUNGAN KOSONG
+    |--------------------------------------------------------------------------
+    */
+
+    private function emptyKunjunganStatistik()
+    {
+        return [
+            'total_kunjungan' => 0,
+
+            'total_siswa' => 0,
+
+            'selesai' => 0,
+
+            'rujuk' => 0,
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER - NAMA FILE
+    |--------------------------------------------------------------------------
+    */
+
+    private function sanitizeFileName($name)
+    {
+        $name = preg_replace(
+            '/[\\\\\/:*?"<>|]+/',
+            '-',
+            $name
+        );
+
+        $name = preg_replace(
+            '/\s+/',
+            '-',
+            trim($name)
+        );
+
+        return strtolower($name);
     }
 }

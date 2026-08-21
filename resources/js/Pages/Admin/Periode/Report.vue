@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
@@ -19,21 +19,66 @@ const props = defineProps({
     },
 })
 
-const totalPeriode = computed(() => props.reports.length)
+/*
+|--------------------------------------------------------------------------
+| Breadcrumb
+|--------------------------------------------------------------------------
+*/
+
+const breadcrumbs = [
+    {
+        label: 'Periode',
+    },
+    {
+        label: 'Report Periode',
+    },
+]
+
+/*
+|--------------------------------------------------------------------------
+| Filter Periode
+|--------------------------------------------------------------------------
+*/
+
+const selectedPeriode = ref('all')
+
+const filteredReports = computed(() => {
+    if (selectedPeriode.value === 'all') {
+        return props.reports
+    }
+
+    return props.reports.filter(
+        report => String(report.id) === String(selectedPeriode.value)
+    )
+})
+
+/*
+|--------------------------------------------------------------------------
+| Statistik
+|--------------------------------------------------------------------------
+*/
+
+const totalPeriode = computed(() => filteredReports.value.length)
 
 const totalSiswa = computed(() => {
-    return props.reports.reduce(
+    return filteredReports.value.reduce(
         (total, report) => total + Number(report.jumlah_siswa || 0),
         0
     )
 })
 
 const totalKunjungan = computed(() => {
-    return props.reports.reduce(
+    return filteredReports.value.reduce(
         (total, report) => total + Number(report.jumlah_kunjungan || 0),
         0
     )
 })
+
+/*
+|--------------------------------------------------------------------------
+| Status
+|--------------------------------------------------------------------------
+*/
 
 function statusClass(lengkap) {
     return lengkap
@@ -47,482 +92,484 @@ function statusLabel(lengkap) {
 </script>
 
 <template>
- <AdminLayout :breadcrumbs="breadcrumbs">
+    <AdminLayout :breadcrumbs="breadcrumbs">
 
-    <div class="space-y-6">
+        <div class="space-y-6">
 
-        <!-- ==================================================
-             HEADER
-        ================================================== -->
-
-        <div
-            class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-        >
-
-            <div>
-
-             
-                <h1 class="text-2xl font-bold text-slate-800">
-                    Report Periode
-                </h1>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    Ringkasan data kesehatan dan kelengkapan pemeriksaan
-                    setiap periode.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <!-- ==================================================
-             SUMMARY
-        ================================================== -->
-
-        <div
-            class="grid grid-cols-1 gap-4 sm:grid-cols-3"
-        >
-
-            <!-- TOTAL PERIODE -->
+            <!-- ==================================================
+                 HEADER
+            ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
             >
 
-                <div class="flex items-center gap-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">
+                        Report Periode
+                    </h1>
 
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100"
+                    <p class="mt-1 text-sm text-slate-500">
+                        Ringkasan data kesehatan dan kelengkapan pemeriksaan
+                        setiap periode.
+                    </p>
+                </div>
+
+                <!-- FILTER PERIODE -->
+
+                <div class="w-full sm:w-64">
+
+                    <label
+                        for="periode"
+                        class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                     >
+                        Pilih Periode
+                    </label>
+
+                    <div class="relative">
 
                         <CalendarDaysIcon
-                            class="h-5 w-5 text-purple-600"
+                            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                         />
 
-                    </div>
-
-                    <div>
-
-                        <p class="text-xs font-medium text-slate-400">
-                            Total Periode
-                        </p>
-
-                        <p class="text-xl font-bold text-slate-800">
-                            {{ totalPeriode }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL SISWA -->
-
-            <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-            >
-
-                <div class="flex items-center gap-3">
-
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
-                    >
-
-                        <UserGroupIcon
-                            class="h-5 w-5 text-blue-600"
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <p class="text-xs font-medium text-slate-400">
-                            Total Siswa
-                        </p>
-
-                        <p class="text-xl font-bold text-slate-800">
-                            {{ totalSiswa }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- TOTAL KUNJUNGAN -->
-
-            <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-            >
-
-                <div class="flex items-center gap-3">
-
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100"
-                    >
-
-                        <HeartIcon
-                            class="h-5 w-5 text-orange-600"
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <p class="text-xs font-medium text-slate-400">
-                            Total Kunjungan
-                        </p>
-
-                        <p class="text-xl font-bold text-slate-800">
-                            {{ totalKunjungan }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ==================================================
-             REPORT TABLE
-        ================================================== -->
-
-        <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-        >
-
-            <!-- TABLE HEADER -->
-
-            <div
-                class="border-b border-slate-200 px-6 py-5"
-            >
-
-                <div class="flex items-center gap-3">
-
-                    <div
-                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
-                    >
-
-                        <ClipboardDocumentCheckIcon
-                            class="h-5 w-5 text-blue-600"
-                        />
-
-                    </div>
-
-                    <div>
-
-                        <h2 class="text-sm font-bold text-slate-800">
-                            Rekapitulasi Periode
-                        </h2>
-
-                        <p class="text-xs text-slate-400">
-                            Status kelengkapan pemeriksaan setiap periode.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- TABLE -->
-
-            <div class="overflow-x-auto">
-
-                <table class="w-full min-w-[1100px]">
-
-                    <thead>
-
-                        <tr
-                            class="border-b border-slate-100 bg-slate-50/70"
+                        <select
+                            id="periode"
+                            v-model="selectedPeriode"
+                            class="w-full appearance-none rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-9 text-sm font-medium text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                         >
 
-                            <th
-                                class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
+                            <option value="all">
+                                Semua Periode
+                            </option>
+
+                            <option
+                                v-for="report in reports"
+                                :key="report.id"
+                                :value="report.id"
                             >
-                                Periode
-                            </th>
+                                {{ report.nama_periode }}
+                            </option>
 
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                Jumlah Siswa
-                            </th>
+                        </select>
 
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                Kunjungan Klinik
-                            </th>
+                        <svg
+                            class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="m19 9-7 7-7-7"
+                            />
+                        </svg>
 
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                Berkala 1
-                            </th>
+                    </div>
 
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                Berkala 2
-                            </th>
+                </div>
 
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                TKSI
-                            </th>
-
-                            <th
-                                class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
-                            >
-                                Aksi
-                            </th>
-
-                        </tr>
-
-                    </thead>
+            </div>
 
 
-                    <tbody>
+            <!-- ==================================================
+                 INFO FILTER
+            ================================================== -->
 
-                        <!-- DATA -->
+            <div
+                v-if="selectedPeriode !== 'all'"
+                class="flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+            >
 
-                        <tr
-                            v-for="report in reports"
-                            :key="report.id"
-                            class="border-b border-slate-100 transition hover:bg-slate-50/70"
+                <div class="flex items-center gap-2">
+
+                    <CalendarDaysIcon
+                        class="h-5 w-5 text-blue-600"
+                    />
+
+                    <div>
+
+                        <p class="text-xs font-semibold text-blue-500">
+                            Periode yang dipilih
+                        </p>
+
+                        <p class="text-sm font-bold text-blue-700">
+                            {{
+                                filteredReports.length
+                                    ? filteredReports[0].nama_periode
+                                    : '-'
+                            }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    @click="selectedPeriode = 'all'"
+                    class="text-xs font-bold text-blue-600 transition hover:text-blue-800"
+                >
+                    Tampilkan Semua
+                </button>
+
+            </div>
+
+
+            <!-- ==================================================
+                 REPORT TABLE
+            ================================================== -->
+
+            <div
+                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            >
+
+                <!-- TABLE HEADER -->
+
+                <div
+                    class="border-b border-slate-200 px-6 py-5"
+                >
+
+                    <div class="flex items-center gap-3">
+
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
                         >
 
-                            <!-- PERIODE -->
+                            <ClipboardDocumentCheckIcon
+                                class="h-5 w-5 text-blue-600"
+                            />
 
-                            <td class="px-5 py-4">
+                        </div>
 
-                                <div class="flex items-center gap-3">
+                        <div>
 
-                                    <div
-                                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100"
-                                    >
+                            <h2 class="text-sm font-bold text-slate-800">
+                                Rekapitulasi Periode
+                            </h2>
 
-                                        <CalendarDaysIcon
-                                            class="h-4 w-4 text-purple-600"
-                                        />
+                            <p class="text-xs text-slate-400">
+                                Status kelengkapan pemeriksaan setiap periode.
+                            </p>
 
-                                    </div>
+                        </div>
 
-                                    <div>
+                    </div>
 
-                                        <p
-                                            class="text-sm font-bold text-slate-700"
-                                        >
-                                            {{ report.nama_periode }}
-                                        </p>
-
-                                        <p
-                                            class="text-xs text-slate-400"
-                                        >
-                                            Periode kesehatan siswa
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
+                </div>
 
 
-                            <!-- JUMLAH SISWA -->
+                <!-- TABLE -->
 
-                            <td class="px-5 py-4 text-center">
+                <div class="overflow-x-auto">
 
-                                <span
-                                    class="text-sm font-bold text-slate-700"
-                                >
-                                    {{ report.jumlah_siswa }}
-                                </span>
+                    <table class="w-full min-w-[1100px]">
 
-                                <p
-                                    class="text-xs text-slate-400"
-                                >
-                                    siswa
-                                </p>
+                        <thead>
 
-                            </td>
-
-
-                            <!-- KUNJUNGAN -->
-
-                            <td class="px-5 py-4 text-center">
-
-                                <span
-                                    class="text-sm font-bold text-slate-700"
-                                >
-                                    {{ report.jumlah_kunjungan }}
-                                </span>
-
-                                <p
-                                    class="text-xs text-slate-400"
-                                >
-                                    kunjungan
-                                </p>
-
-                            </td>
-
-
-                            <!-- B1 -->
-
-                            <td class="px-5 py-4 text-center">
-
-                                <span
-                                    :class="[
-                                        'inline-flex rounded-full px-3 py-1 text-xs font-bold',
-                                        statusClass(report.berkala_1.lengkap)
-                                    ]"
-                                >
-                                    {{ statusLabel(report.berkala_1.lengkap) }}
-                                </span>
-
-                                <p
-                                    class="mt-1 text-xs text-slate-400"
-                                >
-                                    {{ report.berkala_1.selesai }}
-                                    /
-                                    {{ report.berkala_1.total }}
-                                </p>
-
-                            </td>
-
-
-                            <!-- B2 -->
-
-                            <td class="px-5 py-4 text-center">
-
-                                <span
-                                    :class="[
-                                        'inline-flex rounded-full px-3 py-1 text-xs font-bold',
-                                        statusClass(report.berkala_2.lengkap)
-                                    ]"
-                                >
-                                    {{ statusLabel(report.berkala_2.lengkap) }}
-                                </span>
-
-                                <p
-                                    class="mt-1 text-xs text-slate-400"
-                                >
-                                    {{ report.berkala_2.selesai }}
-                                    /
-                                    {{ report.berkala_2.total }}
-                                </p>
-
-                            </td>
-
-
-                            <!-- TKSI -->
-
-                            <td class="px-5 py-4 text-center">
-
-                                <span
-                                    :class="[
-                                        'inline-flex rounded-full px-3 py-1 text-xs font-bold',
-                                        statusClass(report.tksi.lengkap)
-                                    ]"
-                                >
-                                    {{ statusLabel(report.tksi.lengkap) }}
-                                </span>
-
-                                <p
-                                    class="mt-1 text-xs text-slate-400"
-                                >
-                                    {{ report.tksi.selesai }}
-                                    /
-                                    {{ report.tksi.total }}
-                                </p>
-
-                            </td>
-
-
-                            <!-- AKSI -->
-
-                            <td class="px-5 py-4 text-center">
-
-                                <Link
-                                    :href="route(
-                                        'admin.periode.report.show',
-                                        report.id
-                                    )"
-                                    class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
-                                >
-
-                                    <EyeIcon class="h-4 w-4" />
-
-                                    Detail
-
-                                </Link>
-
-                            </td>
-
-                        </tr>
-
-
-                        <!-- EMPTY -->
-
-                        <tr v-if="!reports.length">
-
-                            <td
-                                colspan="7"
-                                class="px-6 py-12 text-center"
+                            <tr
+                                class="border-b border-slate-100 bg-slate-50/70"
                             >
 
-                                <div
-                                    class="mx-auto flex max-w-sm flex-col items-center"
+                                <th
+                                    class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-400"
                                 >
+                                    Periode
+                                </th>
 
-                                    <div
-                                        class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100"
-                                    >
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Jumlah Siswa
+                                </th>
 
-                                        <CalendarDaysIcon
-                                            class="h-6 w-6 text-slate-400"
-                                        />
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Kunjungan Klinik
+                                </th>
+
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Berkala 1
+                                </th>
+
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Berkala 2
+                                </th>
+
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    TKSI
+                                </th>
+
+                                <th
+                                    class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Aksi
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <!-- DATA -->
+
+                            <tr
+                                v-for="report in filteredReports"
+                                :key="report.id"
+                                class="border-b border-slate-100 transition hover:bg-slate-50/70"
+                            >
+
+                                <!-- PERIODE -->
+
+                                <td class="px-5 py-4">
+
+                                    <div class="flex items-center gap-3">
+
+                                        <div
+                                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100"
+                                        >
+
+                                            <CalendarDaysIcon
+                                                class="h-4 w-4 text-purple-600"
+                                            />
+
+                                        </div>
+
+                                        <div>
+
+                                            <p
+                                                class="text-sm font-bold text-slate-700"
+                                            >
+                                                {{ report.nama_periode }}
+                                            </p>
+
+                                            <p
+                                                class="text-xs text-slate-400"
+                                            >
+                                                Periode kesehatan siswa
+                                            </p>
+
+                                        </div>
 
                                     </div>
+
+                                </td>
+
+
+                                <!-- JUMLAH SISWA -->
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <span
+                                        class="text-sm font-bold text-slate-700"
+                                    >
+                                        {{ report.jumlah_siswa }}
+                                    </span>
 
                                     <p
-                                        class="mt-3 text-sm font-semibold text-slate-600"
+                                        class="text-xs text-slate-400"
                                     >
-                                        Belum ada data periode
+                                        siswa
                                     </p>
+
+                                </td>
+
+
+                                <!-- KUNJUNGAN -->
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <span
+                                        class="text-sm font-bold text-slate-700"
+                                    >
+                                        {{ report.jumlah_kunjungan }}
+                                    </span>
+
+                                    <p
+                                        class="text-xs text-slate-400"
+                                    >
+                                        kunjungan
+                                    </p>
+
+                                </td>
+
+
+                                <!-- B1 -->
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <span
+                                        :class="[
+                                            'inline-flex rounded-full px-3 py-1 text-xs font-bold',
+                                            statusClass(report.berkala_1?.lengkap)
+                                        ]"
+                                    >
+                                        {{
+                                            statusLabel(
+                                                report.berkala_1?.lengkap
+                                            )
+                                        }}
+                                    </span>
 
                                     <p
                                         class="mt-1 text-xs text-slate-400"
                                     >
-                                        Report akan muncul setelah periode
-                                        tersedia.
+                                        {{ report.berkala_1?.selesai || 0 }}
+                                        /
+                                        {{ report.berkala_1?.total || 0 }}
                                     </p>
 
-                                </div>
+                                </td>
 
-                            </td>
 
-                        </tr>
+                                <!-- B2 -->
 
-                    </tbody>
+                                <td class="px-5 py-4 text-center">
 
-                </table>
+                                    <span
+                                        :class="[
+                                            'inline-flex rounded-full px-3 py-1 text-xs font-bold',
+                                            statusClass(report.berkala_2?.lengkap)
+                                        ]"
+                                    >
+                                        {{
+                                            statusLabel(
+                                                report.berkala_2?.lengkap
+                                            )
+                                        }}
+                                    </span>
+
+                                    <p
+                                        class="mt-1 text-xs text-slate-400"
+                                    >
+                                        {{ report.berkala_2?.selesai || 0 }}
+                                        /
+                                        {{ report.berkala_2?.total || 0 }}
+                                    </p>
+
+                                </td>
+
+
+                                <!-- TKSI -->
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <span
+                                        :class="[
+                                            'inline-flex rounded-full px-3 py-1 text-xs font-bold',
+                                            statusClass(report.tksi?.lengkap)
+                                        ]"
+                                    >
+                                        {{
+                                            statusLabel(
+                                                report.tksi?.lengkap
+                                            )
+                                        }}
+                                    </span>
+
+                                    <p
+                                        class="mt-1 text-xs text-slate-400"
+                                    >
+                                        {{ report.tksi?.selesai || 0 }}
+                                        /
+                                        {{ report.tksi?.total || 0 }}
+                                    </p>
+
+                                </td>
+
+
+                                <!-- AKSI -->
+
+                                <td class="px-5 py-4 text-center">
+
+                                    <Link
+                                        :href="route(
+                                            'admin.periode.report.show',
+                                            report.id
+                                        )"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
+                                    >
+
+                                        <EyeIcon class="h-4 w-4" />
+
+                                        Detail
+
+                                    </Link>
+
+                                </td>
+
+                            </tr>
+
+
+                            <!-- EMPTY -->
+
+                            <tr v-if="!filteredReports.length">
+
+                                <td
+                                    colspan="7"
+                                    class="px-6 py-12 text-center"
+                                >
+
+                                    <div
+                                        class="mx-auto flex max-w-sm flex-col items-center"
+                                    >
+
+                                        <div
+                                            class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100"
+                                        >
+
+                                            <CalendarDaysIcon
+                                                class="h-6 w-6 text-slate-400"
+                                            />
+
+                                        </div>
+
+                                        <p
+                                            class="mt-3 text-sm font-semibold text-slate-600"
+                                        >
+                                            {{
+                                                selectedPeriode !== 'all'
+                                                    ? 'Data periode tidak ditemukan'
+                                                    : 'Belum ada data periode'
+                                            }}
+                                        </p>
+
+                                        <p
+                                            class="mt-1 text-xs text-slate-400"
+                                        >
+                                            {{
+                                                selectedPeriode !== 'all'
+                                                    ? 'Silakan pilih periode lainnya.'
+                                                    : 'Report akan muncul setelah periode tersedia.'
+                                            }}
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
- </AdminLayout>
+    </AdminLayout>
 </template>

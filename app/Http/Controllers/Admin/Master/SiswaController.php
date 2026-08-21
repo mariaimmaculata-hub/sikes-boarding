@@ -13,19 +13,177 @@ class SiswaController extends Controller
     /**
      * Menampilkan data siswa
      */
-    public function index()
+    public function index(Request $request)
     {
-        $siswas = Siswa::with([
+        /*
+        |--------------------------------------------------------------------------
+        | QUERY DATA SISWA
+        |--------------------------------------------------------------------------
+        */
+
+        $query = Siswa::with([
             'kelas.jurusan'
-        ])
-        ->orderBy('nama')
-        ->paginate(10)
-        ->withQueryString();
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEARCH
+        |--------------------------------------------------------------------------
+        |
+        | Cari berdasarkan:
+        | - NISN
+        | - Nama
+        | - Tingkat kelas
+        | - Nama kelas
+        | - Jurusan
+        |
+        */
+
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('nisn', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+
+                    ->orWhereHas('kelas', function ($kelas) use ($search) {
+
+                        $kelas->where('tingkat', 'like', "%{$search}%")
+                            ->orWhere('nama_kelas', 'like', "%{$search}%")
+
+                            ->orWhereHas('jurusan', function ($jurusan) use ($search) {
+
+                                $jurusan->where(
+                                    'nama_jurusan',
+                                    'like',
+                                    "%{$search}%"
+                                );
+
+                            });
+
+                    });
+
+            });
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER ANGKATAN
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('angkatan')) {
+
+            $query->where(
+                'angkatan',
+                $request->angkatan
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER JENIS KELAMIN
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->filled('jenis_kelamin')) {
+
+            $query->where(
+                'jenis_kelamin',
+                $request->jenis_kelamin
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER KELAS
+        |--------------------------------------------------------------------------
+        |
+        | Filter berdasarkan tingkat:
+        | 10 / 11 / 12
+        |
+        */
+
+        if ($request->filled('kelas')) {
+
+            $query->whereHas('kelas', function ($kelas) use ($request) {
+
+                $kelas->where(
+                    'tingkat',
+                    $request->kelas
+                );
+
+            });
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA ANGKATAN UNTUK DROPDOWN
+        |--------------------------------------------------------------------------
+        |
+        | Diambil dari seluruh database,
+        | bukan hanya dari halaman pagination aktif.
+        |
+        */
+
+        $angkatanOptions = Siswa::query()
+            ->whereNotNull('angkatan')
+            ->where('angkatan', '!=', '')
+            ->distinct()
+            ->orderByDesc('angkatan')
+            ->pluck('angkatan');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAGINATION
+        |--------------------------------------------------------------------------
+        */
+
+        $siswas = $query
+            ->orderBy('nama')
+            ->paginate(10)
+            ->withQueryString();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN
+        |--------------------------------------------------------------------------
+        */
 
         return Inertia::render('Admin/MasterData/Siswa/Index', [
             'siswas' => $siswas,
+            'angkatanOptions' => $angkatanOptions,
         ]);
     }
+
 
     /**
      * Form tambah siswa
@@ -41,6 +199,7 @@ class SiswaController extends Controller
             'kelas' => $kelas,
         ]);
     }
+
 
     /**
      * Simpan siswa
@@ -69,27 +228,29 @@ class SiswaController extends Controller
             ->with('success', 'Data siswa berhasil ditambahkan.');
     }
 
+
     /**
      * Detail siswa
      */
     public function show(Siswa $siswa)
-{
-    $siswa->load([
-        'kelas.jurusan',
-        'periode',
-        'pemeriksaanBerkala' => function ($query) {
-            $query->latest();
-        },
-        'kunjunganKlinik' => function ($query) {
-            $query->latest();
-        },
-        'tksiPeserta',
-    ]);
+    {
+        $siswa->load([
+            'kelas.jurusan',
+            'periode',
+            'pemeriksaanBerkala' => function ($query) {
+                $query->latest();
+            },
+            'kunjunganKlinik' => function ($query) {
+                $query->latest();
+            },
+            'tksiPeserta',
+        ]);
 
-    return inertia('Admin/MasterData/Siswa/Show', [
-        'siswa' => $siswa,
-    ]);
-}
+        return inertia('Admin/MasterData/Siswa/Show', [
+            'siswa' => $siswa,
+        ]);
+    }
+
 
     /**
      * Form edit siswa
@@ -107,6 +268,7 @@ class SiswaController extends Controller
         ]);
     }
 
+
     /**
      * Update siswa
      */
@@ -123,6 +285,7 @@ class SiswaController extends Controller
             'alamat' => 'nullable|string',
             'no_hp' => 'nullable|string|max:20',
             'nama_orang_tua' => 'nullable|string|max:255',
+            'nama_orang_tua' => 'nullable|string|max:255',
             'no_hp_orang_tua' => 'nullable|string|max:20',
             'status' => 'required|in:aktif,nonaktif,lulus',
         ]);
@@ -134,23 +297,143 @@ class SiswaController extends Controller
             ->with('success', 'Data siswa berhasil diperbarui.');
     }
 
+
     /**
      * Hapus siswa
      */
     public function destroy(Siswa $siswa)
-{
-    try {
-        $siswa->delete();
+    {
+        try {
 
-        return redirect()
-            ->route('admin.master.siswa.index')
-            ->with('success', 'Data siswa berhasil dihapus.');
+            $siswa->delete();
 
-    } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()
+                ->route('admin.master.siswa.index')
+                ->with('success', 'Data siswa berhasil dihapus.');
 
-        return redirect()
-            ->route('admin.master.siswa.index')
-            ->with('error', 'Data siswa tidak dapat dihapus karena masih memiliki riwayat kunjungan klinik.');
+        } catch (\Illuminate\Database\QueryException $e) {
+
+            return redirect()
+                ->route('admin.master.siswa.index')
+                ->with(
+                    'error',
+                    'Data siswa tidak dapat dihapus karena masih memiliki riwayat kunjungan klinik.'
+                );
+        }
     }
+    public function bulkStatus(Request $request)
+{
+    $validated = $request->validate([
+        'ids' => ['required', 'array', 'min:1'],
+        'ids.*' => ['integer', 'exists:siswas,id'],
+        'status' => ['required', 'in:nonaktif,lulus'],
+    ]);
+
+    Siswa::whereIn('id', $validated['ids'])
+        ->update([
+            'status' => $validated['status'],
+        ]);
+
+    $jumlah = count($validated['ids']);
+
+    $label = $validated['status'] === 'lulus'
+        ? 'Lulus'
+        : 'Nonaktif';
+
+    return back()->with(
+        'success',
+        "{$jumlah} siswa berhasil diubah menjadi {$label}."
+    );
+}
+public function bulkNaikKelas(Request $request)
+{
+    $validated = $request->validate([
+        'ids' => ['required', 'array', 'min:1'],
+        'ids.*' => ['integer', 'exists:siswas,id'],
+    ]);
+
+    $siswas = Siswa::with('kelas')
+        ->whereIn('id', $validated['ids'])
+        ->get();
+
+    $jumlahNaik = 0;
+    $jumlahLulus = 0;
+
+    foreach ($siswas as $siswa) {
+
+        if (!$siswa->kelas) {
+            continue;
+        }
+
+        $tingkatSekarang = (int) $siswa->kelas->tingkat;
+
+
+        // ==========================================
+        // KELAS 10 → KELAS 11
+        // ==========================================
+
+        if ($tingkatSekarang === 10) {
+
+            $kelasBaru = Kelas::where('tingkat', 11)
+                ->where('jurusan_id', $siswa->kelas->jurusan_id)
+                ->first();
+
+            if ($kelasBaru) {
+
+                $siswa->update([
+                    'kelas_id' => $kelasBaru->id,
+                    'status' => 'aktif',
+                ]);
+
+                $jumlahNaik++;
+            }
+
+            continue;
+        }
+
+
+        // ==========================================
+        // KELAS 11 → KELAS 12
+        // ==========================================
+
+        if ($tingkatSekarang === 11) {
+
+            $kelasBaru = Kelas::where('tingkat', 12)
+                ->where('jurusan_id', $siswa->kelas->jurusan_id)
+                ->first();
+
+            if ($kelasBaru) {
+
+                $siswa->update([
+                    'kelas_id' => $kelasBaru->id,
+                    'status' => 'aktif',
+                ]);
+
+                $jumlahNaik++;
+            }
+
+            continue;
+        }
+
+
+        // ==========================================
+        // KELAS 12 → LULUS
+        // ==========================================
+
+        if ($tingkatSekarang === 12) {
+
+            $siswa->update([
+                'status' => 'lulus',
+            ]);
+
+            $jumlahLulus++;
+        }
+    }
+
+
+    return back()->with(
+        'success',
+        "{$jumlahNaik} siswa naik kelas dan {$jumlahLulus} siswa dinyatakan lulus."
+    );
 }
 }

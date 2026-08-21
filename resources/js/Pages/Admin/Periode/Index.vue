@@ -1,7 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { Link, router, usePage } from '@inertiajs/vue3'
 
 import {
     PlusIcon,
@@ -15,7 +15,7 @@ import {
     XMarkIcon,
     CalendarDaysIcon,
     ExclamationTriangleIcon,
-} from '@heroicons/vue/24/outline';
+} from '@heroicons/vue/24/outline'
 
 
 // ======================================================
@@ -27,34 +27,58 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-});
 
-
-// ======================================================
-// STATE
-// ======================================================
-
-const search = ref('');
-const statusFilter = ref('');
-const periodeFilter = ref('');
-const tanggalMulaiFilter = ref('');
-const tanggalSelesaiFilter = ref('');
-const showFilter = ref(false);
+    periodeAktif: {
+        type: Object,
+        default: null,
+    },
+})
 
 
 // ======================================================
 // PAGE
 // ======================================================
 
-const page = usePage();
+const page = usePage()
+
+
+// ======================================================
+// STATE
+// ======================================================
+
+const search = ref('')
+const statusFilter = ref('')
+const periodeFilter = ref('')
+const tanggalMulaiFilter = ref('')
+const tanggalSelesaiFilter = ref('')
+
+const showFilter = ref(false)
+const showActivePeriodModal = ref(false)
+
+const processingCreate = ref(false)
+const processingDelete = ref(false)
+
+
+// ======================================================
+// FLASH MESSAGE
+// ======================================================
 
 const flashSuccess = computed(() => {
-    return page.props.flash?.success ?? null;
-});
+    return page.props.flash?.success ?? null
+})
 
 const flashError = computed(() => {
-    return page.props.flash?.error ?? null;
-});
+    return page.props.flash?.error ?? null
+})
+
+
+// ======================================================
+// DATA PERIODE
+// ======================================================
+
+const periodeData = computed(() => {
+    return props.periodes?.data ?? []
+})
 
 
 // ======================================================
@@ -62,8 +86,7 @@ const flashError = computed(() => {
 // ======================================================
 
 const filteredPeriodes = computed(() => {
-
-    let data = props.periodes.data ?? [];
+    let data = [...periodeData.value]
 
 
     // ==================================================
@@ -71,13 +94,11 @@ const filteredPeriodes = computed(() => {
     // ==================================================
 
     if (search.value.trim()) {
-
         const keyword = search.value
             .toLowerCase()
-            .trim();
+            .trim()
 
         data = data.filter((periode) => {
-
             return (
                 String(periode.nama_periode ?? '')
                     .toLowerCase()
@@ -100,10 +121,8 @@ const filteredPeriodes = computed(() => {
                 String(periode.pembuat?.name ?? '')
                     .toLowerCase()
                     .includes(keyword)
-            );
-
-        });
-
+            )
+        })
     }
 
 
@@ -112,13 +131,10 @@ const filteredPeriodes = computed(() => {
     // ==================================================
 
     if (periodeFilter.value) {
-
-        data = data.filter(
-            (periode) =>
-                String(periode.id) ===
+        data = data.filter((periode) => {
+            return String(periode.id) ===
                 String(periodeFilter.value)
-        );
-
+        })
     }
 
 
@@ -127,13 +143,11 @@ const filteredPeriodes = computed(() => {
     // ==================================================
 
     if (statusFilter.value) {
-
-        data = data.filter(
-            (periode) =>
-                String(periode.status ?? '').toLowerCase() ===
+        data = data.filter((periode) => {
+            return String(periode.status ?? '')
+                .toLowerCase() ===
                 statusFilter.value.toLowerCase()
-        );
-
+        })
     }
 
 
@@ -142,13 +156,14 @@ const filteredPeriodes = computed(() => {
     // ==================================================
 
     if (tanggalMulaiFilter.value) {
+        data = data.filter((periode) => {
+            if (!periode.tanggal_mulai) {
+                return false
+            }
 
-        data = data.filter(
-            (periode) =>
-                periode.tanggal_mulai &&
-                periode.tanggal_mulai >= tanggalMulaiFilter.value
-        );
-
+            return formatDateInput(periode.tanggal_mulai) >=
+                tanggalMulaiFilter.value
+        })
     }
 
 
@@ -157,19 +172,19 @@ const filteredPeriodes = computed(() => {
     // ==================================================
 
     if (tanggalSelesaiFilter.value) {
+        data = data.filter((periode) => {
+            if (!periode.tanggal_selesai) {
+                return false
+            }
 
-        data = data.filter(
-            (periode) =>
-                periode.tanggal_selesai &&
-                periode.tanggal_selesai <= tanggalSelesaiFilter.value
-        );
-
+            return formatDateInput(periode.tanggal_selesai) <=
+                tanggalSelesaiFilter.value
+        })
     }
 
 
-    return data;
-
-});
+    return data
+})
 
 
 // ======================================================
@@ -177,16 +192,14 @@ const filteredPeriodes = computed(() => {
 // ======================================================
 
 const hasActiveFilter = computed(() => {
-
     return Boolean(
         search.value ||
         statusFilter.value ||
         periodeFilter.value ||
         tanggalMulaiFilter.value ||
         tanggalSelesaiFilter.value
-    );
-
-});
+    )
+})
 
 
 // ======================================================
@@ -194,28 +207,26 @@ const hasActiveFilter = computed(() => {
 // ======================================================
 
 const activeFilterCount = computed(() => {
-
-    let count = 0;
+    let count = 0
 
     if (periodeFilter.value) {
-        count++;
+        count++
     }
 
     if (tanggalMulaiFilter.value) {
-        count++;
+        count++
     }
 
     if (tanggalSelesaiFilter.value) {
-        count++;
+        count++
     }
 
     if (statusFilter.value) {
-        count++;
+        count++
     }
 
-    return count;
-
-});
+    return count
+})
 
 
 // ======================================================
@@ -223,18 +234,15 @@ const activeFilterCount = computed(() => {
 // ======================================================
 
 const selectedPeriode = computed(() => {
-
     if (!periodeFilter.value) {
-        return null;
+        return null
     }
 
-    return (props.periodes.data ?? []).find(
-        (periode) =>
-            String(periode.id) ===
+    return periodeData.value.find((periode) => {
+        return String(periode.id) ===
             String(periodeFilter.value)
-    ) ?? null;
-
-});
+    }) ?? null
+})
 
 
 // ======================================================
@@ -242,14 +250,12 @@ const selectedPeriode = computed(() => {
 // ======================================================
 
 const resetFilter = () => {
-
-    search.value = '';
-    statusFilter.value = '';
-    periodeFilter.value = '';
-    tanggalMulaiFilter.value = '';
-    tanggalSelesaiFilter.value = '';
-
-};
+    search.value = ''
+    statusFilter.value = ''
+    periodeFilter.value = ''
+    tanggalMulaiFilter.value = ''
+    tanggalSelesaiFilter.value = ''
+}
 
 
 // ======================================================
@@ -257,21 +263,25 @@ const resetFilter = () => {
 // ======================================================
 
 const formatDate = (date) => {
-
     if (!date) {
-        return '-';
+        return '-'
     }
 
-    return new Date(date).toLocaleDateString(
+    const parsedDate = new Date(date)
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return '-'
+    }
+
+    return parsedDate.toLocaleDateString(
         'id-ID',
         {
             day: '2-digit',
             month: 'long',
             year: 'numeric',
         }
-    );
-
-};
+    )
+}
 
 
 // ======================================================
@@ -279,14 +289,12 @@ const formatDate = (date) => {
 // ======================================================
 
 const formatDateInput = (date) => {
-
     if (!date) {
-        return '';
+        return ''
     }
 
-    return String(date).substring(0, 10);
-
-};
+    return String(date).substring(0, 10)
+}
 
 
 // ======================================================
@@ -294,25 +302,47 @@ const formatDateInput = (date) => {
 // ======================================================
 
 const selectPeriode = () => {
-
     if (!selectedPeriode.value) {
-        return;
+        tanggalMulaiFilter.value = ''
+        tanggalSelesaiFilter.value = ''
+        return
     }
-
-    // Ketika periode dipilih,
-    // tanggal mulai dan selesai otomatis mengikuti periode tersebut.
 
     tanggalMulaiFilter.value =
         formatDateInput(
             selectedPeriode.value.tanggal_mulai
-        );
+        )
 
     tanggalSelesaiFilter.value =
         formatDateInput(
             selectedPeriode.value.tanggal_selesai
-        );
+        )
+}
 
-};
+
+// ======================================================
+// STATUS LABEL
+// ======================================================
+
+const getStatusLabel = (status) => {
+    const value = String(status ?? '')
+        .toLowerCase()
+        .trim()
+
+    if (value === 'aktif') {
+        return 'Aktif'
+    }
+
+    if (
+        value === 'tidak aktif' ||
+        value === 'nonaktif' ||
+        value === 'non aktif'
+    ) {
+        return 'Tidak Aktif'
+    }
+
+    return status || 'Tidak Aktif'
+}
 
 
 // ======================================================
@@ -320,40 +350,121 @@ const selectPeriode = () => {
 // ======================================================
 
 const getStatusBadge = (status) => {
-
     const value = String(status ?? '')
-        .toLowerCase();
+        .toLowerCase()
+        .trim()
 
     if (value === 'aktif') {
-        return 'border-emerald-200 bg-emerald-50 text-emerald-700';
+        return 'border-emerald-200 bg-emerald-50 text-emerald-700'
     }
 
-    if (value === 'selesai') {
-        return 'border-blue-200 bg-blue-50 text-blue-700';
+    if (
+        value === 'selesai'
+    ) {
+        return 'border-blue-200 bg-blue-50 text-blue-700'
     }
 
-    if (value === 'tidak aktif') {
-        return 'border-slate-200 bg-slate-100 text-slate-500';
+    if (
+        value === 'tidak aktif' ||
+        value === 'nonaktif' ||
+        value === 'non aktif'
+    ) {
+        return 'border-slate-200 bg-slate-100 text-slate-500'
     }
 
-    return 'border-slate-200 bg-slate-100 text-slate-500';
-
-};
+    return 'border-slate-200 bg-slate-100 text-slate-500'
+}
 
 
 // ======================================================
-// DELETE
+// TAMBAH PERIODE
+// ======================================================
+
+const tambahPeriode = () => {
+
+    // Tidak ada periode aktif
+    // langsung menuju halaman create
+
+    if (!props.periodeAktif) {
+        router.get(
+            route('admin.periode.create')
+        )
+
+        return
+    }
+
+
+    // Masih ada periode aktif
+    // tampilkan modal konfirmasi
+
+    showActivePeriodModal.value = true
+}
+
+
+// ======================================================
+// BATAL TAMBAH PERIODE
+// ======================================================
+
+const batalTambahPeriode = () => {
+    if (processingCreate.value) {
+        return
+    }
+
+    showActivePeriodModal.value = false
+}
+
+
+// ======================================================
+// NONAKTIFKAN PERIODE AKTIF DAN BUAT BARU
+// ======================================================
+
+const nonaktifkanDanBuat = () => {
+
+    if (processingCreate.value) {
+        return
+    }
+
+    processingCreate.value = true
+
+    router.post(
+        route(
+            'admin.periode.deactivate-active-and-create'
+        ),
+        {},
+        {
+            preserveScroll: true,
+
+            onSuccess: () => {
+                showActivePeriodModal.value = false
+            },
+
+            onFinish: () => {
+                processingCreate.value = false
+            },
+        }
+    )
+}
+
+
+// ======================================================
+// DELETE PERIODE
 // ======================================================
 
 const deletePeriode = (periode) => {
 
-    const confirmed = confirm(
+    if (processingDelete.value) {
+        return
+    }
+
+    const confirmed = window.confirm(
         `Apakah Anda yakin ingin menghapus periode "${periode.nama_periode}"?`
-    );
+    )
 
     if (!confirmed) {
-        return;
+        return
     }
+
+    processingDelete.value = true
 
     router.delete(
         route(
@@ -362,10 +473,13 @@ const deletePeriode = (periode) => {
         ),
         {
             preserveScroll: true,
-        }
-    );
 
-};
+            onFinish: () => {
+                processingDelete.value = false
+            },
+        }
+    )
+}
 
 
 // ======================================================
@@ -375,7 +489,7 @@ const deletePeriode = (periode) => {
 const goToPage = (url) => {
 
     if (!url) {
-        return;
+        return
     }
 
     router.get(
@@ -385,9 +499,20 @@ const goToPage = (url) => {
             preserveScroll: true,
             preserveState: true,
         }
-    );
+    )
+}
 
-};
+
+// ======================================================
+// NOMOR DATA
+// ======================================================
+
+const getRowNumber = (index) => {
+    return (
+        ((props.periodes.current_page ?? 1) - 1) *
+        (props.periodes.per_page ?? 0)
+    ) + index + 1
+}
 
 </script>
 
@@ -419,8 +544,11 @@ const goToPage = (url) => {
             </div>
 
 
-            <Link
-                :href="route('admin.periode.create')"
+            <!-- TAMBAH PERIODE -->
+
+            <button
+                type="button"
+                @click="tambahPeriode"
                 class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
             >
 
@@ -428,7 +556,7 @@ const goToPage = (url) => {
 
                 Tambah Periode
 
-            </Link>
+            </button>
 
         </div>
 
@@ -439,7 +567,7 @@ const goToPage = (url) => {
 
         <div
             v-if="flashSuccess"
-            class="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
+            class="flex items-center justify-between gap-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
         >
 
             <span>
@@ -518,9 +646,7 @@ const goToPage = (url) => {
             class="rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
 
-            <!-- ==================================================
-                 SEARCH + STATUS + FILTER BUTTON
-            ================================================== -->
+            <!-- SEARCH + STATUS + FILTER -->
 
             <div
                 class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[3fr_2fr_1fr]"
@@ -578,13 +704,11 @@ const goToPage = (url) => {
                         type="button"
                         @click="showFilter = !showFilter"
                         :class="[
-
                             'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
 
                             showFilter || activeFilterCount > 0
                                 ? 'border-blue-200 bg-blue-50 text-blue-700'
                                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-
                         ]"
                     >
 
@@ -598,9 +722,7 @@ const goToPage = (url) => {
                             v-if="activeFilterCount > 0"
                             class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
                         >
-
                             {{ activeFilterCount }}
-
                         </span>
 
                     </button>
@@ -624,9 +746,7 @@ const goToPage = (url) => {
             </div>
 
 
-            <!-- ==================================================
-                 FILTER TAMBAHAN
-            ================================================== -->
+            <!-- FILTER TAMBAHAN -->
 
             <div
                 v-if="showFilter"
@@ -637,9 +757,7 @@ const goToPage = (url) => {
                     class="grid grid-cols-1 gap-4 md:grid-cols-3"
                 >
 
-                    <!-- ==================================================
-                         PILIH PERIODE
-                    ================================================== -->
+                    <!-- PERIODE -->
 
                     <div>
 
@@ -660,7 +778,7 @@ const goToPage = (url) => {
                             </option>
 
                             <option
-                                v-for="periode in (periodes.data ?? [])"
+                                v-for="periode in periodeData"
                                 :key="periode.id"
                                 :value="periode.id"
                             >
@@ -674,9 +792,7 @@ const goToPage = (url) => {
                     </div>
 
 
-                    <!-- ==================================================
-                         TANGGAL MULAI
-                    ================================================== -->
+                    <!-- TANGGAL MULAI -->
 
                     <div>
 
@@ -695,9 +811,7 @@ const goToPage = (url) => {
                     </div>
 
 
-                    <!-- ==================================================
-                         TANGGAL SELESAI
-                    ================================================== -->
+                    <!-- TANGGAL SELESAI -->
 
                     <div>
 
@@ -718,9 +832,7 @@ const goToPage = (url) => {
                 </div>
 
 
-                <!-- ==================================================
-                     PERIODE TERPILIH
-                ================================================== -->
+                <!-- PERIODE TERPILIH -->
 
                 <div
                     v-if="selectedPeriode"
@@ -751,9 +863,7 @@ const goToPage = (url) => {
                             <p
                                 class="mt-0.5 text-sm font-bold text-blue-800"
                             >
-
                                 {{ selectedPeriode.nama_periode }}
-
                             </p>
 
                             <p
@@ -775,9 +885,7 @@ const goToPage = (url) => {
                 </div>
 
 
-                <!-- ==================================================
-                     FILTER AKTIF
-                ================================================== -->
+                <!-- FILTER AKTIF -->
 
                 <div
                     v-if="activeFilterCount > 0"
@@ -791,8 +899,6 @@ const goToPage = (url) => {
                     </span>
 
 
-                    <!-- PERIODE -->
-
                     <span
                         v-if="periodeFilter"
                         class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
@@ -803,8 +909,6 @@ const goToPage = (url) => {
 
                     </span>
 
-
-                    <!-- TANGGAL MULAI -->
 
                     <span
                         v-if="tanggalMulaiFilter"
@@ -817,8 +921,6 @@ const goToPage = (url) => {
                     </span>
 
 
-                    <!-- TANGGAL SELESAI -->
-
                     <span
                         v-if="tanggalSelesaiFilter"
                         class="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700"
@@ -830,18 +932,14 @@ const goToPage = (url) => {
                     </span>
 
 
-                    <!-- STATUS -->
-
                     <span
                         v-if="statusFilter"
                         :class="[
-
                             'rounded-full px-2.5 py-1 text-xs font-semibold',
 
                             statusFilter === 'aktif'
                                 ? 'bg-emerald-100 text-emerald-700'
                                 : 'bg-slate-100 text-slate-600'
-
                         ]"
                     >
 
@@ -968,17 +1066,12 @@ const goToPage = (url) => {
                                 class="whitespace-nowrap px-5 py-4 text-sm text-slate-500"
                             >
 
-                                {{
-                                    (periodes.current_page - 1) *
-                                    periodes.per_page +
-                                    index +
-                                    1
-                                }}
+                                {{ getRowNumber(index) }}
 
                             </td>
 
 
-                            <!-- NAMA -->
+                            <!-- NAMA PERIODE -->
 
                             <td class="px-5 py-4">
 
@@ -1048,21 +1141,12 @@ const goToPage = (url) => {
 
                                 <span
                                     :class="[
-
                                         'inline-flex rounded-full border px-2.5 py-1 text-xs font-bold',
-
                                         getStatusBadge(periode.status)
-
                                     ]"
                                 >
 
-                                    {{
-                                        String(
-                                            periode.status ?? ''
-                                        ).toLowerCase() === 'aktif'
-                                            ? 'Aktif'
-                                            : 'Tidak Aktif'
-                                    }}
+                                    {{ getStatusLabel(periode.status) }}
 
                                 </span>
 
@@ -1124,10 +1208,12 @@ const goToPage = (url) => {
                                                 'admin.periode.show'
                                             )
                                         "
-                                        :href="route(
-                                            'admin.periode.show',
-                                            periode.id
-                                        )"
+                                        :href="
+                                            route(
+                                                'admin.periode.show',
+                                                periode.id
+                                            )
+                                        "
                                         title="Detail"
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
                                     >
@@ -1140,10 +1226,12 @@ const goToPage = (url) => {
                                     <!-- EDIT -->
 
                                     <Link
-                                        :href="route(
-                                            'admin.periode.edit',
-                                            periode.id
-                                        )"
+                                        :href="
+                                            route(
+                                                'admin.periode.edit',
+                                                periode.id
+                                            )
+                                        "
                                         title="Edit"
                                         class="rounded-lg p-2 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600"
                                     >
@@ -1159,9 +1247,10 @@ const goToPage = (url) => {
 
                                     <button
                                         type="button"
+                                        :disabled="processingDelete"
                                         @click="deletePeriode(periode)"
                                         title="Hapus"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
 
                                         <TrashIcon class="h-4 w-4" />
@@ -1177,7 +1266,9 @@ const goToPage = (url) => {
 
                         <!-- EMPTY -->
 
-                        <tr v-if="filteredPeriodes.length === 0">
+                        <tr
+                            v-if="filteredPeriodes.length === 0"
+                        >
 
                             <td
                                 colspan="7"
@@ -1233,7 +1324,7 @@ const goToPage = (url) => {
             <div class="divide-y divide-slate-100 lg:hidden">
 
                 <div
-                    v-for="(periode, index) in filteredPeriodes"
+                    v-for="periode in filteredPeriodes"
                     :key="periode.id"
                     class="p-4"
                 >
@@ -1280,21 +1371,12 @@ const goToPage = (url) => {
 
                         <span
                             :class="[
-
                                 'shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold',
-
                                 getStatusBadge(periode.status)
-
                             ]"
                         >
 
-                            {{
-                                String(
-                                    periode.status ?? ''
-                                ).toLowerCase() === 'aktif'
-                                    ? 'Aktif'
-                                    : 'Tidak Aktif'
-                            }}
+                            {{ getStatusLabel(periode.status) }}
 
                         </span>
 
@@ -1360,21 +1442,12 @@ const goToPage = (url) => {
 
                             <span
                                 :class="[
-
                                     'mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold',
-
                                     getStatusBadge(periode.status)
-
                                 ]"
                             >
 
-                                {{
-                                    String(
-                                        periode.status ?? ''
-                                    ).toLowerCase() === 'aktif'
-                                        ? 'Aktif'
-                                        : 'Tidak Aktif'
-                                }}
+                                {{ getStatusLabel(periode.status) }}
 
                             </span>
 
@@ -1397,10 +1470,12 @@ const goToPage = (url) => {
                                     'admin.periode.show'
                                 )
                             "
-                            :href="route(
-                                'admin.periode.show',
-                                periode.id
-                            )"
+                            :href="
+                                route(
+                                    'admin.periode.show',
+                                    periode.id
+                                )
+                            "
                             class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50"
                         >
 
@@ -1414,10 +1489,12 @@ const goToPage = (url) => {
                         <!-- EDIT -->
 
                         <Link
-                            :href="route(
-                                'admin.periode.edit',
-                                periode.id
-                            )"
+                            :href="
+                                route(
+                                    'admin.periode.edit',
+                                    periode.id
+                                )
+                            "
                             class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-amber-600 hover:bg-amber-50"
                         >
 
@@ -1434,8 +1511,9 @@ const goToPage = (url) => {
 
                         <button
                             type="button"
+                            :disabled="processingDelete"
                             @click="deletePeriode(periode)"
-                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
                         >
 
                             <TrashIcon class="h-4 w-4" />
@@ -1501,7 +1579,7 @@ const goToPage = (url) => {
                     dari
 
                     <span class="font-bold text-slate-700">
-                        {{ periodes.total }}
+                        {{ periodes.total ?? 0 }}
                     </span>
 
                     periode
@@ -1528,8 +1606,8 @@ const goToPage = (url) => {
                     <!-- PAGE NUMBERS -->
 
                     <template
-                        v-for="link in periodes.links.slice(1, -1)"
-                        :key="link.label"
+                        v-for="(link, index) in periodes.links.slice(1, -1)"
+                        :key="`${link.label}-${index}`"
                     >
 
                         <button
@@ -1537,13 +1615,11 @@ const goToPage = (url) => {
                             type="button"
                             @click="goToPage(link.url)"
                             :class="[
-
                                 'min-w-9 rounded-lg border px-2.5 py-2 text-xs font-bold transition',
 
                                 link.active
                                     ? 'border-blue-700 bg-blue-700 text-white'
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
-
                             ]"
                         >
 
@@ -1583,6 +1659,236 @@ const goToPage = (url) => {
         </div>
 
     </div>
+
+<!-- ==================================================
+     MODAL PERIODE AKTIF
+================================================== -->
+
+<Teleport to="body">
+
+    <div
+        v-if="showActivePeriodModal"
+        class="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+    >
+
+        <!-- BACKDROP -->
+
+        <div
+            class="absolute inset-0 bg-slate-900/60"
+            @click="batalTambahPeriode"
+        ></div>
+
+
+        <!-- MODAL -->
+
+        <div
+            class="relative z-10 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+        >
+
+            <!-- HEADER -->
+
+            <div
+                class="border-b border-slate-100 px-6 py-5"
+            >
+
+                <div class="flex items-start gap-4">
+
+                    <div
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100"
+                    >
+
+                        <ExclamationTriangleIcon
+                            class="h-6 w-6 text-amber-600"
+                        />
+
+                    </div>
+
+
+                    <div class="min-w-0 flex-1">
+
+                        <h3
+                            class="text-base font-bold text-slate-800"
+                        >
+                            Periode Aktif Masih Ada
+                        </h3>
+
+                        <p
+                            class="mt-1 text-sm leading-5 text-slate-500"
+                        >
+                            Saat ini masih terdapat periode yang
+                            berstatus aktif.
+                        </p>
+
+                    </div>
+
+
+                    <!-- CLOSE -->
+
+                    <button
+                        type="button"
+                        :disabled="processingCreate"
+                        @click="batalTambahPeriode"
+                        class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+
+                        <XMarkIcon class="h-5 w-5" />
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTENT -->
+
+            <div class="px-6 py-5">
+
+                <!-- PERIODE AKTIF -->
+
+                <div
+                    class="rounded-xl border border-amber-200 bg-amber-50 p-4"
+                >
+
+                    <p
+                        class="text-xs font-bold uppercase tracking-wide text-amber-600"
+                    >
+                        Periode Aktif
+                    </p>
+
+
+                    <p
+                        class="mt-1 text-sm font-bold text-amber-900"
+                    >
+                        {{ periodeAktif?.nama_periode ?? '-' }}
+                    </p>
+
+
+                    <p
+                        v-if="
+                            periodeAktif?.tanggal_mulai &&
+                            periodeAktif?.tanggal_selesai
+                        "
+                        class="mt-1 text-xs text-amber-700"
+                    >
+
+                        {{ formatDate(periodeAktif.tanggal_mulai) }}
+
+                        –
+
+                        {{ formatDate(periodeAktif.tanggal_selesai) }}
+
+                    </p>
+
+                </div>
+
+
+                <!-- PENJELASAN -->
+
+                <p
+                    class="mt-4 text-sm leading-6 text-slate-600"
+                >
+
+                    Apakah Anda ingin menonaktifkan periode tersebut
+                    dan membuat periode baru?
+
+                </p>
+
+
+                <p
+                    class="mt-2 text-xs leading-5 text-slate-400"
+                >
+
+                    Periode lama akan berubah menjadi
+
+                    <span class="font-semibold text-slate-500">
+                        Tidak Aktif
+                    </span>
+
+                    dan seluruh data pemeriksaan yang sudah ada
+                    tetap tersimpan.
+
+                </p>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div
+                class="flex flex-col-reverse gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4 sm:flex-row sm:justify-end"
+            >
+
+                <!-- BATAL -->
+
+                <button
+                    type="button"
+                    :disabled="processingCreate"
+                    @click="batalTambahPeriode"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+
+                    Batal
+
+                </button>
+
+
+                <!-- YA -->
+
+                <button
+                    type="button"
+                    :disabled="processingCreate"
+                    @click="nonaktifkanDanBuat"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+
+                    <!-- LOADING -->
+
+                    <svg
+                        v-if="processingCreate"
+                        class="h-4 w-4 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            class="opacity-25"
+                        />
+
+                        <path
+                            d="M21 12a9 9 0 0 1-9 9"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="round"
+                        />
+
+                    </svg>
+
+
+                    <span>
+
+                        {{
+                            processingCreate
+                                ? 'Memproses...'
+                                : 'Ya, Nonaktifkan & Buat'
+                        }}
+
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</Teleport>
 
 </AdminLayout>
 

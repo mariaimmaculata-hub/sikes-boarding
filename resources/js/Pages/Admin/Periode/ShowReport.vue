@@ -1399,24 +1399,7 @@ const downloadReport = () => {
                              DOWNLOAD REPORT
                         ================================================== -->
 
-                        <div class="flex flex-wrap gap-2">
-
-                            <button
-                                type="button"
-                                @click="downloadReport"
-                                class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-blue-700"
-                            >
-
-                                <ArrowDownTrayIcon
-                                    class="h-4 w-4"
-                                />
-
-                                Unduh Report
-
-                            </button>
-
-                        </div>
-
+                       
                     </div>
 
                 </div>

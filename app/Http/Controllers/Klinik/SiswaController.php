@@ -73,120 +73,98 @@ class SiswaController extends Controller
     /**
      * Menampilkan detail siswa pada periode aktif.
      */
-    public function show(Siswa $siswa)
-    {
-        // ==================================================
-        // PERIODE AKTIF
-        // ==================================================
+ public function show(Siswa $siswa)
+{
+    // ==================================================
+    // PERIODE AKTIF
+    // HANYA UNTUK MENENTUKAN SISWA YANG DAPAT DIBUKA
+    // ==================================================
 
-        $periodeAktif = Periode::where('status', 'aktif')
-            ->firstOrFail();
-
-
-        // ==================================================
-        // AMBIL SISWA YANG TERDAFTAR PADA PERIODE AKTIF
-        // ==================================================
-
-        $siswa = $periodeAktif
-            ->siswa()
-            ->where('siswas.id', $siswa->id)
-
-            ->with([
-
-                // ==================================================
-                // DATA KELAS
-                // ==================================================
-
-                'kelas.jurusan',
+    $periodeAktif = Periode::where('status', 'aktif')
+        ->firstOrFail();
 
 
-                // ==================================================
-                // PERIODE SISWA
-                // ==================================================
+    // ==================================================
+    // AMBIL SISWA PADA PERIODE AKTIF
+    // ==================================================
 
-                'periode',
+    $siswa = $periodeAktif
+        ->siswa()
+        ->where('siswas.id', $siswa->id)
+        ->with([
 
+            // ==================================================
+            // DATA SISWA
+            // ==================================================
 
-                // ==================================================
-                // PEMERIKSAAN BERKALA
-                // HANYA PERIODE AKTIF
-                // ==================================================
+            'kelas.jurusan',
 
-                'pemeriksaanBerkala' => function ($query) use ($periodeAktif) {
+            // ==================================================
+            // PERIODE SISWA
+            // ==================================================
 
-                    $query
-                        ->where(
-                            'periode_id',
-                            $periodeAktif->id
-                        )
+            'periode',
 
-                        ->with([
-                            'pemeriksa',
-                        ])
+            // ==================================================
+            // PEMERIKSAAN BERKALA
+            // TETAP HANYA PERIODE AKTIF
+            // ==================================================
 
-                        ->orderBy(
-                            'jenis_pemeriksaan'
-                        )
+            'pemeriksaanBerkala' => function ($query) use ($periodeAktif) {
 
-                        ->orderBy(
-                            'tanggal_pemeriksaan'
-                        );
-                },
+                $query
+                    ->where('periode_id', $periodeAktif->id)
+                    ->with([
+                        'pemeriksa',
+                    ])
+                    ->orderBy('jenis_pemeriksaan')
+                    ->orderBy('tanggal_pemeriksaan');
+            },
 
+            // ==================================================
+            // RIWAYAT KUNJUNGAN KLINIK
+            // SEMUA PERIODE
+            // ==================================================
 
-                // ==================================================
-                // KUNJUNGAN KLINIK
-                // HANYA PERIODE AKTIF
-                // ==================================================
+            'kunjunganKlinik' => function ($query) {
 
-                'kunjunganKlinik' => function ($query) use ($periodeAktif) {
+                $query
+                    ->with([
+                        'pemeriksa',
+                        'periode',
+                        'penyakit',
+                        'kunjunganObat.obat',
+                    ])
+                    ->latest('tanggal_kunjungan');
+            },
 
-                    $query
-                        ->where(
-                            'periode_id',
-                            $periodeAktif->id
-                        )
+            // ==================================================
+            // TKSI
+            // ==================================================
 
-                        ->with([
-                            'pemeriksa',
-                            'kunjunganObat',
-                        ])
+            'tksiPeserta',
 
-                        ->latest(
-                            'tanggal_kunjungan'
-                        );
-                },
-
-
-                // ==================================================
-                // TKSI
-                // ==================================================
-
-                'tksiPeserta',
-            ])
-
-            ->firstOrFail();
+        ])
+        ->firstOrFail();
 
 
-        // ==================================================
-        // RESPONSE
-        // ==================================================
+    // ==================================================
+    // RESPONSE
+    // ==================================================
 
-        return Inertia::render(
-            'Klinik/Siswa/Show',
-            [
+    return Inertia::render(
+        'Klinik/Siswa/Show',
+        [
+            'siswa' => $siswa,
 
-                'siswa' => $siswa,
-
-                'periode' => [
-                    'id' => $periodeAktif->id,
-                    'nama_periode' => $periodeAktif->nama_periode,
-                    'tanggal_mulai' => $periodeAktif->tanggal_mulai,
-                    'tanggal_selesai' => $periodeAktif->tanggal_selesai,
-                    'status' => $periodeAktif->status,
-                ],
-
-            ]
-        );
-    }
+            'periode' => [
+                'id' => $periodeAktif->id,
+                'nama_periode' => $periodeAktif->nama_periode,
+                'tanggal_mulai' => $periodeAktif->tanggal_mulai,
+                'tanggal_selesai' => $periodeAktif->tanggal_selesai,
+                'status' => $periodeAktif->status,
+            ],
+        ]
+    );
+}
 }
