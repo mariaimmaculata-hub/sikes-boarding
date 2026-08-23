@@ -19,6 +19,7 @@ import {
     ScaleIcon,
     InformationCircleIcon,
     PencilSquareIcon,
+    DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -141,7 +142,7 @@ const aksesBerkala2 = computed(() => {
 
 
 // ======================================================
-// STATUS AKTIF BERDASARKAN FASE + STATUS PERIODE
+// STATUS AKTIF
 // ======================================================
 
 const berkala1Aktif = computed(() => {
@@ -172,13 +173,10 @@ const berkala2Aktif = computed(() => {
 
 const berkala1View = computed(() => {
 
-    // Kalau periode selesai, semua hasil hanya bisa dilihat
     if (periodeSelesai.value) {
         return true
     }
 
-    // Kalau sudah masuk fase 2,
-    // Berkala 1 menjadi view only
     if (fasePemeriksaan.value === 2) {
         return true
     }
@@ -309,15 +307,6 @@ const getStatus = (siswa) => {
 
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Kalau periode sudah selesai
-    |--------------------------------------------------------------------------
-    | Status keseluruhan siswa dianggap selesai jika kedua
-    | pemeriksaan sudah selesai.
-    |--------------------------------------------------------------------------
-    */
-
     if (periodeSelesai.value) {
 
         const b1Selesai =
@@ -396,7 +385,7 @@ const berkala2BisaEdit = computed(() => {
 
 
 // ======================================================
-// BISA EDIT JENIS PEMERIKSAAN
+// BISA EDIT PEMERIKSAAN
 // ======================================================
 
 const bisaEditPemeriksaan = (jenis) => {
@@ -427,15 +416,11 @@ const openResultModal = (siswa, jenis) => {
     let pemeriksaan = null
 
     if (jenis === 'berkala_1') {
-
         pemeriksaan = siswa.berkala_1
-
     }
 
     if (jenis === 'berkala_2') {
-
         pemeriksaan = siswa.berkala_2
-
     }
 
     if (!pemeriksaan) {
@@ -499,7 +484,7 @@ const selectedJenis = computed(() => {
 
 
 // ======================================================
-// ROUTE EDIT PEMERIKSAAN
+// ROUTE EDIT
 // ======================================================
 
 const editPemeriksaanUrl = computed(() => {
@@ -541,9 +526,164 @@ const displayValue = (value) => {
         return '-'
     }
 
+    if (typeof value === 'boolean') {
+        return value ? 'Ya' : 'Tidak'
+    }
+
     return value
 
 }
+
+
+// ======================================================
+// FORMAT LABEL FIELD
+// ======================================================
+
+const formatFieldLabel = (key) => {
+
+    if (!key) {
+        return ''
+    }
+
+    const labels = {
+
+        berat_badan: 'Berat Badan',
+        tinggi_badan: 'Tinggi Badan',
+        imt: 'IMT',
+
+        tekanan_darah: 'Tekanan Darah',
+        denyut_nadi: 'Denyut Nadi',
+        suhu_tubuh: 'Suhu Tubuh',
+
+        mata: 'Mata',
+        telinga: 'Telinga',
+        hidung: 'Hidung',
+        tenggorokan: 'Tenggorokan',
+        gigi_mulut: 'Gigi & Mulut',
+        kulit: 'Kulit',
+        kondisi_umum: 'Kondisi Umum',
+
+        keluhan: 'Keluhan',
+        hasil_pemeriksaan: 'Hasil Pemeriksaan',
+        rekomendasi: 'Rekomendasi',
+        catatan: 'Catatan',
+
+        tanggal_pemeriksaan: 'Tanggal Pemeriksaan',
+        jenis_pemeriksaan: 'Jenis Pemeriksaan',
+        status: 'Status',
+
+        pemeriksa_id: 'Pemeriksa',
+        user_id: 'User',
+
+    }
+
+    if (labels[key]) {
+        return labels[key]
+    }
+
+    return key
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, char => char.toUpperCase())
+
+}
+
+
+// ======================================================
+// FIELD YANG TIDAK PERLU DITAMPILKAN
+// ======================================================
+
+const excludedDetailFields = [
+
+    'id',
+    'siswa_id',
+    'periode_id',
+    'pemeriksa_id',
+    'user_id',
+
+    'created_at',
+    'updated_at',
+    'deleted_at',
+
+    'jenis_pemeriksaan',
+
+    'status',
+
+    'pemeriksa',
+
+]
+
+
+// ======================================================
+// DETAIL TAMBAHAN
+//
+// BAGIAN INI PENTING:
+//
+// Semua field yang dikirim dari controller tetapi belum
+// ditampilkan di bagian khusus akan otomatis ditampilkan
+// di bagian "Data Pemeriksaan Lainnya".
+// ======================================================
+
+const detailFields = computed(() => {
+
+    const pemeriksaan = selectedPemeriksaan.value
+
+    if (!pemeriksaan) {
+        return []
+    }
+
+    return Object.entries(pemeriksaan)
+
+        .filter(([key, value]) => {
+
+            if (excludedDetailFields.includes(key)) {
+                return false
+            }
+
+            if (
+                value !== null &&
+                typeof value === 'object'
+            ) {
+                return false
+            }
+
+            return true
+
+        })
+
+        .filter(([key]) => {
+
+            const knownFields = [
+
+                'berat_badan',
+                'tinggi_badan',
+                'imt',
+
+                'tekanan_darah',
+                'denyut_nadi',
+                'suhu_tubuh',
+
+                'mata',
+                'telinga',
+                'hidung',
+                'tenggorokan',
+                'gigi_mulut',
+                'kulit',
+                'kondisi_umum',
+
+                'keluhan',
+                'hasil_pemeriksaan',
+                'rekomendasi',
+                'catatan',
+
+                'tanggal_pemeriksaan',
+
+            ]
+
+            return !knownFields.includes(key)
+
+        })
+
+})
 
 
 // ======================================================
@@ -568,6 +708,7 @@ const formatTanggal = (tanggal) => {
     const [, tahun, bulan, hari] = match
 
     const namaBulan = [
+
         'Januari',
         'Februari',
         'Maret',
@@ -580,6 +721,7 @@ const formatTanggal = (tanggal) => {
         'Oktober',
         'November',
         'Desember',
+
     ]
 
     return `${hari} ${namaBulan[Number(bulan) - 1]} ${tahun}`
@@ -908,7 +1050,6 @@ const clearFlash = () => {
 
     <div class="space-y-6">
 
-
         <!-- ==================================================
              HEADER
         ================================================== -->
@@ -930,8 +1071,6 @@ const clearFlash = () => {
 
             </div>
 
-
-            <!-- STATUS PERIODE -->
 
             <div
                 v-if="periode"
@@ -1012,7 +1151,6 @@ const clearFlash = () => {
 
                 </div>
 
-
                 <div>
 
                     <p
@@ -1025,9 +1163,10 @@ const clearFlash = () => {
                                     : 'text-emerald-600'
                         "
                     >
-                        {{ periodeSelesai
-                            ? 'Status Pemeriksaan'
-                            : 'Tahap Pemeriksaan Aktif'
+                        {{
+                            periodeSelesai
+                                ? 'Status Pemeriksaan'
+                                : 'Tahap Pemeriksaan Aktif'
                         }}
                     </p>
 
@@ -1175,10 +1314,6 @@ const clearFlash = () => {
         </div>
 
 
-        <!-- ==================================================
-             CONTENT
-        ================================================== -->
-
         <template v-else>
 
 
@@ -1186,9 +1321,7 @@ const clearFlash = () => {
                  SUMMARY
             ================================================== -->
 
-            <div
-                class="grid grid-cols-1 gap-4 sm:grid-cols-3"
-            >
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 
                 <div
                     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -1210,12 +1343,14 @@ const clearFlash = () => {
                 >
 
                     <p class="text-xs font-semibold text-slate-400">
-                        {{ periodeSelesai ? 'Pemeriksaan Selesai' : tahapLabel + ' Selesai' }}
+                        {{
+                            periodeSelesai
+                                ? 'Pemeriksaan Selesai'
+                                : tahapLabel + ' Selesai'
+                        }}
                     </p>
 
-                    <p
-                        class="mt-1 text-2xl font-bold text-emerald-600"
-                    >
+                    <p class="mt-1 text-2xl font-bold text-emerald-600">
                         {{ jumlahSelesai }}
                     </p>
 
@@ -1227,12 +1362,14 @@ const clearFlash = () => {
                 >
 
                     <p class="text-xs font-semibold text-slate-400">
-                        {{ periodeSelesai ? 'Pemeriksaan Belum Selesai' : tahapLabel + ' Belum Selesai' }}
+                        {{
+                            periodeSelesai
+                                ? 'Pemeriksaan Belum Selesai'
+                                : tahapLabel + ' Belum Selesai'
+                        }}
                     </p>
 
-                    <p
-                        class="mt-1 text-2xl font-bold text-rose-600"
-                    >
+                    <p class="mt-1 text-2xl font-bold text-rose-600">
                         {{ jumlahBelumSelesai }}
                     </p>
 
@@ -1361,9 +1498,7 @@ const clearFlash = () => {
                 class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
 
-                <div
-                    class="border-b border-slate-100 px-5 py-4"
-                >
+                <div class="border-b border-slate-100 px-5 py-4">
 
                     <h2 class="text-sm font-bold text-slate-800">
                         Daftar Pemeriksaan Siswa
@@ -1410,12 +1545,9 @@ const clearFlash = () => {
                                     Jurusan
                                 </th>
 
-
                                 <!-- B1 -->
 
-                                <th
-                                    class="relative px-5 py-3 text-center text-xs font-bold uppercase text-slate-500"
-                                >
+                                <th class="relative px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">
 
                                     <div
                                         data-berkala-popup
@@ -1448,15 +1580,11 @@ const clearFlash = () => {
                                             @mouseleave="leavePopupBerkala"
                                         >
 
-                                            <div
-                                                class="rounded-xl border border-blue-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5"
-                                            >
+                                            <div class="rounded-xl border border-blue-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5">
 
                                                 <div class="flex items-start gap-2">
 
-                                                    <div
-                                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50"
-                                                    >
+                                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
 
                                                         <CalendarDaysIcon
                                                             class="h-4 w-4 text-blue-600"
@@ -1489,9 +1617,7 @@ const clearFlash = () => {
 
                                 <!-- B2 -->
 
-                                <th
-                                    class="relative px-5 py-3 text-center text-xs font-bold uppercase text-slate-500"
-                                >
+                                <th class="relative px-5 py-3 text-center text-xs font-bold uppercase text-slate-500">
 
                                     <div
                                         data-berkala-popup
@@ -1524,15 +1650,11 @@ const clearFlash = () => {
                                             @mouseleave="leavePopupBerkala"
                                         >
 
-                                            <div
-                                                class="rounded-xl border border-emerald-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5"
-                                            >
+                                            <div class="rounded-xl border border-emerald-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5">
 
                                                 <div class="flex items-start gap-2">
 
-                                                    <div
-                                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50"
-                                                    >
+                                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50">
 
                                                         <CalendarDaysIcon
                                                             class="h-4 w-4 text-emerald-600"
@@ -1594,10 +1716,10 @@ const clearFlash = () => {
 
                                     <div class="flex items-center gap-3">
 
-                                        <div
-                                            class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
-                                        >
+                                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+
                                             {{ siswa.nama?.charAt(0)?.toUpperCase() }}
+
                                         </div>
 
                                         <p class="text-sm font-semibold text-slate-800">
@@ -1610,25 +1732,27 @@ const clearFlash = () => {
 
 
                                 <td class="px-5 py-4 text-sm font-medium text-slate-700">
+
                                     {{
                                         siswa.kelas?.nama_kelas ||
                                         siswa.kelas?.tingkat ||
                                         '-'
                                     }}
+
                                 </td>
 
 
                                 <td class="px-5 py-4 text-sm text-slate-600">
+
                                     {{
                                         siswa.kelas?.jurusan?.nama_jurusan ||
                                         '-'
                                     }}
+
                                 </td>
 
 
-                                <!-- ==================================================
-                                     B1
-                                ================================================== -->
+                                <!-- B1 -->
 
                                 <td class="px-5 py-4 text-center">
 
@@ -1672,7 +1796,11 @@ const clearFlash = () => {
 
                                             <ClipboardDocumentCheckIcon class="h-4 w-4" />
 
-                                            Lengkapi
+                                            {{
+                                                siswa.berkala_1
+                                                    ? 'Edit Data'
+                                                    : 'Lengkapi'
+                                            }}
 
                                         </span>
 
@@ -1723,9 +1851,7 @@ const clearFlash = () => {
                                 </td>
 
 
-                                <!-- ==================================================
-                                     B2
-                                ================================================== -->
+                                <!-- B2 -->
 
                                 <td class="px-5 py-4 text-center">
 
@@ -1769,7 +1895,11 @@ const clearFlash = () => {
 
                                             <ClipboardDocumentCheckIcon class="h-4 w-4" />
 
-                                            Lengkapi
+                                            {{
+                                                siswa.berkala_2
+                                                    ? 'Edit Data'
+                                                    : 'Lengkapi'
+                                            }}
 
                                         </span>
 
@@ -1886,10 +2016,10 @@ const clearFlash = () => {
 
                             <div class="flex items-center gap-3">
 
-                                <div
-                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
-                                >
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+
                                     {{ siswa.nama?.charAt(0)?.toUpperCase() }}
+
                                 </div>
 
                                 <div>
@@ -1959,9 +2089,7 @@ const clearFlash = () => {
                         <div class="mt-4 grid grid-cols-2 gap-3">
 
 
-                            <!-- ==================================================
-                                 MOBILE B1
-                            ================================================== -->
+                            <!-- B1 -->
 
                             <button
                                 v-if="siswa.berkala_1?.status === 'selesai'"
@@ -2080,9 +2208,7 @@ const clearFlash = () => {
                             </div>
 
 
-                            <!-- ==================================================
-                                 MOBILE B2
-                            ================================================== -->
+                            <!-- B2 -->
 
                             <button
                                 v-if="siswa.berkala_2?.status === 'selesai'"
@@ -2234,7 +2360,7 @@ const clearFlash = () => {
 
 
     <!-- ==========================================================
-         POPUP DETAIL PEMERIKSAAN
+         MODAL DETAIL PEMERIKSAAN
     =========================================================== -->
 
     <Teleport to="body">
@@ -2244,21 +2370,27 @@ const clearFlash = () => {
             class="fixed inset-0 z-[999] flex items-center justify-center p-4"
         >
 
+            <!-- BACKDROP -->
+
             <div
                 class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
                 @click="closeResultModal"
             ></div>
 
 
+            <!-- MODAL -->
+
             <div
-                class="relative flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+                class="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
             >
 
 
-                <!-- HEADER -->
+                <!-- ==================================================
+                     HEADER
+                ================================================== -->
 
                 <div
-                    class="flex items-start justify-between border-b border-slate-100 px-6 py-5"
+                    class="flex items-start justify-between border-b border-slate-100 bg-white px-6 py-5"
                 >
 
                     <div class="flex items-center gap-3">
@@ -2305,7 +2437,9 @@ const clearFlash = () => {
                 </div>
 
 
-                <!-- CONTENT -->
+                <!-- ==================================================
+                     CONTENT
+                ================================================== -->
 
                 <div
                     v-if="selectedPemeriksaan && selectedSiswa"
@@ -2313,7 +2447,9 @@ const clearFlash = () => {
                 >
 
 
-                    <!-- IDENTITAS -->
+                    <!-- ==================================================
+                         IDENTITAS SISWA
+                    ================================================== -->
 
                     <div
                         class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
@@ -2324,11 +2460,13 @@ const clearFlash = () => {
                             <div
                                 class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-700"
                             >
+
                                 {{
                                     selectedSiswa.nama
                                         ?.charAt(0)
                                         ?.toUpperCase()
                                 }}
+
                             </div>
 
 
@@ -2388,7 +2526,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- TANGGAL & STATUS -->
+                    <!-- ==================================================
+                         TANGGAL & STATUS
+                    ================================================== -->
 
                     <div
                         class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
@@ -2466,7 +2606,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- ANTROPOMETRI -->
+                    <!-- ==================================================
+                         ANTROPOMETRI
+                    ================================================== -->
 
                     <div class="mt-6">
 
@@ -2487,8 +2629,10 @@ const clearFlash = () => {
                             class="grid grid-cols-1 gap-3 sm:grid-cols-3"
                         >
 
+                            <!-- BB -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2516,8 +2660,10 @@ const clearFlash = () => {
                             </div>
 
 
+                            <!-- TB -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2545,8 +2691,10 @@ const clearFlash = () => {
                             </div>
 
 
+                            <!-- IMT -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2566,7 +2714,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- TANDA VITAL -->
+                    <!-- ==================================================
+                         TANDA VITAL
+                    ================================================== -->
 
                     <div class="mt-6">
 
@@ -2587,8 +2737,10 @@ const clearFlash = () => {
                             class="grid grid-cols-1 gap-3 sm:grid-cols-3"
                         >
 
+                            <!-- TEKANAN DARAH -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2604,8 +2756,10 @@ const clearFlash = () => {
                             </div>
 
 
+                            <!-- NADI -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2633,8 +2787,10 @@ const clearFlash = () => {
                             </div>
 
 
+                            <!-- SUHU -->
+
                             <div
-                                class="rounded-xl border border-slate-200 p-4"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2666,7 +2822,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- PEMERIKSAAN FISIK -->
+                    <!-- ==================================================
+                         PEMERIKSAAN FISIK
+                    ================================================== -->
 
                     <div class="mt-6">
 
@@ -2687,52 +2845,114 @@ const clearFlash = () => {
                             class="grid grid-cols-1 gap-3 sm:grid-cols-2"
                         >
 
-                            <div class="rounded-xl border border-slate-200 p-4">
+                            <!-- MATA -->
+
+                            <div class="rounded-xl border border-slate-200 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Mata
                                 </p>
 
-                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
                                     {{ displayValue(selectedPemeriksaan.mata) }}
                                 </p>
 
                             </div>
 
 
-                            <div class="rounded-xl border border-slate-200 p-4">
+                            <!-- TELINGA -->
+
+                            <div class="rounded-xl border border-slate-200 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Telinga
                                 </p>
 
-                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
                                     {{ displayValue(selectedPemeriksaan.telinga) }}
                                 </p>
 
                             </div>
 
 
-                            <div class="rounded-xl border border-slate-200 p-4">
+                            <!-- HIDUNG -->
+
+                            <div
+                                v-if="'hidung' in selectedPemeriksaan"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Hidung
+                                </p>
+
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
+                                    {{ displayValue(selectedPemeriksaan.hidung) }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- TENGGOROKAN -->
+
+                            <div
+                                v-if="'tenggorokan' in selectedPemeriksaan"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Tenggorokan
+                                </p>
+
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
+                                    {{ displayValue(selectedPemeriksaan.tenggorokan) }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- GIGI -->
+
+                            <div class="rounded-xl border border-slate-200 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Gigi & Mulut
                                 </p>
 
-                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
                                     {{ displayValue(selectedPemeriksaan.gigi_mulut) }}
                                 </p>
 
                             </div>
 
 
-                            <div class="rounded-xl border border-slate-200 p-4">
+                            <!-- KULIT -->
+
+                            <div
+                                v-if="'kulit' in selectedPemeriksaan"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    Kulit
+                                </p>
+
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
+                                    {{ displayValue(selectedPemeriksaan.kulit) }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- KONDISI UMUM -->
+
+                            <div class="rounded-xl border border-slate-200 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Kondisi Umum
                                 </p>
 
-                                <p class="mt-1 text-sm font-semibold text-slate-700">
+                                <p class="mt-1 whitespace-pre-line text-sm font-semibold text-slate-700">
                                     {{ displayValue(selectedPemeriksaan.kondisi_umum) }}
                                 </p>
 
@@ -2743,13 +2963,23 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- KELUHAN -->
+                    <!-- ==================================================
+                         KELUHAN
+                    ================================================== -->
 
                     <div class="mt-6">
 
-                        <h3 class="mb-3 text-sm font-bold text-slate-800">
-                            Keluhan
-                        </h3>
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <DocumentTextIcon
+                                class="h-5 w-5 text-amber-600"
+                            />
+
+                            <h3 class="text-sm font-bold text-slate-800">
+                                Keluhan
+                            </h3>
+
+                        </div>
 
                         <div
                             class="rounded-xl border border-slate-200 bg-slate-50 p-4"
@@ -2766,13 +2996,23 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- HASIL -->
+                    <!-- ==================================================
+                         HASIL PEMERIKSAAN
+                    ================================================== -->
 
                     <div class="mt-6">
 
-                        <h3 class="mb-3 text-sm font-bold text-slate-800">
-                            Hasil Pemeriksaan
-                        </h3>
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <ClipboardDocumentCheckIcon
+                                class="h-5 w-5 text-emerald-600"
+                            />
+
+                            <h3 class="text-sm font-bold text-slate-800">
+                                Hasil Pemeriksaan
+                            </h3>
+
+                        </div>
 
                         <div
                             class="rounded-xl border border-slate-200 bg-slate-50 p-4"
@@ -2781,7 +3021,11 @@ const clearFlash = () => {
                             <p
                                 class="whitespace-pre-line text-sm leading-6 text-slate-700"
                             >
-                                {{ displayValue(selectedPemeriksaan.hasil_pemeriksaan) }}
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.hasil_pemeriksaan
+                                    )
+                                }}
                             </p>
 
                         </div>
@@ -2789,7 +3033,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- REKOMENDASI -->
+                    <!-- ==================================================
+                         REKOMENDASI
+                    ================================================== -->
 
                     <div class="mt-6">
 
@@ -2804,7 +3050,11 @@ const clearFlash = () => {
                             <p
                                 class="whitespace-pre-line text-sm leading-6 text-blue-800"
                             >
-                                {{ displayValue(selectedPemeriksaan.rekomendasi) }}
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.rekomendasi
+                                    )
+                                }}
                             </p>
 
                         </div>
@@ -2812,7 +3062,9 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- CATATAN -->
+                    <!-- ==================================================
+                         CATATAN
+                    ================================================== -->
 
                     <div class="mt-6">
 
@@ -2827,7 +3079,11 @@ const clearFlash = () => {
                             <p
                                 class="whitespace-pre-line text-sm leading-6 text-amber-800"
                             >
-                                {{ displayValue(selectedPemeriksaan.catatan) }}
+                                {{
+                                    displayValue(
+                                        selectedPemeriksaan.catatan
+                                    )
+                                }}
                             </p>
 
                         </div>
@@ -2835,7 +3091,72 @@ const clearFlash = () => {
                     </div>
 
 
-                    <!-- PEMERIKSA -->
+                    <!-- ==================================================
+                         DATA PEMERIKSAAN LAINNYA
+                         
+                         BAGIAN INI YANG MEMBUAT DETAIL LENGKAP.
+                         
+                         Jika controller mengirim field tambahan dari
+                         database yang belum dibuatkan tampilan khusus,
+                         field tersebut tetap akan muncul di sini.
+                    ================================================== -->
+
+                    <div
+                        v-if="detailFields.length > 0"
+                        class="mt-6"
+                    >
+
+                        <div class="mb-3 flex items-center gap-2">
+
+                            <InformationCircleIcon
+                                class="h-5 w-5 text-indigo-600"
+                            />
+
+                            <div>
+
+                                <h3 class="text-sm font-bold text-slate-800">
+                                    Data Pemeriksaan Lainnya
+                                </h3>
+
+                                <p class="mt-0.5 text-xs text-slate-400">
+                                    Detail data lain yang tersimpan dari pemeriksaan.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                        >
+
+                            <div
+                                v-for="[key, value] in detailFields"
+                                :key="key"
+                                class="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+
+                                <p class="text-xs text-slate-400">
+                                    {{ formatFieldLabel(key) }}
+                                </p>
+
+                                <p
+                                    class="mt-1 whitespace-pre-line break-words text-sm font-semibold text-slate-700"
+                                >
+                                    {{ displayValue(value) }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         PEMERIKSA
+                    ================================================== -->
 
                     <div
                         class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4"
@@ -2865,11 +3186,13 @@ const clearFlash = () => {
                                 <p
                                     class="mt-0.5 text-sm font-bold text-slate-700"
                                 >
+
                                     {{
                                         selectedPemeriksaan.pemeriksa?.name ||
                                         selectedPemeriksaan.pemeriksa?.nama ||
                                         'Tidak diketahui'
                                     }}
+
                                 </p>
 
                             </div>
@@ -2888,9 +3211,6 @@ const clearFlash = () => {
                 <div
                     class="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4"
                 >
-
-                    <!-- EDIT HANYA JIKA PERIODE AKTIF
-                         DAN JENIS PEMERIKSAAN SEDANG AKTIF -->
 
                     <Link
                         v-if="

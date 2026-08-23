@@ -175,6 +175,9 @@ class PemeriksaanBerkalaController extends Controller
                         'suhu_tubuh' =>
                             $berkala1->suhu_tubuh,
 
+                        'saturasi_oksigen' =>
+                            $berkala1->saturasi_oksigen,
+
                         // ------------------------------
                         // PEMERIKSAAN FISIK
                         // ------------------------------
@@ -190,6 +193,34 @@ class PemeriksaanBerkalaController extends Controller
 
                         'kondisi_umum' =>
                             $berkala1->kondisi_umum,
+
+                        // ------------------------------
+                        // KEBERSIHAN
+                        // ------------------------------
+
+                        'kebersihan_rambut' =>
+                            $berkala1->kebersihan_rambut,
+
+                        'kebersihan_wajah' =>
+                            $berkala1->kebersihan_wajah,
+
+                        'kebersihan_telinga' =>
+                            $berkala1->kebersihan_telinga,
+
+                        'kebersihan_hidung' =>
+                            $berkala1->kebersihan_hidung,
+
+                        'kebersihan_mulut_gigi' =>
+                            $berkala1->kebersihan_mulut_gigi,
+
+                        'kebersihan_tangan_kuku' =>
+                            $berkala1->kebersihan_tangan_kuku,
+
+                        'kebersihan_kulit_badan' =>
+                            $berkala1->kebersihan_kulit_badan,
+
+                        'kebersihan_kaki_kuku' =>
+                            $berkala1->kebersihan_kaki_kuku,
 
                         // ------------------------------
                         // HASIL PEMERIKSAAN
@@ -212,11 +243,11 @@ class PemeriksaanBerkalaController extends Controller
                             $berkala1->catatan,
 
                         'pemeriksa' => $berkala1->pemeriksa
-    ? [
-        'id' => $berkala1->pemeriksa->id,
-        'name' => $berkala1->pemeriksa->name,
-    ]
-    : null,
+                            ? [
+                                'id' => $berkala1->pemeriksa->id,
+                                'name' => $berkala1->pemeriksa->name,
+                            ]
+                            : null,
                     ]
                     : null,
 
@@ -264,6 +295,9 @@ class PemeriksaanBerkalaController extends Controller
                         'suhu_tubuh' =>
                             $berkala2->suhu_tubuh,
 
+                        'saturasi_oksigen' =>
+                            $berkala2->saturasi_oksigen,
+
                         // ------------------------------
                         // PEMERIKSAAN FISIK
                         // ------------------------------
@@ -279,6 +313,34 @@ class PemeriksaanBerkalaController extends Controller
 
                         'kondisi_umum' =>
                             $berkala2->kondisi_umum,
+
+                        // ------------------------------
+                        // KEBERSIHAN
+                        // ------------------------------
+
+                        'kebersihan_rambut' =>
+                            $berkala2->kebersihan_rambut,
+
+                        'kebersihan_wajah' =>
+                            $berkala2->kebersihan_wajah,
+
+                        'kebersihan_telinga' =>
+                            $berkala2->kebersihan_telinga,
+
+                        'kebersihan_hidung' =>
+                            $berkala2->kebersihan_hidung,
+
+                        'kebersihan_mulut_gigi' =>
+                            $berkala2->kebersihan_mulut_gigi,
+
+                        'kebersihan_tangan_kuku' =>
+                            $berkala2->kebersihan_tangan_kuku,
+
+                        'kebersihan_kulit_badan' =>
+                            $berkala2->kebersihan_kulit_badan,
+
+                        'kebersihan_kaki_kuku' =>
+                            $berkala2->kebersihan_kaki_kuku,
 
                         // ------------------------------
                         // HASIL PEMERIKSAAN
@@ -300,14 +362,13 @@ class PemeriksaanBerkalaController extends Controller
                         'catatan' =>
                             $berkala2->catatan,
 
-                            'pemeriksa' => $berkala2->pemeriksa
-    ? [
-        'id' => $berkala2->pemeriksa->id,
-        'name' => $berkala2->pemeriksa->name,
-    ]
-    : null,
+                        'pemeriksa' => $berkala2->pemeriksa
+                            ? [
+                                'id' => $berkala2->pemeriksa->id,
+                                'name' => $berkala2->pemeriksa->name,
+                            ]
+                            : null,
                     ]
-
                     : null,
             ];
         });
@@ -336,26 +397,14 @@ class PemeriksaanBerkalaController extends Controller
                     'status' =>
                         $periodeAktif->status,
 
-                    /**
-                     * Fase:
-                     *
-                     * 1 = bulan 1-3
-                     * 2 = bulan 4-6
-                     */
                     'fase_pemeriksaan' =>
                         $fasePemeriksaan,
 
-                    /**
-                     * Akses Berkala 1
-                     */
                     'berkala_1' => [
                         'akses' =>
                             $aksesBerkala1,
                     ],
 
-                    /**
-                     * Akses Berkala 2
-                     */
                     'berkala_2' => [
                         'akses' =>
                             $aksesBerkala2,
@@ -377,19 +426,9 @@ class PemeriksaanBerkalaController extends Controller
         Siswa $siswa,
         string $jenis
     ) {
-        /**
-         * ----------------------------------------------------------
-         * Ambil periode aktif
-         * ----------------------------------------------------------
-         */
         $periodeAktif = Periode::where('status', 'aktif')
             ->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Pastikan siswa terdaftar pada periode aktif
-         * ----------------------------------------------------------
-         */
         $siswa = $periodeAktif->siswa()
             ->where('siswas.id', $siswa->id)
             ->with([
@@ -397,18 +436,8 @@ class PemeriksaanBerkalaController extends Controller
             ])
             ->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Normalisasi jenis
-         * ----------------------------------------------------------
-         */
         $jenis = $this->normalizeJenis($jenis);
 
-        /**
-         * ----------------------------------------------------------
-         * Cek akses
-         * ----------------------------------------------------------
-         */
         $akses = $periodeAktif
             ->statusAksesPemeriksaan($jenis);
 
@@ -422,11 +451,6 @@ class PemeriksaanBerkalaController extends Controller
             );
         }
 
-        /**
-         * ----------------------------------------------------------
-         * Cek pemeriksaan yang sudah ada
-         * ----------------------------------------------------------
-         */
         $pemeriksaan = PemeriksaanBerkala::where(
             'periode_id',
             $periodeAktif->id
@@ -442,11 +466,6 @@ class PemeriksaanBerkalaController extends Controller
             ->latest()
             ->first();
 
-        /**
-         * ----------------------------------------------------------
-         * Kirim ke Vue
-         * ----------------------------------------------------------
-         */
         return Inertia::render(
             'Klinik/Kesehatan/PemeriksaanBerkala/Create',
             [
@@ -490,21 +509,11 @@ class PemeriksaanBerkalaController extends Controller
         Siswa $siswa,
         string $jenis
     ) {
-        /**
-         * ----------------------------------------------------------
-         * Periode aktif
-         * ----------------------------------------------------------
-         */
         $periodeAktif = Periode::where(
             'status',
             'aktif'
         )->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Pastikan siswa ada pada periode aktif
-         * ----------------------------------------------------------
-         */
         $siswa = $periodeAktif->siswa()
             ->where(
                 'siswas.id',
@@ -512,18 +521,8 @@ class PemeriksaanBerkalaController extends Controller
             )
             ->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Normalisasi jenis
-         * ----------------------------------------------------------
-         */
         $jenis = $this->normalizeJenis($jenis);
 
-        /**
-         * ----------------------------------------------------------
-         * Cek akses
-         * ----------------------------------------------------------
-         */
         $akses = $periodeAktif
             ->statusAksesPemeriksaan($jenis);
 
@@ -544,13 +543,19 @@ class PemeriksaanBerkalaController extends Controller
          */
         $validated = $request->validate([
 
+            // ======================================================
             // IDENTITAS
+            // ======================================================
+
             'tanggal_pemeriksaan' => [
                 'required',
                 'date',
             ],
 
+            // ======================================================
             // ANTROPOMETRI
+            // ======================================================
+
             'berat_badan' => [
                 'nullable',
                 'numeric',
@@ -570,7 +575,10 @@ class PemeriksaanBerkalaController extends Controller
                 'max:999',
             ],
 
+            // ======================================================
             // TANDA VITAL
+            // ======================================================
+
             'tekanan_darah' => [
                 'nullable',
                 'string',
@@ -589,7 +597,17 @@ class PemeriksaanBerkalaController extends Controller
                 'min:0',
             ],
 
+            'saturasi_oksigen' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:100',
+            ],
+
+            // ======================================================
             // PEMERIKSAAN FISIK
+            // ======================================================
+
             'mata' => [
                 'nullable',
                 'string',
@@ -614,7 +632,62 @@ class PemeriksaanBerkalaController extends Controller
                 'max:50',
             ],
 
+            // ======================================================
+            // KEBERSIHAN
+            // ======================================================
+
+            'kebersihan_rambut' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_wajah' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_telinga' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_hidung' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_mulut_gigi' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_tangan_kuku' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_kulit_badan' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_kaki_kuku' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            // ======================================================
             // HASIL
+            // ======================================================
+
             'keluhan' => [
                 'nullable',
                 'string',
@@ -630,7 +703,10 @@ class PemeriksaanBerkalaController extends Controller
                 'string',
             ],
 
+            // ======================================================
             // STATUS
+            // ======================================================
+
             'status' => [
                 'required',
                 'in:belum,selesai',
@@ -660,10 +736,16 @@ class PemeriksaanBerkalaController extends Controller
             ],
             [
 
+                // ==================================================
+                // IDENTITAS
+                // ==================================================
+
                 'tanggal_pemeriksaan' =>
                     $validated['tanggal_pemeriksaan'],
 
+                // ==================================================
                 // ANTROPOMETRI
+                // ==================================================
 
                 'berat_badan' =>
                     $validated['berat_badan'] ?? null,
@@ -674,7 +756,9 @@ class PemeriksaanBerkalaController extends Controller
                 'imt' =>
                     $validated['imt'] ?? null,
 
+                // ==================================================
                 // TANDA VITAL
+                // ==================================================
 
                 'tekanan_darah' =>
                     $validated['tekanan_darah'] ?? null,
@@ -685,7 +769,12 @@ class PemeriksaanBerkalaController extends Controller
                 'suhu_tubuh' =>
                     $validated['suhu_tubuh'] ?? null,
 
+                'saturasi_oksigen' =>
+                    $validated['saturasi_oksigen'] ?? null,
+
+                // ==================================================
                 // PEMERIKSAAN FISIK
+                // ==================================================
 
                 'mata' =>
                     $validated['mata'] ?? null,
@@ -699,7 +788,37 @@ class PemeriksaanBerkalaController extends Controller
                 'kondisi_umum' =>
                     $validated['kondisi_umum'] ?? null,
 
+                // ==================================================
+                // KEBERSIHAN
+                // ==================================================
+
+                'kebersihan_rambut' =>
+                    $validated['kebersihan_rambut'] ?? null,
+
+                'kebersihan_wajah' =>
+                    $validated['kebersihan_wajah'] ?? null,
+
+                'kebersihan_telinga' =>
+                    $validated['kebersihan_telinga'] ?? null,
+
+                'kebersihan_hidung' =>
+                    $validated['kebersihan_hidung'] ?? null,
+
+                'kebersihan_mulut_gigi' =>
+                    $validated['kebersihan_mulut_gigi'] ?? null,
+
+                'kebersihan_tangan_kuku' =>
+                    $validated['kebersihan_tangan_kuku'] ?? null,
+
+                'kebersihan_kulit_badan' =>
+                    $validated['kebersihan_kulit_badan'] ?? null,
+
+                'kebersihan_kaki_kuku' =>
+                    $validated['kebersihan_kaki_kuku'] ?? null,
+
+                // ==================================================
                 // HASIL
+                // ==================================================
 
                 'keluhan' =>
                     $validated['keluhan'] ?? null,
@@ -710,7 +829,9 @@ class PemeriksaanBerkalaController extends Controller
                 'rekomendasi' =>
                     $validated['rekomendasi'] ?? null,
 
+                // ==================================================
                 // STATUS
+                // ==================================================
 
                 'status' =>
                     $validated['status'],
@@ -718,18 +839,15 @@ class PemeriksaanBerkalaController extends Controller
                 'catatan' =>
                     $validated['catatan'] ?? null,
 
+                // ==================================================
                 // PEMERIKSA
+                // ==================================================
 
                 'pemeriksa_id' =>
                     Auth::id(),
             ]
         );
 
-        /**
-         * ----------------------------------------------------------
-         * Redirect
-         * ----------------------------------------------------------
-         */
         return redirect()
             ->route(
                 'klinik.kesehatan.pemeriksaan.index'
@@ -751,21 +869,11 @@ class PemeriksaanBerkalaController extends Controller
     public function show(
         PemeriksaanBerkala $pemeriksaanBerkala
     ) {
-        /**
-         * ----------------------------------------------------------
-         * Periode aktif
-         * ----------------------------------------------------------
-         */
         $periodeAktif = Periode::where(
             'status',
             'aktif'
         )->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Pastikan pemeriksaan milik periode aktif
-         * ----------------------------------------------------------
-         */
         if (
             $pemeriksaanBerkala->periode_id !==
             $periodeAktif->id
@@ -773,22 +881,12 @@ class PemeriksaanBerkalaController extends Controller
             abort(404);
         }
 
-        /**
-         * ----------------------------------------------------------
-         * Load relasi
-         * ----------------------------------------------------------
-         */
         $pemeriksaanBerkala->load([
             'siswa.kelas.jurusan',
             'periode',
             'pemeriksa',
         ]);
 
-        /**
-         * ----------------------------------------------------------
-         * Kirim ke Vue
-         * ----------------------------------------------------------
-         */
         return Inertia::render(
             'Klinik/Kesehatan/PemeriksaanBerkala/Show',
             [
@@ -807,21 +905,11 @@ class PemeriksaanBerkalaController extends Controller
     public function edit(
         PemeriksaanBerkala $pemeriksaanBerkala
     ) {
-        /**
-         * ----------------------------------------------------------
-         * Periode aktif
-         * ----------------------------------------------------------
-         */
         $periodeAktif = Periode::where(
             'status',
             'aktif'
         )->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Pastikan pemeriksaan milik periode aktif
-         * ----------------------------------------------------------
-         */
         if (
             $pemeriksaanBerkala->periode_id !==
             $periodeAktif->id
@@ -829,11 +917,6 @@ class PemeriksaanBerkalaController extends Controller
             abort(404);
         }
 
-        /**
-         * ----------------------------------------------------------
-         * Cek akses edit
-         * ----------------------------------------------------------
-         */
         $akses = $periodeAktif
             ->statusAksesPemeriksaan(
                 $pemeriksaanBerkala->jenis_pemeriksaan
@@ -851,11 +934,6 @@ class PemeriksaanBerkalaController extends Controller
             );
         }
 
-        /**
-         * ----------------------------------------------------------
-         * Load relasi
-         * ----------------------------------------------------------
-         */
         $pemeriksaanBerkala->load([
             'siswa.kelas.jurusan',
             'periode',
@@ -881,21 +959,11 @@ class PemeriksaanBerkalaController extends Controller
         Request $request,
         PemeriksaanBerkala $pemeriksaanBerkala
     ) {
-        /**
-         * ----------------------------------------------------------
-         * Periode aktif
-         * ----------------------------------------------------------
-         */
         $periodeAktif = Periode::where(
             'status',
             'aktif'
         )->firstOrFail();
 
-        /**
-         * ----------------------------------------------------------
-         * Pastikan pemeriksaan milik periode aktif
-         * ----------------------------------------------------------
-         */
         if (
             $pemeriksaanBerkala->periode_id !==
             $periodeAktif->id
@@ -903,11 +971,6 @@ class PemeriksaanBerkalaController extends Controller
             abort(404);
         }
 
-        /**
-         * ----------------------------------------------------------
-         * Cek akses update
-         * ----------------------------------------------------------
-         */
         $akses = $periodeAktif
             ->statusAksesPemeriksaan(
                 $pemeriksaanBerkala->jenis_pemeriksaan
@@ -932,13 +995,19 @@ class PemeriksaanBerkalaController extends Controller
          */
         $validated = $request->validate([
 
+            // ======================================================
             // IDENTITAS
+            // ======================================================
+
             'tanggal_pemeriksaan' => [
                 'required',
                 'date',
             ],
 
+            // ======================================================
             // ANTROPOMETRI
+            // ======================================================
+
             'berat_badan' => [
                 'nullable',
                 'numeric',
@@ -957,7 +1026,10 @@ class PemeriksaanBerkalaController extends Controller
                 'min:0',
             ],
 
+            // ======================================================
             // TANDA VITAL
+            // ======================================================
+
             'tekanan_darah' => [
                 'nullable',
                 'string',
@@ -976,7 +1048,17 @@ class PemeriksaanBerkalaController extends Controller
                 'min:0',
             ],
 
+            'saturasi_oksigen' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:100',
+            ],
+
+            // ======================================================
             // PEMERIKSAAN FISIK
+            // ======================================================
+
             'mata' => [
                 'nullable',
                 'string',
@@ -1001,7 +1083,62 @@ class PemeriksaanBerkalaController extends Controller
                 'max:50',
             ],
 
+            // ======================================================
+            // KEBERSIHAN
+            // ======================================================
+
+            'kebersihan_rambut' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_wajah' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_telinga' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_hidung' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_mulut_gigi' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_tangan_kuku' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_kulit_badan' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'kebersihan_kaki_kuku' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            // ======================================================
             // HASIL
+            // ======================================================
+
             'keluhan' => [
                 'nullable',
                 'string',
@@ -1017,7 +1154,10 @@ class PemeriksaanBerkalaController extends Controller
                 'string',
             ],
 
+            // ======================================================
             // STATUS
+            // ======================================================
+
             'status' => [
                 'required',
                 'in:belum,selesai',
@@ -1036,10 +1176,16 @@ class PemeriksaanBerkalaController extends Controller
          */
         $pemeriksaanBerkala->update([
 
+            // ======================================================
+            // IDENTITAS
+            // ======================================================
+
             'tanggal_pemeriksaan' =>
                 $validated['tanggal_pemeriksaan'],
 
+            // ======================================================
             // ANTROPOMETRI
+            // ======================================================
 
             'berat_badan' =>
                 $validated['berat_badan'] ?? null,
@@ -1050,7 +1196,9 @@ class PemeriksaanBerkalaController extends Controller
             'imt' =>
                 $validated['imt'] ?? null,
 
+            // ======================================================
             // TANDA VITAL
+            // ======================================================
 
             'tekanan_darah' =>
                 $validated['tekanan_darah'] ?? null,
@@ -1061,7 +1209,12 @@ class PemeriksaanBerkalaController extends Controller
             'suhu_tubuh' =>
                 $validated['suhu_tubuh'] ?? null,
 
+            'saturasi_oksigen' =>
+                $validated['saturasi_oksigen'] ?? null,
+
+            // ======================================================
             // PEMERIKSAAN FISIK
+            // ======================================================
 
             'mata' =>
                 $validated['mata'] ?? null,
@@ -1075,7 +1228,37 @@ class PemeriksaanBerkalaController extends Controller
             'kondisi_umum' =>
                 $validated['kondisi_umum'] ?? null,
 
+            // ======================================================
+            // KEBERSIHAN
+            // ======================================================
+
+            'kebersihan_rambut' =>
+                $validated['kebersihan_rambut'] ?? null,
+
+            'kebersihan_wajah' =>
+                $validated['kebersihan_wajah'] ?? null,
+
+            'kebersihan_telinga' =>
+                $validated['kebersihan_telinga'] ?? null,
+
+            'kebersihan_hidung' =>
+                $validated['kebersihan_hidung'] ?? null,
+
+            'kebersihan_mulut_gigi' =>
+                $validated['kebersihan_mulut_gigi'] ?? null,
+
+            'kebersihan_tangan_kuku' =>
+                $validated['kebersihan_tangan_kuku'] ?? null,
+
+            'kebersihan_kulit_badan' =>
+                $validated['kebersihan_kulit_badan'] ?? null,
+
+            'kebersihan_kaki_kuku' =>
+                $validated['kebersihan_kaki_kuku'] ?? null,
+
+            // ======================================================
             // HASIL
+            // ======================================================
 
             'keluhan' =>
                 $validated['keluhan'] ?? null,
@@ -1086,7 +1269,9 @@ class PemeriksaanBerkalaController extends Controller
             'rekomendasi' =>
                 $validated['rekomendasi'] ?? null,
 
+            // ======================================================
             // STATUS
+            // ======================================================
 
             'status' =>
                 $validated['status'],
@@ -1094,7 +1279,9 @@ class PemeriksaanBerkalaController extends Controller
             'catatan' =>
                 $validated['catatan'] ?? null,
 
+            // ======================================================
             // PEMERIKSA
+            // ======================================================
 
             'pemeriksa_id' =>
                 Auth::id(),

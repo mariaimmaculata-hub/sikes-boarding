@@ -468,6 +468,281 @@ const formatDate = (value) => {
 
 
 // ======================================================
+// TRIAGE
+// ======================================================
+
+const getTriase = (item) => {
+
+    if (!item) {
+
+        return null
+
+    }
+
+
+    const candidates = [
+
+        item.triase,
+        item.triage,
+        item.tingkat_triase,
+        item.level_triase,
+
+        item.penyakit?.triase,
+        item.penyakit?.triage,
+        item.penyakit?.tingkat_triase,
+        item.penyakit?.level_triase,
+
+    ]
+
+
+    const value = candidates.find(
+        value =>
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== ''
+    )
+
+
+    if (!value) {
+
+        return null
+
+    }
+
+
+    return String(value).trim()
+
+}
+
+
+// ======================================================
+// NORMALISASI TRIAGE
+// ======================================================
+
+const normalizeTriase = (triase) => {
+
+    if (!triase) {
+
+        return null
+
+    }
+
+
+    const value = String(triase)
+        .trim()
+        .toLowerCase()
+
+
+    if (
+        value === 'merah' ||
+        value === 'red' ||
+        value === '1'
+    ) {
+
+        return 'Merah'
+
+    }
+
+
+    if (
+        value === 'kuning' ||
+        value === 'yellow' ||
+        value === '2'
+    ) {
+
+        return 'Kuning'
+
+    }
+
+
+    if (
+        value === 'hijau' ||
+        value === 'green' ||
+        value === '3'
+    ) {
+
+        return 'Hijau'
+
+    }
+
+
+    if (
+        value === 'hitam' ||
+        value === 'black' ||
+        value === '4'
+    ) {
+
+        return 'Hitam'
+
+    }
+
+
+    return String(triase)
+
+}
+
+
+// ======================================================
+// PENJELASAN TRIAGE
+// ======================================================
+// Penjelasan hanya ditampilkan sesuai indikator triase.
+// Tidak menampilkan penjelasan dari warna lainnya.
+// ======================================================
+
+const getTriaseDescription = (triase) => {
+
+    const normalized = normalizeTriase(triase)
+
+    switch (normalized) {
+
+        case 'Merah':
+
+            return {
+                title: 'Gawat Darurat',
+                description:
+                    'Kondisi mengancam nyawa dan harus ditangani segera.',
+            }
+
+
+        case 'Kuning':
+
+            return {
+                title: 'Darurat Tidak Gawat',
+                description:
+                    'Pasien tidak dalam kondisi yang mengancam kematian, tetapi dapat terjadi kecacatan karena penyakit yang mendasari dan membutuhkan penanganan cepat.',
+            }
+
+
+        case 'Hijau':
+
+            return {
+                title: 'Tidak Gawat Darurat',
+                description:
+                    'Tidak ada ancaman kematian dan kondisi pasien relatif stabil sehingga dapat menunggu penanganan.',
+            }
+
+
+        case 'Hitam':
+
+            return {
+                title: 'Darurat Tidak Gawat',
+                description:
+                    'Pasien meninggal atau berada dalam kondisi yang sangat parah dan tidak ada harapan hidup.',
+            }
+
+
+        default:
+
+            return {
+                title: 'Triase',
+                description:
+                    'Keterangan triase belum tersedia.',
+            }
+
+    }
+
+}
+
+
+// ======================================================
+// TRIAGE CLASS
+// ======================================================
+
+const getTriaseClass = (triase) => {
+
+    switch (
+        String(triase ?? '')
+            .trim()
+            .toLowerCase()
+    ) {
+
+        case 'merah':
+        case 'red':
+        case '1':
+
+            return 'bg-red-50 text-red-700 border-red-200'
+
+
+        case 'kuning':
+        case 'yellow':
+        case '2':
+
+            return 'bg-amber-50 text-amber-700 border-amber-200'
+
+
+        case 'hijau':
+        case 'green':
+        case '3':
+
+            return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+
+
+        case 'hitam':
+        case 'black':
+        case '4':
+
+            return 'bg-slate-900 text-white border-slate-800'
+
+
+        default:
+
+            return 'bg-slate-50 text-slate-500 border-slate-200'
+
+    }
+
+}
+
+
+// ======================================================
+// TRIAGE DOT CLASS
+// ======================================================
+
+const getTriaseDotClass = (triase) => {
+
+    switch (
+        String(triase ?? '')
+            .trim()
+            .toLowerCase()
+    ) {
+
+        case 'merah':
+        case 'red':
+        case '1':
+
+            return 'bg-red-500'
+
+
+        case 'kuning':
+        case 'yellow':
+        case '2':
+
+            return 'bg-amber-400'
+
+
+        case 'hijau':
+        case 'green':
+        case '3':
+
+            return 'bg-emerald-500'
+
+
+        case 'hitam':
+        case 'black':
+        case '4':
+
+            return 'bg-slate-900'
+
+
+        default:
+
+            return 'bg-slate-300'
+
+    }
+
+}
+
+
+// ======================================================
 // TREN PENYAKIT
 // ======================================================
 
@@ -640,8 +915,6 @@ const topPenyakit = computed(() => {
             </div>
 
 
-            <!-- KUNJUNGAN BARU -->
-
             <Link
                 :href="route(
                     'klinik.kesehatan.kunjungan.create'
@@ -760,7 +1033,6 @@ const topPenyakit = computed(() => {
 
         <!-- ==================================================
              STATISTIK
-             3 CARD SAMA TINGGI
         ================================================== -->
 
         <div
@@ -768,9 +1040,7 @@ const topPenyakit = computed(() => {
         >
 
 
-            <!-- ==================================================
-                 TOTAL KUNJUNGAN
-            ================================================== -->
+            <!-- TOTAL KUNJUNGAN -->
 
             <div
                 class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -789,7 +1059,7 @@ const topPenyakit = computed(() => {
                         </p>
 
                         <p
-                            class="mt-8 text-5xl  font-bold text-slate-800"
+                            class="mt-8 text-5xl font-bold text-slate-800"
                         >
                             {{ statistik.total ?? 0 }}
                         </p>
@@ -809,8 +1079,6 @@ const topPenyakit = computed(() => {
 
                 </div>
 
-
-                <!-- KONTEN PENUH -->
 
                 <div
                     class="mt-auto border-t border-slate-100 pt-4"
@@ -845,9 +1113,7 @@ const topPenyakit = computed(() => {
             </div>
 
 
-            <!-- ==================================================
-                 KUNJUNGAN HARI INI
-            ================================================== -->
+            <!-- KUNJUNGAN HARI INI -->
 
             <div
                 class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
@@ -887,8 +1153,6 @@ const topPenyakit = computed(() => {
                 </div>
 
 
-                <!-- KONTEN PENUH -->
-
                 <div
                     class="mt-auto border-t border-slate-100 pt-4"
                 >
@@ -922,15 +1186,11 @@ const topPenyakit = computed(() => {
             </div>
 
 
-            <!-- ==================================================
-                 DISTRIBUSI PENYAKIT
-            ================================================== -->
+            <!-- DISTRIBUSI PENYAKIT -->
 
             <div
                 class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
             >
-
-                <!-- HEADER -->
 
                 <div
                     class="flex items-start justify-between"
@@ -966,8 +1226,6 @@ const topPenyakit = computed(() => {
                 </div>
 
 
-                <!-- BAR CHART -->
-
                 <div
                     v-if="top3Penyakit.length"
                     class="mt-4 flex-1 space-y-3"
@@ -977,8 +1235,6 @@ const topPenyakit = computed(() => {
                         v-for="(penyakit, index) in top3Penyakit"
                         :key="penyakit.id ?? index"
                     >
-
-                        <!-- LABEL -->
 
                         <div
                             class="mb-1 flex items-center justify-between gap-3"
@@ -1018,8 +1274,6 @@ const topPenyakit = computed(() => {
                         </div>
 
 
-                        <!-- BAR -->
-
                         <div
                             class="h-2.5 w-full overflow-hidden rounded-full bg-slate-100"
                         >
@@ -1044,8 +1298,6 @@ const topPenyakit = computed(() => {
 
                 </div>
 
-
-                <!-- EMPTY -->
 
                 <div
                     v-else
@@ -1089,8 +1341,6 @@ const topPenyakit = computed(() => {
                 </div>
 
 
-                <!-- FOOTER -->
-
                 <div
                     v-if="top3Penyakit.length"
                     class="mt-auto border-t border-slate-100 pt-3"
@@ -1133,8 +1383,6 @@ const topPenyakit = computed(() => {
                 class="grid grid-cols-1 gap-3 p-4 lg:grid-cols-[3fr_1fr_auto]"
             >
 
-                <!-- SEARCH -->
-
                 <div
                     class="relative"
                 >
@@ -1154,8 +1402,6 @@ const topPenyakit = computed(() => {
 
                 </div>
 
-
-                <!-- PERIODE -->
 
                 <select
                     v-model="periodeId"
@@ -1178,8 +1424,6 @@ const topPenyakit = computed(() => {
 
                 </select>
 
-
-                <!-- FILTER -->
 
                 <button
                     type="button"
@@ -1205,8 +1449,6 @@ const topPenyakit = computed(() => {
 
             </div>
 
-
-            <!-- FILTER TAMBAHAN -->
 
             <div
                 v-if="showFilter"
@@ -1268,8 +1510,6 @@ const topPenyakit = computed(() => {
             class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
         >
 
-            <!-- HEADER -->
-
             <div
                 class="flex flex-col gap-1 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
@@ -1311,7 +1551,7 @@ const topPenyakit = computed(() => {
             >
 
                 <table
-                    class="min-w-[1100px] w-full"
+                    class="min-w-[1200px] w-full"
                 >
 
                     <thead>
@@ -1359,6 +1599,13 @@ const topPenyakit = computed(() => {
                                 class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
                                 Diagnosis
+                            </th>
+
+
+                            <th
+                                class="px-5 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500"
+                            >
+                                Triase
                             </th>
 
 
@@ -1547,6 +1794,40 @@ const topPenyakit = computed(() => {
                             </td>
 
 
+                            <!-- ==================================================
+                                 TRIAGE DESKTOP
+                            ================================================== -->
+
+                            <td
+                                class="px-5 py-4"
+                            >
+
+                                <span
+                                    v-if="getTriase(item)"
+                                    class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold"
+                                    :class="getTriaseClass(getTriase(item))"
+                                >
+
+                                    <span
+                                        class="h-2 w-2 rounded-full"
+                                        :class="getTriaseDotClass(getTriase(item))"
+                                    ></span>
+
+                                    {{ normalizeTriase(getTriase(item)) }}
+
+                                </span>
+
+
+                                <span
+                                    v-else
+                                    class="text-xs text-slate-400"
+                                >
+                                    -
+                                </span>
+
+                            </td>
+
+
                             <td
                                 class="px-5 py-4"
                             >
@@ -1646,7 +1927,7 @@ const topPenyakit = computed(() => {
                         >
 
                             <td
-                                colspan="8"
+                                colspan="9"
                                 class="px-5 py-16 text-center"
                             >
 
@@ -1849,6 +2130,57 @@ const topPenyakit = computed(() => {
                             class="mt-1 text-[11px] text-blue-600"
                         >
                             {{ item.penyakit.kategori }}
+                        </p>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TRIAGE MOBILE
+                    ================================================== -->
+
+                    <div
+                        v-if="getTriase(item)"
+                        class="mt-3 rounded-xl border p-3"
+                        :class="getTriaseClass(getTriase(item))"
+                    >
+
+                        <p
+                            class="text-[10px] font-bold uppercase tracking-wide opacity-70"
+                        >
+                            Triase
+                        </p>
+
+
+                        <div
+                            class="mt-1 flex items-center gap-2"
+                        >
+
+                            <span
+                                class="h-2.5 w-2.5 rounded-full"
+                                :class="getTriaseDotClass(getTriase(item))"
+                            ></span>
+
+
+                            <p
+                                class="text-sm font-bold"
+                            >
+                                {{ normalizeTriase(getTriase(item)) }}
+                            </p>
+
+                        </div>
+
+
+                        <!-- KETERANGAN SESUAI WARNA SAJA -->
+
+                        <p
+                            class="mt-2 text-xs leading-5 opacity-80"
+                        >
+                            {{
+                                getTriaseDescription(
+                                    getTriase(item)
+                                ).description
+                            }}
                         </p>
 
                     </div>
@@ -2254,6 +2586,125 @@ const topPenyakit = computed(() => {
                             </div>
 
 
+                            <!-- ==================================================
+                                 TRIAGE DETAIL
+                            ================================================== -->
+
+                            <div>
+
+                                <p
+                                    class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400"
+                                >
+                                    Triase
+                                </p>
+
+
+                                <!-- JIKA ADA TRIAGE -->
+
+                                <div
+                                    v-if="getTriase(selectedKunjungan)"
+                                    class="rounded-2xl border p-5"
+                                    :class="getTriaseClass(
+                                        getTriase(selectedKunjungan)
+                                    )"
+                                >
+
+                                    <!-- INDIKATOR + NAMA -->
+
+                                    <div
+                                        class="flex items-start gap-3"
+                                    >
+
+                                        <span
+                                            class="mt-1 h-4 w-4 shrink-0 rounded-full"
+                                            :class="getTriaseDotClass(
+                                                getTriase(selectedKunjungan)
+                                            )"
+                                        ></span>
+
+
+                                        <div>
+
+                                            <p
+                                                class="text-lg font-bold"
+                                            >
+                                                {{
+                                                    normalizeTriase(
+                                                        getTriase(
+                                                            selectedKunjungan
+                                                        )
+                                                    )
+                                                }}
+                                            </p>
+
+
+                                            <p
+                                                class="mt-1 text-sm font-semibold opacity-80"
+                                            >
+                                                {{
+                                                    getTriaseDescription(
+                                                        getTriase(
+                                                            selectedKunjungan
+                                                        )
+                                                    ).title
+                                                }}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <!-- ==========================================
+                                         KETERANGAN SESUAI INDIKATOR
+                                    =========================================== -->
+
+                                    <div
+                                        class="mt-4 rounded-xl bg-white/50 p-4"
+                                    >
+
+                                        <p
+                                            class="text-xs font-bold uppercase tracking-wide opacity-60"
+                                        >
+                                            Keterangan
+                                        </p>
+
+
+                                        <p
+                                            class="mt-2 text-sm leading-6"
+                                        >
+                                            {{
+                                                getTriaseDescription(
+                                                    getTriase(
+                                                        selectedKunjungan
+                                                    )
+                                                ).description
+                                            }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- JIKA TRIAGE BELUM ADA -->
+
+                                <div
+                                    v-else
+                                    class="rounded-xl bg-slate-50 p-4"
+                                >
+
+                                    <p
+                                        class="text-sm text-slate-400"
+                                    >
+                                        Triase belum tersedia.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
                             <!-- TINDAKAN -->
 
                             <div>
@@ -2507,15 +2958,11 @@ const topPenyakit = computed(() => {
                 class="fixed inset-0 z-[10000] flex items-center justify-center p-4"
             >
 
-                <!-- OVERLAY -->
-
                 <div
                     class="absolute inset-0 z-0 bg-slate-900/50 backdrop-blur-sm"
                     @click="closeDelete"
                 ></div>
 
-
-                <!-- MODAL -->
 
                 <div
                     class="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"

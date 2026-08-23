@@ -85,6 +85,7 @@ const form = useForm({
     keluhan: '',
     pemeriksaan: '',
     penyakit_id: null,
+    triase: '',
     tindakan: '',
     catatan: '',
     obat: [],
@@ -446,6 +447,21 @@ const totalJumlahObat = computed(() => {
 
 /*
 |--------------------------------------------------------------------------
+| VALIDASI SUBMIT
+|--------------------------------------------------------------------------
+*/
+
+const canSubmit = computed(() => {
+    return (
+        !!form.periode_id &&
+        !!form.siswa_id &&
+        !!form.keluhan?.trim()
+    )
+})
+
+
+/*
+|--------------------------------------------------------------------------
 | SUBMIT
 |--------------------------------------------------------------------------
 */
@@ -477,21 +493,6 @@ function submit() {
         }
     )
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| VALIDASI SUBMIT
-|--------------------------------------------------------------------------
-*/
-
-const canSubmit = computed(() => {
-    return (
-        !!form.periode_id &&
-        !!form.siswa_id &&
-        !!form.keluhan?.trim()
-    )
-})
 
 </script>
 
@@ -1208,6 +1209,186 @@ const canSubmit = computed(() => {
                                 class="mt-1.5 text-xs font-medium text-rose-600"
                             >
                                 {{ form.errors.keluhan }}
+                            </p>
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             TRIASE
+                        ================================================== -->
+
+                        <div>
+
+                            <label
+                                class="mb-2 block text-xs font-bold text-slate-600"
+                            >
+                                Triase
+                                <span class="text-rose-500">*</span>
+                            </label>
+
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+
+                                <!-- MERAH -->
+
+                                <label
+                                    class="cursor-pointer rounded-xl border p-4 transition"
+                                    :class="
+                                        form.triase === 'merah'
+                                            ? 'border-red-500 bg-red-50 ring-2 ring-red-100'
+                                            : 'border-slate-200 bg-white hover:bg-red-50'
+                                    "
+                                >
+
+                                    <div class="flex items-start gap-3">
+
+                                        <input
+                                            v-model="form.triase"
+                                            type="radio"
+                                            value="merah"
+                                            class="mt-1"
+                                        />
+
+                                        <div>
+
+                                            <p class="font-bold text-red-700">
+                                                🔴 Merah
+                                            </p>
+
+                                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                                Prioritas tinggi / kondisi gawat darurat
+                                                yang membutuhkan penanganan segera.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+
+                                <!-- KUNING -->
+
+                                <label
+                                    class="cursor-pointer rounded-xl border p-4 transition"
+                                    :class="
+                                        form.triase === 'kuning'
+                                            ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-100'
+                                            : 'border-slate-200 bg-white hover:bg-yellow-50'
+                                    "
+                                >
+
+                                    <div class="flex items-start gap-3">
+
+                                        <input
+                                            v-model="form.triase"
+                                            type="radio"
+                                            value="kuning"
+                                            class="mt-1"
+                                        />
+
+                                        <div>
+
+                                            <p class="font-bold text-yellow-700">
+                                                🟡 Kuning
+                                            </p>
+
+                                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                                Prioritas sedang dan membutuhkan
+                                                pemeriksaan atau penanganan.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+
+                                <!-- HIJAU -->
+
+                                <label
+                                    class="cursor-pointer rounded-xl border p-4 transition"
+                                    :class="
+                                        form.triase === 'hijau'
+                                            ? 'border-green-500 bg-green-50 ring-2 ring-green-100'
+                                            : 'border-slate-200 bg-white hover:bg-green-50'
+                                    "
+                                >
+
+                                    <div class="flex items-start gap-3">
+
+                                        <input
+                                            v-model="form.triase"
+                                            type="radio"
+                                            value="hijau"
+                                            class="mt-1"
+                                        />
+
+                                        <div>
+
+                                            <p class="font-bold text-green-700">
+                                                🟢 Hijau
+                                            </p>
+
+                                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                                Prioritas rendah dan tidak menunjukkan
+                                                kondisi gawat darurat.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+
+                                <!-- HITAM -->
+
+                                <label
+                                    class="cursor-pointer rounded-xl border p-4 transition"
+                                    :class="
+                                        form.triase === 'hitam'
+                                            ? 'border-slate-700 bg-slate-100 ring-2 ring-slate-200'
+                                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                                    "
+                                >
+
+                                    <div class="flex items-start gap-3">
+
+                                        <input
+                                            v-model="form.triase"
+                                            type="radio"
+                                            value="hitam"
+                                            class="mt-1"
+                                        />
+
+                                        <div>
+
+                                            <p class="font-bold text-slate-800">
+                                                ⚫ Hitam
+                                            </p>
+
+                                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                                                Kondisi meninggal atau tidak menunjukkan
+                                                tanda kehidupan.
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+
+                            <p
+                                v-if="form.errors.triase"
+                                class="mt-2 text-xs font-medium text-rose-600"
+                            >
+                                {{ form.errors.triase }}
                             </p>
 
                         </div>

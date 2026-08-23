@@ -19,6 +19,7 @@ class KunjunganKlinik extends Model
         'pemeriksaan',
         'diagnosis',
         'tindakan',
+        'triase',
         'status',
         'catatan',
         'pemeriksa_id',

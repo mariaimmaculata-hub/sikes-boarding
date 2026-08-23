@@ -37,12 +37,16 @@ class KunjunganController extends Controller
         | SEARCH SISWA
         |--------------------------------------------------------------------------
         */
+
         if ($request->filled('search')) {
+
             $search = $request->search;
 
             $query->whereHas('siswa', function ($q) use ($search) {
+
                 $q->where('nama', 'like', "%{$search}%")
                     ->orWhere('nisn', 'like', "%{$search}%");
+
             });
         }
 
@@ -51,7 +55,9 @@ class KunjunganController extends Controller
         | FILTER PERIODE
         |--------------------------------------------------------------------------
         */
+
         if ($request->filled('periode_id')) {
+
             $query->where(
                 'periode_id',
                 $request->periode_id
@@ -61,11 +67,11 @@ class KunjunganController extends Controller
         /*
         |--------------------------------------------------------------------------
         | FILTER TANGGAL
-        |
-        | Tanggal kunjungan mengikuti created_at.
         |--------------------------------------------------------------------------
         */
+
         if ($request->filled('tanggal')) {
+
             $query->whereDate(
                 'created_at',
                 $request->tanggal
@@ -77,6 +83,7 @@ class KunjunganController extends Controller
         | DATA KUNJUNGAN
         |--------------------------------------------------------------------------
         */
+
         $kunjungan = $query
             ->orderByDesc('created_at')
             ->orderByDesc('id')
@@ -85,16 +92,15 @@ class KunjunganController extends Controller
             ->through(function ($item) {
 
                 return [
+
                     'id' => $item->id,
 
                     /*
                     |--------------------------------------------------------------------------
-                    | TANGGAL INPUT / KUNJUNGAN
-                    |
-                    | Menggunakan created_at karena tanggal otomatis
-                    | dibuat oleh sistem saat data disimpan.
+                    | TANGGAL
                     |--------------------------------------------------------------------------
                     */
+
                     'created_at' => $item->created_at
                         ? $item->created_at->format('d/m/Y H:i')
                         : null,
@@ -103,11 +109,6 @@ class KunjunganController extends Controller
                         ? $item->created_at->format('Y-m-d')
                         : null,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | UPDATED AT
-                    |--------------------------------------------------------------------------
-                    */
                     'updated_at' => $item->updated_at
                         ? $item->updated_at->format('d/m/Y H:i')
                         : null,
@@ -117,6 +118,7 @@ class KunjunganController extends Controller
                     | DATA KESEHATAN
                     |--------------------------------------------------------------------------
                     */
+
                     'keluhan' => $item->keluhan,
 
                     'pemeriksaan' => $item->pemeriksaan,
@@ -126,6 +128,7 @@ class KunjunganController extends Controller
                     | PENYAKIT / DIAGNOSIS
                     |--------------------------------------------------------------------------
                     */
+
                     'penyakit' => $item->penyakit
                         ? [
                             'id' => $item->penyakit->id,
@@ -135,13 +138,23 @@ class KunjunganController extends Controller
                         ]
                         : null,
 
-                    'diagnosis' => $item->penyakit?->nama_penyakit,
+                    'diagnosis' =>
+                        $item->penyakit?->nama_penyakit,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TRIASE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'triase' => $item->triase,
 
                     /*
                     |--------------------------------------------------------------------------
                     | TINDAKAN
                     |--------------------------------------------------------------------------
                     */
+
                     'tindakan' => $item->tindakan,
 
                     /*
@@ -149,6 +162,7 @@ class KunjunganController extends Controller
                     | CATATAN
                     |--------------------------------------------------------------------------
                     */
+
                     'catatan' => $item->catatan,
 
                     /*
@@ -156,6 +170,7 @@ class KunjunganController extends Controller
                     | SISWA
                     |--------------------------------------------------------------------------
                     */
+
                     'siswa' => $item->siswa
                         ? [
                             'id' => $item->siswa->id,
@@ -174,7 +189,8 @@ class KunjunganController extends Controller
                             'jurusan' => $item->siswa->kelas?->jurusan
                                 ? [
                                     'id' => $item->siswa->kelas->jurusan->id,
-                                    'nama_jurusan' => $item->siswa->kelas->jurusan->nama_jurusan,
+                                    'nama_jurusan' =>
+                                        $item->siswa->kelas->jurusan->nama_jurusan,
                                 ]
                                 : null,
                         ]
@@ -185,6 +201,7 @@ class KunjunganController extends Controller
                     | PEMERIKSA
                     |--------------------------------------------------------------------------
                     */
+
                     'pemeriksa' => $item->pemeriksa
                         ? [
                             'id' => $item->pemeriksa->id,
@@ -197,10 +214,12 @@ class KunjunganController extends Controller
                     | PERIODE
                     |--------------------------------------------------------------------------
                     */
+
                     'periode' => $item->periode
                         ? [
                             'id' => $item->periode->id,
-                            'nama_periode' => $item->periode->nama_periode,
+                            'nama_periode' =>
+                                $item->periode->nama_periode,
                         ]
                         : null,
 
@@ -209,20 +228,27 @@ class KunjunganController extends Controller
                     | OBAT
                     |--------------------------------------------------------------------------
                     */
+
                     'obat' => $item->kunjunganObat
                         ->map(function ($itemObat) {
+
                             return [
+
                                 'id' => $itemObat->id,
 
                                 'obat_id' => $itemObat->obat_id,
 
-                                'nama_obat' => $itemObat->obat?->nama_obat,
+                                'nama_obat' =>
+                                    $itemObat->obat?->nama_obat,
 
-                                'satuan' => $itemObat->obat?->satuan,
+                                'satuan' =>
+                                    $itemObat->obat?->satuan,
 
-                                'jumlah' => $itemObat->jumlah,
+                                'jumlah' =>
+                                    $itemObat->jumlah,
 
-                                'keterangan' => $itemObat->keterangan,
+                                'keterangan' =>
+                                    $itemObat->keterangan,
                             ];
                         })
                         ->values(),
@@ -234,112 +260,170 @@ class KunjunganController extends Controller
         | DATA PERIODE
         |--------------------------------------------------------------------------
         */
+
         $periodeList = Periode::query()
             ->orderByDesc('tanggal_mulai')
             ->get()
             ->map(function ($periode) {
+
                 return [
+
                     'id' => $periode->id,
 
-                    'nama_periode' => $periode->nama_periode,
+                    'nama_periode' =>
+                        $periode->nama_periode,
 
-                    'tanggal_mulai' => $periode->tanggal_mulai,
+                    'tanggal_mulai' =>
+                        $periode->tanggal_mulai,
 
-                    'tanggal_selesai' => $periode->tanggal_selesai,
+                    'tanggal_selesai' =>
+                        $periode->tanggal_selesai,
                 ];
             });
-/*
-|--------------------------------------------------------------------------
-| STATISTIK
-|--------------------------------------------------------------------------
-*/
 
-$totalKunjungan = KunjunganKlinik::count();
+        /*
+        |--------------------------------------------------------------------------
+        | STATISTIK
+        |--------------------------------------------------------------------------
+        */
 
-$kunjunganHariIni = KunjunganKlinik::whereDate(
-    'created_at',
-    today()
-)->count();
+        $totalKunjungan =
+            KunjunganKlinik::count();
 
+        $kunjunganHariIni =
+            KunjunganKlinik::whereDate(
+                'created_at',
+                today()
+            )->count();
 
-/*
-|--------------------------------------------------------------------------
-| TREN PENYAKIT
-|--------------------------------------------------------------------------
-|
-| Menghitung jumlah kunjungan berdasarkan penyakit.
-|
-*/
+        /*
+        |--------------------------------------------------------------------------
+        | TREND PENYAKIT
+        |--------------------------------------------------------------------------
+        */
 
-$trendPenyakitQuery = KunjunganKlinik::query()
-    ->select(
-        'penyakit_id',
-        DB::raw('COUNT(*) as jumlah')
-    )
-    ->whereNotNull('penyakit_id')
-    ->groupBy('penyakit_id')
-    ->with('penyakit');
+        $trendPenyakitQuery = KunjunganKlinik::query()
+            ->select(
+                'penyakit_id',
+                DB::raw('COUNT(*) as jumlah')
+            )
+            ->whereNotNull('penyakit_id')
+            ->groupBy('penyakit_id')
+            ->with('penyakit');
 
+        if ($request->filled('periode_id')) {
 
-// Jika sedang memilih periode,
-// statistik penyakit mengikuti periode tersebut.
-if ($request->filled('periode_id')) {
-    $trendPenyakitQuery->where(
-        'periode_id',
-        $request->periode_id
-    );
-}
+            $trendPenyakitQuery->where(
+                'periode_id',
+                $request->periode_id
+            );
+        }
 
-$trendPenyakit = $trendPenyakitQuery
-    ->get()
-    ->map(function ($item) {
-        return [
-            'id' => $item->penyakit_id,
+        $trendPenyakit = $trendPenyakitQuery
+            ->get()
+            ->map(function ($item) {
 
-            'nama_penyakit' =>
-                $item->penyakit?->nama_penyakit
-                ?? 'Tidak diketahui',
+                return [
 
-            'jumlah' => (int) $item->jumlah,
-        ];
-    })
-    ->sortByDesc('jumlah')
-    ->values();
+                    'id' => $item->penyakit_id,
 
+                    'nama_penyakit' =>
+                        $item->penyakit?->nama_penyakit
+                        ?? 'Tidak diketahui',
 
-// Jumlah maksimal untuk menentukan panjang bar
-$maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
+                    'jumlah' =>
+                        (int) $item->jumlah,
+                ];
+            })
+            ->sortByDesc('jumlah')
+            ->values();
+
+        $maxTrendPenyakit =
+            $trendPenyakit->max('jumlah') ?? 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | TREND TRIASE
+        |--------------------------------------------------------------------------
+        */
+
+        $trendTriase = KunjunganKlinik::query()
+            ->select(
+                'triase',
+                DB::raw('COUNT(*) as jumlah')
+            )
+            ->whereNotNull('triase')
+            ->groupBy('triase');
+
+        if ($request->filled('periode_id')) {
+
+            $trendTriase->where(
+                'periode_id',
+                $request->periode_id
+            );
+        }
+
+        $trendTriase = $trendTriase
+            ->get()
+            ->map(function ($item) {
+
+                return [
+
+                    'triase' => $item->triase,
+
+                    'jumlah' =>
+                        (int) $item->jumlah,
+                ];
+            })
+            ->values();
+
         /*
         |--------------------------------------------------------------------------
         | RETURN
         |--------------------------------------------------------------------------
         */
+
         return Inertia::render(
-    'Klinik/Kesehatan/Kunjungan/Index',
-    [
-        'kunjungan' => $kunjungan,
+            'Klinik/Kesehatan/Kunjungan/Index',
+            [
 
-        'periodeList' => $periodeList,
+                'kunjungan' =>
+                    $kunjungan,
 
-        'statistik' => [
-            'total' => $totalKunjungan,
+                'periodeList' =>
+                    $periodeList,
 
-            'hari_ini' => $kunjunganHariIni,
+                'statistik' => [
 
-            'trend_penyakit' => $trendPenyakit,
+                    'total' =>
+                        $totalKunjungan,
 
-            'max_trend_penyakit' => $maxTrendPenyakit,
-        ],
+                    'hari_ini' =>
+                        $kunjunganHariIni,
 
-        'filter' => [
-            'search' => $request->search,
+                    'trend_penyakit' =>
+                        $trendPenyakit,
 
-            'periode_id' => $request->periode_id,
+                    'max_trend_penyakit' =>
+                        $maxTrendPenyakit,
 
-            'tanggal' => $request->tanggal,
-        ],
-    ]
-);
+                    'trend_triase' =>
+                        $trendTriase,
+                ],
+
+                'filter' => [
+
+                    'search' =>
+                        $request->search,
+
+                    'periode_id' =>
+                        $request->periode_id,
+
+                    'tanggal' =>
+                        $request->tanggal,
+                ],
+            ]
+        );
     }
 
 
@@ -355,6 +439,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
         | PERIODE AKTIF
         |--------------------------------------------------------------------------
         */
+
         $periode = Periode::where(
             'status',
             'aktif'
@@ -362,106 +447,188 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
         /*
         |--------------------------------------------------------------------------
-        | DATA SISWA
+        | SISWA
         |--------------------------------------------------------------------------
         */
+
         $siswas = Siswa::with([
             'kelas.jurusan',
         ])
             ->orderBy('nama')
             ->get()
             ->map(function ($siswa) {
+
                 return [
-                    'id' => $siswa->id,
 
-                    'nisn' => $siswa->nisn,
+                    'id' =>
+                        $siswa->id,
 
-                    'nama' => $siswa->nama,
+                    'nisn' =>
+                        $siswa->nisn,
 
-                    'kelas' => $siswa->kelas
-                        ? [
-                            'id' => $siswa->kelas->id,
+                    'nama' =>
+                        $siswa->nama,
 
-                            'nama_kelas' => $siswa->kelas->nama_kelas,
-                        ]
-                        : null,
+                    'kelas' =>
+                        $siswa->kelas
+                            ? [
+                                'id' =>
+                                    $siswa->kelas->id,
 
-                    'jurusan' => $siswa->kelas?->jurusan
-                        ? [
-                            'id' => $siswa->kelas->jurusan->id,
+                                'nama_kelas' =>
+                                    $siswa->kelas->nama_kelas,
+                            ]
+                            : null,
 
-                            'nama_jurusan' => $siswa->kelas->jurusan->nama_jurusan,
-                        ]
-                        : null,
+                    'jurusan' =>
+                        $siswa->kelas?->jurusan
+                            ? [
+                                'id' =>
+                                    $siswa->kelas->jurusan->id,
+
+                                'nama_jurusan' =>
+                                    $siswa
+                                        ->kelas
+                                        ->jurusan
+                                        ->nama_jurusan,
+                            ]
+                            : null,
                 ];
             });
 
         /*
         |--------------------------------------------------------------------------
-        | DATA PENYAKIT
+        | PENYAKIT
         |--------------------------------------------------------------------------
         */
+
         $penyakitList = Penyakit::query()
             ->orderBy('nama_penyakit')
             ->get()
             ->map(function ($penyakit) {
+
                 return [
-                    'id' => $penyakit->id,
 
-                    'nama_penyakit' => $penyakit->nama_penyakit,
+                    'id' =>
+                        $penyakit->id,
 
-                    'kategori' => $penyakit->kategori,
+                    'nama_penyakit' =>
+                        $penyakit->nama_penyakit,
 
-                    'keterangan' => $penyakit->keterangan,
+                    'kategori' =>
+                        $penyakit->kategori,
+
+                    'keterangan' =>
+                        $penyakit->keterangan,
                 ];
             })
             ->values();
 
         /*
         |--------------------------------------------------------------------------
-        | DATA OBAT
+        | OBAT
         |--------------------------------------------------------------------------
         */
+
         $obatList = Obat::query()
             ->where('stok', '>', 0)
             ->orderBy('nama_obat')
             ->get()
             ->map(function ($obat) {
+
                 return [
-                    'id' => $obat->id,
 
-                    'nama_obat' => $obat->nama_obat,
+                    'id' =>
+                        $obat->id,
 
-                    'satuan' => $obat->satuan,
+                    'nama_obat' =>
+                        $obat->nama_obat,
 
-                    'stok' => $obat->stok,
+                    'satuan' =>
+                        $obat->satuan,
 
-                    'keterangan' => $obat->keterangan,
+                    'stok' =>
+                        $obat->stok,
+
+                    'keterangan' =>
+                        $obat->keterangan,
                 ];
             })
             ->values();
 
         /*
         |--------------------------------------------------------------------------
-        | RETURN FORM
+        | DATA TRIASE
         |--------------------------------------------------------------------------
         */
+
+        $triaseList = [
+
+            [
+                'value' => 'merah',
+                'label' => 'Merah',
+                'prioritas' => 'Prioritas Tinggi',
+                'deskripsi' =>
+                    'Gawat darurat dan mengancam nyawa.',
+            ],
+
+            [
+                'value' => 'kuning',
+                'label' => 'Kuning',
+                'prioritas' => 'Prioritas Sedang',
+                'deskripsi' =>
+                    'Darurat tetapi tidak ada ancaman kematian segera.',
+            ],
+
+            [
+                'value' => 'hijau',
+                'label' => 'Hijau',
+                'prioritas' => 'Prioritas Rendah',
+                'deskripsi' =>
+                    'Tidak gawat dan tidak ada ancaman kematian.',
+            ],
+
+            [
+                'value' => 'hitam',
+                'label' => 'Hitam',
+                'prioritas' => 'Prioritas Rendah',
+                'deskripsi' =>
+                    'Darurat tidak gawat dan tidak ada harapan hidup.',
+            ],
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN
+        |--------------------------------------------------------------------------
+        */
+
         return Inertia::render(
             'Klinik/Kesehatan/Kunjungan/Create',
             [
-                'periode' => $periode
-                    ? [
-                        'id' => $periode->id,
 
-                        'nama_periode' => $periode->nama_periode,
-                    ]
-                    : null,
+                'periode' =>
+                    $periode
+                        ? [
+                            'id' =>
+                                $periode->id,
 
-                'siswas' => $siswas,
+                            'nama_periode' =>
+                                $periode->nama_periode,
+                        ]
+                        : null,
 
-                'penyakitList' => $penyakitList,
+                'siswas' =>
+                    $siswas,
 
-                'obatList' => $obatList,
+                'penyakitList' =>
+                    $penyakitList,
+
+                'obatList' =>
+                    $obatList,
+
+                'triaseList' =>
+                    $triaseList,
             ]
         );
     }
@@ -477,15 +644,11 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
         /*
         |--------------------------------------------------------------------------
         | VALIDASI
-        |
-        | Tidak ada:
-        | - tanggal_kunjungan
-        | - status
-        |
-        | Keduanya ditentukan sistem.
         |--------------------------------------------------------------------------
         */
+
         $validated = $request->validate([
+
             'periode_id' => [
                 'required',
                 'exists:periodes,id',
@@ -509,6 +672,17 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             'penyakit_id' => [
                 'nullable',
                 'exists:penyakits,id',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | TRIASE
+            |--------------------------------------------------------------------------
+            */
+
+            'triase' => [
+                'required',
+                'in:merah,kuning,hijau,hitam',
             ],
 
             'tindakan' => [
@@ -543,46 +717,65 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             ],
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
+
         DB::transaction(function () use ($validated) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN KUNJUNGAN
-            |
-            | created_at otomatis diisi Laravel.
-            | tanggal_kunjungan juga diisi menggunakan waktu sistem.
-            |
-            | Tidak ada input tanggal dari user.
-            |--------------------------------------------------------------------------
-            */
             $kunjungan = KunjunganKlinik::create([
-                'periode_id' => $validated['periode_id'],
 
-                'tanggal_kunjungan' => now(),
+                'periode_id' =>
+                    $validated['periode_id'],
 
-                'siswa_id' => $validated['siswa_id'],
+                'tanggal_kunjungan' =>
+                    now(),
 
-                'keluhan' => $validated['keluhan'] ?? null,
+                'siswa_id' =>
+                    $validated['siswa_id'],
 
-                'pemeriksaan' => $validated['pemeriksaan'] ?? null,
+                'keluhan' =>
+                    $validated['keluhan'] ?? null,
 
-                'penyakit_id' => $validated['penyakit_id'] ?? null,
+                'pemeriksaan' =>
+                    $validated['pemeriksaan'] ?? null,
 
-                'tindakan' => $validated['tindakan'] ?? null,
+                'penyakit_id' =>
+                    $validated['penyakit_id'] ?? null,
 
-                'catatan' => $validated['catatan'] ?? null,
+                /*
+                |--------------------------------------------------------------------------
+                | SIMPAN TRIASE
+                |--------------------------------------------------------------------------
+                */
 
-                'pemeriksa_id' => auth()->id(),
+                'triase' =>
+                    $validated['triase'],
+
+                'tindakan' =>
+                    $validated['tindakan'] ?? null,
+
+                'catatan' =>
+                    $validated['catatan'] ?? null,
+
+                'pemeriksa_id' =>
+                    auth()->id(),
             ]);
 
             /*
             |--------------------------------------------------------------------------
-            | SIMPAN OBAT DAN KURANGI STOK
+            | SIMPAN OBAT
             |--------------------------------------------------------------------------
             */
+
             if (!empty($validated['obat'])) {
 
-                foreach ($validated['obat'] as $item) {
+                foreach (
+                    $validated['obat']
+                    as $item
+                ) {
 
                     $obat = Obat::lockForUpdate()
                         ->findOrFail(
@@ -593,19 +786,25 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                         $obat->stok <
                         $item['jumlah']
                     ) {
+
                         throw new \Exception(
                             "Stok obat {$obat->nama_obat} tidak mencukupi. Stok tersedia: {$obat->stok}."
                         );
                     }
 
                     KunjunganObat::create([
-                        'kunjungan_id' => $kunjungan->id,
 
-                        'obat_id' => $obat->id,
+                        'kunjungan_id' =>
+                            $kunjungan->id,
 
-                        'jumlah' => $item['jumlah'],
+                        'obat_id' =>
+                            $obat->id,
 
-                        'keterangan' => $item['keterangan'] ?? null,
+                        'jumlah' =>
+                            $item['jumlah'],
+
+                        'keterangan' =>
+                            $item['keterangan'] ?? null,
                     ]);
 
                     $obat->decrement(
@@ -615,6 +814,12 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                 }
             }
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECT
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()
             ->route(
@@ -635,90 +840,127 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
     public function show(
         KunjunganKlinik $kunjungan
     ) {
+
         $kunjungan->load([
+
             'siswa.kelas.jurusan',
+
             'pemeriksa',
+
             'periode',
+
             'penyakit',
+
             'kunjunganObat.obat',
         ]);
 
         return Inertia::render(
             'Klinik/Kesehatan/Kunjungan/Show',
             [
+
                 'kunjungan' => [
-                    'id' => $kunjungan->id,
+
+                    'id' =>
+                        $kunjungan->id,
 
                     /*
                     |--------------------------------------------------------------------------
-                    | TANGGAL INPUT
-                    |
-                    | Tanggal ditampilkan dari created_at.
+                    | TANGGAL
                     |--------------------------------------------------------------------------
                     */
-                    'created_at' => $kunjungan->created_at
-                        ? $kunjungan->created_at->format('d/m/Y H:i')
-                        : null,
+
+                    'created_at' =>
+                        $kunjungan->created_at
+                            ? $kunjungan
+                                ->created_at
+                                ->format('d/m/Y H:i')
+                            : null,
+
+                    'tanggal_kunjungan' =>
+                        $kunjungan->tanggal_kunjungan
+                            ? \Carbon\Carbon::parse(
+                                $kunjungan->tanggal_kunjungan
+                            )->format('d/m/Y H:i')
+                            : (
+                                $kunjungan->created_at
+                                    ? $kunjungan
+                                        ->created_at
+                                        ->format('d/m/Y H:i')
+                                    : null
+                            ),
+
+                    'updated_at' =>
+                        $kunjungan->updated_at
+                            ? $kunjungan
+                                ->updated_at
+                                ->format('d/m/Y H:i')
+                            : null,
 
                     /*
                     |--------------------------------------------------------------------------
-                    | TANGGAL KUNJUNGAN
-                    |
-                    | Tetap dikirim jika kolom ini masih digunakan
-                    | oleh view/PDF.
+                    | DATA KESEHATAN
                     |--------------------------------------------------------------------------
                     */
-                    'tanggal_kunjungan' => $kunjungan->tanggal_kunjungan
-                        ? \Carbon\Carbon::parse(
-                            $kunjungan->tanggal_kunjungan
-                        )->format('d/m/Y H:i')
-                        : (
-                            $kunjungan->created_at
-                                ? $kunjungan->created_at->format('d/m/Y H:i')
-                                : null
-                        ),
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | UPDATED AT
-                    |--------------------------------------------------------------------------
-                    */
-                    'updated_at' => $kunjungan->updated_at
-                        ? $kunjungan->updated_at->format('d/m/Y H:i')
-                        : null,
+                    'keluhan' =>
+                        $kunjungan->keluhan,
 
-                    'keluhan' => $kunjungan->keluhan,
-
-                    'pemeriksaan' => $kunjungan->pemeriksaan,
+                    'pemeriksaan' =>
+                        $kunjungan->pemeriksaan,
 
                     /*
                     |--------------------------------------------------------------------------
                     | PENYAKIT
                     |--------------------------------------------------------------------------
                     */
-                    'penyakit' => $kunjungan->penyakit
-                        ? [
-                            'id' => $kunjungan->penyakit->id,
 
-                            'nama_penyakit' =>
-                                $kunjungan->penyakit->nama_penyakit,
+                    'penyakit' =>
+                        $kunjungan->penyakit
+                            ? [
 
-                            'kategori' =>
-                                $kunjungan->penyakit->kategori,
+                                'id' =>
+                                    $kunjungan
+                                        ->penyakit
+                                        ->id,
 
-                            'keterangan' =>
-                                $kunjungan->penyakit->keterangan,
-                        ]
-                        : null,
+                                'nama_penyakit' =>
+                                    $kunjungan
+                                        ->penyakit
+                                        ->nama_penyakit,
+
+                                'kategori' =>
+                                    $kunjungan
+                                        ->penyakit
+                                        ->kategori,
+
+                                'keterangan' =>
+                                    $kunjungan
+                                        ->penyakit
+                                        ->keterangan,
+
+                            ]
+                            : null,
 
                     'diagnosis' =>
-                        $kunjungan->penyakit?->nama_penyakit,
+                        $kunjungan
+                            ->penyakit
+                            ?->nama_penyakit,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | TRIASE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'triase' =>
+                        $kunjungan->triase,
 
                     /*
                     |--------------------------------------------------------------------------
                     | TINDAKAN
                     |--------------------------------------------------------------------------
                     */
+
                     'tindakan' =>
                         $kunjungan->tindakan,
 
@@ -727,6 +969,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     | CATATAN
                     |--------------------------------------------------------------------------
                     */
+
                     'catatan' =>
                         $kunjungan->catatan,
 
@@ -735,21 +978,32 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     | SISWA
                     |--------------------------------------------------------------------------
                     */
+
                     'siswa' =>
                         $kunjungan->siswa
                             ? [
+
                                 'id' =>
-                                    $kunjungan->siswa->id,
+                                    $kunjungan
+                                        ->siswa
+                                        ->id,
 
                                 'nisn' =>
-                                    $kunjungan->siswa->nisn,
+                                    $kunjungan
+                                        ->siswa
+                                        ->nisn,
 
                                 'nama' =>
-                                    $kunjungan->siswa->nama,
+                                    $kunjungan
+                                        ->siswa
+                                        ->nama,
 
                                 'kelas' =>
-                                    $kunjungan->siswa->kelas
+                                    $kunjungan
+                                        ->siswa
+                                        ->kelas
                                         ? [
+
                                             'id' =>
                                                 $kunjungan
                                                     ->siswa
@@ -761,6 +1015,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                                                     ->siswa
                                                     ->kelas
                                                     ->nama_kelas,
+
                                         ]
                                         : null,
 
@@ -770,6 +1025,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                                         ->kelas
                                         ?->jurusan
                                         ? [
+
                                             'id' =>
                                                 $kunjungan
                                                     ->siswa
@@ -783,6 +1039,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                                                     ->kelas
                                                     ->jurusan
                                                     ->nama_jurusan,
+
                                         ]
                                         : null,
                             ]
@@ -793,14 +1050,21 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     | PEMERIKSA
                     |--------------------------------------------------------------------------
                     */
+
                     'pemeriksa' =>
                         $kunjungan->pemeriksa
                             ? [
+
                                 'id' =>
-                                    $kunjungan->pemeriksa->id,
+                                    $kunjungan
+                                        ->pemeriksa
+                                        ->id,
 
                                 'name' =>
-                                    $kunjungan->pemeriksa->name,
+                                    $kunjungan
+                                        ->pemeriksa
+                                        ->name,
+
                             ]
                             : null,
 
@@ -809,15 +1073,21 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     | PERIODE
                     |--------------------------------------------------------------------------
                     */
+
                     'periode' =>
                         $kunjungan->periode
                             ? [
+
                                 'id' =>
-                                    $kunjungan->periode->id,
+                                    $kunjungan
+                                        ->periode
+                                        ->id,
 
                                 'nama_periode' =>
-                                    $kunjungan->periode
+                                    $kunjungan
+                                        ->periode
                                         ->nama_periode,
+
                             ]
                             : null,
 
@@ -826,10 +1096,14 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     | OBAT
                     |--------------------------------------------------------------------------
                     */
+
                     'obat' =>
-                        $kunjungan->kunjunganObat
+                        $kunjungan
+                            ->kunjunganObat
                             ->map(function ($item) {
+
                                 return [
+
                                     'id' =>
                                         $item->id,
 
@@ -837,10 +1111,14 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                                         $item->obat_id,
 
                                     'nama_obat' =>
-                                        $item->obat?->nama_obat,
+                                        $item
+                                            ->obat
+                                            ?->nama_obat,
 
                                     'satuan' =>
-                                        $item->obat?->satuan,
+                                        $item
+                                            ->obat
+                                            ?->satuan,
 
                                     'jumlah' =>
                                         $item->jumlah,
@@ -858,24 +1136,31 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
     /**
      * ============================================================
-     * PRINT DETAIL KUNJUNGAN
+     * PRINT
      * ============================================================
      */
     public function print(
         KunjunganKlinik $kunjungan
     ) {
+
         $kunjungan->load([
+
             'siswa.kelas.jurusan',
+
             'pemeriksa',
+
             'periode',
+
             'penyakit',
+
             'kunjunganObat.obat',
         ]);
 
         return view(
             'pdf.kunjungan-klinik',
             [
-                'kunjungan' => $kunjungan,
+                'kunjungan' =>
+                    $kunjungan,
             ]
         );
     }
@@ -883,24 +1168,31 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
     /**
      * ============================================================
-     * DOWNLOAD PDF
+     * PDF
      * ============================================================
      */
     public function pdf(
         KunjunganKlinik $kunjungan
     ) {
+
         $kunjungan->load([
+
             'siswa.kelas.jurusan',
+
             'pemeriksa',
+
             'periode',
+
             'penyakit',
+
             'kunjunganObat.obat',
         ]);
 
         $pdf = Pdf::loadView(
             'pdf.kunjungan-klinik',
             [
-                'kunjungan' => $kunjungan,
+                'kunjungan' =>
+                    $kunjungan,
             ]
         );
 
@@ -909,21 +1201,23 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             'portrait'
         );
 
-        $namaSiswa = $kunjungan->siswa?->nama
+        $namaSiswa = $kunjungan
+            ->siswa
+            ?->nama;
+
+        $namaSiswa = $namaSiswa
             ? preg_replace(
                 '/[^A-Za-z0-9\-]/',
                 '-',
-                $kunjungan->siswa->nama
+                $namaSiswa
             )
             : 'siswa';
 
-        /*
-        |--------------------------------------------------------------------------
-        | NAMA FILE MENGGUNAKAN CREATED_AT
-        |--------------------------------------------------------------------------
-        */
-        $tanggal = $kunjungan->created_at
-            ? $kunjungan->created_at->format('Y-m-d')
+        $tanggal = $kunjungan
+            ->created_at
+            ? $kunjungan
+                ->created_at
+                ->format('Y-m-d')
             : now()->format('Y-m-d');
 
         return $pdf->download(
@@ -944,66 +1238,89 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
     public function edit(
         KunjunganKlinik $kunjungan
     ) {
+
         $kunjungan->load([
+
             'siswa.kelas.jurusan',
+
             'penyakit',
+
             'kunjunganObat.obat',
+
             'periode',
         ]);
 
         /*
         |--------------------------------------------------------------------------
-        | DATA SISWA
+        | SISWA
         |--------------------------------------------------------------------------
         */
+
         $siswas = Siswa::with([
             'kelas.jurusan',
         ])
             ->orderBy('nama')
             ->get()
             ->map(function ($siswa) {
+
                 return [
-                    'id' => $siswa->id,
 
-                    'nisn' => $siswa->nisn,
+                    'id' =>
+                        $siswa->id,
 
-                    'nama' => $siswa->nama,
+                    'nisn' =>
+                        $siswa->nisn,
 
-                    'kelas' => $siswa->kelas
-                        ? [
-                            'id' =>
-                                $siswa->kelas->id,
+                    'nama' =>
+                        $siswa->nama,
 
-                            'nama_kelas' =>
-                                $siswa->kelas->nama_kelas,
-                        ]
-                        : null,
+                    'kelas' =>
+                        $siswa->kelas
+                            ? [
 
-                    'jurusan' => $siswa->kelas?->jurusan
-                        ? [
-                            'id' =>
-                                $siswa->kelas->jurusan->id,
+                                'id' =>
+                                    $siswa->kelas->id,
 
-                            'nama_jurusan' =>
-                                $siswa
-                                    ->kelas
-                                    ->jurusan
-                                    ->nama_jurusan,
-                        ]
-                        : null,
+                                'nama_kelas' =>
+                                    $siswa->kelas->nama_kelas,
+
+                            ]
+                            : null,
+
+                    'jurusan' =>
+                        $siswa->kelas?->jurusan
+                            ? [
+
+                                'id' =>
+                                    $siswa
+                                        ->kelas
+                                        ->jurusan
+                                        ->id,
+
+                                'nama_jurusan' =>
+                                    $siswa
+                                        ->kelas
+                                        ->jurusan
+                                        ->nama_jurusan,
+
+                            ]
+                            : null,
                 ];
             });
 
         /*
         |--------------------------------------------------------------------------
-        | DATA PENYAKIT
+        | PENYAKIT
         |--------------------------------------------------------------------------
         */
+
         $penyakitList = Penyakit::query()
             ->orderBy('nama_penyakit')
             ->get()
             ->map(function ($penyakit) {
+
                 return [
+
                     'id' =>
                         $penyakit->id,
 
@@ -1021,14 +1338,17 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
         /*
         |--------------------------------------------------------------------------
-        | DATA OBAT
+        | OBAT
         |--------------------------------------------------------------------------
         */
+
         $obatList = Obat::query()
             ->orderBy('nama_obat')
             ->get()
             ->map(function ($obat) {
+
                 return [
+
                     'id' =>
                         $obat->id,
 
@@ -1047,9 +1367,51 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             })
             ->values();
 
+        /*
+        |--------------------------------------------------------------------------
+        | TRIASE
+        |--------------------------------------------------------------------------
+        */
+
+        $triaseList = [
+
+            [
+                'value' => 'merah',
+                'label' => 'Merah',
+                'prioritas' => 'Prioritas Tinggi',
+                'deskripsi' =>
+                    'Gawat darurat dan mengancam nyawa.',
+            ],
+
+            [
+                'value' => 'kuning',
+                'label' => 'Kuning',
+                'prioritas' => 'Prioritas Sedang',
+                'deskripsi' =>
+                    'Darurat tetapi tidak ada ancaman kematian segera.',
+            ],
+
+            [
+                'value' => 'hijau',
+                'label' => 'Hijau',
+                'prioritas' => 'Prioritas Rendah',
+                'deskripsi' =>
+                    'Tidak gawat dan tidak ada ancaman kematian.',
+            ],
+
+            [
+                'value' => 'hitam',
+                'label' => 'Hitam',
+                'prioritas' => 'Prioritas Rendah',
+                'deskripsi' =>
+                    'Darurat tidak gawat dan tidak ada harapan hidup.',
+            ],
+        ];
+
         return Inertia::render(
             'Klinik/Kesehatan/Kunjungan/Edit',
             [
+
                 'kunjungan' =>
                     $kunjungan,
 
@@ -1061,6 +1423,9 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
                 'obatList' =>
                     $obatList,
+
+                'triaseList' =>
+                    $triaseList,
             ]
         );
     }
@@ -1075,16 +1440,15 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
         Request $request,
         KunjunganKlinik $kunjungan
     ) {
+
         /*
         |--------------------------------------------------------------------------
         | VALIDASI
-        |
-        | Tidak ada:
-        | - tanggal_kunjungan
-        | - status
         |--------------------------------------------------------------------------
         */
+
         $validated = $request->validate([
+
             'periode_id' => [
                 'required',
                 'exists:periodes,id',
@@ -1110,6 +1474,17 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                 'exists:penyakits,id',
             ],
 
+            /*
+            |--------------------------------------------------------------------------
+            | TRIASE
+            |--------------------------------------------------------------------------
+            */
+
+            'triase' => [
+                'required',
+                'in:merah,kuning,hijau,hitam',
+            ],
+
             'tindakan' => [
                 'nullable',
                 'string',
@@ -1124,13 +1499,11 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
         /*
         |--------------------------------------------------------------------------
         | UPDATE
-        |
-        | created_at TIDAK BERUBAH.
-        | tanggal_kunjungan TIDAK BERUBAH.
-        | updated_at otomatis berubah.
         |--------------------------------------------------------------------------
         */
+
         $kunjungan->update([
+
             'periode_id' =>
                 $validated['periode_id'],
 
@@ -1145,6 +1518,15 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
             'penyakit_id' =>
                 $validated['penyakit_id'] ?? null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE TRIASE
+            |--------------------------------------------------------------------------
+            */
+
+            'triase' =>
+                $validated['triase'],
 
             'tindakan' =>
                 $validated['tindakan'] ?? null,
@@ -1172,6 +1554,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
     public function destroy(
         KunjunganKlinik $kunjungan
     ) {
+
         DB::transaction(function () use ($kunjungan) {
 
             $kunjungan->load(
@@ -1180,9 +1563,10 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
 
             /*
             |--------------------------------------------------------------------------
-            | KEMBALIKAN STOK OBAT
+            | KEMBALIKAN STOK
             |--------------------------------------------------------------------------
             */
+
             foreach (
                 $kunjungan->kunjunganObat
                 as $item
@@ -1194,6 +1578,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
                     );
 
                 if ($obat) {
+
                     $obat->increment(
                         'stok',
                         $item->jumlah
@@ -1206,6 +1591,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             | HAPUS DETAIL OBAT
             |--------------------------------------------------------------------------
             */
+
             $kunjungan
                 ->kunjunganObat()
                 ->delete();
@@ -1215,6 +1601,7 @@ $maxTrendPenyakit = $trendPenyakit->max('jumlah') ?? 0;
             | HAPUS KUNJUNGAN
             |--------------------------------------------------------------------------
             */
+
             $kunjungan->delete();
         });
 

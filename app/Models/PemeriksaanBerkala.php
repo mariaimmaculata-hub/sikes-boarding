@@ -10,32 +10,47 @@ class PemeriksaanBerkala extends Model
     protected $table = 'pemeriksaan_berkala';
     
     protected $fillable = [
-        'siswa_id',
-        'periode_id',
-        'tanggal_pemeriksaan',
-        'jenis_pemeriksaan',
+    'periode_id',
+    'siswa_id',
+    'jenis_pemeriksaan',
+    'tanggal_pemeriksaan',
 
-        'berat_badan',
-        'tinggi_badan',
-        'imt',
+    // Antropometri
+    'berat_badan',
+    'tinggi_badan',
+    'imt',
 
-        'tekanan_darah',
-        'denyut_nadi',
-        'suhu_tubuh',
+    'mata',
+    'telinga',
+    'gigi_mulut',
+    'kondisi_umum',
 
-        'mata',
-        'telinga',
-        'gigi_mulut',
-        'kondisi_umum',
+    // Tanda vital
+    'tekanan_darah',
+    'denyut_nadi',
+    'suhu_tubuh',
+    'saturasi_oksigen',
 
-        'keluhan',
-        'hasil_pemeriksaan',
-        'rekomendasi',
-        'catatan',
+    // Kebersihan
+    'kebersihan_rambut',
+    'kebersihan_wajah',
+    'kebersihan_telinga',
+    'kebersihan_hidung',
+    'kebersihan_mulut_gigi',
+    'kebersihan_tangan_kuku',
+    'kebersihan_kulit_badan',
+    'kebersihan_kaki_kuku',
 
-        'status',
-        'pemeriksa_id',
-    ];
+    // Hasil
+    'keluhan',
+    'hasil_pemeriksaan',
+    'rekomendasi',
+
+    // Status
+    'status',
+    'catatan',
+    'pemeriksa_id',
+];
 
     protected $casts = [
         'tanggal_pemeriksaan' => 'date',

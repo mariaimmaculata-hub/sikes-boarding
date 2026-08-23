@@ -61,11 +61,21 @@ const jenisLabel = computed(() => {
 // ============================================================
 
 const form = useForm({
+    // ========================================================
+    // DATA PEMERIKSAAN
+    // ========================================================
+
     tanggal_pemeriksaan:
         props.pemeriksaan?.tanggal_pemeriksaan
         ?? new Date().toISOString().slice(0, 10),
 
+    status:
+        props.pemeriksaan?.status ?? 'belum',
+
+    // ========================================================
     // ANTROPOMETRI
+    // ========================================================
+
     berat_badan:
         props.pemeriksaan?.berat_badan ?? '',
 
@@ -75,7 +85,10 @@ const form = useForm({
     imt:
         props.pemeriksaan?.imt ?? '',
 
+    // ========================================================
     // TANDA VITAL
+    // ========================================================
+
     tekanan_darah:
         props.pemeriksaan?.tekanan_darah ?? '',
 
@@ -85,7 +98,13 @@ const form = useForm({
     suhu_tubuh:
         props.pemeriksaan?.suhu_tubuh ?? '',
 
+    saturasi_oksigen:
+        props.pemeriksaan?.saturasi_oksigen ?? '',
+
+    // ========================================================
     // PEMERIKSAAN FISIK
+    // ========================================================
+
     mata:
         props.pemeriksaan?.mata ?? '',
 
@@ -98,7 +117,39 @@ const form = useForm({
     kondisi_umum:
         props.pemeriksaan?.kondisi_umum ?? '',
 
-    // HASIL
+    // ========================================================
+    // KEBERSIHAN TUBUH
+    // DARI KEPALA SAMPAI KAKI
+    // ========================================================
+
+    kebersihan_rambut:
+        props.pemeriksaan?.kebersihan_rambut ?? '',
+
+    kebersihan_wajah:
+        props.pemeriksaan?.kebersihan_wajah ?? '',
+
+    kebersihan_telinga:
+        props.pemeriksaan?.kebersihan_telinga ?? '',
+
+    kebersihan_hidung:
+        props.pemeriksaan?.kebersihan_hidung ?? '',
+
+    kebersihan_mulut_gigi:
+        props.pemeriksaan?.kebersihan_mulut_gigi ?? '',
+
+    kebersihan_tangan_kuku:
+        props.pemeriksaan?.kebersihan_tangan_kuku ?? '',
+
+    kebersihan_kulit_badan:
+        props.pemeriksaan?.kebersihan_kulit_badan ?? '',
+
+    kebersihan_kaki_kuku:
+        props.pemeriksaan?.kebersihan_kaki_kuku ?? '',
+
+    // ========================================================
+    // HASIL PEMERIKSAAN
+    // ========================================================
+
     keluhan:
         props.pemeriksaan?.keluhan ?? '',
 
@@ -108,9 +159,9 @@ const form = useForm({
     rekomendasi:
         props.pemeriksaan?.rekomendasi ?? '',
 
-    // STATUS PEMERIKSAAN
-    status:
-        props.pemeriksaan?.status ?? 'belum',
+    // ========================================================
+    // CATATAN
+    // ========================================================
 
     catatan:
         props.pemeriksaan?.catatan ?? '',
@@ -148,7 +199,7 @@ const calculatedImt = computed(() => {
 })
 
 // ============================================================
-// SINKRONKAN IMT
+// UPDATE IMT
 // ============================================================
 
 const updateImt = () => {
@@ -221,6 +272,7 @@ const submit = () => {
         }
     )
 }
+
 // ============================================================
 // BATAL
 // ============================================================
@@ -232,6 +284,7 @@ const cancel = () => {
 
 <template>
     <KlinikLayout>
+
         <div class="space-y-6">
 
             <!-- ==================================================
@@ -318,7 +371,6 @@ const cancel = () => {
 
                 </div>
 
-
                 <div
                     class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4"
                 >
@@ -337,7 +389,6 @@ const cancel = () => {
                         </p>
                     </div>
 
-
                     <!-- NAMA -->
 
                     <div>
@@ -352,7 +403,6 @@ const cancel = () => {
                         </p>
                     </div>
 
-
                     <!-- KELAS -->
 
                     <div>
@@ -366,7 +416,6 @@ const cancel = () => {
                             {{ siswa.kelas?.nama_kelas || '-' }}
                         </p>
                     </div>
-
 
                     <!-- JURUSAN -->
 
@@ -426,7 +475,6 @@ const cancel = () => {
 
                     </div>
 
-
                     <div
                         class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2"
                     >
@@ -462,7 +510,7 @@ const cancel = () => {
                         </div>
 
 
-                        <!-- STATUS PEMERIKSAAN -->
+                        <!-- STATUS -->
 
                         <div>
 
@@ -476,10 +524,6 @@ const cancel = () => {
                             <select
                                 v-model="form.status"
                                 class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
-                                :class="{
-                                    'border-rose-300':
-                                        errorFor('status')
-                                }"
                             >
 
                                 <option value="belum">
@@ -514,9 +558,7 @@ const cancel = () => {
                     class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
 
-                    <div
-                        class="border-b border-slate-100 px-5 py-4"
-                    >
+                    <div class="border-b border-slate-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Antropometri
@@ -528,12 +570,11 @@ const cancel = () => {
 
                     </div>
 
-
                     <div
                         class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3"
                     >
 
-                        <!-- BERAT -->
+                        <!-- BERAT BADAN -->
 
                         <div>
 
@@ -563,10 +604,17 @@ const cancel = () => {
 
                             </div>
 
+                            <p
+                                v-if="errorFor('berat_badan')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('berat_badan') }}
+                            </p>
+
                         </div>
 
 
-                        <!-- TINGGI -->
+                        <!-- TINGGI BADAN -->
 
                         <div>
 
@@ -595,6 +643,13 @@ const cancel = () => {
                                 </span>
 
                             </div>
+
+                            <p
+                                v-if="errorFor('tinggi_badan')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('tinggi_badan') }}
+                            </p>
 
                         </div>
 
@@ -649,9 +704,7 @@ const cancel = () => {
                     class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
 
-                    <div
-                        class="border-b border-slate-100 px-5 py-4"
-                    >
+                    <div class="border-b border-slate-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Tanda Vital
@@ -663,9 +716,8 @@ const cancel = () => {
 
                     </div>
 
-
                     <div
-                        class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3"
+                        class="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 lg:grid-cols-4"
                     >
 
                         <!-- TEKANAN DARAH -->
@@ -683,7 +735,7 @@ const cancel = () => {
                                 <input
                                     v-model="form.tekanan_darah"
                                     type="text"
-                                    placeholder="Contoh: 110/70"
+                                    placeholder="110/70"
                                     class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-16 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                                 />
 
@@ -694,6 +746,13 @@ const cancel = () => {
                                 </span>
 
                             </div>
+
+                            <p
+                                v-if="errorFor('tekanan_darah')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('tekanan_darah') }}
+                            </p>
 
                         </div>
 
@@ -714,7 +773,7 @@ const cancel = () => {
                                     v-model="form.denyut_nadi"
                                     type="number"
                                     min="0"
-                                    placeholder="Contoh: 78"
+                                    placeholder="78"
                                     class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-14 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                                 />
 
@@ -725,6 +784,13 @@ const cancel = () => {
                                 </span>
 
                             </div>
+
+                            <p
+                                v-if="errorFor('denyut_nadi')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('denyut_nadi') }}
+                            </p>
 
                         </div>
 
@@ -746,7 +812,7 @@ const cancel = () => {
                                     type="number"
                                     min="0"
                                     step="0.1"
-                                    placeholder="Contoh: 36.5"
+                                    placeholder="36.5"
                                     class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                                 />
 
@@ -757,6 +823,53 @@ const cancel = () => {
                                 </span>
 
                             </div>
+
+                            <p
+                                v-if="errorFor('suhu_tubuh')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('suhu_tubuh') }}
+                            </p>
+
+                        </div>
+
+
+                        <!-- SATURASI -->
+
+                        <div>
+
+                            <label
+                                class="mb-1.5 block text-xs font-bold text-slate-700"
+                            >
+                                Saturasi Oksigen
+                            </label>
+
+                            <div class="relative">
+
+                                <input
+                                    v-model="form.saturasi_oksigen"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="0.1"
+                                    placeholder="98"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                />
+
+                                <span
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400"
+                                >
+                                    %
+                                </span>
+
+                            </div>
+
+                            <p
+                                v-if="errorFor('saturasi_oksigen')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('saturasi_oksigen') }}
+                            </p>
 
                         </div>
 
@@ -773,17 +886,29 @@ const cancel = () => {
                     class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
                 >
 
-                    <div
-                        class="border-b border-slate-100 px-5 py-4"
-                    >
+                    <div class="border-b border-slate-100 px-5 py-4">
 
-                        <h2 class="text-sm font-bold text-slate-800">
-                            Pemeriksaan Fisik
-                        </h2>
+                        <div class="flex items-center gap-3">
 
-                        <p class="mt-0.5 text-xs text-slate-400">
-                            Kondisi fisik siswa berdasarkan hasil pemeriksaan.
-                        </p>
+                            <div
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600"
+                            >
+                                <ClipboardDocumentCheckIcon class="h-5 w-5" />
+                            </div>
+
+                            <div>
+
+                                <h2 class="text-sm font-bold text-slate-800">
+                                    Pemeriksaan Fisik
+                                </h2>
+
+                                <p class="mt-0.5 text-xs text-slate-400">
+                                    Pemeriksaan kondisi fisik siswa.
+                                </p>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
@@ -825,6 +950,13 @@ const cancel = () => {
 
                             </select>
 
+                            <p
+                                v-if="errorFor('mata')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('mata') }}
+                            </p>
+
                         </div>
 
 
@@ -861,10 +993,17 @@ const cancel = () => {
 
                             </select>
 
+                            <p
+                                v-if="errorFor('telinga')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('telinga') }}
+                            </p>
+
                         </div>
 
 
-                        <!-- GIGI -->
+                        <!-- GIGI MULUT -->
 
                         <div>
 
@@ -896,6 +1035,13 @@ const cancel = () => {
                                 </option>
 
                             </select>
+
+                            <p
+                                v-if="errorFor('gigi_mulut')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('gigi_mulut') }}
+                            </p>
 
                         </div>
 
@@ -933,6 +1079,13 @@ const cancel = () => {
 
                             </select>
 
+                            <p
+                                v-if="errorFor('kondisi_umum')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('kondisi_umum') }}
+                            </p>
+
                         </div>
 
                     </div>
@@ -941,7 +1094,7 @@ const cancel = () => {
 
 
                 <!-- ==================================================
-                     KELUHAN DAN HASIL
+                     KEBERSIHAN TUBUH
                 ================================================== -->
 
                 <section
@@ -951,6 +1104,426 @@ const cancel = () => {
                     <div
                         class="border-b border-slate-100 px-5 py-4"
                     >
+
+                        <div class="flex items-center gap-3">
+
+                            <div
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600"
+                            >
+                                <ClipboardDocumentCheckIcon class="h-5 w-5" />
+                            </div>
+
+                            <div>
+
+                                <h2 class="text-sm font-bold text-slate-800">
+                                    Pemeriksaan Kebersihan Diri
+                                </h2>
+
+                                <p class="mt-0.5 text-xs text-slate-400">
+                                    Pemeriksaan kebersihan siswa dari ujung kepala hingga kaki.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="p-5">
+
+                        <div
+                            class="mb-5 rounded-xl border border-cyan-100 bg-cyan-50 p-4"
+                        >
+
+                            <div class="flex items-start gap-3">
+
+                                <InformationCircleIcon
+                                    class="mt-0.5 h-5 w-5 shrink-0 text-cyan-600"
+                                />
+
+                                <div>
+
+                                    <p class="text-xs font-bold text-cyan-900">
+                                        Pemeriksaan Kebersihan
+                                    </p>
+
+                                    <p class="mt-1 text-xs leading-5 text-cyan-700">
+                                        Periksa kebersihan secara berurutan mulai dari rambut,
+                                        wajah, telinga, hidung, mulut dan gigi, tangan dan kuku,
+                                        kulit tubuh, hingga kaki dan kuku.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+                        >
+
+                            <!-- RAMBUT -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    1. Kebersihan Rambut
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_rambut"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_rambut')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_rambut') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- WAJAH -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    2. Kebersihan Wajah
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_wajah"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_wajah')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_wajah') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- TELINGA -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    3. Kebersihan Telinga
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_telinga"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_telinga')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_telinga') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- HIDUNG -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    4. Kebersihan Hidung
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_hidung"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_hidung')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_hidung') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- MULUT GIGI -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    5. Kebersihan Mulut & Gigi
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_mulut_gigi"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_mulut_gigi')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_mulut_gigi') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- TANGAN KUKU -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    6. Kebersihan Tangan & Kuku
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_tangan_kuku"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_tangan_kuku')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_tangan_kuku') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- KULIT BADAN -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    7. Kebersihan Kulit & Badan
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_kulit_badan"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_kulit_badan')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_kulit_badan') }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- KAKI KUKU -->
+
+                            <div>
+
+                                <label
+                                    class="mb-1.5 block text-xs font-bold text-slate-700"
+                                >
+                                    8. Kebersihan Kaki & Kuku
+                                </label>
+
+                                <select
+                                    v-model="form.kebersihan_kaki_kuku"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                >
+
+                                    <option value="">
+                                        Pilih kondisi
+                                    </option>
+
+                                    <option value="Bersih">
+                                        Bersih
+                                    </option>
+
+                                    <option value="Cukup Bersih">
+                                        Cukup Bersih
+                                    </option>
+
+                                    <option value="Kotor">
+                                        Kotor
+                                    </option>
+
+                                </select>
+
+                                <p
+                                    v-if="errorFor('kebersihan_kaki_kuku')"
+                                    class="mt-1 text-xs text-rose-500"
+                                >
+                                    {{ errorFor('kebersihan_kaki_kuku') }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ==================================================
+                     KELUHAN & HASIL
+                ================================================== -->
+
+                <section
+                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                >
+
+                    <div class="border-b border-slate-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Keluhan & Hasil Pemeriksaan
@@ -982,6 +1555,13 @@ const cancel = () => {
                                 class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                             ></textarea>
 
+                            <p
+                                v-if="errorFor('keluhan')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('keluhan') }}
+                            </p>
+
                         </div>
 
 
@@ -1002,6 +1582,13 @@ const cancel = () => {
                                 class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                             ></textarea>
 
+                            <p
+                                v-if="errorFor('hasil_pemeriksaan')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('hasil_pemeriksaan') }}
+                            </p>
+
                         </div>
 
 
@@ -1012,7 +1599,7 @@ const cancel = () => {
                             <label
                                 class="mb-1.5 block text-xs font-bold text-slate-700"
                             >
-                                Rekomendasi
+                                Rekomendasi / Tindak Lanjut
                             </label>
 
                             <textarea
@@ -1021,6 +1608,13 @@ const cancel = () => {
                                 placeholder="Tuliskan rekomendasi atau tindak lanjut..."
                                 class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                             ></textarea>
+
+                            <p
+                                v-if="errorFor('rekomendasi')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('rekomendasi') }}
+                            </p>
 
                         </div>
 
@@ -1042,6 +1636,13 @@ const cancel = () => {
                                 class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                             ></textarea>
 
+                            <p
+                                v-if="errorFor('catatan')"
+                                class="mt-1 text-xs text-rose-500"
+                            >
+                                {{ errorFor('catatan') }}
+                            </p>
+
                         </div>
 
                     </div>
@@ -1050,7 +1651,7 @@ const cancel = () => {
 
 
                 <!-- ==================================================
-                     INFO
+                     INFORMASI
                 ================================================== -->
 
                 <div
@@ -1072,6 +1673,12 @@ const cancel = () => {
                             {{ jenisLabel }}
                             pada periode
                             {{ periode.nama_periode }}.
+                        </p>
+
+                        <p class="mt-1 text-blue-700">
+                            Pemeriksaan dilakukan secara menyeluruh mulai
+                            dari pengukuran tubuh, tanda vital, pemeriksaan
+                            fisik, hingga kebersihan diri siswa.
                         </p>
 
                     </div>
@@ -1121,5 +1728,6 @@ const cancel = () => {
             </form>
 
         </div>
+
     </KlinikLayout>
 </template>
