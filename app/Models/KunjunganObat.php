@@ -12,6 +12,7 @@ class KunjunganObat extends Model
     protected $fillable = [
         'kunjungan_id',
         'obat_id',
+        'obat_batch_id',
         'jumlah',
         'keterangan',
     ];
@@ -28,13 +29,24 @@ class KunjunganObat extends Model
     }
 
     /**
-     * Data obat
+     * Obat
      */
     public function obat(): BelongsTo
     {
         return $this->belongsTo(
             Obat::class,
             'obat_id'
+        );
+    }
+
+    /**
+     * Batch obat yang digunakan
+     */
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(
+            ObatBatch::class,
+            'obat_batch_id'
         );
     }
 }

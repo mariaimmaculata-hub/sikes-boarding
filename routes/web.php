@@ -639,6 +639,13 @@ Route::middleware(['auth', 'verified', 'role:klinik'])
             ]
         )->name('obat.destroy');
 
+            // =====================================================
+    // BATCH OBAT
+    // =====================================================
+
+    Route::post('/obat/{obat}/batch', [KlinikObatController::class, 'storeBatch'])
+        ->name('obat.batch.store');
+
 
         /*
         |--------------------------------------------------------------------------

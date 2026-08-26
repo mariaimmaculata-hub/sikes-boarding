@@ -57,10 +57,6 @@ const props = defineProps({
 |--------------------------------------------------------------------------
 | TANGGAL SISTEM
 |--------------------------------------------------------------------------
-|
-| Hanya untuk tampilan.
-| Tidak dikirim dari form.
-|
 */
 
 const tanggalHariIni = computed(() => {
@@ -88,6 +84,21 @@ const form = useForm({
     triase: '',
     tindakan: '',
     catatan: '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | OBAT
+    |--------------------------------------------------------------------------
+    |
+    | batch_id TIDAK dikirim dari Vue.
+    |
+    | Controller akan otomatis memilih batch berdasarkan:
+    | 1. stok > 0
+    | 2. belum H-1 expired
+    | 3. expiry paling dekat
+    |
+    */
+
     obat: [],
 })
 
@@ -99,9 +110,7 @@ const form = useForm({
 */
 
 const searchSiswa = ref('')
-
 const showSiswaDropdown = ref(false)
-
 
 const selectedSiswa = computed(() => {
     if (!form.siswa_id) {
@@ -174,9 +183,7 @@ function closeDropdown() {
 */
 
 const searchPenyakit = ref('')
-
 const showPenyakitDropdown = ref(false)
-
 
 const selectedPenyakit = computed(() => {
     if (!form.penyakit_id) {
@@ -261,8 +268,38 @@ const obatError = ref('')
 
 /*
 |--------------------------------------------------------------------------
-| OBAT YANG TERSEDIA
+| OBAT YANG SEDANG DIPILIH
 |--------------------------------------------------------------------------
+*/
+
+const selectedObat = computed(() => {
+    if (!selectedObatId.value) {
+        return null
+    }
+
+    return props.obatList.find(
+        obat =>
+            Number(obat.id) ===
+            Number(selectedObatId.value)
+    ) ?? null
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| OBAT TERSEDIA
+|--------------------------------------------------------------------------
+|
+| Controller mengirim:
+|
+| total_stok
+| batch_terdekat
+| batches
+|
+| BUKAN:
+|
+| stok
+|
 */
 
 const availableObat = computed(() => {
@@ -274,11 +311,25 @@ const availableObat = computed(() => {
                 Number(obat.id)
         )
 
+        const totalStok =
+            Number(obat.total_stok ?? 0)
+
         return (
             !sudahDipilih &&
-            Number(obat.stok) > 0
+            totalStok > 0
         )
     })
+})
+
+
+/*
+|--------------------------------------------------------------------------
+| FORMAT BATCH TERDEKAT
+|--------------------------------------------------------------------------
+*/
+
+const selectedBatchTerdekat = computed(() => {
+    return selectedObat.value?.batch_terdekat ?? null
 })
 
 
@@ -314,9 +365,15 @@ function addObat() {
     const jumlah =
         Number(selectedObatJumlah.value)
 
-    const stok =
-        Number(obat.stok)
+    const totalStok =
+        Number(obat.total_stok ?? 0)
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDASI JUMLAH
+    |--------------------------------------------------------------------------
+    */
 
     if (
         !Number.isInteger(jumlah) ||
@@ -329,7 +386,13 @@ function addObat() {
     }
 
 
-    if (stok <= 0) {
+    /*
+    |--------------------------------------------------------------------------
+    | CEK TOTAL STOK SEMUA BATCH
+    |--------------------------------------------------------------------------
+    */
+
+    if (totalStok <= 0) {
         obatError.value =
             'Stok obat sudah habis.'
 
@@ -337,29 +400,80 @@ function addObat() {
     }
 
 
-    if (jumlah > stok) {
+    if (jumlah > totalStok) {
         obatError.value =
-            `Jumlah melebihi stok yang tersedia (${stok} ${obat.satuan ?? ''}).`
+            `Jumlah melebihi total stok yang tersedia (${totalStok} ${obat.satuan ?? ''}).`
 
         return
     }
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN KE FORM
+    |--------------------------------------------------------------------------
+    |
+    | PENTING:
+    |
+    | Jangan masukkan batch_id.
+    |
+    | Controller akan menentukan batch otomatis
+    | berdasarkan expiry terdekat.
+    |
+    */
+
     form.obat.push({
-        obat_id: obat.id,
 
-        nama_obat: obat.nama_obat,
+        obat_id:
+            obat.id,
 
-        satuan: obat.satuan,
+        nama_obat:
+            obat.nama_obat,
 
-        stok: stok,
+        satuan:
+            obat.satuan,
 
-        jumlah: jumlah,
+        total_stok:
+            totalStok,
+
+        jumlah:
+            jumlah,
 
         keterangan:
             selectedObatKeterangan.value || '',
+
+        /*
+        |--------------------------------------------------------------------------
+        | INFORMASI BATCH HANYA UNTUK DISPLAY
+        |--------------------------------------------------------------------------
+        */
+
+        batch_terdekat:
+            obat.batch_terdekat
+                ? {
+                    kode_batch:
+                        obat.batch_terdekat.kode_batch,
+
+                    tanggal_kadaluarsa:
+                        obat.batch_terdekat
+                            .tanggal_kadaluarsa,
+
+                    keterangan_exp:
+                        obat.batch_terdekat
+                            .keterangan_exp,
+
+                    stok:
+                        obat.batch_terdekat.stok,
+                }
+                : null,
     })
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESET INPUT
+    |--------------------------------------------------------------------------
+    */
 
     selectedObatId.value = null
 
@@ -386,11 +500,12 @@ function removeObat(index) {
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE JUMLAH OBAT
+| VALIDASI JUMLAH OBAT
 |--------------------------------------------------------------------------
 */
 
 function validateObatJumlah(item) {
+
     const obat = props.obatList.find(
         obat =>
             Number(obat.id) ===
@@ -401,8 +516,8 @@ function validateObatJumlah(item) {
         return
     }
 
-    const stok =
-        Number(obat.stok)
+    const totalStok =
+        Number(obat.total_stok ?? 0)
 
     let jumlah =
         Number(item.jumlah)
@@ -416,8 +531,8 @@ function validateObatJumlah(item) {
     }
 
 
-    if (jumlah > stok) {
-        jumlah = stok
+    if (jumlah > totalStok) {
+        jumlah = totalStok
     }
 
 
@@ -455,7 +570,8 @@ const canSubmit = computed(() => {
     return (
         !!form.periode_id &&
         !!form.siswa_id &&
-        !!form.keluhan?.trim()
+        !!form.keluhan?.trim() &&
+        !!form.triase
     )
 })
 
@@ -473,25 +589,85 @@ function submit() {
     }
 
 
-    form.post(
-        route(
-            'klinik.kesehatan.kunjungan.store'
-        ),
-        {
-            preserveScroll: true,
+    /*
+    |--------------------------------------------------------------------------
+    | DATA YANG BENAR-BENAR DIKIRIM
+    |--------------------------------------------------------------------------
+    |
+    | Hanya kirim field yang diperlukan controller.
+    |
+    | Jangan kirim:
+    | nama_obat
+    | satuan
+    | total_stok
+    | batch_terdekat
+    |
+    | karena semuanya hanya untuk tampilan.
+    |
+    */
 
-            onSuccess: () => {
-                // Redirect dilakukan controller.
-            },
+    const payload = {
 
-            onError: errors => {
-                console.error(
-                    'Validation error:',
-                    errors
-                )
-            },
-        }
-    )
+        periode_id:
+            form.periode_id,
+
+        siswa_id:
+            form.siswa_id,
+
+        keluhan:
+            form.keluhan,
+
+        pemeriksaan:
+            form.pemeriksaan,
+
+        penyakit_id:
+            form.penyakit_id,
+
+        triase:
+            form.triase,
+
+        tindakan:
+            form.tindakan,
+
+        catatan:
+            form.catatan,
+
+        obat:
+            form.obat.map(item => ({
+
+                obat_id:
+                    item.obat_id,
+
+                jumlah:
+                    Number(item.jumlah),
+
+                keterangan:
+                    item.keterangan || null,
+
+            })),
+    }
+
+
+    form.transform(() => payload)
+        .post(
+            route(
+                'klinik.kesehatan.kunjungan.store'
+            ),
+            {
+                preserveScroll: true,
+
+                onSuccess: () => {
+                    // Redirect dilakukan oleh controller.
+                },
+
+                onError: errors => {
+                    console.error(
+                        'Validation error:',
+                        errors
+                    )
+                },
+            }
+        )
 }
 
 </script>
@@ -698,9 +874,7 @@ function submit() {
                         </p>
 
 
-                        <div
-                            class="mt-3 space-y-1"
-                        >
+                        <div class="mt-3 space-y-1">
 
                             <p
                                 v-for="(error, field) in form.errors"
@@ -780,9 +954,6 @@ function submit() {
 
                     <div class="p-5">
 
-
-                        <!-- SISWA TERPILIH -->
-
                         <div
                             v-if="selectedSiswa"
                             class="rounded-xl border border-blue-200 bg-blue-50/60 p-4"
@@ -799,19 +970,15 @@ function submit() {
                                     <div
                                         class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
                                     >
-
                                         {{
                                             selectedSiswa.nama
                                                 ?.charAt(0)
                                                 ?.toUpperCase()
                                         }}
-
                                     </div>
 
 
-                                    <div
-                                        class="min-w-0"
-                                    >
+                                    <div class="min-w-0">
 
                                         <p
                                             class="truncate text-sm font-bold text-slate-800"
@@ -847,14 +1014,11 @@ function submit() {
                                                         ?.nama_jurusan
                                                 "
                                             >
-
                                                 ·
-
                                                 {{
                                                     selectedSiswa.jurusan
                                                         .nama_jurusan
                                                 }}
-
                                             </span>
 
                                         </p>
@@ -878,8 +1042,6 @@ function submit() {
                         </div>
 
 
-                        <!-- PILIH SISWA -->
-
                         <div
                             v-else
                             class="relative"
@@ -888,13 +1050,8 @@ function submit() {
                             <label
                                 class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-
                                 Siswa
-
-                                <span class="text-rose-500">
-                                    *
-                                </span>
-
+                                <span class="text-rose-500">*</span>
                             </label>
 
 
@@ -907,9 +1064,7 @@ function submit() {
 
                                 <input
                                     v-model="searchSiswa"
-                                    @focus="
-                                        showSiswaDropdown = true
-                                    "
+                                    @focus="showSiswaDropdown = true"
                                     @blur="closeDropdown"
                                     type="text"
                                     placeholder="Cari nama atau NISN siswa..."
@@ -928,28 +1083,22 @@ function submit() {
                                     v-for="siswa in filteredSiswas"
                                     :key="siswa.id"
                                     type="button"
-                                    @mousedown.prevent="
-                                        selectSiswa(siswa)
-                                    "
+                                    @mousedown.prevent="selectSiswa(siswa)"
                                     class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
                                 >
 
                                     <div
                                         class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
                                     >
-
                                         {{
                                             siswa.nama
                                                 ?.charAt(0)
                                                 ?.toUpperCase()
                                         }}
-
                                     </div>
 
 
-                                    <div
-                                        class="min-w-0"
-                                    >
+                                    <div class="min-w-0">
 
                                         <p
                                             class="truncate text-sm font-semibold text-slate-800"
@@ -961,12 +1110,9 @@ function submit() {
                                         <p
                                             class="text-xs text-slate-400"
                                         >
-
                                             NISN:
                                             {{ siswa.nisn ?? '-' }}
-
                                             ·
-
                                             {{
                                                 siswa.kelas?.nama_kelas
                                                 ??
@@ -974,7 +1120,6 @@ function submit() {
                                                 ??
                                                 '-'
                                             }}
-
                                         </p>
 
                                     </div>
@@ -983,9 +1128,7 @@ function submit() {
 
 
                                 <div
-                                    v-if="
-                                        filteredSiswas.length === 0
-                                    "
+                                    v-if="filteredSiswas.length === 0"
                                     class="px-4 py-6 text-center"
                                 >
 
@@ -993,14 +1136,6 @@ function submit() {
                                         class="text-sm font-semibold text-slate-600"
                                     >
                                         Siswa tidak ditemukan
-                                    </p>
-
-
-                                    <p
-                                        class="mt-1 text-xs text-slate-400"
-                                    >
-                                        Coba gunakan nama atau NISN
-                                        yang berbeda.
                                     </p>
 
                                 </div>
@@ -1034,9 +1169,7 @@ function submit() {
                         class="border-b border-slate-100 px-5 py-4"
                     >
 
-                        <div
-                            class="flex items-center gap-3"
-                        >
+                        <div class="flex items-center gap-3">
 
                             <div
                                 class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50"
@@ -1073,52 +1206,38 @@ function submit() {
 
                     <div class="p-5">
 
-                        <!-- TANGGAL OTOMATIS -->
-
-                        <div>
-
-                            <label
-                                class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
-                            >
-                                Tanggal Kunjungan
-                            </label>
+                        <label
+                            class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
+                        >
+                            Tanggal Kunjungan
+                        </label>
 
 
-                            <div
-                                class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
-                            >
+                        <div
+                            class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                        >
 
-                                <CalendarDaysIcon
-                                    class="h-5 w-5 shrink-0 text-blue-600"
-                                />
-
-
-                                <div>
-
-                                    <p
-                                        class="text-sm font-semibold text-slate-700"
-                                    >
-                                        {{ tanggalHariIni }}
-                                    </p>
+                            <CalendarDaysIcon
+                                class="h-5 w-5 shrink-0 text-blue-600"
+                            />
 
 
-                                    <p
-                                        class="mt-0.5 text-[11px] text-slate-400"
-                                    >
-                                        Diisi otomatis berdasarkan tanggal
-                                        saat data disimpan.
-                                    </p>
+                            <div>
 
-                                </div>
+                                <p
+                                    class="text-sm font-semibold text-slate-700"
+                                >
+                                    {{ tanggalHariIni }}
+                                </p>
+
+
+                                <p
+                                    class="mt-0.5 text-[11px] text-slate-400"
+                                >
+                                    Diisi otomatis berdasarkan tanggal saat data disimpan.
+                                </p>
 
                             </div>
-
-
-                            <p
-                                class="mt-1.5 text-[11px] text-slate-400"
-                            >
-                                Tanggal tidak dapat diubah secara manual.
-                            </p>
 
                         </div>
 
@@ -1139,9 +1258,7 @@ function submit() {
                         class="border-b border-slate-100 px-5 py-4"
                     >
 
-                        <div
-                            class="flex items-center gap-3"
-                        >
+                        <div class="flex items-center gap-3">
 
                             <div
                                 class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50"
@@ -1178,7 +1295,6 @@ function submit() {
 
                     <div class="space-y-5 p-5">
 
-
                         <!-- KELUHAN -->
 
                         <div>
@@ -1186,13 +1302,8 @@ function submit() {
                             <label
                                 class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
-
                                 Keluhan
-
-                                <span class="text-rose-500">
-                                    *
-                                </span>
-
+                                <span class="text-rose-500">*</span>
                             </label>
 
 
@@ -1214,9 +1325,7 @@ function submit() {
                         </div>
 
 
-                        <!-- ==================================================
-                             TRIASE
-                        ================================================== -->
+                        <!-- TRIASE -->
 
                         <div>
 
@@ -1227,10 +1336,10 @@ function submit() {
                                 <span class="text-rose-500">*</span>
                             </label>
 
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
-
-                                <!-- MERAH -->
+                            <div
+                                class="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                            >
 
                                 <label
                                     class="cursor-pointer rounded-xl border p-4 transition"
@@ -1268,8 +1377,6 @@ function submit() {
                                 </label>
 
 
-                                <!-- KUNING -->
-
                                 <label
                                     class="cursor-pointer rounded-xl border p-4 transition"
                                     :class="
@@ -1306,8 +1413,6 @@ function submit() {
                                 </label>
 
 
-                                <!-- HIJAU -->
-
                                 <label
                                     class="cursor-pointer rounded-xl border p-4 transition"
                                     :class="
@@ -1343,8 +1448,6 @@ function submit() {
 
                                 </label>
 
-
-                                <!-- HITAM -->
 
                                 <label
                                     class="cursor-pointer rounded-xl border p-4 transition"
@@ -1450,12 +1553,8 @@ function submit() {
 
                                 <input
                                     v-model="searchPenyakit"
-                                    @focus="
-                                        showPenyakitDropdown = true
-                                    "
-                                    @blur="
-                                        closePenyakitDropdown
-                                    "
+                                    @focus="showPenyakitDropdown = true"
+                                    @blur="closePenyakitDropdown"
                                     type="text"
                                     placeholder="Cari nama penyakit atau kategori..."
                                     class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
@@ -1471,9 +1570,7 @@ function submit() {
                                         v-for="penyakit in filteredPenyakit"
                                         :key="penyakit.id"
                                         type="button"
-                                        @mousedown.prevent="
-                                            selectPenyakit(penyakit)
-                                        "
+                                        @mousedown.prevent="selectPenyakit(penyakit)"
                                         class="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
                                     >
 
@@ -1488,9 +1585,7 @@ function submit() {
                                         </div>
 
 
-                                        <div
-                                            class="min-w-0 flex-1"
-                                        >
+                                        <div class="min-w-0 flex-1">
 
                                             <p
                                                 class="truncate text-sm font-semibold text-slate-800"
@@ -1521,9 +1616,7 @@ function submit() {
 
 
                                     <div
-                                        v-if="
-                                            filteredPenyakit.length === 0
-                                        "
+                                        v-if="filteredPenyakit.length === 0"
                                         class="px-4 py-6 text-center"
                                     >
 
@@ -1531,13 +1624,6 @@ function submit() {
                                             class="text-sm font-semibold text-slate-600"
                                         >
                                             Penyakit tidak ditemukan
-                                        </p>
-
-                                        <p
-                                            class="mt-1 text-xs text-slate-400"
-                                        >
-                                            Coba gunakan nama penyakit
-                                            atau kategori yang berbeda.
                                         </p>
 
                                     </div>
@@ -1581,26 +1667,18 @@ function submit() {
 
 
                                             <p
-                                                v-if="
-                                                    selectedPenyakit.kategori
-                                                "
+                                                v-if="selectedPenyakit.kategori"
                                                 class="mt-0.5 text-xs text-slate-500"
                                             >
-                                                {{
-                                                    selectedPenyakit.kategori
-                                                }}
+                                                {{ selectedPenyakit.kategori }}
                                             </p>
 
 
                                             <p
-                                                v-if="
-                                                    selectedPenyakit.keterangan
-                                                "
+                                                v-if="selectedPenyakit.keterangan"
                                                 class="mt-1 text-xs text-slate-500"
                                             >
-                                                {{
-                                                    selectedPenyakit.keterangan
-                                                }}
+                                                {{ selectedPenyakit.keterangan }}
                                             </p>
 
                                         </div>
@@ -1628,14 +1706,6 @@ function submit() {
                                 {{ form.errors.penyakit_id }}
                             </p>
 
-                            <p
-                                v-if="props.penyakitList.length > 0"
-                                class="mt-1.5 text-[11px] text-slate-400"
-                            >
-                                Pilih penyakit dari data master yang telah
-                                tersedia.
-                            </p>
-
                         </div>
 
 
@@ -1656,14 +1726,6 @@ function submit() {
                                 placeholder="Tuliskan hasil pemeriksaan fisik atau kondisi siswa..."
                                 class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                             ></textarea>
-
-
-                            <p
-                                v-if="form.errors.pemeriksaan"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{ form.errors.pemeriksaan }}
-                            </p>
 
                         </div>
 
@@ -1686,14 +1748,6 @@ function submit() {
                                 class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                             ></textarea>
 
-
-                            <p
-                                v-if="form.errors.tindakan"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{ form.errors.tindakan }}
-                            </p>
-
                         </div>
 
 
@@ -1715,14 +1769,6 @@ function submit() {
                                 class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                             ></textarea>
 
-
-                            <p
-                                v-if="form.errors.catatan"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
-                            >
-                                {{ form.errors.catatan }}
-                            </p>
-
                         </div>
 
                     </div>
@@ -1742,9 +1788,7 @@ function submit() {
                         class="border-b border-slate-100 px-5 py-4"
                     >
 
-                        <div
-                            class="flex items-center gap-3"
-                        >
+                        <div class="flex items-center gap-3">
 
                             <div
                                 class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50"
@@ -1769,7 +1813,7 @@ function submit() {
                                 <p
                                     class="mt-0.5 text-xs text-slate-400"
                                 >
-                                    Tambahkan obat yang diberikan kepada siswa.
+                                    Pilih obat dan jumlah yang diberikan kepada siswa.
                                 </p>
 
                             </div>
@@ -1782,7 +1826,9 @@ function submit() {
                     <div class="space-y-5 p-5">
 
 
-                        <!-- TAMBAH OBAT -->
+                        <!-- ==================================================
+                             TAMBAH OBAT
+                        ================================================== -->
 
                         <div
                             class="rounded-xl border border-slate-200 bg-slate-50 p-4"
@@ -1794,9 +1840,7 @@ function submit() {
 
                                 <!-- OBAT -->
 
-                                <div
-                                    class="md:col-span-5"
-                                >
+                                <div class="md:col-span-5">
 
                                     <label
                                         class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
@@ -1810,9 +1854,7 @@ function submit() {
                                         class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                     >
 
-                                        <option
-                                            :value="null"
-                                        >
+                                        <option :value="null">
                                             Pilih obat
                                         </option>
 
@@ -1826,23 +1868,87 @@ function submit() {
                                             {{ obat.nama_obat }}
 
                                             —
-
                                             Stok:
-                                            {{ obat.stok }}
+                                            {{ obat.total_stok }}
                                             {{ obat.satuan }}
 
                                         </option>
 
                                     </select>
 
+
+                                    <!-- INFO OBAT TERPILIH -->
+
+                                    <div
+                                        v-if="selectedObat"
+                                        class="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2"
+                                    >
+
+                                        <div
+                                            class="flex items-start gap-2"
+                                        >
+
+                                            <BeakerIcon
+                                                class="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+                                            />
+
+
+                                            <div class="min-w-0">
+
+                                                <p
+                                                    class="text-xs font-semibold text-amber-800"
+                                                >
+                                                    Total stok:
+                                                    {{ selectedObat.total_stok }}
+                                                    {{ selectedObat.satuan }}
+                                                </p>
+
+
+                                                <p
+                                                    v-if="selectedBatchTerdekat"
+                                                    class="mt-0.5 text-[11px] text-amber-700"
+                                                >
+
+                                                    Batch yang akan diprioritaskan:
+                                                    <strong>
+                                                        {{
+                                                            selectedBatchTerdekat.kode_batch
+                                                        }}
+                                                    </strong>
+
+                                                    ·
+
+                                                    {{
+                                                        selectedBatchTerdekat.keterangan_exp
+                                                    }}
+
+                                                    · Stok
+                                                    {{
+                                                        selectedBatchTerdekat.stok
+                                                    }}
+
+                                                </p>
+
+
+                                                <p
+                                                    v-else
+                                                    class="mt-0.5 text-[11px] text-rose-600"
+                                                >
+                                                    Tidak ada batch aktif.
+                                                </p>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
 
                                 <!-- JUMLAH -->
 
-                                <div
-                                    class="md:col-span-2"
-                                >
+                                <div class="md:col-span-2">
 
                                     <label
                                         class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
@@ -1852,11 +1958,12 @@ function submit() {
 
 
                                     <input
-                                        v-model.number="
-                                            selectedObatJumlah
-                                        "
+                                        v-model.number="selectedObatJumlah"
                                         type="number"
                                         min="1"
+                                        :max="
+                                            selectedObat?.total_stok ?? 1
+                                        "
                                         class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                                     />
 
@@ -1865,9 +1972,7 @@ function submit() {
 
                                 <!-- KETERANGAN -->
 
-                                <div
-                                    class="md:col-span-4"
-                                >
+                                <div class="md:col-span-4">
 
                                     <label
                                         class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
@@ -1877,9 +1982,7 @@ function submit() {
 
 
                                     <input
-                                        v-model="
-                                            selectedObatKeterangan
-                                        "
+                                        v-model="selectedObatKeterangan"
                                         type="text"
                                         placeholder="Contoh: 3x sehari"
                                         class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
@@ -1897,9 +2000,7 @@ function submit() {
                                     <button
                                         type="button"
                                         @click="addObat"
-                                        :disabled="
-                                            !availableObat.length
-                                        "
+                                        :disabled="!availableObat.length"
                                         class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
 
@@ -1926,7 +2027,9 @@ function submit() {
                         </div>
 
 
-                        <!-- LIST OBAT -->
+                        <!-- ==================================================
+                             LIST OBAT
+                        ================================================== -->
 
                         <div
                             v-if="form.obat.length"
@@ -1951,13 +2054,10 @@ function submit() {
                                     <p
                                         class="text-xs font-semibold text-slate-500"
                                     >
-
                                         {{ totalJenisObat }}
                                         jenis ·
-
                                         {{ totalJumlahObat }}
                                         item
-
                                     </p>
 
                                 </div>
@@ -1971,9 +2071,7 @@ function submit() {
 
                                 <div
                                     v-for="(item, index) in form.obat"
-                                    :key="
-                                        `${item.obat_id}-${index}`
-                                    "
+                                    :key="`${item.obat_id}-${index}`"
                                     class="flex flex-col gap-4 p-4 md:flex-row md:items-center"
                                 >
 
@@ -1988,9 +2086,7 @@ function submit() {
                                     </div>
 
 
-                                    <div
-                                        class="min-w-0 flex-1"
-                                    >
+                                    <div class="min-w-0 flex-1">
 
                                         <p
                                             class="text-sm font-bold text-slate-800"
@@ -2002,25 +2098,56 @@ function submit() {
                                         <p
                                             class="mt-0.5 text-xs text-slate-400"
                                         >
-
-                                            Stok tersedia:
-                                            {{ item.stok }}
+                                            Total stok:
+                                            {{ item.total_stok }}
                                             {{ item.satuan }}
-
                                         </p>
+
+
+                                        <!-- BATCH YANG DIPRIORITASKAN -->
+
+                                        <div
+                                            v-if="item.batch_terdekat"
+                                            class="mt-2 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2"
+                                        >
+
+                                            <p
+                                                class="text-[11px] font-semibold text-amber-800"
+                                            >
+                                                Batch prioritas:
+                                                {{
+                                                    item.batch_terdekat.kode_batch
+                                                }}
+                                            </p>
+
+
+                                            <p
+                                                class="mt-0.5 text-[11px] text-amber-700"
+                                            >
+                                                {{
+                                                    item.batch_terdekat.keterangan_exp
+                                                }}
+
+                                                · Stok
+                                                {{
+                                                    item.batch_terdekat.stok
+                                                }}
+                                            </p>
+
+                                        </div>
 
 
                                         <p
                                             v-if="item.keterangan"
-                                            class="mt-1 text-xs text-slate-500"
+                                            class="mt-2 text-xs text-slate-500"
                                         >
-
                                             {{ item.keterangan }}
-
                                         </p>
 
                                     </div>
 
+
+                                    <!-- JUMLAH -->
 
                                     <div
                                         class="flex items-center gap-2"
@@ -2034,17 +2161,13 @@ function submit() {
 
 
                                         <input
-                                            v-model.number="
-                                                item.jumlah
-                                            "
+                                            v-model.number="item.jumlah"
                                             @change="
-                                                validateObatJumlah(
-                                                    item
-                                                )
+                                                validateObatJumlah(item)
                                             "
                                             type="number"
                                             min="1"
-                                            :max="item.stok"
+                                            :max="item.total_stok"
                                             class="w-24 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                                         />
 
@@ -2058,11 +2181,11 @@ function submit() {
                                     </div>
 
 
+                                    <!-- HAPUS -->
+
                                     <button
                                         type="button"
-                                        @click="
-                                            removeObat(index)
-                                        "
+                                        @click="removeObat(index)"
                                         class="inline-flex items-center justify-center rounded-lg p-2 text-rose-500 transition hover:bg-rose-50"
                                         title="Hapus obat"
                                     >
@@ -2110,10 +2233,10 @@ function submit() {
 
 
                         <p
-                            v-if="form.errors['obat']"
+                            v-if="form.errors.obat"
                             class="text-xs font-medium text-rose-600"
                         >
-                            {{ form.errors['obat'] }}
+                            {{ form.errors.obat }}
                         </p>
 
                     </div>
@@ -2164,7 +2287,6 @@ function submit() {
                     </button>
 
                 </div>
-
 
             </form>
 

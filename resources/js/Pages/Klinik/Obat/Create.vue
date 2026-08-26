@@ -1,6 +1,6 @@
 <script setup>
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import KlinikLayout from '@/Layouts/KlinikLayout.vue'
 
 import {
@@ -13,6 +13,8 @@ import {
     ArrowLeftIcon,
     CheckIcon,
     ExclamationTriangleIcon,
+    CalendarDaysIcon,
+    ArchiveBoxIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -21,10 +23,17 @@ import {
 // ======================================================
 
 const form = useForm({
+
+    // DATA OBAT
     nama_obat: '',
     satuan: '',
-    stok: 0,
     keterangan: '',
+
+    // BATCH PERTAMA
+    tanggal_masuk: '',
+    tanggal_kadaluarsa: '',
+    jumlah: 0,
+
 })
 
 
@@ -38,6 +47,10 @@ const submit = () => {
         route('klinik.obat.store'),
         {
             preserveScroll: true,
+
+            onSuccess: () => {
+                form.reset()
+            },
         }
     )
 
@@ -49,7 +62,9 @@ const submit = () => {
 // ======================================================
 
 const hasErrors = computed(() => {
+
     return Object.keys(form.errors).length > 0
+
 })
 
 
@@ -58,7 +73,9 @@ const hasErrors = computed(() => {
 // ======================================================
 
 const getError = (field) => {
+
     return form.errors[field] ?? null
+
 }
 
 </script>
@@ -81,20 +98,16 @@ const getError = (field) => {
 
             <div>
 
-              
-                <!-- TITLE -->
-
                 <h1
                     class="mt-1 text-2xl font-bold text-slate-800"
                 >
                     Tambah Obat
                 </h1>
 
-
                 <p
                     class="mt-1 text-sm text-slate-500"
                 >
-                    Tambahkan data obat baru ke dalam data obat klinik.
+                    Tambahkan obat baru beserta batch pertama dan stok awal.
                 </p>
 
             </div>
@@ -150,7 +163,6 @@ const getError = (field) => {
                     class="mt-0.5 text-xs text-rose-600"
                 >
                     Terdapat beberapa data yang belum sesuai.
-
                 </p>
 
             </div>
@@ -202,7 +214,7 @@ const getError = (field) => {
                         <p
                             class="mt-0.5 text-xs text-slate-400"
                         >
-                            Isi informasi obat dan stok yang tersedia.
+                            Isi informasi dasar obat yang akan disimpan.
                         </p>
 
                     </div>
@@ -222,57 +234,87 @@ const getError = (field) => {
 
 
                 <!-- ==================================================
-                     NAMA OBAT
+                     INFORMASI DASAR OBAT
                 ================================================== -->
 
                 <div>
 
-                    <label
-                        for="nama_obat"
-                        class="mb-1.5 block text-sm font-semibold text-slate-700"
-                    >
-                        Nama Obat
-                        <span class="text-rose-500">*</span>
-                    </label>
+                    <div class="mb-4">
+
+                        <h3
+                            class="text-sm font-bold text-slate-800"
+                        >
+                            Informasi Dasar Obat
+                        </h3>
+
+                        <p
+                            class="mt-1 text-xs text-slate-400"
+                        >
+                            Data ini akan menjadi identitas utama obat.
+                        </p>
+
+                    </div>
 
 
-                    <input
-                        id="nama_obat"
-                        v-model="form.nama_obat"
-                        type="text"
-                        placeholder="Contoh: Paracetamol"
-                        autocomplete="off"
-                        :class="[
-                            'w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
-                            getError('nama_obat')
-                                ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
-                        ]"
-                    />
-
-
-                    <p
-                        v-if="getError('nama_obat')"
-                        class="mt-1.5 text-xs font-medium text-rose-600"
-                    >
-                        {{ getError('nama_obat') }}
-                    </p>
-
-                </div>
-
-
-                <!-- ==================================================
-                     SATUAN + STOK
-                ================================================== -->
-
-                <div
-                    class="grid grid-cols-1 gap-5 md:grid-cols-2"
-                >
-
-
-                    <!-- SATUAN -->
+                    <!-- ==================================================
+                         NAMA OBAT
+                    ================================================== -->
 
                     <div>
+
+                        <label
+                            for="nama_obat"
+                            class="mb-1.5 block text-sm font-semibold text-slate-700"
+                        >
+
+                            Nama Obat
+
+                            <span class="text-rose-500">
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <input
+                            id="nama_obat"
+                            v-model="form.nama_obat"
+                            type="text"
+                            placeholder="Contoh: Paracetamol"
+                            autocomplete="off"
+                            :class="[
+                                'w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
+
+                                getError('nama_obat')
+                                    ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                            ]"
+                        />
+
+
+                        <p
+                            v-if="getError('nama_obat')"
+                            class="mt-1.5 text-xs font-medium text-rose-600"
+                        >
+                            {{ getError('nama_obat') }}
+                        </p>
+
+
+                        <p
+                            v-else
+                            class="mt-1.5 text-xs text-slate-400"
+                        >
+                            Nama obat harus unik. Jika obat sudah ada, gunakan menu tambah batch.
+                        </p>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         SATUAN
+                    ================================================== -->
+
+                    <div class="mt-5">
 
                         <label
                             for="satuan"
@@ -290,6 +332,7 @@ const getError = (field) => {
                             autocomplete="off"
                             :class="[
                                 'w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
+
                                 getError('satuan')
                                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                                     : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
@@ -315,40 +358,40 @@ const getError = (field) => {
                     </div>
 
 
-                    <!-- STOK -->
+                    <!-- ==================================================
+                         KETERANGAN
+                    ================================================== -->
 
-                    <div>
+                    <div class="mt-5">
 
                         <label
-                            for="stok"
+                            for="keterangan"
                             class="mb-1.5 block text-sm font-semibold text-slate-700"
                         >
-                            Stok
-                            <span class="text-rose-500">*</span>
+                            Keterangan
                         </label>
 
 
-                        <input
-                            id="stok"
-                            v-model.number="form.stok"
-                            type="number"
-                            min="0"
-                            step="1"
-                            placeholder="0"
+                        <textarea
+                            id="keterangan"
+                            v-model="form.keterangan"
+                            rows="4"
+                            placeholder="Masukkan keterangan tambahan mengenai obat..."
                             :class="[
-                                'w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
-                                getError('stok')
+                                'w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
+
+                                getError('keterangan')
                                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
                                     : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
                             ]"
-                        />
+                        ></textarea>
 
 
                         <p
-                            v-if="getError('stok')"
+                            v-if="getError('keterangan')"
                             class="mt-1.5 text-xs font-medium text-rose-600"
                         >
-                            {{ getError('stok') }}
+                            {{ getError('keterangan') }}
                         </p>
 
 
@@ -356,7 +399,7 @@ const getError = (field) => {
                             v-else
                             class="mt-1.5 text-xs text-slate-400"
                         >
-                            Stok tidak boleh kurang dari 0.
+                            Keterangan bersifat opsional.
                         </p>
 
                     </div>
@@ -365,47 +408,301 @@ const getError = (field) => {
 
 
                 <!-- ==================================================
-                     KETERANGAN
+                     PEMBATAS
+                ================================================== -->
+
+                <div class="border-t border-slate-100"></div>
+
+
+                <!-- ==================================================
+                     BATCH PERTAMA
                 ================================================== -->
 
                 <div>
 
-                    <label
-                        for="keterangan"
-                        class="mb-1.5 block text-sm font-semibold text-slate-700"
+                    <div class="mb-4">
+
+                        <div class="flex items-center gap-3">
+
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50"
+                            >
+
+                                <ArchiveBoxIcon
+                                    class="h-5 w-5 text-emerald-600"
+                                />
+
+                            </div>
+
+
+                            <div>
+
+                                <h3
+                                    class="text-sm font-bold text-slate-800"
+                                >
+                                    Batch Pertama
+                                </h3>
+
+                                <p
+                                    class="mt-1 text-xs text-slate-400"
+                                >
+                                    Tentukan tanggal masuk, kadaluarsa, dan jumlah stok awal.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TANGGAL MASUK + TANGGAL KADALUARSA
+                    ================================================== -->
+
+                    <div
+                        class="grid grid-cols-1 gap-5 md:grid-cols-2"
                     >
-                        Keterangan
-                    </label>
 
 
-                    <textarea
-                        id="keterangan"
-                        v-model="form.keterangan"
-                        rows="4"
-                        placeholder="Masukkan keterangan tambahan mengenai obat..."
-                        :class="[
-                            'w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
-                            getError('keterangan')
-                                ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
-                        ]"
-                    ></textarea>
+                        <!-- TANGGAL MASUK -->
+
+                        <div>
+
+                            <label
+                                for="tanggal_masuk"
+                                class="mb-1.5 block text-sm font-semibold text-slate-700"
+                            >
+
+                                Tanggal Masuk
+
+                                <span class="text-rose-500">
+                                    *
+                                </span>
+
+                            </label>
 
 
-                    <p
-                        v-if="getError('keterangan')"
-                        class="mt-1.5 text-xs font-medium text-rose-600"
+                            <div class="relative">
+
+                                <CalendarDaysIcon
+                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                />
+
+
+                                <input
+                                    id="tanggal_masuk"
+                                    v-model="form.tanggal_masuk"
+                                    type="date"
+                                    :class="[
+                                        'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:ring-2',
+
+                                        getError('tanggal_masuk')
+                                            ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                    ]"
+                                />
+
+                            </div>
+
+
+                            <p
+                                v-if="getError('tanggal_masuk')"
+                                class="mt-1.5 text-xs font-medium text-rose-600"
+                            >
+                                {{ getError('tanggal_masuk') }}
+                            </p>
+
+
+                            <p
+                                v-else
+                                class="mt-1.5 text-xs text-slate-400"
+                            >
+                                Tanggal obat masuk ke klinik.
+                            </p>
+
+                        </div>
+
+
+                        <!-- TANGGAL KADALUARSA -->
+
+                        <div>
+
+                            <label
+                                for="tanggal_kadaluarsa"
+                                class="mb-1.5 block text-sm font-semibold text-slate-700"
+                            >
+
+                                Tanggal Kadaluarsa
+
+                                <span class="text-rose-500">
+                                    *
+                                </span>
+
+                            </label>
+
+
+                            <div class="relative">
+
+                                <CalendarDaysIcon
+                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                />
+
+
+                                <input
+                                    id="tanggal_kadaluarsa"
+                                    v-model="form.tanggal_kadaluarsa"
+                                    type="date"
+                                    :min="form.tanggal_masuk || undefined"
+                                    :class="[
+                                        'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:ring-2',
+
+                                        getError('tanggal_kadaluarsa')
+                                            ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                    ]"
+                                />
+
+                            </div>
+
+
+                            <p
+                                v-if="getError('tanggal_kadaluarsa')"
+                                class="mt-1.5 text-xs font-medium text-rose-600"
+                            >
+                                {{ getError('tanggal_kadaluarsa') }}
+                            </p>
+
+
+                            <p
+                                v-else
+                                class="mt-1.5 text-xs text-slate-400"
+                            >
+                                Tidak boleh sebelum tanggal masuk.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         JUMLAH
+                    ================================================== -->
+
+                    <div class="mt-5">
+
+                        <label
+                            for="jumlah"
+                            class="mb-1.5 block text-sm font-semibold text-slate-700"
+                        >
+
+                            Jumlah Stok Awal
+
+                            <span class="text-rose-500">
+                                *
+                            </span>
+
+                        </label>
+
+
+                        <div class="relative">
+
+                            <ArchiveBoxIcon
+                                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                            />
+
+
+                            <input
+                                id="jumlah"
+                                v-model.number="form.jumlah"
+                                type="number"
+                                min="1"
+                                step="1"
+                                placeholder="Contoh: 100"
+                                :class="[
+                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
+
+                                    getError('jumlah')
+                                        ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
+                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                ]"
+                            />
+
+                        </div>
+
+
+                        <p
+                            v-if="getError('jumlah')"
+                            class="mt-1.5 text-xs font-medium text-rose-600"
+                        >
+                            {{ getError('jumlah') }}
+                        </p>
+
+
+                        <p
+                            v-else
+                            class="mt-1.5 text-xs text-slate-400"
+                        >
+                            Jumlah ini otomatis menjadi stok awal batch pertama.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     INFO BATCH
+                ================================================== -->
+
+                <div
+                    class="rounded-xl border border-emerald-100 bg-emerald-50 p-4"
+                >
+
+                    <div
+                        class="flex items-start gap-3"
                     >
-                        {{ getError('keterangan') }}
-                    </p>
+
+                        <div
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100"
+                        >
+
+                            <ArchiveBoxIcon
+                                class="h-4 w-4 text-emerald-600"
+                            />
+
+                        </div>
 
 
-                    <p
-                        v-else
-                        class="mt-1.5 text-xs text-slate-400"
-                    >
-                        Keterangan bersifat opsional.
-                    </p>
+                        <div class="min-w-0">
+
+                            <p
+                                class="text-xs font-bold uppercase tracking-wide text-emerald-600"
+                            >
+                                Batch Pertama
+                            </p>
+
+
+                            <p
+                                class="mt-1 text-sm font-bold text-emerald-800"
+                            >
+                                Stok akan disimpan sebagai batch
+                            </p>
+
+
+                            <p
+                                class="mt-1 text-xs leading-5 text-emerald-700"
+                            >
+                                Obat yang sama tidak perlu dibuat ulang.
+                                Jika nanti Paracetamol datang dengan tanggal
+                                kadaluarsa berbeda, gunakan menu
+                                <strong>Tambah Batch</strong>.
+                            </p>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -451,13 +748,44 @@ const getError = (field) => {
                             </p>
 
 
-                            <p
-                                class="mt-1 text-xs text-blue-600"
+                            <div
+                                class="mt-2 grid grid-cols-1 gap-1 text-xs text-blue-600 sm:grid-cols-3"
                             >
-                                Stok:
-                                {{ form.stok ?? 0 }}
-                                {{ form.satuan || '' }}
-                            </p>
+
+                                <p>
+
+                                    <span class="font-semibold">
+                                        Jumlah:
+                                    </span>
+
+                                    {{ form.jumlah || 0 }}
+                                    {{ form.satuan || '' }}
+
+                                </p>
+
+
+                                <p>
+
+                                    <span class="font-semibold">
+                                        Masuk:
+                                    </span>
+
+                                    {{ form.tanggal_masuk || '-' }}
+
+                                </p>
+
+
+                                <p>
+
+                                    <span class="font-semibold">
+                                        Exp:
+                                    </span>
+
+                                    {{ form.tanggal_kadaluarsa || '-' }}
+
+                                </p>
+
+                            </div>
 
                         </div>
 
@@ -500,11 +828,13 @@ const getError = (field) => {
                     />
 
                     <span>
+
                         {{
                             form.processing
                                 ? 'Menyimpan...'
                                 : 'Simpan Obat'
                         }}
+
                     </span>
 
                 </button>

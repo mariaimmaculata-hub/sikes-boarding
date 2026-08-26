@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\KunjunganKlinik;
 use App\Models\KunjunganObat;
 use App\Models\Obat;
+use App\Models\ObatBatch;
 use App\Models\Periode;
 use App\Models\Siswa;
 use App\Models\Penyakit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class KunjunganController extends Controller
 {
@@ -30,6 +33,7 @@ class KunjunganController extends Controller
                 'periode',
                 'penyakit',
                 'kunjunganObat.obat',
+                'kunjunganObat.batch',
             ]);
 
         /*
@@ -46,7 +50,6 @@ class KunjunganController extends Controller
 
                 $q->where('nama', 'like', "%{$search}%")
                     ->orWhere('nisn', 'like', "%{$search}%");
-
             });
         }
 
@@ -95,12 +98,6 @@ class KunjunganController extends Controller
 
                     'id' => $item->id,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TANGGAL
-                    |--------------------------------------------------------------------------
-                    */
-
                     'created_at' => $item->created_at
                         ? $item->created_at->format('d/m/Y H:i')
                         : null,
@@ -113,28 +110,44 @@ class KunjunganController extends Controller
                         ? $item->updated_at->format('d/m/Y H:i')
                         : null,
 
+                    'tanggal_kunjungan' =>
+                        $item->tanggal_kunjungan
+                            ? Carbon::parse(
+                                $item->tanggal_kunjungan
+                            )->format('d/m/Y H:i')
+                            : null,
+
                     /*
                     |--------------------------------------------------------------------------
-                    | DATA KESEHATAN
+                    | KESEHATAN
                     |--------------------------------------------------------------------------
                     */
 
-                    'keluhan' => $item->keluhan,
+                    'keluhan' =>
+                        $item->keluhan,
 
-                    'pemeriksaan' => $item->pemeriksaan,
+                    'pemeriksaan' =>
+                        $item->pemeriksaan,
 
                     /*
                     |--------------------------------------------------------------------------
-                    | PENYAKIT / DIAGNOSIS
+                    | PENYAKIT
                     |--------------------------------------------------------------------------
                     */
 
                     'penyakit' => $item->penyakit
                         ? [
-                            'id' => $item->penyakit->id,
-                            'nama_penyakit' => $item->penyakit->nama_penyakit,
-                            'kategori' => $item->penyakit->kategori,
-                            'keterangan' => $item->penyakit->keterangan,
+                            'id' =>
+                                $item->penyakit->id,
+
+                            'nama_penyakit' =>
+                                $item->penyakit->nama_penyakit,
+
+                            'kategori' =>
+                                $item->penyakit->kategori,
+
+                            'keterangan' =>
+                                $item->penyakit->keterangan,
                         ]
                         : null,
 
@@ -147,7 +160,8 @@ class KunjunganController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    'triase' => $item->triase,
+                    'triase' =>
+                        $item->triase,
 
                     /*
                     |--------------------------------------------------------------------------
@@ -155,7 +169,8 @@ class KunjunganController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    'tindakan' => $item->tindakan,
+                    'tindakan' =>
+                        $item->tindakan,
 
                     /*
                     |--------------------------------------------------------------------------
@@ -163,7 +178,8 @@ class KunjunganController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    'catatan' => $item->catatan,
+                    'catatan' =>
+                        $item->catatan,
 
                     /*
                     |--------------------------------------------------------------------------
@@ -173,26 +189,51 @@ class KunjunganController extends Controller
 
                     'siswa' => $item->siswa
                         ? [
-                            'id' => $item->siswa->id,
 
-                            'nisn' => $item->siswa->nisn,
+                            'id' =>
+                                $item->siswa->id,
 
-                            'nama' => $item->siswa->nama,
+                            'nisn' =>
+                                $item->siswa->nisn,
 
-                            'kelas' => $item->siswa->kelas
-                                ? [
-                                    'id' => $item->siswa->kelas->id,
-                                    'nama_kelas' => $item->siswa->kelas->nama_kelas,
-                                ]
-                                : null,
+                            'nama' =>
+                                $item->siswa->nama,
 
-                            'jurusan' => $item->siswa->kelas?->jurusan
-                                ? [
-                                    'id' => $item->siswa->kelas->jurusan->id,
-                                    'nama_jurusan' =>
-                                        $item->siswa->kelas->jurusan->nama_jurusan,
-                                ]
-                                : null,
+                            'kelas' =>
+                                $item->siswa->kelas
+                                    ? [
+
+                                        'id' =>
+                                            $item->siswa
+                                                ->kelas
+                                                ->id,
+
+                                        'nama_kelas' =>
+                                            $item->siswa
+                                                ->kelas
+                                                ->nama_kelas,
+
+                                    ]
+                                    : null,
+
+                            'jurusan' =>
+                                $item->siswa->kelas?->jurusan
+                                    ? [
+
+                                        'id' =>
+                                            $item->siswa
+                                                ->kelas
+                                                ->jurusan
+                                                ->id,
+
+                                        'nama_jurusan' =>
+                                            $item->siswa
+                                                ->kelas
+                                                ->jurusan
+                                                ->nama_jurusan,
+
+                                    ]
+                                    : null,
                         ]
                         : null,
 
@@ -202,12 +243,18 @@ class KunjunganController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    'pemeriksa' => $item->pemeriksa
-                        ? [
-                            'id' => $item->pemeriksa->id,
-                            'name' => $item->pemeriksa->name,
-                        ]
-                        : null,
+                    'pemeriksa' =>
+                        $item->pemeriksa
+                            ? [
+
+                                'id' =>
+                                    $item->pemeriksa->id,
+
+                                'name' =>
+                                    $item->pemeriksa->name,
+
+                            ]
+                            : null,
 
                     /*
                     |--------------------------------------------------------------------------
@@ -215,43 +262,80 @@ class KunjunganController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    'periode' => $item->periode
-                        ? [
-                            'id' => $item->periode->id,
-                            'nama_periode' =>
-                                $item->periode->nama_periode,
-                        ]
-                        : null,
+                    'periode' =>
+                        $item->periode
+                            ? [
+
+                                'id' =>
+                                    $item->periode->id,
+
+                                'nama_periode' =>
+                                    $item->periode->nama_periode,
+
+                            ]
+                            : null,
 
                     /*
                     |--------------------------------------------------------------------------
-                    | OBAT
+                    | OBAT + BATCH
                     |--------------------------------------------------------------------------
                     */
 
-                    'obat' => $item->kunjunganObat
-                        ->map(function ($itemObat) {
+                    'obat' =>
+                        $item->kunjunganObat
+                            ->map(function ($itemObat) {
 
-                            return [
+                                return [
 
-                                'id' => $itemObat->id,
+                                    'id' =>
+                                        $itemObat->id,
 
-                                'obat_id' => $itemObat->obat_id,
+                                    'obat_id' =>
+                                        $itemObat->obat_id,
 
-                                'nama_obat' =>
-                                    $itemObat->obat?->nama_obat,
+                                    'batch_id' =>
+                                        $itemObat->batch_id,
 
-                                'satuan' =>
-                                    $itemObat->obat?->satuan,
+                                    'nama_obat' =>
+                                        $itemObat
+                                            ->obat
+                                            ?->nama_obat,
 
-                                'jumlah' =>
-                                    $itemObat->jumlah,
+                                    'satuan' =>
+                                        $itemObat
+                                            ->obat
+                                            ?->satuan,
 
-                                'keterangan' =>
-                                    $itemObat->keterangan,
-                            ];
-                        })
-                        ->values(),
+                                    'kode_batch' =>
+                                        $itemObat
+                                            ->batch
+                                            ?->kode_batch,
+
+                                    'tanggal_masuk' =>
+                                        $itemObat
+                                            ->batch
+                                            ?->tanggal_masuk
+                                            ?->format('Y-m-d'),
+
+                                    'tanggal_kadaluarsa' =>
+                                        $itemObat
+                                            ->batch
+                                            ?->tanggal_kadaluarsa
+                                            ?->format('Y-m-d'),
+
+                                    'keterangan_exp' =>
+                                        $itemObat->batch
+                                            ?->tanggal_kadaluarsa
+                                            ?->format('d/m/Y'),
+
+                                    'jumlah' =>
+                                        $itemObat->jumlah,
+
+                                    'keterangan' =>
+                                        $itemObat->keterangan,
+                                ];
+                            })
+                            ->values(),
                 ];
             });
 
@@ -268,7 +352,8 @@ class KunjunganController extends Controller
 
                 return [
 
-                    'id' => $periode->id,
+                    'id' =>
+                        $periode->id,
 
                     'nama_periode' =>
                         $periode->nama_periode,
@@ -279,7 +364,8 @@ class KunjunganController extends Controller
                     'tanggal_selesai' =>
                         $periode->tanggal_selesai,
                 ];
-            });
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -325,7 +411,8 @@ class KunjunganController extends Controller
 
                 return [
 
-                    'id' => $item->penyakit_id,
+                    'id' =>
+                        $item->penyakit_id,
 
                     'nama_penyakit' =>
                         $item->penyakit?->nama_penyakit
@@ -347,7 +434,7 @@ class KunjunganController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $trendTriase = KunjunganKlinik::query()
+        $trendTriaseQuery = KunjunganKlinik::query()
             ->select(
                 'triase',
                 DB::raw('COUNT(*) as jumlah')
@@ -357,19 +444,20 @@ class KunjunganController extends Controller
 
         if ($request->filled('periode_id')) {
 
-            $trendTriase->where(
+            $trendTriaseQuery->where(
                 'periode_id',
                 $request->periode_id
             );
         }
 
-        $trendTriase = $trendTriase
+        $trendTriase = $trendTriaseQuery
             ->get()
             ->map(function ($item) {
 
                 return [
 
-                    'triase' => $item->triase,
+                    'triase' =>
+                        $item->triase,
 
                     'jumlah' =>
                         (int) $item->jumlah,
@@ -472,29 +560,37 @@ class KunjunganController extends Controller
                     'kelas' =>
                         $siswa->kelas
                             ? [
+
                                 'id' =>
                                     $siswa->kelas->id,
 
                                 'nama_kelas' =>
                                     $siswa->kelas->nama_kelas,
+
                             ]
                             : null,
 
                     'jurusan' =>
                         $siswa->kelas?->jurusan
                             ? [
+
                                 'id' =>
-                                    $siswa->kelas->jurusan->id,
+                                    $siswa
+                                        ->kelas
+                                        ->jurusan
+                                        ->id,
 
                                 'nama_jurusan' =>
                                     $siswa
                                         ->kelas
                                         ->jurusan
                                         ->nama_jurusan,
+
                             ]
                             : null,
                 ];
-            });
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -526,15 +622,71 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | OBAT
+        | OBAT + BATCH
         |--------------------------------------------------------------------------
+        |
+        | ATURAN:
+        |
+        | 1. Stok harus > 0
+        | 2. Batch tidak boleh expired
+        | 3. Batch H-1 expired sudah tidak boleh dipilih
+        | 4. Batch diurutkan dari expiry terdekat
+        | 5. Batch pertama otomatis menjadi batch terdekat
+        |
         */
 
+        $batasKadaluarsa =
+            today()->addDay();
+
         $obatList = Obat::query()
-            ->where('stok', '>', 0)
+            ->with([
+                'batches' => function ($query) use ($batasKadaluarsa) {
+
+                    $query
+                        ->where('stok', '>', 0)
+
+                        /*
+                        | Batch yang exp besok sudah tidak boleh dipilih.
+                        |
+                        | Contoh:
+                        | Hari ini 25
+                        | Exp 26 -> tidak muncul
+                        | Exp 27 -> muncul
+                        */
+                        ->whereDate(
+                            'tanggal_kadaluarsa',
+                            '>',
+                            $batasKadaluarsa
+                        )
+
+                        ->orderBy(
+                            'tanggal_kadaluarsa',
+                            'asc'
+                        )
+
+                        ->orderBy(
+                            'tanggal_masuk',
+                            'asc'
+                        )
+
+                        ->orderBy(
+                            'id',
+                            'asc'
+                        );
+                }
+            ])
             ->orderBy('nama_obat')
             ->get()
             ->map(function ($obat) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | BATCH TERDEKAT
+                |--------------------------------------------------------------------------
+                */
+
+                $batchTerdekat =
+                    $obat->batches->first();
 
                 return [
 
@@ -547,55 +699,128 @@ class KunjunganController extends Controller
                     'satuan' =>
                         $obat->satuan,
 
-                    'stok' =>
-                        $obat->stok,
-
                     'keterangan' =>
                         $obat->keterangan,
+
+                    'total_stok' =>
+                        (int) $obat->batches->sum('stok'),
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BATCH TERDEKAT
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'batch_terdekat' =>
+                        $batchTerdekat
+                            ? [
+
+                                'id' =>
+                                    $batchTerdekat->id,
+
+                                'kode_batch' =>
+                                    $batchTerdekat->kode_batch,
+
+                                'tanggal_kadaluarsa' =>
+                                    $batchTerdekat
+                                        ->tanggal_kadaluarsa
+                                        ->format('Y-m-d'),
+
+                                'keterangan_exp' =>
+                                    'Exp. ' .
+                                    $batchTerdekat
+                                        ->tanggal_kadaluarsa
+                                        ->format('d/m/Y'),
+
+                                'stok' =>
+                                    (int) $batchTerdekat->stok,
+
+                            ]
+                            : null,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SEMUA BATCH YANG MASIH BISA DIPILIH
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'batches' =>
+                        $obat->batches
+                            ->values()
+                            ->map(function ($batch, $index) {
+
+                                return [
+
+                                    'id' =>
+                                        $batch->id,
+
+                                    'kode_batch' =>
+                                        $batch->kode_batch,
+
+                                    'tanggal_masuk' =>
+                                        $batch->tanggal_masuk
+                                            ? $batch
+                                                ->tanggal_masuk
+                                                ->format('Y-m-d')
+                                            : null,
+
+                                    'tanggal_kadaluarsa' =>
+                                        $batch->tanggal_kadaluarsa
+                                            ? $batch
+                                                ->tanggal_kadaluarsa
+                                                ->format('Y-m-d')
+                                            : null,
+
+                                    /*
+                                    | KETERANGAN EXP
+                                    */
+
+                                    'keterangan_exp' =>
+                                        $batch->tanggal_kadaluarsa
+                                            ? 'Exp. ' .
+                                                $batch
+                                                    ->tanggal_kadaluarsa
+                                                    ->format('d/m/Y')
+                                            : null,
+
+                                    /*
+                                    | BATCH PERTAMA =
+                                    | BATCH EXPIRED TERDEKAT
+                                    */
+
+                                    'is_terdekat' =>
+                                        $index === 0,
+
+                                    'stok' =>
+                                        (int) $batch->stok,
+
+                                    'keterangan' =>
+                                        $batch->keterangan,
+                                ];
+                            })
+                            ->values(),
                 ];
+            })
+            /*
+            |--------------------------------------------------------------------------
+            | HANYA OBAT YANG MASIH PUNYA BATCH AKTIF
+            |--------------------------------------------------------------------------
+            */
+
+            ->filter(function ($obat) {
+
+                return $obat['batches']->isNotEmpty();
             })
             ->values();
 
         /*
         |--------------------------------------------------------------------------
-        | DATA TRIASE
+        | TRIASE
         |--------------------------------------------------------------------------
         */
 
-        $triaseList = [
-
-            [
-                'value' => 'merah',
-                'label' => 'Merah',
-                'prioritas' => 'Prioritas Tinggi',
-                'deskripsi' =>
-                    'Gawat darurat dan mengancam nyawa.',
-            ],
-
-            [
-                'value' => 'kuning',
-                'label' => 'Kuning',
-                'prioritas' => 'Prioritas Sedang',
-                'deskripsi' =>
-                    'Darurat tetapi tidak ada ancaman kematian segera.',
-            ],
-
-            [
-                'value' => 'hijau',
-                'label' => 'Hijau',
-                'prioritas' => 'Prioritas Rendah',
-                'deskripsi' =>
-                    'Tidak gawat dan tidak ada ancaman kematian.',
-            ],
-
-            [
-                'value' => 'hitam',
-                'label' => 'Hitam',
-                'prioritas' => 'Prioritas Rendah',
-                'deskripsi' =>
-                    'Darurat tidak gawat dan tidak ada harapan hidup.',
-            ],
-        ];
+        $triaseList =
+            $this->triaseList();
 
         /*
         |--------------------------------------------------------------------------
@@ -610,11 +835,13 @@ class KunjunganController extends Controller
                 'periode' =>
                     $periode
                         ? [
+
                             'id' =>
                                 $periode->id,
 
                             'nama_periode' =>
                                 $periode->nama_periode,
+
                         ]
                         : null,
 
@@ -641,12 +868,6 @@ class KunjunganController extends Controller
      */
     public function store(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI
-        |--------------------------------------------------------------------------
-        */
-
         $validated = $request->validate([
 
             'periode_id' => [
@@ -674,12 +895,6 @@ class KunjunganController extends Controller
                 'exists:penyakits,id',
             ],
 
-            /*
-            |--------------------------------------------------------------------------
-            | TRIASE
-            |--------------------------------------------------------------------------
-            */
-
             'triase' => [
                 'required',
                 'in:merah,kuning,hijau,hitam',
@@ -705,6 +920,11 @@ class KunjunganController extends Controller
                 'exists:obats,id',
             ],
 
+            'obat.*.batch_id' => [
+                'nullable',
+                'exists:obat_batches,id',
+            ],
+
             'obat.*.jumlah' => [
                 'required',
                 'integer',
@@ -716,12 +936,6 @@ class KunjunganController extends Controller
                 'string',
             ],
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
 
         DB::transaction(function () use ($validated) {
 
@@ -745,12 +959,6 @@ class KunjunganController extends Controller
                 'penyakit_id' =>
                     $validated['penyakit_id'] ?? null,
 
-                /*
-                |--------------------------------------------------------------------------
-                | SIMPAN TRIASE
-                |--------------------------------------------------------------------------
-                */
-
                 'triase' =>
                     $validated['triase'],
 
@@ -766,60 +974,21 @@ class KunjunganController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | SIMPAN OBAT
+            | PROSES OBAT
             |--------------------------------------------------------------------------
             */
 
             if (!empty($validated['obat'])) {
 
-                foreach (
-                    $validated['obat']
-                    as $item
-                ) {
+                foreach ($validated['obat'] as $item) {
 
-                    $obat = Obat::lockForUpdate()
-                        ->findOrFail(
-                            $item['obat_id']
-                        );
-
-                    if (
-                        $obat->stok <
-                        $item['jumlah']
-                    ) {
-
-                        throw new \Exception(
-                            "Stok obat {$obat->nama_obat} tidak mencukupi. Stok tersedia: {$obat->stok}."
-                        );
-                    }
-
-                    KunjunganObat::create([
-
-                        'kunjungan_id' =>
-                            $kunjungan->id,
-
-                        'obat_id' =>
-                            $obat->id,
-
-                        'jumlah' =>
-                            $item['jumlah'],
-
-                        'keterangan' =>
-                            $item['keterangan'] ?? null,
-                    ]);
-
-                    $obat->decrement(
-                        'stok',
-                        $item['jumlah']
+                    $this->kurangiStokObat(
+                        $kunjungan,
+                        $item
                     );
                 }
             }
         });
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT
-        |--------------------------------------------------------------------------
-        */
 
         return redirect()
             ->route(
@@ -844,14 +1013,11 @@ class KunjunganController extends Controller
         $kunjungan->load([
 
             'siswa.kelas.jurusan',
-
             'pemeriksa',
-
             'periode',
-
             'penyakit',
-
             'kunjunganObat.obat',
+            'kunjunganObat.batch',
         ]);
 
         return Inertia::render(
@@ -863,12 +1029,6 @@ class KunjunganController extends Controller
                     'id' =>
                         $kunjungan->id,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TANGGAL
-                    |--------------------------------------------------------------------------
-                    */
-
                     'created_at' =>
                         $kunjungan->created_at
                             ? $kunjungan
@@ -878,7 +1038,7 @@ class KunjunganController extends Controller
 
                     'tanggal_kunjungan' =>
                         $kunjungan->tanggal_kunjungan
-                            ? \Carbon\Carbon::parse(
+                            ? Carbon::parse(
                                 $kunjungan->tanggal_kunjungan
                             )->format('d/m/Y H:i')
                             : (
@@ -896,23 +1056,11 @@ class KunjunganController extends Controller
                                 ->format('d/m/Y H:i')
                             : null,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | DATA KESEHATAN
-                    |--------------------------------------------------------------------------
-                    */
-
                     'keluhan' =>
                         $kunjungan->keluhan,
 
                     'pemeriksaan' =>
                         $kunjungan->pemeriksaan,
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PENYAKIT
-                    |--------------------------------------------------------------------------
-                    */
 
                     'penyakit' =>
                         $kunjungan->penyakit
@@ -946,38 +1094,14 @@ class KunjunganController extends Controller
                             ->penyakit
                             ?->nama_penyakit,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TRIASE
-                    |--------------------------------------------------------------------------
-                    */
-
                     'triase' =>
                         $kunjungan->triase,
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | TINDAKAN
-                    |--------------------------------------------------------------------------
-                    */
 
                     'tindakan' =>
                         $kunjungan->tindakan,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CATATAN
-                    |--------------------------------------------------------------------------
-                    */
-
                     'catatan' =>
                         $kunjungan->catatan,
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | SISWA
-                    |--------------------------------------------------------------------------
-                    */
 
                     'siswa' =>
                         $kunjungan->siswa
@@ -1045,12 +1169,6 @@ class KunjunganController extends Controller
                             ]
                             : null,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PEMERIKSA
-                    |--------------------------------------------------------------------------
-                    */
-
                     'pemeriksa' =>
                         $kunjungan->pemeriksa
                             ? [
@@ -1067,12 +1185,6 @@ class KunjunganController extends Controller
 
                             ]
                             : null,
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PERIODE
-                    |--------------------------------------------------------------------------
-                    */
 
                     'periode' =>
                         $kunjungan->periode
@@ -1091,12 +1203,6 @@ class KunjunganController extends Controller
                             ]
                             : null,
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | OBAT
-                    |--------------------------------------------------------------------------
-                    */
-
                     'obat' =>
                         $kunjungan
                             ->kunjunganObat
@@ -1110,6 +1216,9 @@ class KunjunganController extends Controller
                                     'obat_id' =>
                                         $item->obat_id,
 
+                                    'batch_id' =>
+                                        $item->batch_id,
+
                                     'nama_obat' =>
                                         $item
                                             ->obat
@@ -1119,6 +1228,28 @@ class KunjunganController extends Controller
                                         $item
                                             ->obat
                                             ?->satuan,
+
+                                    'kode_batch' =>
+                                        $item
+                                            ->batch
+                                            ?->kode_batch,
+
+                                    'tanggal_masuk' =>
+                                        $item
+                                            ->batch
+                                            ?->tanggal_masuk
+                                            ?->format('Y-m-d'),
+
+                                    'tanggal_kadaluarsa' =>
+                                        $item
+                                            ->batch
+                                            ?->tanggal_kadaluarsa
+                                            ?->format('Y-m-d'),
+
+                                    'keterangan_exp' =>
+                                        $item->batch
+                                            ?->tanggal_kadaluarsa
+                                            ?->format('d/m/Y'),
 
                                     'jumlah' =>
                                         $item->jumlah,
@@ -1144,16 +1275,12 @@ class KunjunganController extends Controller
     ) {
 
         $kunjungan->load([
-
             'siswa.kelas.jurusan',
-
             'pemeriksa',
-
             'periode',
-
             'penyakit',
-
             'kunjunganObat.obat',
+            'kunjunganObat.batch',
         ]);
 
         return view(
@@ -1176,16 +1303,12 @@ class KunjunganController extends Controller
     ) {
 
         $kunjungan->load([
-
             'siswa.kelas.jurusan',
-
             'pemeriksa',
-
             'periode',
-
             'penyakit',
-
             'kunjunganObat.obat',
+            'kunjunganObat.batch',
         ]);
 
         $pdf = Pdf::loadView(
@@ -1201,9 +1324,10 @@ class KunjunganController extends Controller
             'portrait'
         );
 
-        $namaSiswa = $kunjungan
-            ->siswa
-            ?->nama;
+        $namaSiswa =
+            $kunjungan
+                ->siswa
+                ?->nama;
 
         $namaSiswa = $namaSiswa
             ? preg_replace(
@@ -1213,12 +1337,13 @@ class KunjunganController extends Controller
             )
             : 'siswa';
 
-        $tanggal = $kunjungan
-            ->created_at
-            ? $kunjungan
+        $tanggal =
+            $kunjungan
                 ->created_at
-                ->format('Y-m-d')
-            : now()->format('Y-m-d');
+                ? $kunjungan
+                    ->created_at
+                    ->format('Y-m-d')
+                : now()->format('Y-m-d');
 
         return $pdf->download(
             'kunjungan-klinik-' .
@@ -1242,12 +1367,10 @@ class KunjunganController extends Controller
         $kunjungan->load([
 
             'siswa.kelas.jurusan',
-
             'penyakit',
-
-            'kunjunganObat.obat',
-
             'periode',
+            'kunjunganObat.obat',
+            'kunjunganObat.batch',
         ]);
 
         /*
@@ -1306,7 +1429,8 @@ class KunjunganController extends Controller
                             ]
                             : null,
                 ];
-            });
+            })
+            ->values();
 
         /*
         |--------------------------------------------------------------------------
@@ -1338,14 +1462,139 @@ class KunjunganController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | OBAT
+        | BATCH YANG SEDANG DIPAKAI PADA KUNJUNGAN
         |--------------------------------------------------------------------------
         */
 
+        $batchTerpakaiIds =
+            $kunjungan
+                ->kunjunganObat
+                ->pluck('batch_id')
+                ->filter()
+                ->values()
+                ->toArray();
+
+        /*
+        |--------------------------------------------------------------------------
+        | BATAS MINIMAL EXPIRY
+        |--------------------------------------------------------------------------
+        */
+
+        $batasKadaluarsa =
+            today()->addDay();
+
+        /*
+        |--------------------------------------------------------------------------
+        | OBAT + BATCH
+        |--------------------------------------------------------------------------
+        |
+        | Pada edit:
+        |
+        | - Batch aktif tetap ditampilkan.
+        | - Batch H-1 yang sedang digunakan tetap ditampilkan
+        |   supaya data lama tidak tiba-tiba hilang.
+        | - Batch lain yang sudah H-1 tidak ditampilkan.
+        |
+        */
+
         $obatList = Obat::query()
+            ->with([
+                'batches' => function ($query) use (
+                    $batasKadaluarsa,
+                    $batchTerpakaiIds
+                ) {
+
+                    $query->where(function ($q) use (
+                        $batasKadaluarsa,
+                        $batchTerpakaiIds
+                    ) {
+
+                        /*
+                        | Batch normal yang masih aman
+                        */
+
+                        $q->where(function ($q2) use (
+                            $batasKadaluarsa
+                        ) {
+
+                            $q2->where(
+                                'stok',
+                                '>',
+                                0
+                            )
+                            ->whereDate(
+                                'tanggal_kadaluarsa',
+                                '>',
+                                $batasKadaluarsa
+                            );
+                        });
+
+                        /*
+                        | ATAU batch yang sedang digunakan
+                        */
+
+                        if (!empty($batchTerpakaiIds)) {
+
+                            $q->orWhereIn(
+                                'id',
+                                $batchTerpakaiIds
+                            );
+                        }
+                    })
+
+                    ->orderBy(
+                        'tanggal_kadaluarsa',
+                        'asc'
+                    )
+
+                    ->orderBy(
+                        'tanggal_masuk',
+                        'asc'
+                    )
+
+                    ->orderBy(
+                        'id',
+                        'asc'
+                    );
+                }
+            ])
             ->orderBy('nama_obat')
             ->get()
-            ->map(function ($obat) {
+            ->map(function ($obat) use (
+                $batchTerpakaiIds
+            ) {
+
+                $batchTerdekat = $obat->batches
+                    ->filter(function ($batch) use (
+                        $batchTerpakaiIds
+                    ) {
+
+                        /*
+                        | Batch yang benar-benar masih boleh dipilih.
+                        */
+
+                        return
+                            $batch->stok > 0
+                            &&
+                            $batch->tanggal_kadaluarsa
+                            &&
+                            $batch
+                                ->tanggal_kadaluarsa
+                                ->gt(
+                                    today()->addDay()
+                                );
+                    })
+                    ->sortBy([
+                        [
+                            'tanggal_kadaluarsa',
+                            'asc'
+                        ],
+                        [
+                            'tanggal_masuk',
+                            'asc'
+                        ],
+                    ])
+                    ->first();
 
                 return [
 
@@ -1358,12 +1607,139 @@ class KunjunganController extends Controller
                     'satuan' =>
                         $obat->satuan,
 
-                    'stok' =>
-                        $obat->stok,
-
                     'keterangan' =>
                         $obat->keterangan,
+
+                    'total_stok' =>
+                        (int) $obat->batches->sum(
+                            'stok'
+                        ),
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | BATCH TERDEKAT
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'batch_terdekat' =>
+                        $batchTerdekat
+                            ? [
+
+                                'id' =>
+                                    $batchTerdekat->id,
+
+                                'kode_batch' =>
+                                    $batchTerdekat
+                                        ->kode_batch,
+
+                                'tanggal_kadaluarsa' =>
+                                    $batchTerdekat
+                                        ->tanggal_kadaluarsa
+                                        ->format('Y-m-d'),
+
+                                'keterangan_exp' =>
+                                    'Exp. ' .
+                                    $batchTerdekat
+                                        ->tanggal_kadaluarsa
+                                        ->format('d/m/Y'),
+
+                                'stok' =>
+                                    (int)
+                                    $batchTerdekat->stok,
+
+                            ]
+                            : null,
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SEMUA BATCH
+                    |--------------------------------------------------------------------------
+                    */
+
+                    'batches' =>
+                        $obat->batches
+                            ->values()
+                            ->map(function (
+                                $batch,
+                                $index
+                            ) use (
+                                $batchTerpakaiIds,
+                                $batchTerdekat
+                            ) {
+
+                                $sedangDipakai =
+                                    in_array(
+                                        $batch->id,
+                                        $batchTerpakaiIds
+                                    );
+
+                                $isTerdekat =
+                                    $batchTerdekat
+                                    &&
+                                    $batch->id ===
+                                        $batchTerdekat->id;
+
+                                return [
+
+                                    'id' =>
+                                        $batch->id,
+
+                                    'kode_batch' =>
+                                        $batch->kode_batch,
+
+                                    'tanggal_masuk' =>
+                                        $batch->tanggal_masuk
+                                            ? $batch
+                                                ->tanggal_masuk
+                                                ->format('Y-m-d')
+                                            : null,
+
+                                    'tanggal_kadaluarsa' =>
+                                        $batch->tanggal_kadaluarsa
+                                            ? $batch
+                                                ->tanggal_kadaluarsa
+                                                ->format('Y-m-d')
+                                            : null,
+
+                                    'keterangan_exp' =>
+                                        $batch
+                                            ->tanggal_kadaluarsa
+                                            ? 'Exp. ' .
+                                                $batch
+                                                    ->tanggal_kadaluarsa
+                                                    ->format('d/m/Y')
+                                            : null,
+
+                                    'stok' =>
+                                        (int)
+                                        $batch->stok,
+
+                                    'keterangan' =>
+                                        $batch->keterangan,
+
+                                    /*
+                                    | Apakah batch paling dekat?
+                                    */
+
+                                    'is_terdekat' =>
+                                        $isTerdekat,
+
+                                    /*
+                                    | Apakah sedang dipakai
+                                    | pada kunjungan ini?
+                                    */
+
+                                    'sedang_dipakai' =>
+                                        $sedangDipakai,
+                                ];
+                            })
+                            ->values(),
                 ];
+            })
+            ->filter(function ($obat) {
+
+                return $obat['batches']
+                    ->isNotEmpty();
             })
             ->values();
 
@@ -1373,40 +1749,14 @@ class KunjunganController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $triaseList = [
+        $triaseList =
+            $this->triaseList();
 
-            [
-                'value' => 'merah',
-                'label' => 'Merah',
-                'prioritas' => 'Prioritas Tinggi',
-                'deskripsi' =>
-                    'Gawat darurat dan mengancam nyawa.',
-            ],
-
-            [
-                'value' => 'kuning',
-                'label' => 'Kuning',
-                'prioritas' => 'Prioritas Sedang',
-                'deskripsi' =>
-                    'Darurat tetapi tidak ada ancaman kematian segera.',
-            ],
-
-            [
-                'value' => 'hijau',
-                'label' => 'Hijau',
-                'prioritas' => 'Prioritas Rendah',
-                'deskripsi' =>
-                    'Tidak gawat dan tidak ada ancaman kematian.',
-            ],
-
-            [
-                'value' => 'hitam',
-                'label' => 'Hitam',
-                'prioritas' => 'Prioritas Rendah',
-                'deskripsi' =>
-                    'Darurat tidak gawat dan tidak ada harapan hidup.',
-            ],
-        ];
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN
+        |--------------------------------------------------------------------------
+        */
 
         return Inertia::render(
             'Klinik/Kesehatan/Kunjungan/Edit',
@@ -1436,79 +1786,145 @@ class KunjunganController extends Controller
      * UPDATE
      * ============================================================
      */
-    public function update(
-        Request $request,
-        KunjunganKlinik $kunjungan
+   /**
+ * ============================================================
+ * UPDATE KUNJUNGAN
+ * ============================================================
+ *
+ * LOGIKA STOK:
+ *
+ * 1. Ambil semua detail obat lama.
+ * 2. Kembalikan stok lama ke batch masing-masing.
+ * 3. Hapus detail obat lama.
+ * 4. Update data kunjungan.
+ * 5. Validasi dan kurangi stok untuk obat baru.
+ *
+ * Semua dilakukan dalam DB::transaction().
+ *
+ * Contoh:
+ *
+ * Stok awal     = 10
+ * Obat lama     = 1
+ * Stok sekarang = 9
+ *
+ * Edit menjadi 6:
+ *
+ * 9 + 1 = 10
+ * 10 - 6 = 4
+ *
+ * Jadi stok akhir = 4.
+ *
+ * Jika stok awal = 5:
+ *
+ * 5 - 6 = tidak cukup
+ *
+ * Maka transaksi dibatalkan dan stok tetap seperti sebelumnya.
+ */
+public function update(
+    Request $request,
+    KunjunganKlinik $kunjungan
+) {
+    $validated = $request->validate([
+        'periode_id' => [
+            'required',
+            'exists:periodes,id',
+        ],
+
+        'siswa_id' => [
+            'required',
+            'exists:siswas,id',
+        ],
+
+        'keluhan' => [
+            'nullable',
+            'string',
+        ],
+
+        'pemeriksaan' => [
+            'nullable',
+            'string',
+        ],
+
+        'penyakit_id' => [
+            'nullable',
+            'exists:penyakits,id',
+        ],
+
+        'triase' => [
+            'required',
+            'in:merah,kuning,hijau,hitam',
+        ],
+
+        'tindakan' => [
+            'nullable',
+            'string',
+        ],
+
+        'catatan' => [
+            'nullable',
+            'string',
+        ],
+
+        'obat' => [
+            'nullable',
+            'array',
+        ],
+
+        'obat.*.id' => [
+            'nullable',
+            'integer',
+        ],
+
+        'obat.*.obat_id' => [
+            'required',
+            'integer',
+            'exists:obats,id',
+        ],
+
+        'obat.*.batch_id' => [
+            'nullable',
+            'integer',
+            'exists:obat_batches,id',
+        ],
+
+        'obat.*.jumlah' => [
+            'required',
+            'integer',
+            'min:1',
+        ],
+
+        'obat.*.keterangan' => [
+            'nullable',
+            'string',
+        ],
+    ]);
+
+    DB::transaction(function () use (
+        $validated,
+        $kunjungan
     ) {
 
         /*
         |--------------------------------------------------------------------------
-        | VALIDASI
+        | LOCK KUNJUNGAN
         |--------------------------------------------------------------------------
         */
 
-        $validated = $request->validate([
+        $kunjungan = KunjunganKlinik::query()
+            ->lockForUpdate()
+            ->findOrFail($kunjungan->id);
 
-            'periode_id' => [
-                'required',
-                'exists:periodes,id',
-            ],
-
-            'siswa_id' => [
-                'required',
-                'exists:siswas,id',
-            ],
-
-            'keluhan' => [
-                'nullable',
-                'string',
-            ],
-
-            'pemeriksaan' => [
-                'nullable',
-                'string',
-            ],
-
-            'penyakit_id' => [
-                'nullable',
-                'exists:penyakits,id',
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | TRIASE
-            |--------------------------------------------------------------------------
-            */
-
-            'triase' => [
-                'required',
-                'in:merah,kuning,hijau,hitam',
-            ],
-
-            'tindakan' => [
-                'nullable',
-                'string',
-            ],
-
-            'catatan' => [
-                'nullable',
-                'string',
-            ],
-        ]);
 
         /*
         |--------------------------------------------------------------------------
-        | UPDATE
+        | UPDATE DATA KUNJUNGAN
         |--------------------------------------------------------------------------
         */
 
         $kunjungan->update([
+            'periode_id' => $validated['periode_id'],
 
-            'periode_id' =>
-                $validated['periode_id'],
-
-            'siswa_id' =>
-                $validated['siswa_id'],
+            'siswa_id' => $validated['siswa_id'],
 
             'keluhan' =>
                 $validated['keluhan'] ?? null,
@@ -1518,12 +1934,6 @@ class KunjunganController extends Controller
 
             'penyakit_id' =>
                 $validated['penyakit_id'] ?? null,
-
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE TRIASE
-            |--------------------------------------------------------------------------
-            */
 
             'triase' =>
                 $validated['triase'],
@@ -1535,16 +1945,498 @@ class KunjunganController extends Controller
                 $validated['catatan'] ?? null,
         ]);
 
-        return redirect()
-            ->route(
-                'klinik.kesehatan.kunjungan.index'
-            )
-            ->with(
-                'success',
-                'Data kunjungan berhasil diperbarui.'
-            );
-    }
 
+        /*
+        |--------------------------------------------------------------------------
+        | OBAT DARI FORM
+        |--------------------------------------------------------------------------
+        */
+
+        $obatBaru = $validated['obat'] ?? [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEGAH DUPLIKAT OBAT
+        |--------------------------------------------------------------------------
+        */
+
+        $obatIds = collect($obatBaru)
+            ->pluck('obat_id')
+            ->map(fn ($id) => (int) $id);
+
+        if (
+            $obatIds->count() !==
+            $obatIds->unique()->count()
+        ) {
+            throw ValidationException::withMessages([
+                'obat' =>
+                    'Obat yang sama tidak boleh dimasukkan lebih dari satu kali.',
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL DETAIL OBAT LAMA
+        |--------------------------------------------------------------------------
+        */
+
+        $obatLama = KunjunganObat::query()
+            ->where(
+                'kunjungan_id',
+                $kunjungan->id
+            )
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ID DETAIL YANG MASIH ADA DI FORM
+        |--------------------------------------------------------------------------
+        */
+
+        $detailYangDipakai = collect($obatBaru)
+            ->pluck('id')
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HAPUS DETAIL YANG SUDAH DIHAPUS DARI FORM
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($obatLama as $id => $detailLama) {
+
+            if (
+                !$detailYangDipakai->contains(
+                    (int) $id
+                )
+            ) {
+
+                /*
+                | Kembalikan stok
+                */
+
+                if ($detailLama->batch_id) {
+
+                    $batchLama =
+                        ObatBatch::query()
+                            ->lockForUpdate()
+                            ->find(
+                                $detailLama->batch_id
+                            );
+
+                    if ($batchLama) {
+
+                        $batchLama->increment(
+                            'stok',
+                            (int) $detailLama->jumlah
+                        );
+                    }
+                }
+
+                /*
+                | Hapus detail
+                */
+
+                $detailLama->delete();
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROSES OBAT
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (
+            $obatBaru as $index => $item
+        ) {
+
+            $detailId =
+                !empty($item['id'])
+                    ? (int) $item['id']
+                    : null;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CARI DETAIL LAMA
+            |--------------------------------------------------------------------------
+            */
+
+            $detailLama = null;
+
+            if ($detailId) {
+
+                $detailLama =
+                    $obatLama->get($detailId);
+
+                if (
+                    !$detailLama ||
+                    (int) $detailLama->kunjungan_id !==
+                        (int) $kunjungan->id
+                ) {
+
+                    throw ValidationException::withMessages([
+                        "obat.$index.id" =>
+                            'Detail obat tidak valid.',
+                    ]);
+                }
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | DATA LAMA
+            |--------------------------------------------------------------------------
+            */
+
+            $obatIdLama =
+                $detailLama
+                    ? (int) $detailLama->obat_id
+                    : null;
+
+            $batchIdLama =
+                $detailLama
+                    ? (int) $detailLama->batch_id
+                    : null;
+
+            $jumlahLama =
+                $detailLama
+                    ? (int) $detailLama->jumlah
+                    : 0;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | DATA BARU
+            |--------------------------------------------------------------------------
+            */
+
+            $obatIdBaru =
+                (int) $item['obat_id'];
+
+            $jumlahBaru =
+                (int) $item['jumlah'];
+
+            $batchIdBaru =
+                !empty($item['batch_id'])
+                    ? (int) $item['batch_id']
+                    : null;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | OBAT
+            |--------------------------------------------------------------------------
+            */
+
+            $obat = Obat::query()
+                ->find($obatIdBaru);
+
+            if (!$obat) {
+
+                throw ValidationException::withMessages([
+                    "obat.$index.obat_id" =>
+                        'Obat tidak ditemukan.',
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | JIKA BATCH TIDAK DITENTUKAN
+            |--------------------------------------------------------------------------
+            */
+
+            if (!$batchIdBaru) {
+
+                $batchBaru =
+                    ObatBatch::query()
+                        ->where(
+                            'obat_id',
+                            $obatIdBaru
+                        )
+                        ->where(
+                            'stok',
+                            '>',
+                            0
+                        )
+                        ->whereDate(
+                            'tanggal_kadaluarsa',
+                            '>',
+                            today()->addDay()
+                        )
+                        ->orderBy(
+                            'tanggal_kadaluarsa'
+                        )
+                        ->orderBy(
+                            'tanggal_masuk'
+                        )
+                        ->lockForUpdate()
+                        ->first();
+
+                if (!$batchBaru) {
+
+                    throw ValidationException::withMessages([
+                        "obat.$index.batch_id" =>
+                            "Obat {$obat->nama_obat} tidak memiliki batch aktif.",
+                    ]);
+                }
+
+                $batchIdBaru =
+                    (int) $batchBaru->id;
+
+            } else {
+
+                $batchBaru =
+                    ObatBatch::query()
+                        ->lockForUpdate()
+                        ->find(
+                            $batchIdBaru
+                        );
+
+                if (!$batchBaru) {
+
+                    throw ValidationException::withMessages([
+                        "obat.$index.batch_id" =>
+                            'Batch obat tidak ditemukan.',
+                    ]);
+                }
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | BATCH HARUS SESUAI OBAT
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                (int) $batchBaru->obat_id !==
+                $obatIdBaru
+            ) {
+
+                throw ValidationException::withMessages([
+                    "obat.$index.batch_id" =>
+                        'Batch tidak sesuai dengan obat.',
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | EDIT OBAT LAMA
+            |--------------------------------------------------------------------------
+            */
+
+            if ($detailLama) {
+
+                /*
+                |--------------------------------------------------------------
+                | BATCH SAMA
+                |--------------------------------------------------------------
+                */
+
+                if (
+                    $batchIdLama ===
+                    $batchIdBaru
+                ) {
+
+                    $selisih =
+                        $jumlahBaru -
+                        $jumlahLama;
+
+
+                    /*
+                    | Jumlah bertambah
+                    */
+
+                    if ($selisih > 0) {
+
+                        if (
+                            (int) $batchBaru->stok <
+                            $selisih
+                        ) {
+
+                            throw ValidationException::withMessages([
+                                "obat.$index.jumlah" =>
+                                    "Stok tidak mencukupi. " .
+                                    "Stok tersedia: {$batchBaru->stok}.",
+                            ]);
+                        }
+
+                        $batchBaru->decrement(
+                            'stok',
+                            $selisih
+                        );
+                    }
+
+
+                    /*
+                    | Jumlah berkurang
+                    */
+
+                    elseif ($selisih < 0) {
+
+                        $batchBaru->increment(
+                            'stok',
+                            abs($selisih)
+                        );
+                    }
+
+                }
+
+                /*
+                |--------------------------------------------------------------
+                | BATCH BERUBAH
+                |--------------------------------------------------------------
+                */
+
+                else {
+
+                    /*
+                    | Kembalikan stok batch lama
+                    */
+
+                    if ($batchIdLama) {
+
+                        $batchLama =
+                            ObatBatch::query()
+                                ->lockForUpdate()
+                                ->find(
+                                    $batchIdLama
+                                );
+
+                        if ($batchLama) {
+
+                            $batchLama->increment(
+                                'stok',
+                                $jumlahLama
+                            );
+                        }
+                    }
+
+
+                    /*
+                    | Kurangi stok batch baru
+                    */
+
+                    if (
+                        (int) $batchBaru->stok <
+                        $jumlahBaru
+                    ) {
+
+                        throw ValidationException::withMessages([
+                            "obat.$index.jumlah" =>
+                                "Stok batch baru tidak mencukupi.",
+                        ]);
+                    }
+
+                    $batchBaru->decrement(
+                        'stok',
+                        $jumlahBaru
+                    );
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | UPDATE DETAIL OBAT
+                |--------------------------------------------------------------------------
+                */
+
+                $detailLama->update([
+                    'obat_id' =>
+                        $obatIdBaru,
+
+                    'batch_id' =>
+                        $batchIdBaru,
+
+                    'jumlah' =>
+                        $jumlahBaru,
+
+                    'keterangan' =>
+                        $item['keterangan']
+                        ?? null,
+                ]);
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | OBAT BARU
+            |--------------------------------------------------------------------------
+            */
+
+            else {
+
+                if (
+                    (int) $batchBaru->stok <
+                    $jumlahBaru
+                ) {
+
+                    throw ValidationException::withMessages([
+                        "obat.$index.jumlah" =>
+                            "Stok batch tidak mencukupi. " .
+                            "Stok tersedia: {$batchBaru->stok}.",
+                    ]);
+                }
+
+
+                /*
+                | Kurangi stok
+                */
+
+                $batchBaru->decrement(
+                    'stok',
+                    $jumlahBaru
+                );
+
+
+                /*
+                | Buat detail baru
+                */
+
+                KunjunganObat::create([
+                    'kunjungan_id' =>
+                        $kunjungan->id,
+
+                    'obat_id' =>
+                        $obatIdBaru,
+
+                    'batch_id' =>
+                        $batchIdBaru,
+
+                    'jumlah' =>
+                        $jumlahBaru,
+
+                    'keterangan' =>
+                        $item['keterangan']
+                        ?? null,
+                ]);
+            }
+        }
+    });
+
+
+    return redirect()
+        ->route(
+            'klinik.kesehatan.kunjungan.index'
+        )
+        ->with(
+            'success',
+            'Data kunjungan berhasil diperbarui.'
+        );
+}
 
     /**
      * ============================================================
@@ -1555,52 +2447,36 @@ class KunjunganController extends Controller
         KunjunganKlinik $kunjungan
     ) {
 
-        DB::transaction(function () use ($kunjungan) {
+        DB::transaction(function () use (
+            $kunjungan
+        ) {
 
             $kunjungan->load(
                 'kunjunganObat'
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | KEMBALIKAN STOK
-            |--------------------------------------------------------------------------
-            */
 
             foreach (
                 $kunjungan->kunjunganObat
                 as $item
             ) {
 
-                $obat = Obat::lockForUpdate()
+                $batch = ObatBatch::lockForUpdate()
                     ->find(
-                        $item->obat_id
+                        $item->batch_id
                     );
 
-                if ($obat) {
+                if ($batch) {
 
-                    $obat->increment(
+                    $batch->increment(
                         'stok',
                         $item->jumlah
                     );
                 }
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS DETAIL OBAT
-            |--------------------------------------------------------------------------
-            */
-
             $kunjungan
                 ->kunjunganObat()
                 ->delete();
-
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS KUNJUNGAN
-            |--------------------------------------------------------------------------
-            */
 
             $kunjungan->delete();
         });
@@ -1611,7 +2487,481 @@ class KunjunganController extends Controller
             )
             ->with(
                 'success',
-                'Data kunjungan berhasil dihapus dan stok obat dikembalikan.'
+                'Data kunjungan berhasil dihapus dan stok batch obat dikembalikan.'
             );
+    }
+
+
+    /**
+     * ============================================================
+     * HELPER:
+     * KURANGI STOK OBAT
+     * ============================================================
+     *
+     * ATURAN:
+     *
+     * 1. Batch harus punya stok.
+     * 2. Batch harus belum H-1 expired.
+     * 3. Jika batch_id dikirim, gunakan batch tersebut.
+     * 4. Jika batch_id kosong, pilih otomatis batch
+     *    dengan expiry terdekat.
+     *
+     */
+   /**
+ * ============================================================
+ * HELPER:
+ * KURANGI STOK OBAT
+ * ============================================================
+ *
+ * ATURAN:
+ *
+ * 1. obat_id wajib sesuai dengan batch_id.
+ * 2. Batch harus tersedia.
+ * 3. Batch tidak boleh expired.
+ * 4. Batch H-1 tidak boleh digunakan.
+ * 5. Stok tidak boleh negatif.
+ * 6. Jika batch_id dikirim, gunakan batch tersebut.
+ * 7. Jika batch_id kosong, gunakan FIFO berdasarkan expiry.
+ *
+ */
+private function kurangiStokObat(
+    KunjunganKlinik $kunjungan,
+    array $item
+): void {
+
+    $obatId =
+        (int) $item['obat_id'];
+
+    $jumlahDiminta =
+        (int) $item['jumlah'];
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDASI JUMLAH
+    |--------------------------------------------------------------------------
+    */
+
+    if ($jumlahDiminta <= 0) {
+
+        throw ValidationException::withMessages([
+
+            'obat' =>
+                'Jumlah obat harus lebih dari 0.',
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | BATAS KADALUARSA
+    |--------------------------------------------------------------------------
+    |
+    | Contoh:
+    |
+    | Hari ini 25
+    |
+    | Exp 25 -> tidak boleh
+    | Exp 26 -> tidak boleh
+    | Exp 27 -> boleh
+    |
+    */
+
+    $batasKadaluarsa =
+        today()->addDay();
+
+    /*
+    |--------------------------------------------------------------------------
+    | JIKA BATCH DIPILIH MANUAL
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !empty($item['batch_id'])
+    ) {
+
+        $batch = ObatBatch::query()
+            ->where(
+                'id',
+                $item['batch_id']
+            )
+            ->where(
+                'obat_id',
+                $obatId
+            )
+            ->lockForUpdate()
+            ->first();
+
+        /*
+        |--------------------------------------------------------------------------
+        | BATCH TIDAK DITEMUKAN
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$batch) {
+
+            throw ValidationException::withMessages([
+
+                'obat' =>
+                    'Batch obat yang dipilih tidak ditemukan atau tidak sesuai dengan obat.',
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEK TANGGAL EXPIRED
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$batch->tanggal_kadaluarsa
+            ||
+            $batch
+                ->tanggal_kadaluarsa
+                ->lte(
+                    $batasKadaluarsa
+                )
+        ) {
+
+            $tanggalExp =
+                $batch->tanggal_kadaluarsa
+                    ? $batch
+                        ->tanggal_kadaluarsa
+                        ->format('d/m/Y')
+                    : '-';
+
+            throw ValidationException::withMessages([
+
+                'obat' =>
+                    "Batch {$batch->kode_batch} tidak dapat digunakan karena sudah H-1 atau kadaluarsa. Exp: {$tanggalExp}.",
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEK STOK
+        |--------------------------------------------------------------------------
+        */
+
+        $stokTersedia =
+            (int) $batch->stok;
+
+        if (
+            $stokTersedia <
+            $jumlahDiminta
+        ) {
+
+            throw ValidationException::withMessages([
+
+                'obat' =>
+                    "Stok batch {$batch->kode_batch} tidak mencukupi. " .
+                    "Stok tersedia: {$stokTersedia}, " .
+                    "jumlah diminta: {$jumlahDiminta}.",
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | KURANGI STOK
+        |--------------------------------------------------------------------------
+        */
+
+        $batch->stok =
+            $stokTersedia -
+            $jumlahDiminta;
+
+        $batch->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SIMPAN DETAIL KUNJUNGAN
+        |--------------------------------------------------------------------------
+        */
+
+        KunjunganObat::create([
+
+            'kunjungan_id' =>
+                $kunjungan->id,
+
+            'obat_id' =>
+                $obatId,
+
+            'batch_id' =>
+                $batch->id,
+
+            'jumlah' =>
+                $jumlahDiminta,
+
+            'keterangan' =>
+                $item['keterangan'] ?? null,
+        ]);
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | JIKA BATCH TIDAK DIPILIH
+    |--------------------------------------------------------------------------
+    |
+    | Gunakan FIFO berdasarkan:
+    |
+    | 1. Expiry terdekat
+    | 2. Tanggal masuk
+    | 3. ID batch
+    |
+    */
+
+    $batches = ObatBatch::query()
+        ->where(
+            'obat_id',
+            $obatId
+        )
+
+        ->where(
+            'stok',
+            '>',
+            0
+        )
+
+        ->whereNotNull(
+            'tanggal_kadaluarsa'
+        )
+
+        ->whereDate(
+            'tanggal_kadaluarsa',
+            '>',
+            $batasKadaluarsa
+        )
+
+        ->orderBy(
+            'tanggal_kadaluarsa',
+            'asc'
+        )
+
+        ->orderBy(
+            'tanggal_masuk',
+            'asc'
+        )
+
+        ->orderBy(
+            'id',
+            'asc'
+        )
+
+        ->lockForUpdate()
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | HITUNG TOTAL STOK
+    |--------------------------------------------------------------------------
+    */
+
+    $totalStok =
+        (int) $batches->sum('stok');
+
+    /*
+    |--------------------------------------------------------------------------
+    | CEK TOTAL STOK
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $totalStok <
+        $jumlahDiminta
+    ) {
+
+        throw ValidationException::withMessages([
+
+            'obat' =>
+                "Stok {$this->namaObat($obatId)} tidak mencukupi. " .
+                "Stok tersedia: {$totalStok}, " .
+                "jumlah diminta: {$jumlahDiminta}.",
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | JUMLAH YANG MASIH HARUS DIAMBIL
+    |--------------------------------------------------------------------------
+    */
+
+    $sisa =
+        $jumlahDiminta;
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL DARI BATCH FIFO
+    |--------------------------------------------------------------------------
+    */
+
+    foreach (
+        $batches as $batch
+    ) {
+
+        if (
+            $sisa <= 0
+        ) {
+            break;
+        }
+
+        $stokBatch =
+            (int) $batch->stok;
+
+        $jumlahDiambil =
+            min(
+                $stokBatch,
+                $sisa
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | KURANGI STOK BATCH
+        |--------------------------------------------------------------------------
+        */
+
+        $batch->stok =
+            $stokBatch -
+            $jumlahDiambil;
+
+        $batch->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | SIMPAN RIWAYAT
+        |--------------------------------------------------------------------------
+        */
+
+        KunjunganObat::create([
+
+            'kunjungan_id' =>
+                $kunjungan->id,
+
+            'obat_id' =>
+                $obatId,
+
+            'batch_id' =>
+                $batch->id,
+
+            'jumlah' =>
+                $jumlahDiambil,
+
+            'keterangan' =>
+                $item['keterangan'] ?? null,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | KURANGI SISA
+        |--------------------------------------------------------------------------
+        */
+
+        $sisa -=
+            $jumlahDiambil;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PENGAMAN
+    |--------------------------------------------------------------------------
+    |
+    | Secara normal tidak akan sampai sini jika total stok
+    | sudah divalidasi.
+    |
+    */
+
+    if (
+        $sisa > 0
+    ) {
+
+        throw ValidationException::withMessages([
+
+            'obat' =>
+                "Stok {$this->namaObat($obatId)} tidak mencukupi untuk memenuhi jumlah yang diminta.",
+        ]);
+    }
+}
+
+    /**
+     * ============================================================
+     * HELPER NAMA OBAT
+     * ============================================================
+     */
+    private function namaObat(
+        int $obatId
+    ): string {
+
+        return Obat::where(
+            'id',
+            $obatId
+        )->value('nama_obat')
+            ?? 'Obat';
+    }
+
+
+    /**
+     * ============================================================
+     * HELPER TRIASE
+     * ============================================================
+     */
+    private function triaseList(): array
+    {
+        return [
+
+            [
+                'value' =>
+                    'merah',
+
+                'label' =>
+                    'Merah',
+
+                'prioritas' =>
+                    'Prioritas Tinggi',
+
+                'deskripsi' =>
+                    'Gawat darurat dan mengancam nyawa.',
+            ],
+
+            [
+                'value' =>
+                    'kuning',
+
+                'label' =>
+                    'Kuning',
+
+                'prioritas' =>
+                    'Prioritas Sedang',
+
+                'deskripsi' =>
+                    'Darurat tetapi tidak ada ancaman kematian segera.',
+            ],
+
+            [
+                'value' =>
+                    'hijau',
+
+                'label' =>
+                    'Hijau',
+
+                'prioritas' =>
+                    'Prioritas Rendah',
+
+                'deskripsi' =>
+                    'Tidak gawat dan tidak ada ancaman kematian.',
+            ],
+
+            [
+                'value' =>
+                    'hitam',
+
+                'label' =>
+                    'Hitam',
+
+                'prioritas' =>
+                    'Prioritas Rendah',
+
+                'deskripsi' =>
+                    'Darurat tidak gawat dan tidak ada harapan hidup.',
+            ],
+        ];
     }
 }
