@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Link, usePage, router } from '@inertiajs/vue3'
+import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
     HomeIcon,
@@ -25,6 +26,28 @@ import {
 const page = usePage()
 
 const currentUrl = computed(() => page.url)
+
+const notificationCount = computed(() =>
+    Number(page.props.notificationCount ?? 0)
+)
+
+let notificationTimer = null
+
+onMounted(() => {
+    notificationTimer = window.setInterval(() => {
+        router.reload({
+            only: ['notificationCount'],
+            preserveScroll: true,
+            preserveState: true,
+        })
+    }, 10000)
+})
+
+onBeforeUnmount(() => {
+    if (notificationTimer) {
+        window.clearInterval(notificationTimer)
+    }
+})
 
 
 // ======================================================
@@ -82,6 +105,42 @@ const isActive = (path) => {
 
 
 // ======================================================
+// CEK ID / UUID
+// ======================================================
+//
+// Digunakan agar ID seperti:
+//
+// 1
+// 25
+// 123
+//
+// maupun UUID seperti:
+//
+// C97d06a8-50b0-4f33-b100-44af40e15d6d
+//
+// TIDAK DITAMPILKAN DI BREADCRUMB.
+// ======================================================
+
+const isIdentifier = (segment) => {
+
+    // ID angka
+    if (/^\d+$/.test(segment)) {
+        return true
+    }
+
+    // UUID standar
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+    if (uuidRegex.test(segment)) {
+        return true
+    }
+
+    return false
+}
+
+
+// ======================================================
 // BREADCRUMB MAP
 // ======================================================
 //
@@ -110,35 +169,70 @@ const isActive = (path) => {
 //
 // /notifikasi
 // Dashboard / Notifikasi
+//
+// /notifikasi/{uuid}
+// Dashboard / Notifikasi
 // ======================================================
 
 const breadcrumbMap = {
 
+    // ==================================================
     // MASTER DATA
+    // ==================================================
+
     siswa: 'Data Siswa',
+
     user: 'Data User',
+
     'siswa-import': 'Import Siswa',
 
+
+    // ==================================================
     // PERIODE
+    // ==================================================
+
     periode: 'Periode',
+
     'siswa-aktif': 'Siswa Periode Aktif',
+
     report: 'Report Periode',
 
+
+    // ==================================================
     // LAINNYA
+    // ==================================================
+
     kunjungan: 'Kunjungan Klinik',
+
     notifikasi: 'Notifikasi',
 
+
+    // ==================================================
     // PEMERIKSAAN
+    // ==================================================
+
     pemeriksaan: 'Pemeriksaan Berkala',
+
     'report-berkala': 'Report Berkala',
 
+
+    // ==================================================
     // TKSI
+    // ==================================================
+
     tksi: 'TKSI',
+
     input: 'Input TKSI',
 
+
+    // ==================================================
     // ACTION
+    // ==================================================
+
     create: 'Tambah',
+
     edit: 'Ubah',
+
     show: 'Detail',
 }
 
@@ -150,8 +244,10 @@ const breadcrumbMap = {
 const breadcrumbs = computed(() => {
 
     const segments = currentUrl.value
+        .split('?')[0]
         .split('/')
         .filter(Boolean)
+
 
     // ==================================================
     // DASHBOARD SELALU MENJADI ROOT
@@ -164,10 +260,13 @@ const breadcrumbs = computed(() => {
         },
     ]
 
+
     let currentPath = ''
 
 
-    segments.forEach((segment) => {
+    for (let index = 0; index < segments.length; index++) {
+
+        const segment = segments[index]
 
         currentPath += `/${segment}`
 
@@ -177,17 +276,18 @@ const breadcrumbs = computed(() => {
         // ==================================================
 
         if (segment === 'admin') {
-            return
+            continue
         }
 
 
         // ==================================================
         // JANGAN TAMPILKAN "dashboard"
-        // Karena Dashboard sudah menjadi root
+        //
+        // Dashboard sudah menjadi root.
         // ==================================================
 
         if (segment === 'dashboard') {
-            return
+            continue
         }
 
 
@@ -195,6 +295,7 @@ const breadcrumbs = computed(() => {
         // JANGAN TAMPILKAN "master"
         //
         // /admin/master/siswa
+        //
         // menjadi:
         //
         // Dashboard / Data Siswa
@@ -205,7 +306,24 @@ const breadcrumbs = computed(() => {
         // ==================================================
 
         if (segment === 'master') {
-            return
+            continue
+        }
+
+
+        // ==================================================
+        // JANGAN TAMPILKAN ID / UUID
+        //
+        // Contoh:
+        //
+        // /notifikasi/C97d06a8-50b0-4f33-b100-44af40e15d6d
+        //
+        // menjadi:
+        //
+        // Dashboard / Notifikasi
+        // ==================================================
+
+        if (isIdentifier(segment)) {
+            continue
         }
 
 
@@ -213,18 +331,25 @@ const breadcrumbs = computed(() => {
         // NAMA BREADCRUMB
         // ==================================================
 
-        let name =
+        const name =
             breadcrumbMap[segment] ??
-            segment.charAt(0).toUpperCase() +
-            segment.slice(1)
+            segment
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, char =>
+                    char.toUpperCase()
+                )
 
 
         // ==================================================
-        // JIKA SEGMENT BERUPA ID
+        // CEGAH DUPLIKAT
         // ==================================================
 
-        if (!isNaN(segment)) {
-            name = `Detail #${segment}`
+        const alreadyExists = list.some(
+            item => item.name === name
+        )
+
+        if (alreadyExists) {
+            continue
         }
 
 
@@ -236,8 +361,8 @@ const breadcrumbs = computed(() => {
             name,
             url: currentPath,
         })
+    }
 
-    })
 
     return list
 })
@@ -259,6 +384,7 @@ const breadcrumbs = computed(() => {
         >
 
             <!-- LEFT -->
+
             <div class="flex items-center space-x-3">
 
                 <!-- MOBILE MENU -->
@@ -328,20 +454,7 @@ const breadcrumbs = computed(() => {
 
                 <!-- NOTIFICATION -->
 
-                <Link
-                    href="/notifikasi"
-                    class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
-                >
-
-                    <BellIcon class="w-6 h-6" />
-
-                    <span
-                        class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white"
-                    >
-                        3
-                    </span>
-
-                </Link>
+                <NotificationDropdown />
 
 
                 <!-- PROFILE -->
@@ -429,7 +542,7 @@ const breadcrumbs = computed(() => {
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 013-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                     />
 
                                 </svg>
@@ -491,7 +604,6 @@ const breadcrumbs = computed(() => {
 
                     <nav class="space-y-1">
 
-
                         <!-- ==================================================
                              DASHBOARD
                         ================================================== -->
@@ -536,9 +648,7 @@ const breadcrumbs = computed(() => {
                                     class="flex items-center space-x-3"
                                 >
 
-                                    <FolderIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <FolderIcon class="w-5 h-5" />
 
                                     <span>
                                         Master Data
@@ -575,9 +685,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <UserGroupIcon
-                                        class="w-4 h-4"
-                                    />
+                                    <UserGroupIcon class="w-4 h-4" />
 
                                     <span>
                                         Data Siswa
@@ -598,9 +706,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <UserIcon
-                                        class="w-4 h-4"
-                                    />
+                                    <UserIcon class="w-4 h-4" />
 
                                     <span>
                                         Data User
@@ -634,9 +740,7 @@ const breadcrumbs = computed(() => {
                                     class="flex items-center space-x-3"
                                 >
 
-                                    <CalendarDaysIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <CalendarDaysIcon class="w-5 h-5" />
 
                                     <span>
                                         Periode
@@ -673,9 +777,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <CalendarDaysIcon
-                                        class="w-4 h-4"
-                                    />
+                                    <CalendarDaysIcon class="w-4 h-4" />
 
                                     <span>
                                         Data Periode
@@ -696,9 +798,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <UserGroupIcon
-                                        class="w-4 h-4"
-                                    />
+                                    <UserGroupIcon class="w-4 h-4" />
 
                                     <span>
                                         Siswa Periode Aktif
@@ -719,9 +819,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <ChartBarIcon
-                                        class="w-4 h-4"
-                                    />
+                                    <ChartBarIcon class="w-4 h-4" />
 
                                     <span>
                                         Report Periode
@@ -748,9 +846,7 @@ const breadcrumbs = computed(() => {
                             ]"
                         >
 
-                            <ClipboardDocumentCheckIcon
-                                class="w-5 h-5"
-                            />
+                            <ClipboardDocumentCheckIcon class="w-5 h-5" />
 
                             <span>
                                 Kunjungan Klinik
@@ -777,9 +873,7 @@ const breadcrumbs = computed(() => {
                                 class="flex items-center space-x-3"
                             >
 
-                                <BellIcon
-                                    class="w-5 h-5"
-                                />
+                                <BellIcon class="w-5 h-5" />
 
                                 <span>
                                     Notifikasi
@@ -789,9 +883,16 @@ const breadcrumbs = computed(() => {
 
 
                             <span
+                                v-if="notificationCount > 0"
                                 class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                             >
-                                3
+
+                                {{
+                                    notificationCount > 99
+                                        ? '99+'
+                                        : notificationCount
+                                }}
+
                             </span>
 
                         </Link>
@@ -806,7 +907,9 @@ const breadcrumbs = computed(() => {
                 <div
                     class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50 font-medium"
                 >
+
                     &copy; 2026 SMKN Jateng Semarang
+
                 </div>
 
             </aside>
@@ -877,9 +980,7 @@ const breadcrumbs = computed(() => {
                                     class="p-1 rounded-lg hover:bg-blue-900 text-white"
                                 >
 
-                                    <XMarkIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <XMarkIcon class="w-5 h-5" />
 
                                 </button>
 
@@ -889,7 +990,6 @@ const breadcrumbs = computed(() => {
                             <!-- MOBILE NAV -->
 
                             <nav class="space-y-1">
-
 
                                 <!-- DASHBOARD -->
 
@@ -904,9 +1004,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <HomeIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <HomeIcon class="w-5 h-5" />
 
                                     <span>
                                         Dashboard
@@ -934,9 +1032,7 @@ const breadcrumbs = computed(() => {
                                             class="flex items-center space-x-3"
                                         >
 
-                                            <FolderIcon
-                                                class="w-5 h-5"
-                                            />
+                                            <FolderIcon class="w-5 h-5" />
 
                                             <span>
                                                 Master Data
@@ -961,8 +1057,6 @@ const breadcrumbs = computed(() => {
                                         class="mt-1 pl-10 pr-2 space-y-1"
                                     >
 
-                                        <!-- DATA SISWA -->
-
                                         <Link
                                             href="/admin/master/siswa"
                                             @click="toggleMobileSidebar"
@@ -974,9 +1068,7 @@ const breadcrumbs = computed(() => {
                                             ]"
                                         >
 
-                                            <UserGroupIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <UserGroupIcon class="w-4 h-4" />
 
                                             <span>
                                                 Data Siswa
@@ -984,8 +1076,6 @@ const breadcrumbs = computed(() => {
 
                                         </Link>
 
-
-                                        <!-- DATA USER -->
 
                                         <Link
                                             href="/admin/master/user"
@@ -998,9 +1088,7 @@ const breadcrumbs = computed(() => {
                                             ]"
                                         >
 
-                                            <UserIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <UserIcon class="w-4 h-4" />
 
                                             <span>
                                                 Data User
@@ -1032,9 +1120,7 @@ const breadcrumbs = computed(() => {
                                             class="flex items-center space-x-3"
                                         >
 
-                                            <CalendarDaysIcon
-                                                class="w-5 h-5"
-                                            />
+                                            <CalendarDaysIcon class="w-5 h-5" />
 
                                             <span>
                                                 Periode
@@ -1059,8 +1145,6 @@ const breadcrumbs = computed(() => {
                                         class="mt-1 pl-10 pr-2 space-y-1"
                                     >
 
-                                        <!-- DATA PERIODE -->
-
                                         <Link
                                             href="/admin/periode"
                                             @click="toggleMobileSidebar"
@@ -1072,9 +1156,7 @@ const breadcrumbs = computed(() => {
                                             ]"
                                         >
 
-                                            <CalendarDaysIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <CalendarDaysIcon class="w-4 h-4" />
 
                                             <span>
                                                 Data Periode
@@ -1082,8 +1164,6 @@ const breadcrumbs = computed(() => {
 
                                         </Link>
 
-
-                                        <!-- SISWA PERIODE AKTIF -->
 
                                         <Link
                                             href="/admin/periode/siswa-aktif"
@@ -1096,9 +1176,7 @@ const breadcrumbs = computed(() => {
                                             ]"
                                         >
 
-                                            <UserGroupIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <UserGroupIcon class="w-4 h-4" />
 
                                             <span>
                                                 Siswa Periode Aktif
@@ -1106,8 +1184,6 @@ const breadcrumbs = computed(() => {
 
                                         </Link>
 
-
-                                        <!-- REPORT PERIODE -->
 
                                         <Link
                                             href="/admin/periode/report"
@@ -1120,9 +1196,7 @@ const breadcrumbs = computed(() => {
                                             ]"
                                         >
 
-                                            <ChartBarIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <ChartBarIcon class="w-4 h-4" />
 
                                             <span>
                                                 Report Periode
@@ -1148,9 +1222,7 @@ const breadcrumbs = computed(() => {
                                     ]"
                                 >
 
-                                    <ClipboardDocumentCheckIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <ClipboardDocumentCheckIcon class="w-5 h-5" />
 
                                     <span>
                                         Kunjungan Klinik
@@ -1176,9 +1248,7 @@ const breadcrumbs = computed(() => {
                                         class="flex items-center space-x-3"
                                     >
 
-                                        <BellIcon
-                                            class="w-5 h-5"
-                                        />
+                                        <BellIcon class="w-5 h-5" />
 
                                         <span>
                                             Notifikasi
@@ -1188,9 +1258,16 @@ const breadcrumbs = computed(() => {
 
 
                                     <span
+                                        v-if="notificationCount > 0"
                                         class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                                     >
-                                        3
+
+                                        {{
+                                            notificationCount > 99
+                                                ? '99+'
+                                                : notificationCount
+                                        }}
+
                                     </span>
 
                                 </Link>
@@ -1205,7 +1282,9 @@ const breadcrumbs = computed(() => {
                         <div
                             class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50"
                         >
+
                             &copy; 2026 SMKN Jateng Semarang
+
                         </div>
 
                     </aside>
@@ -1238,7 +1317,7 @@ const breadcrumbs = computed(() => {
 
                         <template
                             v-for="(crumb, idx) in breadcrumbs"
-                            :key="idx"
+                            :key="`${crumb.url}-${idx}`"
                         >
 
                             <!-- SEPARATOR -->

@@ -8,6 +8,7 @@ use App\Models\Periode;
 use App\Models\PemeriksaanBerkala;
 use App\Models\Siswa;
 use App\Models\TksiHasil;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -193,6 +194,14 @@ public function store(Request $request)
                 $e->getMessage()
             );
     }
+
+    NotificationService::toRoles(
+        ['klinik', 'tksi'],
+        'Periode Baru',
+        "Periode {$validated['nama_periode']} telah dibuat dan dapat digunakan.",
+        'info',
+        route('admin.periode.index')
+    );
 
     return redirect()
         ->route('admin.periode.index')
@@ -823,6 +832,14 @@ public function update(
             );
     }
 
+    NotificationService::toRoles(
+        ['klinik', 'tksi'],
+        'Periode Diperbarui',
+        "Periode {$validated['nama_periode']} telah diperbarui.",
+        'info',
+        route('admin.periode.index')
+    );
+
     return redirect()
         ->route('admin.periode.index')
         ->with(
@@ -841,6 +858,8 @@ public function update(
     ) {
         try {
 
+            $deletedPeriode = $periode->nama_periode;
+
             DB::transaction(
                 function () use ($periode) {
 
@@ -848,6 +867,14 @@ public function update(
 
                     $periode->delete();
                 }
+            );
+
+            NotificationService::toRoles(
+                ['klinik', 'tksi'],
+                'Periode Dihapus',
+                "Periode {$deletedPeriode} telah dihapus oleh Admin.",
+                'warning',
+                route('admin.periode.index')
             );
 
             return redirect()
@@ -1624,7 +1651,9 @@ public function update(
  */
 public function deactivateActiveAndCreate()
 {
-    DB::transaction(function () {
+    $periodeNama = null;
+
+    DB::transaction(function () use (&$periodeNama) {
 
         $periodeAktif = Periode::where('status', 'aktif')
             ->lockForUpdate()
@@ -1632,11 +1661,23 @@ public function deactivateActiveAndCreate()
 
         if ($periodeAktif) {
 
+            $periodeNama = $periodeAktif->nama_periode;
+
             $periodeAktif->update([
                 'status' => 'selesai',
             ]);
         }
     });
+
+    if ($periodeNama) {
+        NotificationService::toRoles(
+            ['klinik', 'tksi'],
+            'Periode Berakhir',
+            "Periode {$periodeNama} telah dinyatakan selesai oleh Admin.",
+            'warning',
+            route('admin.periode.index')
+        );
+    }
 
     return redirect()
         ->route('admin.periode.create')

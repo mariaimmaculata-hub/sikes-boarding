@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Klinik;
 
 use App\Http\Controllers\Controller;
 use App\Models\Penyakit;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,7 +32,15 @@ class PenyakitController extends Controller
             'keterangan' => ['nullable', 'string'],
         ]);
 
-        Penyakit::create($validated);
+        $penyakit = Penyakit::create($validated);
+
+        NotificationService::toRole(
+            'klinik',
+            'Data Penyakit Ditambahkan',
+            "Penyakit {$penyakit->nama_penyakit} telah ditambahkan.",
+            'info',
+            route('klinik.penyakit.index')
+        );
 
         return redirect()
             ->route('klinik.penyakit.index')
@@ -55,6 +64,14 @@ class PenyakitController extends Controller
 
         $penyakit->update($validated);
 
+        NotificationService::toRole(
+            'klinik',
+            'Data Penyakit Diperbarui',
+            "Penyakit {$penyakit->nama_penyakit} telah diperbarui.",
+            'info',
+            route('klinik.penyakit.index')
+        );
+
         return redirect()
             ->route('klinik.penyakit.index')
             ->with('success', 'Data penyakit berhasil diperbarui.');
@@ -62,7 +79,16 @@ class PenyakitController extends Controller
 
     public function destroy(Penyakit $penyakit)
     {
+        $deletedDisease = $penyakit->nama_penyakit;
         $penyakit->delete();
+
+        NotificationService::toRole(
+            'klinik',
+            'Data Penyakit Dihapus',
+            "Penyakit {$deletedDisease} telah dihapus.",
+            'warning',
+            route('klinik.penyakit.index')
+        );
 
         return redirect()
             ->route('klinik.penyakit.index')

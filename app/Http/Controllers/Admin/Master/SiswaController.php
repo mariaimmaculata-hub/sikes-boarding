@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Master;
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
 use App\Models\Kelas;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -221,7 +222,15 @@ class SiswaController extends Controller
             'status' => 'required|in:aktif,nonaktif,lulus',
         ]);
 
-        Siswa::create($validated);
+        $siswa = Siswa::create($validated);
+
+        NotificationService::toRoles(
+            ['klinik', 'tksi'],
+            'Siswa Baru Ditambahkan',
+            "Data siswa {$siswa->nama} telah ditambahkan dan siap digunakan.",
+            'info',
+            route('admin.master.siswa.index')
+        );
 
         return redirect()
             ->route('admin.master.siswa.index')
@@ -292,6 +301,14 @@ class SiswaController extends Controller
 
         $siswa->update($validated);
 
+        NotificationService::toRoles(
+            ['klinik', 'tksi'],
+            'Data Siswa Diperbarui',
+            "Data siswa {$siswa->nama} telah diperbarui oleh Admin.",
+            'info',
+            route('klinik.siswa.show', $siswa)
+        );
+
         return redirect()
             ->route('admin.master.siswa.index')
             ->with('success', 'Data siswa berhasil diperbarui.');
@@ -305,7 +322,16 @@ class SiswaController extends Controller
     {
         try {
 
+            $deletedName = $siswa->nama;
             $siswa->delete();
+
+            NotificationService::toRoles(
+                ['klinik', 'tksi'],
+                'Data Siswa Dihapus',
+                "Data siswa {$deletedName} telah dihapus oleh Admin.",
+                'warning',
+                route('admin.master.siswa.index')
+            );
 
             return redirect()
                 ->route('admin.master.siswa.index')
@@ -335,6 +361,14 @@ class SiswaController extends Controller
         ]);
 
     $jumlah = count($validated['ids']);
+
+    NotificationService::toRoles(
+        ['klinik', 'tksi'],
+        'Status Siswa Diperbarui',
+        "Status {$jumlah} siswa telah diubah menjadi {$validated['status']} oleh Admin.",
+        'info',
+        route('admin.master.siswa.index')
+    );
 
     $label = $validated['status'] === 'lulus'
         ? 'Lulus'
@@ -430,6 +464,16 @@ public function bulkNaikKelas(Request $request)
         }
     }
 
+
+    if ($jumlahNaik > 0 || $jumlahLulus > 0) {
+        NotificationService::toRoles(
+            ['klinik', 'tksi'],
+            'Perubahan Status Siswa',
+            "{$jumlahNaik} siswa naik kelas dan {$jumlahLulus} siswa dinyatakan lulus.",
+            'info',
+            route('admin.master.siswa.index')
+        );
+    }
 
     return back()->with(
         'success',

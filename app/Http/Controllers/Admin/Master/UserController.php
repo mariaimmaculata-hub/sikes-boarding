@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -96,7 +97,23 @@ class UserController extends Controller
             $validated['password']
         );
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        NotificationService::toUser(
+            $user,
+            'Selamat datang di SiKes-Boarding',
+            'Akun Anda telah dibuat oleh Admin. Silakan gunakan akun ini untuk mengakses sistem.',
+            'success',
+            route('dashboard')
+        );
+
+        NotificationService::toRole(
+            'admin',
+            'User Baru Ditambahkan',
+            "User {$user->name} dengan role {$user->role} telah ditambahkan.",
+            'info',
+            route('admin.master.user.index')
+        );
 
         return redirect()
             ->route('admin.master.user.index')
@@ -163,6 +180,22 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        NotificationService::toUser(
+            $user,
+            'Data akun diperbarui',
+            'Data akun Anda telah diperbarui oleh Admin.',
+            'info',
+            route('dashboard')
+        );
+
+        NotificationService::toRole(
+            'admin',
+            'User Diperbarui',
+            "Data user {$user->name} telah diperbarui.",
+            'info',
+            route('admin.master.user.index')
+        );
+
         return redirect()
             ->route('admin.master.user.index')
             ->with(
@@ -186,7 +219,17 @@ class UserController extends Controller
                 );
         }
 
+        $deletedName = $user->name;
+        $deletedRole = $user->role;
         $user->delete();
+
+        NotificationService::toRole(
+            'admin',
+            'User Dihapus',
+            "User {$deletedName} dengan role {$deletedRole} telah dihapus.",
+            'warning',
+            route('admin.master.user.index')
+        );
 
         return redirect()
             ->route('admin.master.user.index')

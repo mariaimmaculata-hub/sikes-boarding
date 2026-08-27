@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PemeriksaanBerkala;
 use App\Models\Periode;
 use App\Models\Siswa;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -848,6 +849,23 @@ class PemeriksaanBerkalaController extends Controller
             ]
         );
 
+        NotificationService::toRole(
+            'admin',
+            'Pemeriksaan Berkala Baru',
+            "Pemeriksaan {$this->labelJenis($jenis)} untuk siswa {$siswa->nama} telah selesai dilakukan oleh Klinik.",
+            'info',
+            route('admin.pemeriksaan.index')
+        );
+
+        NotificationService::toRole(
+            'tksi',
+            'Data Kesehatan Siswa Diperbarui',
+            "Pemeriksaan {$this->labelJenis($jenis)} siswa {$siswa->nama} telah diperbarui. Silakan periksa bila diperlukan.",
+            'info',
+            route('tksi.input.index')
+        );
+
+
         return redirect()
             ->route(
                 'klinik.kesehatan.pemeriksaan.index'
@@ -1286,6 +1304,24 @@ class PemeriksaanBerkalaController extends Controller
             'pemeriksa_id' =>
                 Auth::id(),
         ]);
+
+        $pemeriksaanBerkala->load('siswa');
+
+        NotificationService::toRole(
+            'admin',
+            'Pemeriksaan Berkala Diperbarui',
+            "Pemeriksaan {$this->labelJenis($pemeriksaanBerkala->jenis_pemeriksaan)} untuk siswa {$pemeriksaanBerkala->siswa->nama} telah diperbarui.",
+            'info',
+            route('admin.pemeriksaan.show', $pemeriksaanBerkala->id)
+        );
+
+        NotificationService::toRole(
+            'tksi',
+            'Data Kesehatan Siswa Diperbarui',
+            "Data pemeriksaan siswa {$pemeriksaanBerkala->siswa->nama} telah diperbarui oleh Klinik.",
+            'info',
+            route('tksi.input.index')
+        );
 
         return redirect()
             ->route(

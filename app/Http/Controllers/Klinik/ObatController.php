@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Klinik;
 use App\Http\Controllers\Controller;
 use App\Models\Obat;
 use App\Models\ObatBatch;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -268,7 +269,9 @@ class ObatController extends Controller
         |--------------------------------------------------------------
         */
 
-        DB::transaction(function () use ($validated) {
+        $obat = null;
+
+        DB::transaction(function () use ($validated, &$obat) {
 
             /*
             |----------------------------------------------------------
@@ -324,6 +327,22 @@ class ObatController extends Controller
         | REDIRECT
         |--------------------------------------------------------------
         */
+
+        NotificationService::toRole(
+            'klinik',
+            'Obat Baru Ditambahkan',
+            "Obat {$obat->nama_obat} telah ditambahkan beserta batch pertamanya.",
+            'info',
+            route('klinik.obat.index')
+        );
+
+        NotificationService::toRole(
+            'admin',
+            'Data Obat Diperbarui',
+            "Obat {$obat->nama_obat} telah ditambahkan oleh Klinik.",
+            'info',
+            route('admin.dashboard')
+        );
 
         return redirect()
             ->route('klinik.obat.index')
@@ -457,6 +476,14 @@ class ObatController extends Controller
         | REDIRECT
         |--------------------------------------------------------------
         */
+
+        NotificationService::toRole(
+            'klinik',
+            'Batch Obat Ditambahkan',
+            "Batch baru untuk obat {$obat->nama_obat} telah ditambahkan sebanyak {$validated['jumlah']} unit.",
+            'info',
+            route('klinik.obat.index')
+        );
 
         return redirect()
             ->route('klinik.obat.index')
@@ -612,6 +639,14 @@ class ObatController extends Controller
         ]);
 
 
+        NotificationService::toRole(
+            'klinik',
+            'Data Obat Diperbarui',
+            "Data obat {$obat->nama_obat} telah diperbarui.",
+            'info',
+            route('klinik.obat.index')
+        );
+
         return redirect()
             ->route('klinik.obat.index')
             ->with(
@@ -640,7 +675,16 @@ class ObatController extends Controller
             |
             */
 
+            $deletedObatName = $obat->nama_obat;
             $obat->delete();
+
+            NotificationService::toRole(
+                'klinik',
+                'Obat Dihapus',
+                "Obat {$deletedObatName} telah dihapus.",
+                'warning',
+                route('klinik.obat.index')
+            );
 
             return redirect()
                 ->route('klinik.obat.index')

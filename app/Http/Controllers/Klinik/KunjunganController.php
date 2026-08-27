@@ -10,6 +10,7 @@ use App\Models\ObatBatch;
 use App\Models\Periode;
 use App\Models\Siswa;
 use App\Models\Penyakit;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -937,68 +938,106 @@ class KunjunganController extends Controller
             ],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $kunjungan = DB::transaction(function () use ($validated) {
 
-            $kunjungan = KunjunganKlinik::create([
+    $kunjungan = KunjunganKlinik::create([
+        'periode_id' => $validated['periode_id'],
+        'tanggal_kunjungan' => now(),
+        'siswa_id' => $validated['siswa_id'],
+        'keluhan' => $validated['keluhan'] ?? null,
+        'pemeriksaan' => $validated['pemeriksaan'] ?? null,
+        'penyakit_id' => $validated['penyakit_id'] ?? null,
+        'triase' => $validated['triase'],
+        'tindakan' => $validated['tindakan'] ?? null,
+        'catatan' => $validated['catatan'] ?? null,
+        'pemeriksa_id' => auth()->id(),
+    ]);
 
-                'periode_id' =>
-                    $validated['periode_id'],
+    /*
+    |--------------------------------------------------------------------------
+    | PROSES OBAT
+    |--------------------------------------------------------------------------
+    */
 
-                'tanggal_kunjungan' =>
-                    now(),
+    if (!empty($validated['obat'])) {
 
-                'siswa_id' =>
-                    $validated['siswa_id'],
+        foreach ($validated['obat'] as $item) {
 
-                'keluhan' =>
-                    $validated['keluhan'] ?? null,
-
-                'pemeriksaan' =>
-                    $validated['pemeriksaan'] ?? null,
-
-                'penyakit_id' =>
-                    $validated['penyakit_id'] ?? null,
-
-                'triase' =>
-                    $validated['triase'],
-
-                'tindakan' =>
-                    $validated['tindakan'] ?? null,
-
-                'catatan' =>
-                    $validated['catatan'] ?? null,
-
-                'pemeriksa_id' =>
-                    auth()->id(),
-            ]);
-
-            /*
-            |--------------------------------------------------------------------------
-            | PROSES OBAT
-            |--------------------------------------------------------------------------
-            */
-
-            if (!empty($validated['obat'])) {
-
-                foreach ($validated['obat'] as $item) {
-
-                    $this->kurangiStokObat(
-                        $kunjungan,
-                        $item
-                    );
-                }
-            }
-        });
-
-        return redirect()
-            ->route(
-                'klinik.kesehatan.kunjungan.index'
-            )
-            ->with(
-                'success',
-                'Data kunjungan klinik berhasil disimpan.'
+            $this->kurangiStokObat(
+                $kunjungan,
+                $item
             );
+        }
     }
+
+    return $kunjungan;
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| LOAD SISWA
+|--------------------------------------------------------------------------
+*/
+
+$kunjungan->load('siswa');
+
+
+/*
+|--------------------------------------------------------------------------
+| NOTIFIKASI ADMIN
+|--------------------------------------------------------------------------
+*/
+
+NotificationService::toRole(
+    'admin',
+    'Kunjungan Klinik Baru',
+    "{$kunjungan->siswa->nama} baru saja melakukan kunjungan klinik dengan triase {$kunjungan->triase}.",
+    $kunjungan->triase === 'merah' || $kunjungan->triase === 'hitam'
+        ? 'danger'
+        : 'info',
+    route('admin.kunjungan.show', $kunjungan)
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| NOTIFIKASI TKSI
+|--------------------------------------------------------------------------
+*/
+
+if (
+    in_array(
+        $kunjungan->triase,
+        ['merah', 'kuning', 'hitam'],
+        true
+    )
+) {
+
+    NotificationService::toRole(
+        'tksi',
+        'Tindak Lanjut Kunjungan Klinik',
+        "Siswa {$kunjungan->siswa->nama} memiliki kunjungan klinik dengan triase {$kunjungan->triase}. Mohon ditindaklanjuti.",
+        $kunjungan->triase === 'merah' || $kunjungan->triase === 'hitam'
+            ? 'danger'
+            : 'warning',
+        route('tksi.input.index')
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| REDIRECT
+|--------------------------------------------------------------------------
+*/
+
+return redirect()
+    ->route('klinik.kesehatan.kunjungan.index')
+    ->with(
+        'success',
+        'Data kunjungan klinik berhasil disimpan.'
+    );}
 
 
     /**
@@ -2428,6 +2467,16 @@ public function update(
     });
 
 
+    $kunjungan->load('siswa');
+
+    NotificationService::toRole(
+        'admin',
+        'Kunjungan Klinik Diperbarui',
+        "Data kunjungan {$kunjungan->siswa->nama} telah diperbarui oleh Klinik.",
+        'info',
+        route('admin.kunjungan.show', $kunjungan)
+    );
+
     return redirect()
         ->route(
             'klinik.kesehatan.kunjungan.index'
@@ -2446,6 +2495,9 @@ public function update(
     public function destroy(
         KunjunganKlinik $kunjungan
     ) {
+
+        $kunjungan->load('siswa');
+        $deletedStudentName = $kunjungan->siswa?->nama ?? 'Siswa';
 
         DB::transaction(function () use (
             $kunjungan
@@ -2480,6 +2532,14 @@ public function update(
 
             $kunjungan->delete();
         });
+
+        NotificationService::toRole(
+            'admin',
+            'Kunjungan Klinik Dihapus',
+            "Kunjungan klinik {$deletedStudentName} telah dihapus oleh Klinik.",
+            'warning',
+            route('admin.kunjungan.index')
+        );
 
         return redirect()
             ->route(
@@ -2670,6 +2730,17 @@ private function kurangiStokObat(
 
         $batch->save();
 
+        if ($batch->stok <= 5) {
+            $batch->loadMissing('obat');
+            NotificationService::toRole(
+                'klinik',
+                'Stok Obat Menipis',
+                "Stok {$batch->obat->nama_obat} tersisa {$batch->stok} unit.",
+                'warning',
+                route('klinik.obat.index')
+            );
+        }
+
         /*
         |--------------------------------------------------------------------------
         | SIMPAN DETAIL KUNJUNGAN
@@ -2824,6 +2895,17 @@ private function kurangiStokObat(
             $jumlahDiambil;
 
         $batch->save();
+
+        if ($batch->stok <= 5) {
+            $batch->loadMissing('obat');
+            NotificationService::toRole(
+                'klinik',
+                'Stok Obat Menipis',
+                "Stok {$batch->obat->nama_obat} tersisa {$batch->stok} unit.",
+                'warning',
+                route('klinik.obat.index')
+            );
+        }
 
         /*
         |--------------------------------------------------------------------------

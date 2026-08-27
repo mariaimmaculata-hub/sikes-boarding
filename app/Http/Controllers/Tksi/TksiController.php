@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Periode;
 use App\Models\Siswa;
 use App\Models\TksiHasil;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -564,6 +565,24 @@ class TksiController extends Controller
             }
         });
 
+        $siswa = Siswa::find($validated['siswa_id']);
+
+        NotificationService::toRole(
+            'admin',
+            'Hasil TKSI Baru',
+            "Hasil TKSI untuk siswa {$siswa->nama} telah disimpan.",
+            'info',
+            route('admin.tksi.index')
+        );
+
+        NotificationService::toRole(
+            'klinik',
+            'Hasil TKSI Baru',
+            "Hasil TKSI untuk siswa {$siswa->nama} telah diperbarui dan dapat menjadi referensi pemeriksaan kesehatan.",
+            'info',
+            route('klinik.siswa.show', $siswa)
+        );
+
         /*
         |--------------------------------------------------------------------------
         | Kembali ke index
@@ -884,6 +903,24 @@ class TksiController extends Controller
         | Redirect
         |--------------------------------------------------------------------------
         */
+        $siswa = Siswa::find($validated['siswa_id']);
+
+        NotificationService::toRole(
+            'admin',
+            'Hasil TKSI Diperbarui',
+            "Hasil TKSI untuk siswa {$siswa->nama} telah diperbarui.",
+            'info',
+            route('admin.tksi.index')
+        );
+
+        NotificationService::toRole(
+            'klinik',
+            'Hasil TKSI Diperbarui',
+            "Hasil TKSI untuk siswa {$siswa->nama} telah diperbarui.",
+            'info',
+            route('klinik.siswa.show', $siswa)
+        );
+
         return redirect()
             ->route('tksi.input.index')
             ->with(

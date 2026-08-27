@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Jurusan;
 use App\Models\Kelas;
 use App\Models\Siswa;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -430,6 +431,14 @@ class SiswaImportController extends Controller
         }
 
         DB::commit();
+
+        NotificationService::toRoles(
+            ['klinik', 'tksi'],
+            'Import Siswa Selesai',
+            "Sebanyak {$inserted} data siswa berhasil diimport ke sistem.",
+            'success',
+            route('admin.master.siswa.index')
+        );
 
     } catch (\Throwable $e) {
 

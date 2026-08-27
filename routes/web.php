@@ -75,9 +75,31 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/notifikasi', [
+    NotificationController::class,
+    'index'
+])->name('notifikasi.index');
+
+Route::get('/notifikasi/{id}', [
+    NotificationController::class,
+    'show'
+])->name('notifikasi.show');
+
+    Route::patch('/notifikasi/{notification}/read', [
         NotificationController::class,
-        'index'
-    ])->name('notifikasi.index');
+        'markRead'
+    ])->name('notifikasi.read');
+
+    Route::patch('/notifikasi/read-all', [
+        NotificationController::class,
+        'markAllRead'
+    ])->name('notifikasi.read-all');
+
+
+// HAPUS BANYAK
+Route::delete(
+    '/notifikasi',
+    [NotificationController::class, 'destroyMultiple']
+)->name('notifikasi.destroy-multiple');
 
 });
 

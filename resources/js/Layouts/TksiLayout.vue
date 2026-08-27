@@ -2,6 +2,7 @@
 
 import { ref, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
+import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
     HomeIcon,
@@ -196,18 +197,55 @@ const breadcrumbs = computed(() => {
         ]
     }
 
-    if (path === '/notifikasi') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Notifikasi',
-                url: '/notifikasi',
-            },
-        ]
-    }
+ /*
+|--------------------------------------------------------------------------
+| NOTIFIKASI
+|--------------------------------------------------------------------------
+*/
+
+if (path === '/notifikasi') {
+    return [
+        {
+            name: 'Dashboard',
+            url: '/tksi/dashboard',
+        },
+        {
+            name: 'Notifikasi',
+            url: '/notifikasi',
+        },
+    ]
+}
+
+/*
+|--------------------------------------------------------------------------
+| DETAIL NOTIFIKASI
+|--------------------------------------------------------------------------
+|
+| URL:
+| /notifikasi/{id}
+|
+| Jangan tampilkan UUID / ID notifikasi.
+| Tampilkan nama halaman "Detail Notifikasi".
+|
+|--------------------------------------------------------------------------
+*/
+
+if (path.startsWith('/notifikasi/')) {
+    return [
+        {
+            name: 'Dashboard',
+            url: '/tksi/dashboard',
+        },
+        {
+            name: 'Notifikasi',
+            url: '/notifikasi',
+        },
+        {
+            name: 'Detail Notifikasi',
+            url: path,
+        },
+    ]
+}
 
     return [
         {
@@ -311,24 +349,7 @@ const breadcrumbs = computed(() => {
             >
 
                 <!-- NOTIFICATION -->
-
-                <Link
-                    href="/notifikasi"
-                    class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
-                    aria-label="Notifikasi"
-                >
-
-                    <BellIcon
-                        class="w-6 h-6"
-                    />
-
-                    <span
-                        class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white"
-                    >
-                        0
-                    </span>
-
-                </Link>
+<NotificationDropdown />
 
 
                 <!-- PROFILE -->

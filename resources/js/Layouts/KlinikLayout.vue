@@ -1,7 +1,8 @@
 
 <script setup>
-import { ref, computed } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Link, usePage, router } from '@inertiajs/vue3'
+import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
     Bars3Icon,
@@ -28,6 +29,19 @@ import {
 const page = usePage()
 
 const user = computed(() => page.props.auth?.user)
+
+const notificationCount = computed(() => Number(page.props.notificationCount ?? 0))
+let notificationTimer = null
+
+onMounted(() => {
+    notificationTimer = window.setInterval(() => {
+        router.reload({ only: ['notificationCount'], preserveScroll: true, preserveState: true })
+    }, 10000)
+})
+
+onBeforeUnmount(() => {
+    if (notificationTimer) window.clearInterval(notificationTimer)
+})
 
 
 // ============================================================
@@ -270,6 +284,27 @@ const breadcrumbs = computed(() => {
         return items
     }
 
+    
+    // ========================================================
+    // DETAIL NOTIFIKASI
+    // ========================================================
+
+    if (path.startsWith('/notifikasi/')) {
+
+        items.push({
+            name: 'Notifikasi',
+            url: '/notifikasi',
+        })
+
+        items.push({
+            name: 'Detail Notifikasi',
+            url: path,
+        })
+
+        return items
+    }
+
+
 
     return items
 })
@@ -367,26 +402,7 @@ const breadcrumbs = computed(() => {
             >
 
                 <!-- NOTIFICATION -->
-
-                <Link
-                    href="/notifikasi"
-                    class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
-                    aria-label="Notifikasi"
-                >
-
-                    <BellIcon
-                        class="w-6 h-6"
-                    />
-
-                    <!-- JUMLAH NOTIFIKASI -->
-
-                    <span
-                        class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white"
-                    >
-                        0
-                    </span>
-
-                </Link>
+<NotificationDropdown />
 
 
                 <!-- PROFILE -->
@@ -849,9 +865,10 @@ const breadcrumbs = computed(() => {
 
 
                             <span
+                                v-if="notificationCount > 0"
                                 class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                             >
-                                0
+                                {{ notificationCount > 99 ? '99+' : notificationCount }}
                             </span>
 
                         </Link>
