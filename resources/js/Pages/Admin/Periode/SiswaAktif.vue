@@ -588,11 +588,11 @@ const formatDate = (date) => {
 
 
                         <div
-                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50"
+                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50"
                         >
 
                             <UserGroupIcon
-                                class="h-6 w-6 text-blue-600"
+                                class="h-6 w-6 text-pink-600"
                             />
 
                         </div>
@@ -732,11 +732,11 @@ const formatDate = (date) => {
 
 
                         <div
-                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50"
+                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50"
                         >
 
                             <CheckCircleIcon
-                                class="h-6 w-6 text-blue-600"
+                                class="h-6 w-6 text-pink-600"
                             />
 
                         </div>
@@ -776,7 +776,7 @@ const formatDate = (date) => {
                             v-model="search"
                             type="text"
                             placeholder="Cari siswa berdasarkan nama atau NISN..."
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                         />
 
                     </div>
@@ -797,7 +797,7 @@ const formatDate = (date) => {
             'inline-flex h-11 min-w-[260px] items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition',
 
             showFilter || activeFilterCount > 0
-                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                ? 'border-pink-200 bg-pink-50 text-pink-700'
                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
 
         ]"
@@ -813,7 +813,7 @@ const formatDate = (date) => {
 
         <span
             v-if="activeFilterCount > 0"
-            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
+            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1.5 text-[10px] font-bold text-white"
         >
             {{ activeFilterCount }}
         </span>
@@ -867,7 +867,7 @@ const formatDate = (date) => {
 
                             <select
                                 v-model="tingkatFilter"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             >
 
                                 <option value="">
@@ -899,7 +899,7 @@ const formatDate = (date) => {
 
                             <select
                                 v-model="jurusanFilter"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             >
 
                                 <option value="">
@@ -931,7 +931,7 @@ const formatDate = (date) => {
 
                             <select
                                 v-model="statusPemeriksaanFilter"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             >
 
                                 <option value="">
@@ -967,7 +967,7 @@ const formatDate = (date) => {
 
                             <select
                                 v-model="statusKeseluruhanFilter"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             >
 
                                 <option value="">
@@ -1007,7 +1007,7 @@ const formatDate = (date) => {
 
                         <span
                             v-if="tingkatFilter"
-                            class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                            class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                         >
                             Tingkat:
                             {{ tingkatFilter }}
@@ -1018,7 +1018,7 @@ const formatDate = (date) => {
 
                         <span
                             v-if="jurusanFilter"
-                            class="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-semibold text-indigo-700"
+                            class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                         >
                             Jurusan:
                             {{ jurusanFilter }}
@@ -1207,7 +1207,7 @@ const formatDate = (date) => {
                                     >
 
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                                         >
                                             {{
                                                 item.nama
@@ -1412,7 +1412,7 @@ const formatDate = (date) => {
                                             )
                                         "
                                         title="Detail siswa"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <EyeIcon
@@ -1502,7 +1502,7 @@ const formatDate = (date) => {
                             >
 
                                 <div
-                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700"
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100 font-bold text-pink-700"
                                 >
                                     {{
                                         item.nama
@@ -1679,7 +1679,7 @@ const formatDate = (date) => {
                                         item.id
                                     )
                                 "
-                                class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-50"
+                                class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 transition hover:bg-pink-50"
                             >
 
                                 <EyeIcon

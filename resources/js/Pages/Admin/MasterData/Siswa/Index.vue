@@ -590,7 +590,7 @@ const goToPage = (url) => {
 
                 <Link
                     :href="route('admin.master.siswa.create')"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800"
                 >
 
                     <UserPlusIcon class="h-5 w-5" />
@@ -706,7 +706,7 @@ const goToPage = (url) => {
                         v-model="search"
                         type="text"
                         placeholder="Cari NISN, nama, kelas, atau jurusan..."
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                     />
 
                 </div>
@@ -718,7 +718,7 @@ const goToPage = (url) => {
 
                     <select
                         v-model="statusFilter"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option value="">
@@ -752,7 +752,7 @@ const goToPage = (url) => {
                         :class="[
                             'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
                             showFilter || activeFilterCount > 0
-                                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                                ? 'border-pink-200 bg-pink-50 text-pink-700'
                                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                         ]"
                     >
@@ -766,7 +766,7 @@ const goToPage = (url) => {
 
                         <span
                             v-if="activeFilterCount > 0"
-                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
+                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1.5 text-[10px] font-bold text-white"
                         >
                             {{ activeFilterCount }}
                         </span>
@@ -818,7 +818,7 @@ const goToPage = (url) => {
 
                         <select
                             v-model="angkatanFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -852,7 +852,7 @@ const goToPage = (url) => {
 
                         <select
                             v-model="jenisKelaminFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -884,7 +884,7 @@ const goToPage = (url) => {
 
                         <select
                             v-model="kelasFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -922,7 +922,7 @@ const goToPage = (url) => {
 
                     <span
                         v-if="angkatanFilter"
-                        class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                        class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                     >
                         Angkatan {{ angkatanFilter }}
                     </span>
@@ -930,7 +930,7 @@ const goToPage = (url) => {
 
                     <span
                         v-if="jenisKelaminFilter"
-                        class="rounded-full bg-purple-100 px-2.5 py-1 text-xs font-semibold text-purple-700"
+                        class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                     >
 
                         {{
@@ -1006,7 +1006,7 @@ const goToPage = (url) => {
                         <!-- JUMLAH DIPILIH -->
 
                         <div
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700"
                         >
 
                             <CheckIcon class="h-4 w-4" />
@@ -1038,7 +1038,7 @@ const goToPage = (url) => {
                             type="button"
                             :disabled="isBulkUpdating"
                             @click="updateBulkStatus('lulus')"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-200 bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700 transition hover:bg-pink-100 disabled:cursor-not-allowed disabled:opacity-50"
                         >
 
                             <AcademicCapIcon class="h-4 w-4" />
@@ -1110,7 +1110,7 @@ const goToPage = (url) => {
                                     :checked="isAllSelected"
                                     :indeterminate="isSomeSelected"
                                     @change="toggleSelectAll"
-                                    class="h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    class="h-4 w-4 cursor-pointer rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                                 />
 
                             </th>
@@ -1176,7 +1176,7 @@ const goToPage = (url) => {
                             :class="[
                                 'transition',
                                 selectedIds.includes(siswa.id)
-                                    ? 'bg-blue-50/60'
+                                    ? 'bg-pink-50/60'
                                     : 'hover:bg-slate-50'
                             ]"
                         >
@@ -1192,7 +1192,7 @@ const goToPage = (url) => {
                                     type="checkbox"
                                     :checked="selectedIds.includes(siswa.id)"
                                     @change="toggleSelect(siswa.id)"
-                                    class="h-4 w-4 cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    class="h-4 w-4 cursor-pointer rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                                 />
 
                             </td>
@@ -1230,7 +1230,7 @@ const goToPage = (url) => {
                                 <div class="flex items-center gap-3">
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                     >
 
                                         {{
@@ -1332,7 +1332,7 @@ const goToPage = (url) => {
                                             ? 'bg-emerald-100 text-emerald-700'
 
                                             : siswa.status === 'lulus'
-                                                ? 'bg-blue-100 text-blue-700'
+                                                ? 'bg-pink-100 text-pink-700'
 
                                                 : 'bg-slate-100 text-slate-500'
                                     ]"
@@ -1367,7 +1367,7 @@ const goToPage = (url) => {
                                             siswa.id
                                         )"
                                         title="Detail"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <EyeIcon class="h-4 w-4" />
@@ -1483,7 +1483,7 @@ const goToPage = (url) => {
                             :checked="isAllSelected"
                             :indeterminate="isSomeSelected"
                             @change="toggleSelectAll"
-                            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            class="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                         />
 
                         Pilih semua
@@ -1493,7 +1493,7 @@ const goToPage = (url) => {
 
                     <span
                         v-if="selectedCount > 0"
-                        class="text-xs font-semibold text-blue-600"
+                        class="text-xs font-semibold text-pink-600"
                     >
 
                         {{ selectedCount }} dipilih
@@ -1509,7 +1509,7 @@ const goToPage = (url) => {
                     :class="[
                         'p-4 transition',
                         selectedIds.includes(siswa.id)
-                            ? 'bg-blue-50/60'
+                            ? 'bg-pink-50/60'
                             : ''
                     ]"
                 >
@@ -1528,12 +1528,12 @@ const goToPage = (url) => {
                                 type="checkbox"
                                 :checked="selectedIds.includes(siswa.id)"
                                 @change="toggleSelect(siswa.id)"
-                                class="h-4 w-4 shrink-0 cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 shrink-0 cursor-pointer rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                             />
 
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                             >
 
                                 {{
@@ -1570,7 +1570,7 @@ const goToPage = (url) => {
                                     ? 'bg-emerald-100 text-emerald-700'
 
                                     : siswa.status === 'lulus'
-                                        ? 'bg-blue-100 text-blue-700'
+                                        ? 'bg-pink-100 text-pink-700'
 
                                         : 'bg-slate-100 text-slate-500'
                             ]"
@@ -1681,7 +1681,7 @@ const goToPage = (url) => {
                                 'admin.master.siswa.show',
                                 siswa.id
                             )"
-                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50"
+                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 hover:bg-pink-50"
                         >
 
                             <EyeIcon class="h-4 w-4" />
@@ -1809,7 +1809,7 @@ const goToPage = (url) => {
                                 'min-w-9 rounded-lg border px-2.5 py-2 text-xs font-bold transition',
 
                                 link.active
-                                    ? 'border-blue-700 bg-blue-700 text-white'
+                                    ? 'border-pink-700 bg-pink-700 text-white'
 
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                             ]"

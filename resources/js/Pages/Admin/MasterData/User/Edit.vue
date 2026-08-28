@@ -87,7 +87,7 @@ const submit = () => {
 
                     <Link
                         :href="route('admin.master.user.index')"
-                        class="transition hover:text-blue-600"
+                        class="transition hover:text-pink-600"
                     >
                         Data User
                     </Link>
@@ -152,11 +152,11 @@ const submit = () => {
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <UserIcon
-                            class="h-5 w-5 text-blue-700"
+                            class="h-5 w-5 text-pink-700"
                         />
 
                     </div>
@@ -225,7 +225,7 @@ const submit = () => {
                                 v-model="form.name"
                                 type="text"
                                 placeholder="Masukkan nama lengkap"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 :class="{
                                     'border-rose-400 focus:border-rose-500 focus:ring-rose-100':
                                         form.errors.name
@@ -259,7 +259,7 @@ const submit = () => {
                                 v-model="form.email"
                                 type="email"
                                 placeholder="contoh@email.com"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 :class="{
                                     'border-rose-400 focus:border-rose-500 focus:ring-rose-100':
                                         form.errors.email
@@ -314,7 +314,7 @@ const submit = () => {
                             <select
                                 id="status"
                                 v-model="form.status"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 :class="{
                                     'border-rose-400':
                                         form.errors.status
@@ -356,7 +356,7 @@ const submit = () => {
                             <select
                                 id="role"
                                 v-model="form.role"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 :class="{
                                     'border-rose-400':
                                         form.errors.role
@@ -396,18 +396,18 @@ const submit = () => {
                     <!-- ROLE INFO -->
 
                     <div
-                        class="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                        class="mt-4 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                     >
 
                         <p
-                            class="text-xs font-bold text-blue-700"
+                            class="text-xs font-bold text-pink-700"
                         >
                             Hak Akses
                         </p>
 
                         <p
                             v-if="form.role === 'admin'"
-                            class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                            class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                         >
                             Admin dapat mengelola data master, pengguna,
                             periode, dan pengaturan sistem.
@@ -415,7 +415,7 @@ const submit = () => {
 
                         <p
                             v-else-if="form.role === 'klinik'"
-                            class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                            class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                         >
                             Petugas Klinik dapat mengelola pemeriksaan
                             dan data kesehatan siswa.
@@ -423,7 +423,7 @@ const submit = () => {
 
                         <p
                             v-else-if="form.role === 'tksi'"
-                            class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                            class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                         >
                             TKSI dapat mengelola data dan aktivitas
                             sesuai dengan kewenangan yang diberikan.
@@ -431,7 +431,7 @@ const submit = () => {
 
                         <p
                             v-else
-                            class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                            class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                         >
                             Pilih role untuk melihat informasi hak akses.
                         </p>
@@ -493,7 +493,7 @@ const submit = () => {
                                             : 'password'
                                     "
                                     placeholder="Masukkan password baru"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                     :class="{
                                         'border-rose-400 focus:border-rose-500 focus:ring-rose-100':
                                             form.errors.password
@@ -558,7 +558,7 @@ const submit = () => {
                                             : 'password'
                                     "
                                     placeholder="Ulangi password baru"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 />
 
                                 <button
@@ -637,7 +637,7 @@ const submit = () => {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                     <span

@@ -186,11 +186,11 @@ const hasError = (field) => {
                     <div class="flex items-center gap-3">
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                         >
 
                             <UserPlusIcon
-                                class="h-5 w-5 text-blue-700"
+                                class="h-5 w-5 text-pink-700"
                             />
 
                         </div>
@@ -249,7 +249,7 @@ const hasError = (field) => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     hasError('name')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -287,7 +287,7 @@ const hasError = (field) => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     hasError('email')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -322,7 +322,7 @@ const hasError = (field) => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:ring-2',
                                     hasError('status')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             >
 
@@ -367,7 +367,7 @@ const hasError = (field) => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:ring-2',
                                     hasError('role')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             >
 
@@ -402,11 +402,11 @@ const hasError = (field) => {
 
                             <div
                                 v-if="form.role"
-                                class="mt-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                                class="mt-3 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                             >
 
                                 <p
-                                    class="text-xs font-bold text-blue-700"
+                                    class="text-xs font-bold text-pink-700"
                                 >
                                     {{
                                         roleOptions.find(
@@ -416,7 +416,7 @@ const hasError = (field) => {
                                 </p>
 
                                 <p
-                                    class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                                    class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                                 >
                                     {{
                                         roleOptions.find(
@@ -457,7 +457,7 @@ const hasError = (field) => {
                 'w-full rounded-xl border bg-white py-2.5 pl-3.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                 form.errors.password
                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                    : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
             ]"
         />
 
@@ -517,7 +517,7 @@ const hasError = (field) => {
                 'w-full rounded-xl border bg-white py-2.5 pl-3.5 pr-11 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                 form.errors.password_confirmation
                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                    : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
             ]"
         />
 
@@ -563,17 +563,17 @@ const hasError = (field) => {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4"
+                class="rounded-2xl border border-pink-100 bg-pink-50 px-5 py-4"
             >
 
                 <div class="flex items-start gap-3">
 
                     <div
-                        class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                        class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                     >
 
                         <UserPlusIcon
-                            class="h-4 w-4 text-blue-700"
+                            class="h-4 w-4 text-pink-700"
                         />
 
                     </div>
@@ -582,13 +582,13 @@ const hasError = (field) => {
                     <div>
 
                         <p
-                            class="text-sm font-bold text-blue-800"
+                            class="text-sm font-bold text-pink-800"
                         >
                             Perhatian Hak Akses
                         </p>
 
                         <p
-                            class="mt-1 text-xs leading-relaxed text-blue-600"
+                            class="mt-1 text-xs leading-relaxed text-pink-600"
                         >
                             Pastikan role yang dipilih sesuai dengan tugas
                             dan tanggung jawab pengguna. Hak akses pengguna
@@ -621,7 +621,7 @@ const hasError = (field) => {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                     <UserPlusIcon

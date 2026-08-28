@@ -339,7 +339,7 @@ const breadcrumbs = [
                         'admin.periode.edit',
                         periode.id
                     )"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800"
                 >
 
                     <PencilSquareIcon
@@ -371,11 +371,11 @@ const breadcrumbs = [
                     >
 
                         <div
-                            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-100"
+                            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100"
                         >
 
                             <CalendarDaysIcon
-                                class="h-7 w-7 text-blue-700"
+                                class="h-7 w-7 text-pink-700"
                             />
 
                         </div>
@@ -570,11 +570,11 @@ const breadcrumbs = [
 
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                         >
 
                             <UserGroupIcon
-                                class="h-5 w-5 text-blue-700"
+                                class="h-5 w-5 text-pink-700"
                             />
 
                         </div>
@@ -682,11 +682,11 @@ const breadcrumbs = [
 
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                         >
 
                             <HeartIcon
-                                class="h-5 w-5 text-indigo-700"
+                                class="h-5 w-5 text-pink-700"
                             />
 
                         </div>
@@ -910,7 +910,7 @@ const breadcrumbs = [
 
 
                         <span
-                            class="text-sm font-bold text-indigo-700"
+                            class="text-sm font-bold text-pink-700"
                         >
                             {{ persenBerkala2 }}%
                         </span>
@@ -923,7 +923,7 @@ const breadcrumbs = [
                     >
 
                         <div
-                            class="h-full rounded-full bg-indigo-500 transition-all duration-500"
+                            class="h-full rounded-full bg-pink-500 transition-all duration-500"
                             :style="{
                                 width: `${persenBerkala2}%`
                             }"
@@ -1046,11 +1046,11 @@ const breadcrumbs = [
                     >
 
                         <div
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
+                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-100"
                         >
 
                             <UserGroupIcon
-                                class="h-5 w-5 text-blue-700"
+                                class="h-5 w-5 text-pink-700"
                             />
 
                         </div>
@@ -1076,7 +1076,7 @@ const breadcrumbs = [
 
 
                     <span
-                        class="w-fit rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
+                        class="w-fit rounded-full bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
                     >
                         {{ jumlahSiswa }} siswa
                     </span>
@@ -1193,7 +1193,7 @@ const breadcrumbs = [
                                     >
 
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                         >
 
                                             {{
@@ -1297,7 +1297,7 @@ const breadcrumbs = [
 
                                     <span
                                         v-if="statusBerkala2(item) === 'Selesai'"
-                                        class="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700"
+                                        class="inline-flex items-center gap-1.5 rounded-full border border-pink-200 bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
                                     >
 
                                         <CheckCircleIcon
@@ -1420,7 +1420,7 @@ const breadcrumbs = [
                         >
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                             >
 
                                 {{
@@ -1533,7 +1533,7 @@ const breadcrumbs = [
 
                                 <span
                                     v-if="statusBerkala2(item) === 'Selesai'"
-                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-[11px] font-bold text-indigo-700"
+                                    class="mt-1 inline-flex items-center gap-1 rounded-full bg-pink-50 px-2 py-1 text-[11px] font-bold text-pink-700"
                                 >
 
                                     <CheckCircleIcon

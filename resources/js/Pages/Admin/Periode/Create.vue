@@ -152,7 +152,7 @@ const breadcrumbs = [
 
                         <Link
                             :href="route('admin.periode.index')"
-                            class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-blue-600"
+                            class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-pink-600"
                         >
 
                             <ArrowLeftIcon class="h-5 w-5" />
@@ -202,11 +202,11 @@ const breadcrumbs = [
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                             >
 
                                 <CalendarDaysIcon
-                                    class="h-5 w-5 text-blue-700"
+                                    class="h-5 w-5 text-pink-700"
                                 />
 
                             </div>
@@ -249,7 +249,7 @@ const breadcrumbs = [
                                 v-model="form.nama_periode"
                                 type="text"
                                 placeholder="Contoh: Pemeriksaan Kesehatan Semester Ganjil 2026/2027"
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             />
 
                             <p
@@ -276,7 +276,7 @@ const breadcrumbs = [
                             <input
                                 v-model="form.tanggal_mulai"
                                 type="date"
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             />
 
                             <p
@@ -303,7 +303,7 @@ const breadcrumbs = [
                             <input
                                 v-model="form.tanggal_selesai"
                                 type="date"
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             />
 
                             <p
@@ -329,7 +329,7 @@ const breadcrumbs = [
 
                             <select
                                 v-model="form.status"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             >
 
                                 <option value="draft">
@@ -377,11 +377,11 @@ const breadcrumbs = [
                             <div class="flex items-center gap-3">
 
                                 <div
-                                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                                    class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                                 >
 
                                     <UserGroupIcon
-                                        class="h-5 w-5 text-blue-700"
+                                        class="h-5 w-5 text-pink-700"
                                     />
 
                                 </div>
@@ -408,7 +408,7 @@ const breadcrumbs = [
                             <!-- COUNT -->
 
                             <div
-                                class="inline-flex w-fit items-center rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
+                                class="inline-flex w-fit items-center rounded-full bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
                             >
 
                                 {{ selectedCount }} siswa dipilih
@@ -441,7 +441,7 @@ const breadcrumbs = [
                                     @input="updateSelectAllState"
                                     type="text"
                                     placeholder="Cari nama siswa, NISN, kelas, atau jurusan..."
-                                    class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                 />
 
                             </div>
@@ -510,12 +510,12 @@ const breadcrumbs = [
                                 :value="siswa.id"
                                 v-model="form.siswa_ids"
                                 @change="updateSelectAllState"
-                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                             />
 
 
                             <div
-                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                             >
 
                                 {{
@@ -555,7 +555,7 @@ const breadcrumbs = [
 
                             <div
                                 v-if="isSelected(siswa.id)"
-                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600"
+                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-600"
                             >
 
                                 <CheckIcon
@@ -596,7 +596,7 @@ const breadcrumbs = [
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
 
                         <span

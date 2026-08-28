@@ -361,7 +361,7 @@ const getStatusBadge = (status) => {
     if (
         value === 'selesai'
     ) {
-        return 'border-blue-200 bg-blue-50 text-blue-700'
+        return 'border-pink-200 bg-pink-50 text-pink-700'
     }
 
     if (
@@ -549,7 +549,7 @@ const getRowNumber = (index) => {
             <button
                 type="button"
                 @click="tambahPeriode"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800"
             >
 
                 <PlusIcon class="h-5 w-5" />
@@ -664,7 +664,7 @@ const getRowNumber = (index) => {
                         v-model="search"
                         type="text"
                         placeholder="Cari nama periode atau pembuat..."
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                     />
 
                 </div>
@@ -676,7 +676,7 @@ const getRowNumber = (index) => {
 
                     <select
                         v-model="statusFilter"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option value="">
@@ -707,7 +707,7 @@ const getRowNumber = (index) => {
                             'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
 
                             showFilter || activeFilterCount > 0
-                                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                                ? 'border-pink-200 bg-pink-50 text-pink-700'
                                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                         ]"
                     >
@@ -720,7 +720,7 @@ const getRowNumber = (index) => {
 
                         <span
                             v-if="activeFilterCount > 0"
-                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
+                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1.5 text-[10px] font-bold text-white"
                         >
                             {{ activeFilterCount }}
                         </span>
@@ -770,7 +770,7 @@ const getRowNumber = (index) => {
                         <select
                             v-model="periodeFilter"
                             @change="selectPeriode"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -805,7 +805,7 @@ const getRowNumber = (index) => {
                         <input
                             v-model="tanggalMulaiFilter"
                             type="date"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         />
 
                     </div>
@@ -824,7 +824,7 @@ const getRowNumber = (index) => {
                         <input
                             v-model="tanggalSelesaiFilter"
                             type="date"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         />
 
                     </div>
@@ -836,17 +836,17 @@ const getRowNumber = (index) => {
 
                 <div
                     v-if="selectedPeriode"
-                    class="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                    class="mt-4 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                 >
 
                     <div class="flex items-start gap-3">
 
                         <div
-                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                         >
 
                             <CalendarDaysIcon
-                                class="h-5 w-5 text-blue-700"
+                                class="h-5 w-5 text-pink-700"
                             />
 
                         </div>
@@ -855,19 +855,19 @@ const getRowNumber = (index) => {
                         <div>
 
                             <p
-                                class="text-xs font-bold uppercase tracking-wide text-blue-600"
+                                class="text-xs font-bold uppercase tracking-wide text-pink-600"
                             >
                                 Periode Dipilih
                             </p>
 
                             <p
-                                class="mt-0.5 text-sm font-bold text-blue-800"
+                                class="mt-0.5 text-sm font-bold text-pink-800"
                             >
                                 {{ selectedPeriode.nama_periode }}
                             </p>
 
                             <p
-                                class="mt-1 text-xs text-blue-600"
+                                class="mt-1 text-xs text-pink-600"
                             >
 
                                 {{ formatDate(selectedPeriode.tanggal_mulai) }}
@@ -901,7 +901,7 @@ const getRowNumber = (index) => {
 
                     <span
                         v-if="periodeFilter"
-                        class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                        class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                     >
 
                         Periode:
@@ -912,7 +912,7 @@ const getRowNumber = (index) => {
 
                     <span
                         v-if="tanggalMulaiFilter"
-                        class="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-semibold text-indigo-700"
+                        class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                     >
 
                         Mulai:
@@ -923,7 +923,7 @@ const getRowNumber = (index) => {
 
                     <span
                         v-if="tanggalSelesaiFilter"
-                        class="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-700"
+                        class="rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-700"
                     >
 
                         Selesai:
@@ -1080,11 +1080,11 @@ const getRowNumber = (index) => {
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100"
                                     >
 
                                         <CalendarDaysIcon
-                                            class="h-4 w-4 text-blue-700"
+                                            class="h-4 w-4 text-pink-700"
                                         />
 
                                     </div>
@@ -1215,7 +1215,7 @@ const getRowNumber = (index) => {
                                             )
                                         "
                                         title="Detail"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <EyeIcon class="h-4 w-4" />
@@ -1340,11 +1340,11 @@ const getRowNumber = (index) => {
                         >
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100"
                             >
 
                                 <CalendarDaysIcon
-                                    class="h-5 w-5 text-blue-700"
+                                    class="h-5 w-5 text-pink-700"
                                 />
 
                             </div>
@@ -1476,7 +1476,7 @@ const getRowNumber = (index) => {
                                     periode.id
                                 )
                             "
-                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50"
+                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 hover:bg-pink-50"
                         >
 
                             <EyeIcon class="h-4 w-4" />
@@ -1618,7 +1618,7 @@ const getRowNumber = (index) => {
                                 'min-w-9 rounded-lg border px-2.5 py-2 text-xs font-bold transition',
 
                                 link.active
-                                    ? 'border-blue-700 bg-blue-700 text-white'
+                                    ? 'border-pink-700 bg-pink-700 text-white'
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
                             ]"
                         >
@@ -1839,7 +1839,7 @@ const getRowNumber = (index) => {
                     type="button"
                     :disabled="processingCreate"
                     @click="nonaktifkanDanBuat"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                     <!-- LOADING -->

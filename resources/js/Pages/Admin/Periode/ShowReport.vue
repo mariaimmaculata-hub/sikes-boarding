@@ -1178,7 +1178,7 @@ const hasilAkhirClass = (item) => {
             return 'bg-green-100 text-green-700 border-green-200'
 
         case 'Sedang':
-            return 'bg-blue-100 text-blue-700 border-blue-200'
+            return 'bg-pink-100 text-pink-700 border-pink-200'
 
         case 'Kurang':
             return 'bg-amber-100 text-amber-700 border-amber-200'
@@ -1216,7 +1216,7 @@ const hasilAkhirDotClass = (item) => {
             return 'bg-green-500'
 
         case 'Sedang':
-            return 'bg-blue-500'
+            return 'bg-pink-500'
 
         case 'Kurang':
             return 'bg-amber-500'
@@ -1307,11 +1307,11 @@ const downloadReport = () => {
                             <div class="flex items-center gap-3">
 
                                 <div
-                                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100"
+                                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100"
                                 >
 
                                     <ClipboardDocumentCheckIcon
-                                        class="h-6 w-6 text-blue-600"
+                                        class="h-6 w-6 text-pink-600"
                                     />
 
                                 </div>
@@ -1320,7 +1320,7 @@ const downloadReport = () => {
                                 <div>
 
                                     <p
-                                        class="text-xs font-bold uppercase tracking-wider text-blue-600"
+                                        class="text-xs font-bold uppercase tracking-wider text-pink-600"
                                     >
                                         Laporan Kesehatan Siswa
                                     </p>
@@ -1422,11 +1422,11 @@ const downloadReport = () => {
                     <div class="flex items-center gap-4">
 
                         <div
-                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100"
+                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100"
                         >
 
                             <UserGroupIcon
-                                class="h-6 w-6 text-blue-600"
+                                class="h-6 w-6 text-pink-600"
                             />
 
                         </div>
@@ -1557,11 +1557,11 @@ const downloadReport = () => {
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-100"
                             >
 
                                 <ClipboardDocumentCheckIcon
-                                    class="h-5 w-5 text-blue-600"
+                                    class="h-5 w-5 text-pink-600"
                                 />
 
                             </div>
@@ -2014,7 +2014,7 @@ const downloadReport = () => {
 
 
                                                         <span
-                                                            class="flex h-7 w-7 items-center justify-center rounded-full bg-blue-50 text-xs font-bold text-blue-600"
+                                                            class="flex h-7 w-7 items-center justify-center rounded-full bg-pink-50 text-xs font-bold text-pink-600"
                                                         >
                                                             {{ detail.skor }}
                                                         </span>
@@ -2163,17 +2163,17 @@ const downloadReport = () => {
             ====================================================== -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50/50 p-5"
+                class="rounded-2xl border border-pink-100 bg-pink-50/50 p-5"
             >
 
                 <div class="flex gap-3">
 
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                     >
 
                         <ClipboardDocumentCheckIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>

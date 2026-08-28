@@ -1,4 +1,5 @@
 <script setup>
+
 import { Head, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
@@ -85,24 +86,27 @@ const statIcons = {
 |--------------------------------------------------------------------------
 | WARNA STATISTIK
 |--------------------------------------------------------------------------
+| Mengikuti tema AdminLayout:
+| Pink → Rose → Fuchsia → Amber
+|--------------------------------------------------------------------------
 */
 
 const statColors = {
 
     siswa:
-        'border-blue-600 text-blue-600 bg-blue-50/50',
+        'border-pink-600 text-pink-600 bg-pink-50/50',
 
     kelas:
-        'border-green-600 text-green-600 bg-green-50/50',
+        'border-rose-600 text-rose-600 bg-rose-50/50',
 
     klinik:
-        'border-purple-600 text-purple-600 bg-purple-50/50',
+        'border-fuchsia-600 text-fuchsia-600 bg-fuchsia-50/50',
 
     pendamping:
-        'border-orange-600 text-orange-600 bg-orange-50/50',
+        'border-amber-600 text-amber-600 bg-amber-50/50',
 
     pemeriksaan:
-        'border-rose-600 text-rose-600 bg-rose-50/50',
+        'border-pink-700 text-pink-700 bg-pink-50/50',
 
 }
 
@@ -130,15 +134,15 @@ const formatNumber = (value) => {
 
 const illnessColors = [
 
+    'bg-pink-600',
+
+    'bg-rose-600',
+
+    'bg-fuchsia-600',
+
+    'bg-pink-500',
+
     'bg-rose-500',
-
-    'bg-orange-500',
-
-    'bg-amber-500',
-
-    'bg-blue-500',
-
-    'bg-teal-500',
 
 ]
 
@@ -254,7 +258,9 @@ const chartPoint = (
 
     const x =
         data.length === 1
+
             ? width / 2
+
             : 50 +
               (
                   index *
@@ -378,37 +384,49 @@ const getPointValue = (item) => {
             =================================================== -->
 
             <div
-                class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg flex items-center justify-between"
+                class="bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 rounded-3xl p-6 md:p-8 text-white relative overflow-hidden shadow-lg flex items-center justify-between"
             >
+
+                <!-- BACKGROUND DECORATION -->
 
                 <div
                     class="absolute right-0 top-0 w-80 h-80 bg-white/5 rounded-full blur-2xl pointer-events-none"
                 ></div>
 
+
                 <div
-                    class="absolute -right-20 -bottom-32 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"
+                    class="absolute -right-20 -bottom-32 w-72 h-72 bg-pink-400/10 rounded-full blur-3xl pointer-events-none"
                 ></div>
 
+
+                <!-- TEXT -->
 
                 <div class="relative z-10 space-y-2">
 
                     <h2
                         class="text-2xl md:text-3xl font-extrabold tracking-tight"
                     >
+
                         Selamat datang, Admin!
+
                     </h2>
 
+
                     <p
-                        class="text-sm md:text-base text-blue-100/90 max-w-2xl font-medium leading-relaxed"
+                        class="text-sm md:text-base text-pink-100/90 max-w-2xl font-medium leading-relaxed"
                     >
+
                         Kelola data kesehatan dan kebugaran siswa
                         dengan mudah dan terintegrasi.
+
                     </p>
 
                 </div>
 
 
-                <!-- ILUSTRASI GEDUNG -->
+                <!-- ==================================================
+                     ILUSTRASI GEDUNG
+                =================================================== -->
 
                 <div
                     class="hidden md:block relative z-10 w-44 h-auto opacity-95"
@@ -417,7 +435,7 @@ const getPointValue = (item) => {
                     <svg
                         viewBox="0 0 120 80"
                         fill="none"
-                        class="w-full text-blue-300"
+                        class="w-full text-pink-200"
                     >
 
                         <path
@@ -426,6 +444,7 @@ const getPointValue = (item) => {
                             stroke-width="2.5"
                             stroke-linecap="round"
                         />
+
 
                         <rect
                             x="30"
@@ -437,6 +456,7 @@ const getPointValue = (item) => {
                             fill-opacity="0.3"
                         />
 
+
                         <rect
                             x="80"
                             y="38"
@@ -447,9 +467,10 @@ const getPointValue = (item) => {
                             fill-opacity="0.3"
                         />
 
+
                         <path
                             d="M60 10v6M57 13h6"
-                            stroke="#EF4444"
+                            stroke="#FCA5A5"
                             stroke-width="2"
                         />
 
@@ -483,7 +504,9 @@ const getPointValue = (item) => {
                         <span
                             class="text-slate-500 text-xs font-bold uppercase tracking-wider"
                         >
+
                             {{ item.name }}
+
                         </span>
 
 
@@ -512,7 +535,9 @@ const getPointValue = (item) => {
                         <span
                             class="text-2xl font-extrabold text-slate-900"
                         >
+
                             {{ formatNumber(item.value) }}
+
                         </span>
 
                     </div>
@@ -537,7 +562,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -545,13 +570,18 @@ const getPointValue = (item) => {
                         <h3
                             class="text-sm font-bold text-slate-900"
                         >
+
                             Grafik Pemeriksaan Berkala
+
                         </h3>
+
 
                         <span
                             class="text-slate-400 text-xs font-semibold"
                         >
+
                             (3 Bulan Terakhir)
+
                         </span>
 
                     </div>
@@ -563,7 +593,7 @@ const getPointValue = (item) => {
 
                         <svg
                             viewBox="0 0 300 150"
-                            class="w-full h-full text-blue-600"
+                            class="w-full h-full text-pink-600"
                             preserveAspectRatio="none"
                         >
 
@@ -574,31 +604,34 @@ const getPointValue = (item) => {
                                 y1="20"
                                 x2="280"
                                 y2="20"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="60"
                                 x2="280"
                                 y2="60"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="100"
                                 x2="280"
                                 y2="100"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="120"
                                 x2="280"
                                 y2="120"
-                                stroke="#cbd5e1"
+                                stroke="#fbcfe8"
                                 stroke-width="1.5"
                             />
 
@@ -673,7 +706,9 @@ const getPointValue = (item) => {
                                     font-weight="bold"
                                     fill="#1e293b"
                                 >
+
                                     {{ getPointValue(item) }}
+
                                 </text>
 
 
@@ -690,7 +725,9 @@ const getPointValue = (item) => {
                                     font-weight="bold"
                                     fill="#64748b"
                                 >
+
                                     {{ item.label }}
+
                                 </text>
 
                             </template>
@@ -706,7 +743,9 @@ const getPointValue = (item) => {
                                 font-size="11"
                                 fill="#94a3b8"
                             >
+
                                 Belum ada data
+
                             </text>
 
                         </svg>
@@ -722,7 +761,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -730,13 +769,18 @@ const getPointValue = (item) => {
                         <h3
                             class="text-sm font-bold text-slate-900"
                         >
+
                             Grafik Kunjungan Klinik
+
                         </h3>
+
 
                         <span
                             class="text-slate-400 text-xs font-semibold"
                         >
+
                             (3 Bulan Terakhir)
+
                         </span>
 
                     </div>
@@ -748,43 +792,50 @@ const getPointValue = (item) => {
 
                         <svg
                             viewBox="0 0 300 150"
-                            class="w-full h-full text-green-600"
+                            class="w-full h-full text-rose-600"
                             preserveAspectRatio="none"
                         >
+
+                            <!-- GRID -->
 
                             <line
                                 x1="30"
                                 y1="20"
                                 x2="280"
                                 y2="20"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="60"
                                 x2="280"
                                 y2="60"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="100"
                                 x2="280"
                                 y2="100"
-                                stroke="#f1f5f9"
+                                stroke="#fce7f3"
                             />
+
 
                             <line
                                 x1="30"
                                 y1="120"
                                 x2="280"
                                 y2="120"
-                                stroke="#cbd5e1"
+                                stroke="#fbcfe8"
                                 stroke-width="1.5"
                             />
 
+
+                            <!-- AREA -->
 
                             <path
                                 v-if="kunjunganBulanan.length"
@@ -793,6 +844,8 @@ const getPointValue = (item) => {
                                 fill-opacity="0.08"
                             />
 
+
+                            <!-- LINE -->
 
                             <path
                                 v-if="kunjunganBulanan.length"
@@ -804,6 +857,8 @@ const getPointValue = (item) => {
                                 stroke-linejoin="round"
                             />
 
+
+                            <!-- POINT -->
 
                             <template
                                 v-for="(item, index) in kunjunganBulanan"
@@ -850,7 +905,9 @@ const getPointValue = (item) => {
                                     font-weight="bold"
                                     fill="#1e293b"
                                 >
+
                                     {{ getPointValue(item) }}
+
                                 </text>
 
 
@@ -867,11 +924,15 @@ const getPointValue = (item) => {
                                     font-weight="bold"
                                     fill="#64748b"
                                 >
+
                                     {{ item.label }}
+
                                 </text>
 
                             </template>
 
+
+                            <!-- EMPTY -->
 
                             <text
                                 v-if="!kunjunganBulanan.length"
@@ -881,7 +942,9 @@ const getPointValue = (item) => {
                                 font-size="11"
                                 fill="#94a3b8"
                             >
+
                                 Belum ada data
+
                             </text>
 
                         </svg>
@@ -897,7 +960,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -905,13 +968,18 @@ const getPointValue = (item) => {
                         <h3
                             class="text-sm font-bold text-slate-900"
                         >
+
                             5 Penyakit Terbanyak Bulan Ini
+
                         </h3>
+
 
                         <span
                             class="text-slate-400 text-xs font-semibold"
                         >
+
                             (Bulan Berjalan)
+
                         </span>
 
                     </div>
@@ -940,8 +1008,11 @@ const getPointValue = (item) => {
                                         "
                                     ></span>
 
+
                                     <span>
+
                                         {{ ill.name }}
+
                                     </span>
 
                                 </span>
@@ -950,8 +1021,10 @@ const getPointValue = (item) => {
                                 <span
                                     class="text-slate-900 font-bold"
                                 >
+
                                     {{ formatNumber(ill.count) }}
                                     kasus
+
                                 </span>
 
                             </div>
@@ -979,24 +1052,33 @@ const getPointValue = (item) => {
                         </div>
 
 
+                        <!-- EMPTY -->
+
                         <div
                             v-if="!penyakitTerbanyak.length"
                             class="py-8 text-center text-xs font-semibold text-slate-400"
                         >
+
                             Belum ada data penyakit bulan ini.
+
                         </div>
 
                     </div>
 
 
+                    <!-- LINK -->
+
                     <Link
                         href="/admin/kunjungan"
-                        class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-800"
+                        class="pt-3 border-t border-pink-100 flex items-center justify-between text-xs font-bold text-pink-600 hover:text-pink-800 transition"
                     >
 
                         <span>
+
                             Lihat semua
+
                         </span>
+
 
                         <ChevronRightIcon
                             class="w-4 h-4"
@@ -1024,7 +1106,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -1034,15 +1116,19 @@ const getPointValue = (item) => {
                         >
 
                             <CalendarDaysIcon
-                                class="w-5 h-5 text-blue-600"
+                                class="w-5 h-5 text-pink-600"
                             />
 
                             <span>
+
                                 Jadwal Hari Ini
+
                             </span>
 
                         </h3>
 
+
+                        <!-- ADA DATA -->
 
                         <div
                             v-if="jadwalHariIni.length"
@@ -1052,36 +1138,47 @@ const getPointValue = (item) => {
                             <div
                                 v-for="(sched, idx) in jadwalHariIni"
                                 :key="idx"
-                                class="flex space-x-3.5 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition"
+                                class="flex space-x-3.5 p-3 rounded-xl hover:bg-pink-50/50 border border-transparent hover:border-pink-100 transition"
                             >
 
+                                <!-- TIME -->
+
                                 <div
-                                    class="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 h-fit rounded-lg flex-shrink-0 text-center leading-relaxed"
+                                    class="bg-pink-50 text-pink-700 text-xs font-bold px-2 py-1 h-fit rounded-lg flex-shrink-0 text-center leading-relaxed"
                                 >
 
                                     {{ sched.time }}
 
                                     <span
-                                        class="block text-[9px] font-medium text-blue-500/80"
+                                        class="block text-[9px] font-medium text-pink-500/80"
                                     >
+
                                         Mulai
+
                                     </span>
 
                                 </div>
 
+
+                                <!-- DESCRIPTION -->
 
                                 <div class="space-y-0.5">
 
                                     <span
                                         class="text-sm font-bold text-slate-900"
                                     >
+
                                         {{ sched.title }}
+
                                     </span>
+
 
                                     <p
                                         class="text-xs text-slate-500 font-semibold"
                                     >
+
                                         {{ sched.desc }}
+
                                     </p>
 
                                 </div>
@@ -1091,19 +1188,24 @@ const getPointValue = (item) => {
                         </div>
 
 
+                        <!-- EMPTY -->
+
                         <div
                             v-else
                             class="py-8 text-center"
                         >
 
                             <CalendarDaysIcon
-                                class="w-10 h-10 mx-auto text-slate-300"
+                                class="w-10 h-10 mx-auto text-pink-200"
                             />
+
 
                             <p
                                 class="mt-2 text-xs font-semibold text-slate-400"
                             >
+
                                 Tidak ada jadwal hari ini.
+
                             </p>
 
                         </div>
@@ -1111,14 +1213,19 @@ const getPointValue = (item) => {
                     </div>
 
 
+                    <!-- LINK -->
+
                     <Link
                         href="/admin/periode"
-                        class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-800"
+                        class="pt-4 mt-4 border-t border-pink-100 flex items-center justify-between text-xs font-bold text-pink-600 hover:text-pink-800 transition"
                     >
 
                         <span>
+
                             Lihat semua jadwal
+
                         </span>
+
 
                         <ChevronRightIcon
                             class="w-4 h-4"
@@ -1135,7 +1242,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -1145,15 +1252,19 @@ const getPointValue = (item) => {
                         >
 
                             <UserGroupIcon
-                                class="w-5 h-5 text-green-600"
+                                class="w-5 h-5 text-rose-600"
                             />
 
                             <span>
+
                                 Siswa Perlu Pemantauan
+
                             </span>
 
                         </h3>
 
+
+                        <!-- ADA DATA -->
 
                         <div
                             v-if="siswaPemantauan.length"
@@ -1167,19 +1278,27 @@ const getPointValue = (item) => {
                                 <thead>
 
                                     <tr
-                                        class="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                                        class="border-b border-pink-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
                                     >
 
                                         <th class="pb-2">
+
                                             Nama
+
                                         </th>
+
 
                                         <th class="pb-2">
+
                                             Kelas
+
                                         </th>
 
+
                                         <th class="pb-2 text-right">
+
                                             Status
+
                                         </th>
 
                                     </tr>
@@ -1192,20 +1311,26 @@ const getPointValue = (item) => {
                                     <tr
                                         v-for="(student, idx) in siswaPemantauan"
                                         :key="idx"
-                                        class="border-b border-slate-100/50 hover:bg-slate-50/50 transition"
+                                        class="border-b border-pink-100/50 hover:bg-pink-50/40 transition"
                                     >
 
                                         <td
                                             class="py-2.5 text-xs font-bold text-slate-900"
                                         >
+
                                             {{ student.name }}
+
                                         </td>
+
 
                                         <td
                                             class="py-2.5 text-xs font-semibold text-slate-500"
                                         >
+
                                             {{ student.class }}
+
                                         </td>
+
 
                                         <td
                                             class="py-2.5 text-right"
@@ -1218,7 +1343,9 @@ const getPointValue = (item) => {
                                                     'bg-amber-50 text-amber-700 border-amber-200'
                                                 "
                                             >
+
                                                 {{ student.status }}
+
                                             </span>
 
                                         </td>
@@ -1232,19 +1359,24 @@ const getPointValue = (item) => {
                         </div>
 
 
+                        <!-- EMPTY -->
+
                         <div
                             v-else
                             class="py-8 text-center"
                         >
 
                             <UserGroupIcon
-                                class="w-10 h-10 mx-auto text-slate-300"
+                                class="w-10 h-10 mx-auto text-pink-200"
                             />
+
 
                             <p
                                 class="mt-2 text-xs font-semibold text-slate-400"
                             >
+
                                 Belum ada siswa dalam pemantauan.
+
                             </p>
 
                         </div>
@@ -1252,14 +1384,19 @@ const getPointValue = (item) => {
                     </div>
 
 
+                    <!-- LINK -->
+
                     <Link
                         href="/admin/pemeriksaan"
-                        class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-800"
+                        class="pt-4 mt-4 border-t border-pink-100 flex items-center justify-between text-xs font-bold text-pink-600 hover:text-pink-800 transition"
                     >
 
                         <span>
+
                             Lihat semua
+
                         </span>
+
 
                         <ChevronRightIcon
                             class="w-4 h-4"
@@ -1276,7 +1413,7 @@ const getPointValue = (item) => {
                 =================================================== -->
 
                 <div
-                    class="bg-white rounded-2xl shadow-md p-5 border border-slate-100 flex flex-col justify-between"
+                    class="bg-white rounded-2xl shadow-md p-5 border border-pink-100 flex flex-col justify-between"
                 >
 
                     <div>
@@ -1286,15 +1423,19 @@ const getPointValue = (item) => {
                         >
 
                             <BellIcon
-                                class="w-5 h-5 text-purple-600"
+                                class="w-5 h-5 text-fuchsia-600"
                             />
 
                             <span>
+
                                 Notifikasi
+
                             </span>
 
                         </h3>
 
+
+                        <!-- ADA DATA -->
 
                         <div
                             v-if="notifications.length"
@@ -1307,11 +1448,13 @@ const getPointValue = (item) => {
                                 class="flex space-x-3 items-start"
                             >
 
+                                <!-- ICON -->
+
                                 <div
                                     class="p-2 rounded-xl flex-shrink-0"
                                     :class="
                                         notif.color ??
-                                        'bg-blue-100 text-blue-700'
+                                        'bg-pink-100 text-pink-700'
                                     "
                                 >
 
@@ -1326,18 +1469,25 @@ const getPointValue = (item) => {
                                 </div>
 
 
+                                <!-- CONTENT -->
+
                                 <div class="space-y-1">
 
                                     <p
                                         class="text-xs font-semibold text-slate-800 leading-normal"
                                     >
+
                                         {{ notif.text }}
+
                                     </p>
+
 
                                     <span
                                         class="text-[10px] text-slate-400 font-bold block"
                                     >
+
                                         {{ notif.time }}
+
                                     </span>
 
                                 </div>
@@ -1347,19 +1497,24 @@ const getPointValue = (item) => {
                         </div>
 
 
+                        <!-- EMPTY -->
+
                         <div
                             v-else
                             class="py-8 text-center"
                         >
 
                             <BellIcon
-                                class="w-10 h-10 mx-auto text-slate-300"
+                                class="w-10 h-10 mx-auto text-pink-200"
                             />
+
 
                             <p
                                 class="mt-2 text-xs font-semibold text-slate-400"
                             >
+
                                 Tidak ada notifikasi baru.
+
                             </p>
 
                         </div>
@@ -1367,14 +1522,19 @@ const getPointValue = (item) => {
                     </div>
 
 
+                    <!-- LINK -->
+
                     <Link
                         href="/admin/notifikasi"
-                        class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-800"
+                        class="pt-4 mt-4 border-t border-pink-100 flex items-center justify-between text-xs font-bold text-pink-600 hover:text-pink-800 transition"
                     >
 
                         <span>
+
                             Lihat semua notifikasi
+
                         </span>
+
 
                         <ChevronRightIcon
                             class="w-4 h-4"

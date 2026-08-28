@@ -219,13 +219,13 @@ const getRoleBadge = (role) => {
     switch (String(role ?? '').toLowerCase()) {
 
         case 'admin':
-            return 'border-blue-200 bg-blue-50 text-blue-700';
+            return 'border-pink-200 bg-pink-50 text-pink-700';
 
         case 'klinik':
             return 'border-emerald-200 bg-emerald-50 text-emerald-700';
 
         case 'tksi':
-            return 'border-purple-200 bg-purple-50 text-purple-700';
+            return 'border-pink-200 bg-pink-50 text-pink-700';
 
         default:
             return 'border-slate-200 bg-slate-50 text-slate-600';
@@ -334,7 +334,7 @@ const goToPage = (url) => {
 
                 <Link
                     :href="route('admin.master.user.create')"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800"
                 >
 
                     <UserPlusIcon class="h-5 w-5" />
@@ -451,7 +451,7 @@ const goToPage = (url) => {
                         v-model="search"
                         type="text"
                         placeholder="Cari nama, email, username, atau role..."
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                     />
 
                 </div>
@@ -463,7 +463,7 @@ const goToPage = (url) => {
 
                     <select
                         v-model="statusFilter"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option value="">
@@ -496,7 +496,7 @@ const goToPage = (url) => {
                             'flex-1 inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
 
                             showFilter || activeFilterCount > 0
-                                ? 'border-blue-200 bg-blue-50 text-blue-700'
+                                ? 'border-pink-200 bg-pink-50 text-pink-700'
                                 : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                         ]"
                     >
@@ -509,7 +509,7 @@ const goToPage = (url) => {
 
                         <span
                             v-if="activeFilterCount > 0"
-                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1.5 text-[10px] font-bold text-white"
+                            class="flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1.5 text-[10px] font-bold text-white"
                         >
 
                             {{ activeFilterCount }}
@@ -565,7 +565,7 @@ const goToPage = (url) => {
 
                         <select
                             v-model="roleFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -594,17 +594,17 @@ const goToPage = (url) => {
                     <div class="flex items-end">
 
                         <div
-                            class="w-full rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                            class="w-full rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                         >
 
                             <p
-                                class="text-xs font-bold text-blue-700"
+                                class="text-xs font-bold text-pink-700"
                             >
                                 Hak Akses
                             </p>
 
                             <p
-                                class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                                class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                             >
                                 Admin, Petugas Klinik, dan TKSI
                                 memiliki akses sesuai peran masing-masing.
@@ -639,12 +639,12 @@ const goToPage = (url) => {
                             'rounded-full px-2.5 py-1 text-xs font-semibold',
 
                             roleFilter === 'admin'
-                                ? 'bg-blue-100 text-blue-700'
+                                ? 'bg-pink-100 text-pink-700'
 
                                 : roleFilter === 'klinik'
                                     ? 'bg-emerald-100 text-emerald-700'
 
-                                    : 'bg-purple-100 text-purple-700'
+                                    : 'bg-pink-100 text-pink-700'
                         ]"
                     >
 
@@ -790,7 +790,7 @@ const goToPage = (url) => {
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                     >
 
                                         {{
@@ -912,7 +912,7 @@ const goToPage = (url) => {
                                             user.id
                                         )"
                                         title="Detail"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <EyeIcon
@@ -1037,7 +1037,7 @@ const goToPage = (url) => {
                         >
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                             >
 
                                 {{
@@ -1189,7 +1189,7 @@ const goToPage = (url) => {
                                 'admin.master.user.show',
                                 user.id
                             )"
-                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50"
+                            class="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 hover:bg-pink-50"
                         >
 
                             <EyeIcon class="h-4 w-4" />
@@ -1341,7 +1341,7 @@ const goToPage = (url) => {
                                 'min-w-9 rounded-lg border px-2.5 py-2 text-xs font-bold transition',
 
                                 link.active
-                                    ? 'border-blue-700 bg-blue-700 text-white'
+                                    ? 'border-pink-700 bg-pink-700 text-white'
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-50'
 
                             ]"

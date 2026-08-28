@@ -122,7 +122,7 @@ const submit = () => {
 
                         <div class="flex items-center gap-3">
 
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600">
 
                                 <UserIcon class="h-5 w-5" />
 
@@ -169,7 +169,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.nisn
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -204,7 +204,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.nama
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -238,7 +238,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.tempat_lahir
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -271,7 +271,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.tanggal_lahir
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -302,7 +302,7 @@ const submit = () => {
                                     :class="[
                                         'flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition',
                                         form.jenis_kelamin === 'L'
-                                            ? 'border-blue-300 bg-blue-50 ring-1 ring-blue-200'
+                                            ? 'border-pink-300 bg-pink-50 ring-1 ring-pink-200'
                                             : 'border-slate-200 hover:bg-slate-50'
                                     ]"
                                 >
@@ -311,7 +311,7 @@ const submit = () => {
                                         v-model="form.jenis_kelamin"
                                         type="radio"
                                         value="L"
-                                        class="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500"
+                                        class="h-4 w-4 border-slate-300 text-pink-600 focus:ring-pink-500"
                                     />
 
                                     <div>
@@ -335,7 +335,7 @@ const submit = () => {
                                     :class="[
                                         'flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition',
                                         form.jenis_kelamin === 'P'
-                                            ? 'border-blue-300 bg-blue-50 ring-1 ring-blue-200'
+                                            ? 'border-pink-300 bg-pink-50 ring-1 ring-pink-200'
                                             : 'border-slate-200 hover:bg-slate-50'
                                     ]"
                                 >
@@ -344,7 +344,7 @@ const submit = () => {
                                         v-model="form.jenis_kelamin"
                                         type="radio"
                                         value="P"
-                                        class="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500"
+                                        class="h-4 w-4 border-slate-300 text-pink-600 focus:ring-pink-500"
                                     />
 
                                     <div>
@@ -387,7 +387,7 @@ const submit = () => {
 
                         <div class="flex items-center gap-3">
 
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600">
 
                                 <AcademicCapIcon class="h-5 w-5" />
 
@@ -431,7 +431,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.kelas_id
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             >
 
@@ -487,7 +487,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.angkatan
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -566,7 +566,7 @@ const submit = () => {
                                         'w-full resize-none rounded-xl border bg-white py-2.5 pl-10 pr-3.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                         form.errors.alamat
                                             ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                            : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                     ]"
                                 ></textarea>
 
@@ -603,7 +603,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.no_hp
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -637,7 +637,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.nama_orang_tua
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -672,7 +672,7 @@ const submit = () => {
                                     'w-full rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:ring-2',
                                     form.errors.no_hp_orang_tua
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -799,7 +799,7 @@ const submit = () => {
                                 :class="[
                                     'flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition',
                                     form.status === 'lulus'
-                                        ? 'border-blue-300 bg-blue-50 ring-1 ring-blue-200'
+                                        ? 'border-pink-300 bg-pink-50 ring-1 ring-pink-200'
                                         : 'border-slate-200 hover:bg-slate-50'
                                 ]"
                             >
@@ -808,7 +808,7 @@ const submit = () => {
                                     v-model="form.status"
                                     type="radio"
                                     value="lulus"
-                                    class="h-4 w-4 border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    class="h-4 w-4 border-slate-300 text-pink-600 focus:ring-pink-500"
                                 />
 
                                 <div>
@@ -856,7 +856,7 @@ const submit = () => {
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-800 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                     >
 
                         <PencilSquareIcon class="h-5 w-5" />

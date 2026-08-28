@@ -239,7 +239,7 @@ const formatTanggal = (tanggal) => {
                         <!-- AVATAR -->
 
                         <div
-                            class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-2xl font-bold text-blue-700"
+                            class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-pink-100 text-2xl font-bold text-pink-700"
                         >
 
                             {{
@@ -287,7 +287,7 @@ const formatTanggal = (tanggal) => {
                                 <!-- KELAS -->
 
                                 <span
-                                    class="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
+                                    class="inline-flex items-center rounded-lg bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
                                 >
                                     {{ namaKelas(siswa.kelas) }}
                                 </span>
@@ -626,7 +626,7 @@ const formatTanggal = (tanggal) => {
                                 :class="
                                     siswa.tksi?.status ===
                                     'selesai'
-                                        ? 'bg-blue-50 text-blue-600'
+                                        ? 'bg-pink-50 text-pink-600'
                                         : 'bg-amber-50 text-amber-600'
                                 "
                                 class="flex h-10 w-10 items-center justify-center rounded-xl"
@@ -698,7 +698,7 @@ const formatTanggal = (tanggal) => {
                     >
 
                         <CalendarDaysIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
 

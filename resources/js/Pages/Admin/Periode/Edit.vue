@@ -351,11 +351,11 @@ const breadcrumbs = [
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100"
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-100"
                             >
 
                                 <CalendarDaysIcon
-                                    class="h-5 w-5 text-blue-700"
+                                    class="h-5 w-5 text-pink-700"
                                 />
 
                             </div>
@@ -409,7 +409,7 @@ const breadcrumbs = [
                                     'w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.nama_periode
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -445,7 +445,7 @@ const breadcrumbs = [
                                     'w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.tanggal_mulai
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -481,7 +481,7 @@ const breadcrumbs = [
                                     'w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.tanggal_selesai
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -516,7 +516,7 @@ const breadcrumbs = [
                                     'w-full rounded-xl border bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:ring-2',
                                     form.errors.status
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-slate-200 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             >
 
@@ -550,17 +550,17 @@ const breadcrumbs = [
                         <div class="flex items-end">
 
                             <div
-                                class="w-full rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                                class="w-full rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                             >
 
                                 <p
-                                    class="text-xs font-bold text-blue-700"
+                                    class="text-xs font-bold text-pink-700"
                                 >
                                     Status Periode
                                 </p>
 
                                 <p
-                                    class="mt-0.5 text-[11px] leading-relaxed text-blue-600"
+                                    class="mt-0.5 text-[11px] leading-relaxed text-pink-600"
                                 >
                                     Draft untuk persiapan, Aktif untuk periode
                                     berjalan, dan Selesai untuk periode yang
@@ -629,7 +629,7 @@ const breadcrumbs = [
                             <!-- TOTAL -->
 
                             <div
-                                class="inline-flex w-fit items-center rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700"
+                                class="inline-flex w-fit items-center rounded-full bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
                             >
 
                                 {{ form.siswa_ids.length }}
@@ -658,7 +658,7 @@ const breadcrumbs = [
                                 v-model="search"
                                 type="text"
                                 placeholder="Cari nama, NISN, kelas, atau jurusan..."
-                                class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             />
 
                         </div>
@@ -680,7 +680,7 @@ const breadcrumbs = [
                                 type="checkbox"
                                 :checked="allFilteredSelected"
                                 @change="toggleSelectAll"
-                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                             />
 
                             Pilih semua yang tampil
@@ -691,7 +691,7 @@ const breadcrumbs = [
                         <button
                             type="button"
                             @click="showStudentList = !showStudentList"
-                            class="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                            class="text-xs font-semibold text-pink-600 hover:text-pink-700"
                         >
 
                             {{
@@ -754,7 +754,7 @@ const breadcrumbs = [
                                 type="checkbox"
                                 :checked="isSelected(siswa.id)"
                                 @change="toggleStudent(siswa.id)"
-                                class="h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                class="h-4 w-4 shrink-0 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                             />
 
 
@@ -817,11 +817,11 @@ const breadcrumbs = [
 
                             <div
                                 v-if="isSelected(siswa.id)"
-                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100"
+                                class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pink-100"
                             >
 
                                 <CheckIcon
-                                    class="h-4 w-4 text-blue-700"
+                                    class="h-4 w-4 text-pink-700"
                                 />
 
                             </div>
@@ -848,7 +848,7 @@ const breadcrumbs = [
                                 </strong>
                             </span>
 
-                            <span class="font-semibold text-blue-600">
+                            <span class="font-semibold text-pink-600">
                                 Terpilih:
                                 {{ form.siswa_ids.length }}
                                 siswa
@@ -899,7 +899,7 @@ const breadcrumbs = [
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                         >
 
                             <svg
