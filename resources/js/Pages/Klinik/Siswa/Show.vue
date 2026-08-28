@@ -9,12 +9,7 @@ import {
     CalendarDaysIcon,
     ClipboardDocumentCheckIcon,
     HeartIcon,
-    DocumentTextIcon,
-    BeakerIcon,
-    ClockIcon,
     UserCircleIcon,
-    CheckCircleIcon,
-    ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -94,7 +89,7 @@ const formatStatus = (status) => {
 
     return String(status)
         .replaceAll('_', ' ')
-        .replace(/\b\w/g, (char) => char.toUpperCase())
+        .replace(/\b\w/g, char => char.toUpperCase())
 }
 
 
@@ -137,7 +132,6 @@ const pemeriksaanStatusClass = (status) => {
 }
 
 
-
 // ======================================================
 // PEMERIKSAAN BERKALA
 // ======================================================
@@ -157,7 +151,7 @@ const pemeriksaan = () => {
 
 const pemeriksaan1 = () => {
     return pemeriksaan().find(
-        (item) =>
+        item =>
             String(item.jenis_pemeriksaan ?? '')
                 .toLowerCase() === 'berkala_1'
     ) ?? null
@@ -170,7 +164,7 @@ const pemeriksaan1 = () => {
 
 const pemeriksaan2 = () => {
     return pemeriksaan().find(
-        (item) =>
+        item =>
             String(item.jenis_pemeriksaan ?? '')
                 .toLowerCase() === 'berkala_2'
     ) ?? null
@@ -195,14 +189,6 @@ const kunjunganKlinik = () => {
 // ======================================================
 
 const tanggalKunjungan = (kunjungan) => {
-    /*
-     * Backend KunjunganController menggunakan created_at
-     * sebagai tanggal kunjungan pada index().
-     *
-     * Tetap support tanggal_kunjungan apabila data detail
-     * dari controller siswa masih mengirim field tersebut.
-     */
-
     return (
         kunjungan.tanggal_kunjungan ??
         kunjungan.created_at ??
@@ -217,16 +203,6 @@ const tanggalKunjungan = (kunjungan) => {
 // ======================================================
 
 const obatKunjungan = (kunjungan) => {
-    /*
-     * Backend KunjunganController mengirim:
-     *
-     * 'obat' => [...]
-     *
-     * bukan:
-     *
-     * 'kunjungan_obat'
-     */
-
     return (
         kunjungan.obat ??
         kunjungan.kunjungan_obat ??
@@ -274,7 +250,7 @@ const initial = props.siswa.nama
 
                 <Link
                     :href="route('klinik.siswa.index')"
-                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-blue-600"
+                    class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-pink-100 bg-white text-slate-500 shadow-sm transition hover:bg-pink-50 hover:text-pink-600"
                 >
                     <ArrowLeftIcon class="h-5 w-5" />
                 </Link>
@@ -298,16 +274,16 @@ const initial = props.siswa.nama
 
             <div
                 v-if="periode"
-                class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-2.5"
+                class="rounded-xl border border-pink-100 bg-pink-50 px-4 py-2.5"
             >
 
                 <p
-                    class="text-[10px] font-bold uppercase tracking-wider text-blue-500"
+                    class="text-[10px] font-bold uppercase tracking-wider text-pink-500"
                 >
                     Periode Aktif
                 </p>
 
-                <p class="mt-0.5 text-sm font-bold text-blue-800">
+                <p class="mt-0.5 text-sm font-bold text-pink-800">
                     {{ periode.nama_periode }}
                 </p>
 
@@ -322,17 +298,17 @@ const initial = props.siswa.nama
         ================================================== -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="border-b border-slate-100 bg-slate-50 px-5 py-4"
+                class="border-b border-pink-100 bg-gradient-to-r from-pink-50 to-rose-50 px-5 py-4"
             >
 
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-700"
+                        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-100 text-lg font-bold text-pink-700 ring-4 ring-white"
                     >
                         {{ initial }}
                     </div>
@@ -358,12 +334,12 @@ const initial = props.siswa.nama
 
             <div class="p-5">
 
-                <div class="mb-4 flex items-center gap-2">
+                <div class="mb-5 flex items-center gap-3">
 
                     <div
-                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-50"
                     >
-                        <UserIcon class="h-4 w-4 text-blue-600" />
+                        <UserIcon class="h-5 w-5 text-pink-600" />
                     </div>
 
                     <div>
@@ -512,20 +488,20 @@ const initial = props.siswa.nama
         ================================================== -->
 
         <div
-            class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="border-b border-slate-100 px-5 py-4"
+                class="border-b border-pink-100 px-5 py-4"
             >
 
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-50"
                     >
                         <AcademicCapIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
                     </div>
 
@@ -551,9 +527,8 @@ const initial = props.siswa.nama
             >
 
                 <div
-                    class="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                    class="rounded-xl border border-pink-100 bg-pink-50/50 p-4"
                 >
-
                     <p class="text-xs font-medium text-slate-400">
                         Kelas
                     </p>
@@ -561,14 +536,12 @@ const initial = props.siswa.nama
                     <p class="mt-1 text-sm font-bold text-slate-800">
                         {{ siswa.kelas?.nama_kelas || '-' }}
                     </p>
-
                 </div>
 
 
                 <div
-                    class="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                    class="rounded-xl border border-pink-100 bg-pink-50/50 p-4"
                 >
-
                     <p class="text-xs font-medium text-slate-400">
                         Tingkat
                     </p>
@@ -576,14 +549,12 @@ const initial = props.siswa.nama
                     <p class="mt-1 text-sm font-bold text-slate-800">
                         {{ siswa.kelas?.tingkat || '-' }}
                     </p>
-
                 </div>
 
 
                 <div
-                    class="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                    class="rounded-xl border border-pink-100 bg-pink-50/50 p-4"
                 >
-
                     <p class="text-xs font-medium text-slate-400">
                         Jurusan
                     </p>
@@ -591,14 +562,12 @@ const initial = props.siswa.nama
                     <p class="mt-1 text-sm font-bold text-slate-800">
                         {{ siswa.kelas?.jurusan?.nama_jurusan || '-' }}
                     </p>
-
                 </div>
 
 
                 <div
-                    class="rounded-xl border border-slate-100 bg-slate-50 p-4"
+                    class="rounded-xl border border-pink-100 bg-pink-50/50 p-4"
                 >
-
                     <p class="text-xs font-medium text-slate-400">
                         Angkatan
                     </p>
@@ -606,7 +575,6 @@ const initial = props.siswa.nama
                     <p class="mt-1 text-sm font-bold text-slate-800">
                         {{ siswa.angkatan || '-' }}
                     </p>
-
                 </div>
 
             </div>
@@ -620,11 +588,11 @@ const initial = props.siswa.nama
         ================================================== -->
 
         <div
-            class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="border-b border-slate-100 px-5 py-4"
+                class="border-b border-pink-100 px-5 py-4"
             >
 
                 <div class="flex items-center justify-between gap-4">
@@ -632,10 +600,10 @@ const initial = props.siswa.nama
                     <div class="flex items-center gap-3">
 
                         <div
-                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-50"
                         >
                             <ClipboardDocumentCheckIcon
-                                class="h-5 w-5 text-rose-500"
+                                class="h-5 w-5 text-pink-600"
                             />
                         </div>
 
@@ -654,7 +622,7 @@ const initial = props.siswa.nama
                     </div>
 
                     <span
-                        class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700"
+                        class="rounded-full bg-pink-50 px-3 py-1 text-xs font-bold text-pink-700"
                     >
                         2 Pemeriksaan
                     </span>
@@ -682,7 +650,7 @@ const initial = props.siswa.nama
                             <div class="flex items-center gap-3">
 
                                 <div
-                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-sm font-bold text-blue-700"
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-100 text-sm font-bold text-pink-700"
                                 >
                                     1
                                 </div>
@@ -746,12 +714,14 @@ const initial = props.siswa.nama
                                 >
 
                                     <CalendarDaysIcon
-                                        class="h-4 w-4 text-slate-400"
+                                        class="h-4 w-4 text-pink-500"
                                     />
 
-                                    {{ formatDate(
-                                        pemeriksaan1()?.tanggal_pemeriksaan
-                                    ) }}
+                                    {{
+                                        formatDate(
+                                            pemeriksaan1()?.tanggal_pemeriksaan
+                                        )
+                                    }}
 
                                 </div>
 
@@ -765,7 +735,7 @@ const initial = props.siswa.nama
                                 </p>
 
                                 <div
-                                    class="mt-1 rounded-xl bg-slate-50 p-3 text-sm leading-relaxed text-slate-700"
+                                    class="mt-1 rounded-xl bg-pink-50/50 p-3 text-sm leading-relaxed text-slate-700"
                                 >
                                     {{ pemeriksaan1()?.hasil_pemeriksaan || '-' }}
                                 </div>
@@ -811,10 +781,10 @@ const initial = props.siswa.nama
                         >
 
                             <div
-                                class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100"
+                                class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-pink-50"
                             >
                                 <ClipboardDocumentCheckIcon
-                                    class="h-5 w-5 text-slate-400"
+                                    class="h-5 w-5 text-pink-300"
                                 />
                             </div>
 
@@ -845,7 +815,7 @@ const initial = props.siswa.nama
                             <div class="flex items-center gap-3">
 
                                 <div
-                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-100 text-sm font-bold text-purple-700"
+                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100 text-sm font-bold text-rose-700"
                                 >
                                     2
                                 </div>
@@ -909,12 +879,14 @@ const initial = props.siswa.nama
                                 >
 
                                     <CalendarDaysIcon
-                                        class="h-4 w-4 text-slate-400"
+                                        class="h-4 w-4 text-pink-500"
                                     />
 
-                                    {{ formatDate(
-                                        pemeriksaan2()?.tanggal_pemeriksaan
-                                    ) }}
+                                    {{
+                                        formatDate(
+                                            pemeriksaan2()?.tanggal_pemeriksaan
+                                        )
+                                    }}
 
                                 </div>
 
@@ -928,7 +900,7 @@ const initial = props.siswa.nama
                                 </p>
 
                                 <div
-                                    class="mt-1 rounded-xl bg-slate-50 p-3 text-sm leading-relaxed text-slate-700"
+                                    class="mt-1 rounded-xl bg-rose-50/50 p-3 text-sm leading-relaxed text-slate-700"
                                 >
                                     {{ pemeriksaan2()?.hasil_pemeriksaan || '-' }}
                                 </div>
@@ -974,10 +946,10 @@ const initial = props.siswa.nama
                         >
 
                             <div
-                                class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100"
+                                class="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-rose-50"
                             >
                                 <ClipboardDocumentCheckIcon
-                                    class="h-5 w-5 text-slate-400"
+                                    class="h-5 w-5 text-rose-300"
                                 />
                             </div>
 
@@ -999,496 +971,431 @@ const initial = props.siswa.nama
 
         </div>
 
-<!-- ==================================================
-     RIWAYAT KUNJUNGAN KLINIK
-================================================== -->
 
-<div
-    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
->
 
-    <!-- HEADER -->
-    <div
-        class="border-b border-slate-100 px-5 py-5"
-    >
+        <!-- ==================================================
+             RIWAYAT KUNJUNGAN KLINIK
+        ================================================== -->
 
         <div
-            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
-            <div class="flex items-center gap-3">
+            <!-- HEADER -->
+
+            <div
+                class="border-b border-pink-100 px-5 py-5"
+            >
 
                 <div
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50"
+                    class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
-                    <HeartIcon
-                        class="h-5 w-5 text-orange-500"
-                    />
-                </div>
 
-                <div>
+                    <div class="flex items-center gap-3">
 
-                    <h2 class="text-sm font-bold text-slate-800">
-                        Riwayat Kunjungan Klinik
-                    </h2>
+                        <div
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50"
+                        >
+                            <HeartIcon
+                                class="h-5 w-5 text-pink-600"
+                            />
+                        </div>
 
-                    <p class="mt-0.5 text-xs text-slate-400">
-                        Riwayat pelayanan kesehatan siswa
-                    </p>
+                        <div>
+
+                            <h2 class="text-sm font-bold text-slate-800">
+                                Riwayat Kunjungan Klinik
+                            </h2>
+
+                            <p class="mt-0.5 text-xs text-slate-400">
+                                Riwayat pelayanan kesehatan siswa
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <span
+                        class="w-fit rounded-full bg-pink-50 px-3 py-1.5 text-xs font-bold text-pink-700"
+                    >
+                        {{ jumlahKunjungan() }} Kunjungan
+                    </span>
 
                 </div>
 
             </div>
 
-            <span
-                class="w-fit rounded-full bg-orange-50 px-3 py-1.5 text-xs font-bold text-orange-700"
+
+            <!-- TIDAK ADA DATA -->
+
+            <div
+                v-if="!kunjunganKlinik().length"
+                class="px-5 py-16 text-center"
             >
-                {{ jumlahKunjungan() }} Kunjungan
-            </span>
+
+                <div
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pink-50"
+                >
+                    <HeartIcon
+                        class="h-7 w-7 text-pink-300"
+                    />
+                </div>
+
+                <h3 class="mt-4 text-sm font-bold text-slate-700">
+                    Belum ada kunjungan klinik
+                </h3>
+
+                <p
+                    class="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400"
+                >
+                    Belum terdapat riwayat kunjungan klinik
+                    untuk siswa ini pada periode yang ditampilkan.
+                </p>
+
+            </div>
+
+
+            <!-- TABEL -->
+
+            <div
+                v-else
+                class="max-h-[600px] overflow-auto"
+            >
+
+                <table class="min-w-[1450px] w-full">
+
+                    <thead
+                        class="sticky top-0 z-20 bg-pink-50"
+                    >
+
+                        <tr class="border-b border-pink-100">
+
+                            <th
+                                class="sticky left-0 z-30 w-12 bg-pink-50 px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                No
+                            </th>
+
+                            <th
+                                class="min-w-[150px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Tanggal
+                            </th>
+
+                            <th
+                                class="min-w-[150px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Periode
+                            </th>
+
+                            <th
+                                class="min-w-[190px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Keluhan
+                            </th>
+
+                            <th
+                                class="min-w-[190px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Pemeriksaan
+                            </th>
+
+                            <th
+                                class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Diagnosis
+                            </th>
+
+                            <th
+                                class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Tindakan
+                            </th>
+
+                            <th
+                                class="min-w-[200px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Catatan
+                            </th>
+
+                            <th
+                                class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Obat
+                            </th>
+
+                            <th
+                                class="min-w-[160px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-pink-500"
+                            >
+                                Pemeriksa
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody class="divide-y divide-slate-100">
+
+                        <tr
+                            v-for="(kunjungan, index) in kunjunganKlinik()"
+                            :key="kunjungan.id"
+                            class="transition hover:bg-pink-50/40"
+                        >
+
+                            <!-- NO -->
+
+                            <td
+                                class="sticky left-0 z-10 bg-white px-4 py-3 text-center"
+                            >
+
+                                <span
+                                    class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-pink-50 text-xs font-bold text-pink-700"
+                                >
+                                    {{ index + 1 }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- TANGGAL -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <div class="flex items-start gap-2">
+
+                                    <CalendarDaysIcon
+                                        class="mt-0.5 h-4 w-4 shrink-0 text-pink-500"
+                                    />
+
+                                    <div>
+
+                                        <p
+                                            class="text-xs font-semibold text-slate-700"
+                                        >
+                                            {{
+                                                formatDate(
+                                                    tanggalKunjungan(kunjungan)
+                                                )
+                                            }}
+                                        </p>
+
+                                        <p
+                                            class="mt-0.5 text-[10px] text-slate-400"
+                                        >
+                                            {{
+                                                formatDateTime(
+                                                    tanggalKunjungan(kunjungan)
+                                                ).split(' pukul ')[1] || ''
+                                            }}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- PERIODE -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <span
+                                    class="inline-flex rounded-lg bg-pink-50 px-2.5 py-1.5 text-[11px] font-semibold text-pink-700"
+                                >
+                                    {{
+                                        kunjungan.periode?.nama_periode
+                                        || '-'
+                                    }}
+                                </span>
+
+                            </td>
+
+
+                            <!-- KELUHAN -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <p
+                                    class="line-clamp-2 text-xs leading-relaxed text-slate-700"
+                                    :title="kunjungan.keluhan || '-'"
+                                >
+                                    {{ kunjungan.keluhan || '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- PEMERIKSAAN -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <p
+                                    class="line-clamp-2 text-xs leading-relaxed text-slate-700"
+                                    :title="kunjungan.pemeriksaan || '-'"
+                                >
+                                    {{ kunjungan.pemeriksaan || '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- DIAGNOSIS -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <p
+                                    class="line-clamp-2 text-xs font-semibold leading-relaxed text-slate-700"
+                                    :title="kunjungan.diagnosis || '-'"
+                                >
+                                    {{ kunjungan.diagnosis || '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- TINDAKAN -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <p
+                                    class="line-clamp-2 text-xs leading-relaxed text-slate-700"
+                                    :title="kunjungan.tindakan || '-'"
+                                >
+                                    {{ kunjungan.tindakan || '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- CATATAN -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <p
+                                    class="line-clamp-2 text-xs leading-relaxed text-slate-600"
+                                    :title="kunjungan.catatan || '-'"
+                                >
+                                    {{ kunjungan.catatan || '-' }}
+                                </p>
+
+                            </td>
+
+
+                            <!-- OBAT -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <div
+                                    v-if="obatKunjungan(kunjungan).length"
+                                    class="space-y-1.5"
+                                >
+
+                                    <div
+                                        v-for="obat in obatKunjungan(kunjungan)"
+                                        :key="obat.id"
+                                        class="flex items-center justify-between gap-2"
+                                    >
+
+                                        <span
+                                            class="text-xs font-semibold text-slate-700"
+                                        >
+                                            {{
+                                                obat.nama_obat
+                                                || obat.obat?.nama_obat
+                                                || '-'
+                                            }}
+                                        </span>
+
+                                        <span
+                                            class="shrink-0 rounded-md bg-pink-50 px-1.5 py-0.5 text-[10px] font-bold text-pink-700"
+                                        >
+                                            {{ obat.jumlah || 0 }}
+                                            {{
+                                                obat.satuan
+                                                || obat.obat?.satuan
+                                                || ''
+                                            }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <span
+                                    v-else
+                                    class="text-xs text-slate-400"
+                                >
+                                    -
+                                </span>
+
+                            </td>
+
+
+                            <!-- PEMERIKSA -->
+
+                            <td class="px-4 py-3 align-top">
+
+                                <div class="flex items-center gap-2">
+
+                                    <div
+                                        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pink-50"
+                                    >
+
+                                        <UserCircleIcon
+                                            class="h-4 w-4 text-pink-600"
+                                        />
+
+                                    </div>
+
+                                    <p
+                                        class="text-xs font-semibold text-slate-700"
+                                    >
+                                        {{
+                                            kunjungan.pemeriksa?.name
+                                            || kunjungan.pemeriksa?.nama
+                                            || '-'
+                                        }}
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div
+                v-if="kunjunganKlinik().length"
+                class="flex flex-wrap items-center justify-between gap-2 border-t border-pink-100 bg-pink-50/40 px-5 py-3"
+            >
+
+                <p class="text-[10px] text-slate-400">
+                    Menampilkan {{ jumlahKunjungan() }} riwayat kunjungan
+                </p>
+
+                <p class="text-[10px] text-slate-400">
+                    Geser tabel ke samping atau ke bawah untuk melihat data lainnya
+                </p>
+
+            </div>
 
         </div>
 
-    </div>
-
-
-    <!-- ==================================================
-         TIDAK ADA DATA
-         PAKAI v-if SENDIRI
-    ================================================== -->
-
-    <div
-        v-if="!kunjunganKlinik().length"
-        class="px-5 py-16 text-center"
-    >
-
-        <div
-            class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100"
-        >
-            <HeartIcon
-                class="h-7 w-7 text-slate-400"
-            />
-        </div>
-
-        <h3 class="mt-4 text-sm font-bold text-slate-700">
-            Belum ada kunjungan klinik
-        </h3>
-
-        <p
-            class="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-400"
-        >
-            Belum terdapat riwayat kunjungan klinik
-            untuk siswa ini pada periode yang ditampilkan.
-        </p>
-
-    </div>
-
-<!-- ==================================================
-     TABEL RIWAYAT KUNJUNGAN
-================================================== -->
-
-<div
-    v-else
-    class="max-h-[600px] overflow-auto"
->
-
-    <table class="min-w-[1450px] w-full">
-
-        <!-- HEADER -->
-
-        <thead
-            class="sticky top-0 z-20 bg-slate-50"
-        >
-
-            <tr class="border-b border-slate-200">
-
-                <!-- NO -->
-
-                <th
-                    class="sticky left-0 z-30 w-12 bg-slate-50 px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    No
-                </th>
-
-
-                <!-- TANGGAL -->
-
-                <th
-                    class="min-w-[150px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Tanggal
-                </th>
-
-
-                <!-- PERIODE -->
-
-                <th
-                    class="min-w-[150px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Periode
-                </th>
-
-
-                <!-- KELUHAN -->
-
-                <th
-                    class="min-w-[190px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Keluhan
-                </th>
-
-
-                <!-- PEMERIKSAAN -->
-
-                <th
-                    class="min-w-[190px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Pemeriksaan
-                </th>
-
-
-                <!-- DIAGNOSIS -->
-
-                <th
-                    class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Diagnosis
-                </th>
-
-
-                <!-- TINDAKAN -->
-
-                <th
-                    class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Tindakan
-                </th>
-
-
-                <!-- CATATAN -->
-
-                <th
-                    class="min-w-[200px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Catatan
-                </th>
-
-
-                <!-- OBAT -->
-
-                <th
-                    class="min-w-[180px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Obat
-                </th>
-
-
-
-                <!-- PEMERIKSA -->
-
-                <th
-                    class="min-w-[160px] px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                >
-                    Pemeriksa
-                </th>
-
-            </tr>
-
-        </thead>
-
-
-
-        <!-- BODY -->
-
-        <tbody class="divide-y divide-slate-100">
-
-            <tr
-                v-for="(kunjungan, index) in kunjunganKlinik()"
-                :key="kunjungan.id"
-                class="transition hover:bg-orange-50/40"
-            >
-
-                <!-- NO -->
-
-                <td
-                    class="sticky left-0 z-10 bg-white px-4 py-3 text-center"
-                >
-
-                    <span
-                        class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-orange-50 text-xs font-bold text-orange-700"
-                    >
-                        {{ index + 1 }}
-                    </span>
-
-                </td>
-
-
-
-                <!-- TANGGAL -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <div class="flex items-start gap-2">
-
-                        <CalendarDaysIcon
-                            class="mt-0.5 h-4 w-4 shrink-0 text-slate-400"
-                        />
-
-                        <div>
-
-                            <p
-                                class="text-xs font-semibold text-slate-700"
-                            >
-                                {{
-                                    formatDate(
-                                        tanggalKunjungan(kunjungan)
-                                    )
-                                }}
-                            </p>
-
-                            <p
-                                class="mt-0.5 text-[10px] text-slate-400"
-                            >
-                                {{
-                                    formatDateTime(
-                                        tanggalKunjungan(kunjungan)
-                                    ).split(' pukul ')[1] || ''
-                                }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </td>
-
-
-
-                <!-- PERIODE -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <span
-                        class="inline-flex rounded-lg bg-blue-50 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700"
-                    >
-                        {{
-                            kunjungan.periode?.nama_periode
-                            || '-'
-                        }}
-                    </span>
-
-                </td>
-
-
-
-                <!-- KELUHAN -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <p
-                        class="line-clamp-2 text-xs leading-relaxed text-slate-700"
-                        :title="kunjungan.keluhan || '-'"
-                    >
-                        {{ kunjungan.keluhan || '-' }}
-                    </p>
-
-                </td>
-
-
-
-                <!-- PEMERIKSAAN -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <p
-                        class="line-clamp-2 text-xs leading-relaxed text-slate-700"
-                        :title="kunjungan.pemeriksaan || '-'"
-                    >
-                        {{ kunjungan.pemeriksaan || '-' }}
-                    </p>
-
-                </td>
-
-
-
-                <!-- DIAGNOSIS -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <p
-                        class="line-clamp-2 text-xs font-semibold leading-relaxed text-slate-700"
-                        :title="kunjungan.diagnosis || '-'"
-                    >
-                        {{ kunjungan.diagnosis || '-' }}
-                    </p>
-
-                </td>
-
-
-
-                <!-- TINDAKAN -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <p
-                        class="line-clamp-2 text-xs leading-relaxed text-slate-700"
-                        :title="kunjungan.tindakan || '-'"
-                    >
-                        {{ kunjungan.tindakan || '-' }}
-                    </p>
-
-                </td>
-
-
-
-                <!-- CATATAN -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <p
-                        class="line-clamp-2 text-xs leading-relaxed text-slate-600"
-                        :title="kunjungan.catatan || '-'"
-                    >
-                        {{ kunjungan.catatan || '-' }}
-                    </p>
-
-                </td>
-
-
-
-                <!-- OBAT -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <div
-                        v-if="obatKunjungan(kunjungan).length"
-                        class="space-y-1.5"
-                    >
-
-                        <div
-                            v-for="obat in obatKunjungan(kunjungan)"
-                            :key="obat.id"
-                            class="flex items-center justify-between gap-2"
-                        >
-
-                            <span
-                                class="text-xs font-semibold text-slate-700"
-                            >
-                                {{
-                                    obat.nama_obat
-                                    || obat.obat?.nama_obat
-                                    || '-'
-                                }}
-                            </span>
-
-                            <span
-                                class="shrink-0 rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700"
-                            >
-                                {{ obat.jumlah || 0 }}
-                                {{
-                                    obat.satuan
-                                    || obat.obat?.satuan
-                                    || ''
-                                }}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    <span
-                        v-else
-                        class="text-xs text-slate-400"
-                    >
-                        -
-                    </span>
-
-                </td>
-
-
-
-
-                <!-- PEMERIKSA -->
-
-                <td
-                    class="px-4 py-3 align-top"
-                >
-
-                    <div class="flex items-center gap-2">
-
-                        <div
-                            class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50"
-                        >
-
-                            <UserCircleIcon
-                                class="h-4 w-4 text-blue-600"
-                            />
-
-                        </div>
-
-                        <p
-                            class="text-xs font-semibold text-slate-700"
-                        >
-                            {{
-                                kunjungan.pemeriksa?.name
-                                || kunjungan.pemeriksa?.nama
-                                || '-'
-                            }}
-                        </p>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        </tbody>
-
-    </table>
-
-</div>
-
-
-
-<!-- FOOTER -->
-
-<div
-    v-if="kunjunganKlinik().length"
-    class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-slate-50 px-5 py-3"
->
-
-    <p class="text-[10px] text-slate-400">
-        Menampilkan {{ jumlahKunjungan() }} riwayat kunjungan
-    </p>
-
-    <p class="text-[10px] text-slate-400">
-        Geser tabel ke samping atau ke bawah untuk melihat data lainnya
-    </p>
-
-</div>
-  
-
-
-</div>
 
 
         <!-- ==================================================
-             FOOTER
+             FOOTER INFORMATION
         ================================================== -->
 
         <div
@@ -1501,5 +1408,4 @@ const initial = props.siswa.nama
     </div>
 
 </KlinikLayout>
-
 </template>

@@ -70,7 +70,7 @@ const props = defineProps({
 
                 <Link
                     :href="route('klinik.penyakit.index')"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-pink-50 hover:text-pink-700"
                 >
 
                     <ArrowLeftIcon
@@ -89,7 +89,7 @@ const props = defineProps({
                         'klinik.penyakit.edit',
                         props.penyakit.id
                     )"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700"
                 >
 
                     <PencilSquareIcon
@@ -110,7 +110,7 @@ const props = defineProps({
         ================================================== -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
 
@@ -119,7 +119,7 @@ const props = defineProps({
             ================================================== -->
 
             <div
-                class="border-b border-slate-100 px-6 py-6"
+                class="border-b border-pink-100 bg-gradient-to-r from-pink-50/70 to-white px-6 py-6"
             >
 
                 <div
@@ -130,11 +130,11 @@ const props = defineProps({
                     <!-- ICON -->
 
                     <div
-                        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-50"
+                        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100"
                     >
 
                         <ExclamationTriangleIcon
-                            class="h-7 w-7 text-rose-600"
+                            class="h-7 w-7 text-pink-600"
                         />
 
                     </div>
@@ -147,7 +147,7 @@ const props = defineProps({
                     >
 
                         <p
-                            class="text-xs font-bold uppercase tracking-wider text-rose-500"
+                            class="text-xs font-bold uppercase tracking-wider text-pink-500"
                         >
                             Data Penyakit
                         </p>
@@ -195,7 +195,7 @@ const props = defineProps({
                 ================================================== -->
 
                 <div
-                    class="rounded-xl border border-slate-200 bg-slate-50/60 p-5"
+                    class="rounded-xl border border-pink-100 bg-pink-50/30 p-5 transition hover:border-pink-200 hover:bg-pink-50/50"
                 >
 
                     <div
@@ -203,11 +203,11 @@ const props = defineProps({
                     >
 
                         <div
-                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-100"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-100"
                         >
 
                             <ExclamationTriangleIcon
-                                class="h-4 w-4 text-rose-600"
+                                class="h-4 w-4 text-pink-600"
                             />
 
                         </div>
@@ -245,7 +245,7 @@ const props = defineProps({
                 ================================================== -->
 
                 <div
-                    class="rounded-xl border border-slate-200 bg-slate-50/60 p-5"
+                    class="rounded-xl border border-pink-100 bg-pink-50/30 p-5 transition hover:border-pink-200 hover:bg-pink-50/50"
                 >
 
                     <div
@@ -253,11 +253,11 @@ const props = defineProps({
                     >
 
                         <div
-                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg bg-pink-100"
                         >
 
                             <InformationCircleIcon
-                                class="h-4 w-4 text-blue-600"
+                                class="h-4 w-4 text-pink-600"
                             />
 
                         </div>
@@ -274,7 +274,7 @@ const props = defineProps({
 
                             <span
                                 v-if="props.penyakit.kategori"
-                                class="mt-1 inline-flex items-center rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700"
+                                class="mt-1 inline-flex items-center rounded-lg bg-pink-100 px-2.5 py-1 text-xs font-bold text-pink-700"
                             >
 
                                 {{ props.penyakit.kategori }}
@@ -301,7 +301,7 @@ const props = defineProps({
                 ================================================== -->
 
                 <div
-                    class="md:col-span-2 rounded-xl border border-slate-200 bg-white p-5"
+                    class="rounded-xl border border-pink-100 bg-white p-5 md:col-span-2"
                 >
 
                     <div
@@ -309,11 +309,11 @@ const props = defineProps({
                     >
 
                         <div
-                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50"
                         >
 
                             <InformationCircleIcon
-                                class="h-4 w-4 text-slate-600"
+                                class="h-4 w-4 text-pink-600"
                             />
 
                         </div>
@@ -363,7 +363,7 @@ const props = defineProps({
             ================================================== -->
 
             <div
-                class="border-t border-slate-100 bg-slate-50/50 px-6 py-5"
+                class="border-t border-pink-100 bg-pink-50/30 px-6 py-5"
             >
 
                 <div
@@ -371,11 +371,11 @@ const props = defineProps({
                 >
 
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                     >
 
                         <InformationCircleIcon
-                            class="h-4 w-4 text-slate-500"
+                            class="h-4 w-4 text-pink-600"
                         />
 
                     </div>
@@ -384,14 +384,14 @@ const props = defineProps({
                     <div>
 
                         <p
-                            class="text-xs font-bold uppercase tracking-wide text-slate-500"
+                            class="text-xs font-bold uppercase tracking-wide text-pink-700"
                         >
                             Informasi Data
                         </p>
 
 
                         <p
-                            class="mt-1 text-xs leading-5 text-slate-400"
+                            class="mt-1 text-xs leading-5 text-slate-500"
                         >
 
                             Data penyakit ini digunakan sebagai referensi
@@ -411,7 +411,7 @@ const props = defineProps({
             ================================================== -->
 
             <div
-                class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-white px-6 py-4 sm:flex-row sm:justify-end"
+                class="flex flex-col-reverse gap-3 border-t border-pink-100 bg-white px-6 py-4 sm:flex-row sm:justify-end"
             >
 
 
@@ -419,7 +419,7 @@ const props = defineProps({
 
                 <Link
                     :href="route('klinik.penyakit.index')"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50 hover:text-pink-700"
                 >
 
                     <ArrowLeftIcon
@@ -438,7 +438,7 @@ const props = defineProps({
                         'klinik.penyakit.edit',
                         props.penyakit.id
                     )"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700"
                 >
 
                     <PencilSquareIcon

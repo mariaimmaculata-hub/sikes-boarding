@@ -726,7 +726,7 @@ function submit() {
                             'klinik.kesehatan.kunjungan.index'
                         )
                     "
-                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-pink-50"
                 >
 
                     <ArrowLeftIcon
@@ -746,7 +746,7 @@ function submit() {
 
             <div
                 v-if="periode"
-                class="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4"
+                class="rounded-2xl border border-pink-100 bg-pink-50 px-5 py-4"
             >
 
                 <div
@@ -754,11 +754,11 @@ function submit() {
                 >
 
                     <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <CalendarDaysIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -767,14 +767,14 @@ function submit() {
                     <div>
 
                         <p
-                            class="text-xs font-semibold uppercase tracking-wide text-blue-500"
+                            class="text-xs font-semibold uppercase tracking-wide text-pink-500"
                         >
                             Periode Aktif
                         </p>
 
 
                         <p
-                            class="mt-0.5 text-sm font-bold text-blue-800"
+                            class="mt-0.5 text-sm font-bold text-pink-800"
                         >
                             {{ periode.nama_periode }}
                         </p>
@@ -792,7 +792,7 @@ function submit() {
 
             <div
                 v-else
-                class="rounded-2xl border border-rose-200 bg-rose-50 p-4"
+                class="rounded-2xl border border-pink-200 bg-pink-50 p-4"
             >
 
                 <div
@@ -800,11 +800,11 @@ function submit() {
                 >
 
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <ExclamationTriangleIcon
-                            class="h-5 w-5 text-rose-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -813,14 +813,14 @@ function submit() {
                     <div>
 
                         <p
-                            class="text-sm font-bold text-rose-800"
+                            class="text-sm font-bold text-pink-800"
                         >
                             Periode aktif tidak ditemukan
                         </p>
 
 
                         <p
-                            class="mt-0.5 text-xs text-rose-600"
+                            class="mt-0.5 text-xs text-pink-600"
                         >
                             Data kunjungan membutuhkan periode aktif.
                             Silakan aktifkan periode terlebih dahulu.
@@ -839,7 +839,7 @@ function submit() {
 
             <div
                 v-if="Object.keys(form.errors).length"
-                class="rounded-2xl border border-rose-200 bg-rose-50 p-4"
+                class="rounded-2xl border border-pink-200 bg-pink-50 p-4"
             >
 
                 <div
@@ -847,11 +847,11 @@ function submit() {
                 >
 
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <ExclamationTriangleIcon
-                            class="h-5 w-5 text-rose-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -860,14 +860,14 @@ function submit() {
                     <div>
 
                         <p
-                            class="text-sm font-bold text-rose-800"
+                            class="text-sm font-bold text-pink-800"
                         >
                             Data belum lengkap
                         </p>
 
 
                         <p
-                            class="mt-0.5 text-xs text-rose-600"
+                            class="mt-0.5 text-xs text-pink-600"
                         >
                             Periksa kembali kolom yang ditandai
                             sebelum menyimpan data.
@@ -879,7 +879,7 @@ function submit() {
                             <p
                                 v-for="(error, field) in form.errors"
                                 :key="field"
-                                class="text-xs font-medium text-rose-700"
+                                class="text-xs font-medium text-pink-700"
                             >
                                 • {{ error }}
                             </p>
@@ -908,11 +908,11 @@ function submit() {
                 ================================================== -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="border-b border-slate-100 px-5 py-4"
+                        class="border-b border-pink-100 px-5 py-4"
                     >
 
                         <div
@@ -920,11 +920,11 @@ function submit() {
                         >
 
                             <div
-                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50"
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50"
                             >
 
                                 <UserIcon
-                                    class="h-5 w-5 text-blue-600"
+                                    class="h-5 w-5 text-pink-600"
                                 />
 
                             </div>
@@ -956,7 +956,7 @@ function submit() {
 
                         <div
                             v-if="selectedSiswa"
-                            class="rounded-xl border border-blue-200 bg-blue-50/60 p-4"
+                            class="rounded-xl border border-pink-200 bg-pink-50/60 p-4"
                         >
 
                             <div
@@ -968,7 +968,7 @@ function submit() {
                                 >
 
                                     <div
-                                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                                     >
                                         {{
                                             selectedSiswa.nama
@@ -1032,7 +1032,7 @@ function submit() {
                                     v-if="!props.siswa"
                                     type="button"
                                     @click="clearSiswa"
-                                    class="shrink-0 rounded-lg px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-100"
+                                    class="shrink-0 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 transition hover:bg-pink-100"
                                 >
                                     Ganti
                                 </button>
@@ -1051,7 +1051,7 @@ function submit() {
                                 class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
                                 Siswa
-                                <span class="text-rose-500">*</span>
+                                <span class="text-pink-500">*</span>
                             </label>
 
 
@@ -1068,7 +1068,7 @@ function submit() {
                                     @blur="closeDropdown"
                                     type="text"
                                     placeholder="Cari nama atau NISN siswa..."
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-pink-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                                 />
 
                             </div>
@@ -1076,7 +1076,7 @@ function submit() {
 
                             <div
                                 v-if="showSiswaDropdown"
-                                class="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+                                class="absolute left-0 right-0 z-30 mt-2 max-h-72 overflow-y-auto rounded-xl border border-pink-100 bg-white shadow-lg"
                             >
 
                                 <button
@@ -1084,11 +1084,11 @@ function submit() {
                                     :key="siswa.id"
                                     type="button"
                                     @mousedown.prevent="selectSiswa(siswa)"
-                                    class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
+                                    class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-pink-50"
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                     >
                                         {{
                                             siswa.nama
@@ -1147,7 +1147,7 @@ function submit() {
 
                         <p
                             v-if="form.errors.siswa_id"
-                            class="mt-1.5 text-xs font-medium text-rose-600"
+                            class="mt-1.5 text-xs font-medium text-pink-600"
                         >
                             {{ form.errors.siswa_id }}
                         </p>
@@ -1162,21 +1162,21 @@ function submit() {
                 ================================================== -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="border-b border-slate-100 px-5 py-4"
+                        class="border-b border-pink-100 px-5 py-4"
                     >
 
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50"
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50"
                             >
 
                                 <CalendarDaysIcon
-                                    class="h-5 w-5 text-blue-600"
+                                    class="h-5 w-5 text-pink-600"
                                 />
 
                             </div>
@@ -1214,11 +1214,11 @@ function submit() {
 
 
                         <div
-                            class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                            class="flex items-center gap-3 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                         >
 
                             <CalendarDaysIcon
-                                class="h-5 w-5 shrink-0 text-blue-600"
+                                class="h-5 w-5 shrink-0 text-pink-600"
                             />
 
 
@@ -1251,11 +1251,11 @@ function submit() {
                 ================================================== -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="border-b border-slate-100 px-5 py-4"
+                        class="border-b border-pink-100 px-5 py-4"
                     >
 
                         <div class="flex items-center gap-3">
@@ -1303,7 +1303,7 @@ function submit() {
                                 class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"
                             >
                                 Keluhan
-                                <span class="text-rose-500">*</span>
+                                <span class="text-pink-500">*</span>
                             </label>
 
 
@@ -1311,13 +1311,13 @@ function submit() {
                                 v-model="form.keluhan"
                                 rows="3"
                                 placeholder="Tuliskan keluhan yang disampaikan siswa..."
-                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full resize-none rounded-xl border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             ></textarea>
 
 
                             <p
                                 v-if="form.errors.keluhan"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
+                                class="mt-1.5 text-xs font-medium text-pink-600"
                             >
                                 {{ form.errors.keluhan }}
                             </p>
@@ -1333,7 +1333,7 @@ function submit() {
                                 class="mb-2 block text-xs font-bold text-slate-600"
                             >
                                 Triase
-                                <span class="text-rose-500">*</span>
+                                <span class="text-pink-500">*</span>
                             </label>
 
 
@@ -1346,7 +1346,7 @@ function submit() {
                                     :class="
                                         form.triase === 'merah'
                                             ? 'border-red-500 bg-red-50 ring-2 ring-red-100'
-                                            : 'border-slate-200 bg-white hover:bg-red-50'
+                                            : 'border-pink-100 bg-white hover:bg-red-50'
                                     "
                                 >
 
@@ -1382,7 +1382,7 @@ function submit() {
                                     :class="
                                         form.triase === 'kuning'
                                             ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-100'
-                                            : 'border-slate-200 bg-white hover:bg-yellow-50'
+                                            : 'border-pink-100 bg-white hover:bg-yellow-50'
                                     "
                                 >
 
@@ -1418,7 +1418,7 @@ function submit() {
                                     :class="
                                         form.triase === 'hijau'
                                             ? 'border-green-500 bg-green-50 ring-2 ring-green-100'
-                                            : 'border-slate-200 bg-white hover:bg-green-50'
+                                            : 'border-pink-100 bg-white hover:bg-green-50'
                                     "
                                 >
 
@@ -1454,7 +1454,7 @@ function submit() {
                                     :class="
                                         form.triase === 'hitam'
                                             ? 'border-slate-700 bg-slate-100 ring-2 ring-slate-200'
-                                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                                            : 'border-pink-100 bg-white hover:bg-pink-50'
                                     "
                                 >
 
@@ -1489,7 +1489,7 @@ function submit() {
 
                             <p
                                 v-if="form.errors.triase"
-                                class="mt-2 text-xs font-medium text-rose-600"
+                                class="mt-2 text-xs font-medium text-pink-600"
                             >
                                 {{ form.errors.triase }}
                             </p>
@@ -1557,13 +1557,13 @@ function submit() {
                                     @blur="closePenyakitDropdown"
                                     type="text"
                                     placeholder="Cari nama penyakit atau kategori..."
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-pink-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                                 />
 
 
                                 <div
                                     v-if="showPenyakitDropdown"
-                                    class="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg"
+                                    class="absolute left-0 right-0 z-40 mt-2 max-h-72 overflow-y-auto rounded-xl border border-pink-100 bg-white shadow-lg"
                                 >
 
                                     <button
@@ -1571,11 +1571,11 @@ function submit() {
                                         :key="penyakit.id"
                                         type="button"
                                         @mousedown.prevent="selectPenyakit(penyakit)"
-                                        class="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-slate-50"
+                                        class="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-pink-50"
                                     >
 
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-pink-600"
                                         >
 
                                             <HeartIcon
@@ -1635,7 +1635,7 @@ function submit() {
 
                             <div
                                 v-if="selectedPenyakit"
-                                class="mt-3 rounded-xl border border-rose-200 bg-rose-50/60 p-4"
+                                class="mt-3 rounded-xl border border-pink-200 bg-pink-50/60 p-4"
                             >
 
                                 <div
@@ -1647,11 +1647,11 @@ function submit() {
                                     >
 
                                         <div
-                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-100"
+                                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100"
                                         >
 
                                             <HeartIcon
-                                                class="h-5 w-5 text-rose-600"
+                                                class="h-5 w-5 text-pink-600"
                                             />
 
                                         </div>
@@ -1689,7 +1689,7 @@ function submit() {
                                     <button
                                         type="button"
                                         @click="clearPenyakit"
-                                        class="shrink-0 rounded-lg px-3 py-2 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
+                                        class="shrink-0 rounded-lg px-3 py-2 text-xs font-semibold text-pink-600 transition hover:bg-pink-100"
                                     >
                                         Ganti
                                     </button>
@@ -1701,7 +1701,7 @@ function submit() {
 
                             <p
                                 v-if="form.errors.penyakit_id"
-                                class="mt-1.5 text-xs font-medium text-rose-600"
+                                class="mt-1.5 text-xs font-medium text-pink-600"
                             >
                                 {{ form.errors.penyakit_id }}
                             </p>
@@ -1724,7 +1724,7 @@ function submit() {
                                 v-model="form.pemeriksaan"
                                 rows="4"
                                 placeholder="Tuliskan hasil pemeriksaan fisik atau kondisi siswa..."
-                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full resize-none rounded-xl border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             ></textarea>
 
                         </div>
@@ -1745,7 +1745,7 @@ function submit() {
                                 v-model="form.tindakan"
                                 rows="3"
                                 placeholder="Tuliskan tindakan atau penanganan yang diberikan..."
-                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full resize-none rounded-xl border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             ></textarea>
 
                         </div>
@@ -1766,7 +1766,7 @@ function submit() {
                                 v-model="form.catatan"
                                 rows="3"
                                 placeholder="Tambahkan catatan lain jika diperlukan..."
-                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full resize-none rounded-xl border border-pink-100 bg-pink-50 px-4 py-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                             ></textarea>
 
                         </div>
@@ -1781,11 +1781,11 @@ function submit() {
                 ================================================== -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="border-b border-slate-100 px-5 py-4"
+                        class="border-b border-pink-100 px-5 py-4"
                     >
 
                         <div class="flex items-center gap-3">
@@ -1831,7 +1831,7 @@ function submit() {
                         ================================================== -->
 
                         <div
-                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                            class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <div
@@ -1851,7 +1851,7 @@ function submit() {
 
                                     <select
                                         v-model="selectedObatId"
-                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                     >
 
                                         <option :value="null">
@@ -1932,7 +1932,7 @@ function submit() {
 
                                                 <p
                                                     v-else
-                                                    class="mt-0.5 text-[11px] text-rose-600"
+                                                    class="mt-0.5 text-[11px] text-pink-600"
                                                 >
                                                     Tidak ada batch aktif.
                                                 </p>
@@ -1964,7 +1964,7 @@ function submit() {
                                         :max="
                                             selectedObat?.total_stok ?? 1
                                         "
-                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                     />
 
                                 </div>
@@ -1985,7 +1985,7 @@ function submit() {
                                         v-model="selectedObatKeterangan"
                                         type="text"
                                         placeholder="Contoh: 3x sehari"
-                                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                     />
 
                                 </div>
@@ -2001,7 +2001,7 @@ function submit() {
                                         type="button"
                                         @click="addObat"
                                         :disabled="!availableObat.length"
-                                        class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                        class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-pink-600 px-3 py-2.5 text-sm font-bold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
 
                                         <PlusIcon
@@ -2019,7 +2019,7 @@ function submit() {
 
                             <p
                                 v-if="obatError"
-                                class="mt-3 text-xs font-medium text-rose-600"
+                                class="mt-3 text-xs font-medium text-pink-600"
                             >
                                 {{ obatError }}
                             </p>
@@ -2033,11 +2033,11 @@ function submit() {
 
                         <div
                             v-if="form.obat.length"
-                            class="overflow-hidden rounded-xl border border-slate-200"
+                            class="overflow-hidden rounded-xl border border-pink-100"
                         >
 
                             <div
-                                class="border-b border-slate-100 bg-slate-50 px-4 py-3"
+                                class="border-b border-pink-100 bg-pink-50 px-4 py-3"
                             >
 
                                 <div
@@ -2168,7 +2168,7 @@ function submit() {
                                             type="number"
                                             min="1"
                                             :max="item.total_stok"
-                                            class="w-24 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                            class="w-24 rounded-lg border border-pink-100 bg-pink-50 px-3 py-2 text-center text-sm font-semibold text-slate-700 outline-none focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                                         />
 
 
@@ -2186,7 +2186,7 @@ function submit() {
                                     <button
                                         type="button"
                                         @click="removeObat(index)"
-                                        class="inline-flex items-center justify-center rounded-lg p-2 text-rose-500 transition hover:bg-rose-50"
+                                        class="inline-flex items-center justify-center rounded-lg p-2 text-pink-500 transition hover:bg-pink-50"
                                         title="Hapus obat"
                                     >
 
@@ -2207,7 +2207,7 @@ function submit() {
 
                         <div
                             v-else
-                            class="rounded-xl border border-dashed border-slate-200 px-5 py-8 text-center"
+                            class="rounded-xl border border-dashed border-pink-100 px-5 py-8 text-center"
                         >
 
                             <BeakerIcon
@@ -2234,7 +2234,7 @@ function submit() {
 
                         <p
                             v-if="form.errors.obat"
-                            class="text-xs font-medium text-rose-600"
+                            class="text-xs font-medium text-pink-600"
                         >
                             {{ form.errors.obat }}
                         </p>
@@ -2258,7 +2258,7 @@ function submit() {
                                 'klinik.kesehatan.kunjungan.index'
                             )
                         "
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                        class="inline-flex items-center justify-center rounded-xl border border-pink-100 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50"
                     >
                         Batal
                     </Link>
@@ -2270,7 +2270,7 @@ function submit() {
                             form.processing ||
                             !canSubmit
                         "
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
 
                         <CheckCircleIcon

@@ -98,11 +98,27 @@ const getError = (field) => {
 
             <div>
 
+                <!-- LABEL -->
+
+                <div
+                    class="flex items-center gap-2 text-xs font-semibold text-pink-500"
+                >
+
+                    <BeakerIcon
+                        class="h-4 w-4"
+                    />
+
+                    Klinik
+
+                </div>
+
+
                 <h1
                     class="mt-1 text-2xl font-bold text-slate-800"
                 >
                     Tambah Obat
                 </h1>
+
 
                 <p
                     class="mt-1 text-sm text-slate-500"
@@ -117,7 +133,7 @@ const getError = (field) => {
 
             <Link
                 :href="route('klinik.obat.index')"
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-pink-50 hover:text-pink-700"
             >
 
                 <ArrowLeftIcon
@@ -176,7 +192,7 @@ const getError = (field) => {
 
         <form
             @submit.prevent="submit"
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
 
@@ -185,7 +201,7 @@ const getError = (field) => {
             ================================================== -->
 
             <div
-                class="border-b border-slate-100 px-6 py-5"
+                class="border-b border-pink-100 px-6 py-5"
             >
 
                 <div
@@ -193,11 +209,11 @@ const getError = (field) => {
                 >
 
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <BeakerIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -287,7 +303,7 @@ const getError = (field) => {
 
                                 getError('nama_obat')
                                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                    : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                             ]"
                         />
 
@@ -335,7 +351,7 @@ const getError = (field) => {
 
                                 getError('satuan')
                                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                    : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                             ]"
                         />
 
@@ -382,7 +398,7 @@ const getError = (field) => {
 
                                 getError('keterangan')
                                     ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                    : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                             ]"
                         ></textarea>
 
@@ -411,7 +427,9 @@ const getError = (field) => {
                      PEMBATAS
                 ================================================== -->
 
-                <div class="border-t border-slate-100"></div>
+                <div
+                    class="border-t border-pink-100"
+                ></div>
 
 
                 <!-- ==================================================
@@ -486,7 +504,7 @@ const getError = (field) => {
                             <div class="relative">
 
                                 <CalendarDaysIcon
-                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-pink-300"
                                 />
 
 
@@ -499,7 +517,7 @@ const getError = (field) => {
 
                                         getError('tanggal_masuk')
                                             ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                            : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                                     ]"
                                 />
 
@@ -545,7 +563,7 @@ const getError = (field) => {
                             <div class="relative">
 
                                 <CalendarDaysIcon
-                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-pink-300"
                                 />
 
 
@@ -559,7 +577,7 @@ const getError = (field) => {
 
                                         getError('tanggal_kadaluarsa')
                                             ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                            : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                            : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                                     ]"
                                 />
 
@@ -609,7 +627,7 @@ const getError = (field) => {
                         <div class="relative">
 
                             <ArchiveBoxIcon
-                                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-pink-300"
                             />
 
 
@@ -625,7 +643,7 @@ const getError = (field) => {
 
                                     getError('jumlah')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                        : 'border-pink-100 focus:border-pink-400 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -712,7 +730,7 @@ const getError = (field) => {
                 ================================================== -->
 
                 <div
-                    class="rounded-xl border border-blue-100 bg-blue-50 p-4"
+                    class="rounded-xl border border-pink-100 bg-pink-50/50 p-4"
                 >
 
                     <div
@@ -720,11 +738,11 @@ const getError = (field) => {
                     >
 
                         <div
-                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                         >
 
                             <BeakerIcon
-                                class="h-4 w-4 text-blue-600"
+                                class="h-4 w-4 text-pink-600"
                             />
 
                         </div>
@@ -735,21 +753,21 @@ const getError = (field) => {
                         >
 
                             <p
-                                class="text-xs font-bold uppercase tracking-wide text-blue-500"
+                                class="text-xs font-bold uppercase tracking-wide text-pink-500"
                             >
                                 Preview
                             </p>
 
 
                             <p
-                                class="mt-1 text-sm font-bold text-blue-800"
+                                class="mt-1 text-sm font-bold text-pink-800"
                             >
                                 {{ form.nama_obat || 'Nama obat' }}
                             </p>
 
 
                             <div
-                                class="mt-2 grid grid-cols-1 gap-1 text-xs text-blue-600 sm:grid-cols-3"
+                                class="mt-2 grid grid-cols-1 gap-1 text-xs text-pink-600 sm:grid-cols-3"
                             >
 
                                 <p>
@@ -801,7 +819,7 @@ const getError = (field) => {
             ================================================== -->
 
             <div
-                class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/50 px-6 py-4 sm:flex-row sm:justify-end"
+                class="flex flex-col-reverse gap-3 border-t border-pink-100 bg-pink-50/30 px-6 py-4 sm:flex-row sm:justify-end"
             >
 
 
@@ -809,7 +827,7 @@ const getError = (field) => {
 
                 <Link
                     :href="route('klinik.obat.index')"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                    class="inline-flex items-center justify-center rounded-xl border border-pink-100 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50 hover:text-pink-700"
                 >
                     Batal
                 </Link>
@@ -820,7 +838,7 @@ const getError = (field) => {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                     <CheckIcon

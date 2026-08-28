@@ -686,7 +686,7 @@ const getTriaseClass = (triase) => {
 
         default:
 
-            return 'bg-slate-50 text-slate-500 border-slate-200'
+            return 'bg-pink-50 text-slate-500 border-pink-100'
 
     }
 
@@ -919,7 +919,7 @@ const topPenyakit = computed(() => {
                 :href="route(
                     'klinik.kesehatan.kunjungan.create'
                 )"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700"
             >
 
                 <ClipboardDocumentCheckIcon
@@ -978,7 +978,7 @@ const topPenyakit = computed(() => {
 
         <div
             v-if="flashError"
-            class="flex items-start justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+            class="flex items-start justify-between gap-4 rounded-xl border border-pink-200 bg-pink-50 px-4 py-3 text-sm text-pink-700"
         >
 
             <div
@@ -986,11 +986,11 @@ const topPenyakit = computed(() => {
             >
 
                 <div
-                    class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-100"
+                    class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-pink-100"
                 >
 
                     <ExclamationTriangleIcon
-                        class="h-4 w-4 text-rose-600"
+                        class="h-4 w-4 text-pink-600"
                     />
 
                 </div>
@@ -999,14 +999,14 @@ const topPenyakit = computed(() => {
                 <div>
 
                     <p
-                        class="font-bold text-rose-800"
+                        class="font-bold text-pink-800"
                     >
                         Terjadi kesalahan
                     </p>
 
 
                     <p
-                        class="mt-0.5 text-xs text-rose-600"
+                        class="mt-0.5 text-xs text-pink-600"
                     >
                         {{ flashError }}
                     </p>
@@ -1019,7 +1019,7 @@ const topPenyakit = computed(() => {
             <button
                 type="button"
                 @click="clearFlash"
-                class="rounded-lg p-1 text-rose-500 transition hover:bg-rose-100"
+                class="rounded-lg p-1 text-pink-500 transition hover:bg-pink-100"
             >
 
                 <XMarkIcon
@@ -1043,7 +1043,7 @@ const topPenyakit = computed(() => {
             <!-- TOTAL KUNJUNGAN -->
 
             <div
-                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
                 <div
@@ -1068,11 +1068,11 @@ const topPenyakit = computed(() => {
 
 
                     <div
-                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <ClipboardDocumentCheckIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -1081,7 +1081,7 @@ const topPenyakit = computed(() => {
 
 
                 <div
-                    class="mt-auto border-t border-slate-100 pt-4"
+                    class="mt-auto border-t border-pink-100 pt-4"
                 >
 
                     <p
@@ -1101,7 +1101,7 @@ const topPenyakit = computed(() => {
                         </span>
 
                         <span
-                            class="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-600"
+                            class="rounded-full bg-pink-50 px-2.5 py-1 text-[10px] font-bold text-pink-600"
                         >
                             Semua Data
                         </span>
@@ -1116,7 +1116,7 @@ const topPenyakit = computed(() => {
             <!-- KUNJUNGAN HARI INI -->
 
             <div
-                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
                 <div
@@ -1154,7 +1154,7 @@ const topPenyakit = computed(() => {
 
 
                 <div
-                    class="mt-auto border-t border-slate-100 pt-4"
+                    class="mt-auto border-t border-pink-100 pt-4"
                 >
 
                     <p
@@ -1189,7 +1189,7 @@ const topPenyakit = computed(() => {
             <!-- DISTRIBUSI PENYAKIT -->
 
             <div
-                class="flex min-h-[210px] flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="flex min-h-[210px] flex-col rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
                 <div
@@ -1214,11 +1214,11 @@ const topPenyakit = computed(() => {
 
 
                     <div
-                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <ClipboardDocumentCheckIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -1248,9 +1248,9 @@ const topPenyakit = computed(() => {
                                     class="h-2.5 w-2.5 shrink-0 rounded-full"
                                     :class="
                                         index === 0
-                                            ? 'bg-blue-500'
+                                            ? 'bg-pink-500'
                                             : index === 1
-                                                ? 'bg-sky-400'
+                                                ? 'bg-pink-400'
                                                 : 'bg-slate-400'
                                     "
                                 ></span>
@@ -1282,9 +1282,9 @@ const topPenyakit = computed(() => {
                                 class="h-full rounded-full transition-all duration-500"
                                 :class="
                                     index === 0
-                                        ? 'bg-blue-500'
+                                        ? 'bg-pink-500'
                                         : index === 1
-                                            ? 'bg-sky-400'
+                                            ? 'bg-pink-400'
                                             : 'bg-slate-400'
                                 "
                                 :style="{
@@ -1301,7 +1301,7 @@ const topPenyakit = computed(() => {
 
                 <div
                     v-else
-                    class="mt-4 flex flex-1 items-center rounded-xl bg-slate-50 p-3"
+                    class="mt-4 flex flex-1 items-center rounded-xl bg-pink-50 p-3"
                 >
 
                     <div
@@ -1343,7 +1343,7 @@ const topPenyakit = computed(() => {
 
                 <div
                     v-if="top3Penyakit.length"
-                    class="mt-auto border-t border-slate-100 pt-3"
+                    class="mt-auto border-t border-pink-100 pt-3"
                 >
 
                     <div
@@ -1376,7 +1376,7 @@ const topPenyakit = computed(() => {
         ================================================== -->
 
         <div
-            class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
@@ -1397,7 +1397,7 @@ const topPenyakit = computed(() => {
                         @input="handleSearch"
                         type="text"
                         placeholder="Cari NISN, nama siswa, atau diagnosis..."
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-pink-100 bg-pink-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                     />
 
                 </div>
@@ -1406,7 +1406,7 @@ const topPenyakit = computed(() => {
                 <select
                     v-model="periodeId"
                     @change="applyFilter"
-                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                 >
 
                     <option value="">
@@ -1433,8 +1433,8 @@ const topPenyakit = computed(() => {
                         'inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition',
 
                         showFilter || tanggal
-                            ? 'border-blue-200 bg-blue-50 text-blue-700'
-                            : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                            ? 'border-pink-200 bg-pink-50 text-pink-700'
+                            : 'border-pink-100 bg-white text-slate-600 hover:bg-pink-50'
 
                     ]"
                 >
@@ -1452,7 +1452,7 @@ const topPenyakit = computed(() => {
 
             <div
                 v-if="showFilter"
-                class="border-t border-slate-100 bg-slate-50/70 px-4 py-4"
+                class="border-t border-pink-100 bg-pink-50/70 px-4 py-4"
             >
 
                 <div
@@ -1474,7 +1474,7 @@ const topPenyakit = computed(() => {
                             v-model="tanggal"
                             @change="applyFilter"
                             type="date"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         />
 
                     </div>
@@ -1507,11 +1507,11 @@ const topPenyakit = computed(() => {
         ================================================== -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="flex flex-col gap-1 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                class="flex flex-col gap-1 border-b border-pink-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
                 <div>
@@ -1534,7 +1534,7 @@ const topPenyakit = computed(() => {
 
                 <div
                     v-if="hasActiveFilter"
-                    class="text-xs font-medium text-blue-600"
+                    class="text-xs font-medium text-pink-600"
                 >
                     Filter aktif
                 </div>
@@ -1557,7 +1557,7 @@ const topPenyakit = computed(() => {
                     <thead>
 
                         <tr
-                            class="border-b border-slate-200 bg-slate-50"
+                            class="border-b border-pink-100 bg-pink-50"
                         >
 
                             <th
@@ -1634,7 +1634,7 @@ const topPenyakit = computed(() => {
                         <tr
                             v-for="(item, index) in kunjungan.data"
                             :key="item.id"
-                            class="transition hover:bg-slate-50"
+                            class="transition hover:bg-pink-50"
                         >
 
                             <td
@@ -1661,7 +1661,7 @@ const topPenyakit = computed(() => {
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                     >
 
                                         {{
@@ -1837,7 +1837,7 @@ const topPenyakit = computed(() => {
                                 >
 
                                     <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700"
+                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700"
                                     >
 
                                         {{
@@ -1874,7 +1874,7 @@ const topPenyakit = computed(() => {
                                         type="button"
                                         title="Lihat detail"
                                         @click="openDetail(item)"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <EyeIcon
@@ -1890,7 +1890,7 @@ const topPenyakit = computed(() => {
                                             item.id
                                         )"
                                         title="Edit"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <PencilSquareIcon
@@ -1904,7 +1904,7 @@ const topPenyakit = computed(() => {
                                         type="button"
                                         title="Hapus"
                                         @click="openDelete(item)"
-                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                        class="rounded-lg p-2 text-slate-400 transition hover:bg-pink-50 hover:text-pink-600"
                                     >
 
                                         <TrashIcon
@@ -1996,7 +1996,7 @@ const topPenyakit = computed(() => {
                         >
 
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700"
                             >
 
                                 {{
@@ -2087,7 +2087,7 @@ const topPenyakit = computed(() => {
 
 
                     <div
-                        class="mt-4 rounded-xl bg-slate-50 p-3"
+                        class="mt-4 rounded-xl bg-pink-50 p-3"
                     >
 
                         <p
@@ -2108,18 +2108,18 @@ const topPenyakit = computed(() => {
 
                     <div
                         v-if="item.penyakit"
-                        class="mt-3 rounded-xl bg-blue-50 p-3"
+                        class="mt-3 rounded-xl bg-pink-50 p-3"
                     >
 
                         <p
-                            class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
+                            class="text-[10px] font-bold uppercase tracking-wide text-pink-500"
                         >
                             Diagnosis
                         </p>
 
 
                         <p
-                            class="mt-1 text-xs font-semibold text-blue-800"
+                            class="mt-1 text-xs font-semibold text-pink-800"
                         >
                             {{ item.penyakit?.nama_penyakit ?? '-' }}
                         </p>
@@ -2127,7 +2127,7 @@ const topPenyakit = computed(() => {
 
                         <p
                             v-if="item.penyakit?.kategori"
-                            class="mt-1 text-[11px] text-blue-600"
+                            class="mt-1 text-[11px] text-pink-600"
                         >
                             {{ item.penyakit.kategori }}
                         </p>
@@ -2193,7 +2193,7 @@ const topPenyakit = computed(() => {
                         <button
                             type="button"
                             @click="openDetail(item)"
-                            class="flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                            class="flex-1 rounded-xl border border-pink-100 px-3 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-pink-50"
                         >
 
                             <span
@@ -2216,7 +2216,7 @@ const topPenyakit = computed(() => {
                                 'klinik.kesehatan.kunjungan.edit',
                                 item.id
                             )"
-                            class="flex-1 rounded-xl bg-blue-600 px-3 py-2.5 text-center text-xs font-bold text-white transition hover:bg-blue-700"
+                            class="flex-1 rounded-xl bg-pink-600 px-3 py-2.5 text-center text-xs font-bold text-white transition hover:bg-pink-700"
                         >
 
                             <span
@@ -2280,7 +2280,7 @@ const topPenyakit = computed(() => {
 
             <div
                 v-if="kunjungan.data?.length"
-                class="flex flex-col gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                class="flex flex-col gap-3 border-t border-pink-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
             >
 
                 <p
@@ -2331,7 +2331,7 @@ const topPenyakit = computed(() => {
                             'min-w-9 rounded-lg px-3 py-2 text-xs font-semibold transition',
 
                             link.active
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-pink-600 text-white'
                                 : link.url
                                     ? 'text-slate-600 hover:bg-slate-100'
                                     : 'cursor-not-allowed text-slate-300'
@@ -2379,7 +2379,7 @@ const topPenyakit = computed(() => {
                     <!-- HEADER -->
 
                     <div
-                        class="flex shrink-0 items-start justify-between border-b border-slate-200 px-6 py-5"
+                        class="flex shrink-0 items-start justify-between border-b border-pink-100 px-6 py-5"
                     >
 
                         <div>
@@ -2451,7 +2451,7 @@ const topPenyakit = computed(() => {
                         >
 
                             <div
-                                class="rounded-xl bg-slate-50 p-4"
+                                class="rounded-xl bg-pink-50 p-4"
                             >
 
                                 <p
@@ -2487,7 +2487,7 @@ const topPenyakit = computed(() => {
 
 
                             <div
-                                class="rounded-xl bg-slate-50 p-4"
+                                class="rounded-xl bg-pink-50 p-4"
                             >
 
                                 <p
@@ -2691,7 +2691,7 @@ const topPenyakit = computed(() => {
 
                                 <div
                                     v-else
-                                    class="rounded-xl bg-slate-50 p-4"
+                                    class="rounded-xl bg-pink-50 p-4"
                                 >
 
                                     <p
@@ -2747,7 +2747,7 @@ const topPenyakit = computed(() => {
                                     <div
                                         v-for="(obat, index) in selectedKunjungan.obat"
                                         :key="obat.id ?? index"
-                                        class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                        class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                                     >
 
                                         <div
@@ -2784,7 +2784,7 @@ const topPenyakit = computed(() => {
 
 
                                             <div
-                                                class="shrink-0 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-blue-600"
+                                                class="shrink-0 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-pink-600"
                                             >
 
                                                 {{ obat.jumlah ?? 0 }}
@@ -2797,7 +2797,7 @@ const topPenyakit = computed(() => {
 
                                         <div
                                             v-if="obat.keterangan"
-                                            class="mt-3 border-t border-slate-200 pt-3"
+                                            class="mt-3 border-t border-pink-100 pt-3"
                                         >
 
                                             <p
@@ -2822,7 +2822,7 @@ const topPenyakit = computed(() => {
 
                                 <div
                                     v-else
-                                    class="rounded-xl bg-slate-50 p-4"
+                                    class="rounded-xl bg-pink-50 p-4"
                                 >
 
                                     <p
@@ -2866,7 +2866,7 @@ const topPenyakit = computed(() => {
                     <!-- FOOTER -->
 
                     <div
-                        class="relative z-20 flex shrink-0 flex-col gap-2 border-t border-slate-200 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+                        class="relative z-20 flex shrink-0 flex-col gap-2 border-t border-pink-100 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
                     >
 
                         <div
@@ -2878,7 +2878,7 @@ const topPenyakit = computed(() => {
                             <button
                                 type="button"
                                 @click.stop="printDetail"
-                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50 hover:text-slate-800"
                             >
 
                                 <PrinterIcon
@@ -2895,7 +2895,7 @@ const topPenyakit = computed(() => {
                             <button
                                 type="button"
                                 @click.stop="downloadPdf"
-                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                                class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-pink-200 bg-pink-50 px-4 py-2.5 text-sm font-semibold text-pink-700 transition hover:bg-pink-100"
                             >
 
                                 <ArrowDownTrayIcon
@@ -2916,7 +2916,7 @@ const topPenyakit = computed(() => {
                             <button
                                 type="button"
                                 @click="closeDetail"
-                                class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                                class="rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50"
                             >
                                 Tutup
                             </button>
@@ -2927,7 +2927,7 @@ const topPenyakit = computed(() => {
                                     'klinik.kesehatan.kunjungan.edit',
                                     selectedKunjungan.id
                                 )"
-                                class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                                class="inline-flex items-center justify-center rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-700"
                             >
                                 Edit Data
                             </Link>
@@ -2969,11 +2969,11 @@ const topPenyakit = computed(() => {
                 >
 
                     <div
-                        class="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50"
+                        class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <ExclamationTriangleIcon
-                            class="h-6 w-6 text-rose-600"
+                            class="h-6 w-6 text-pink-600"
                         />
 
                     </div>
@@ -3013,7 +3013,7 @@ const topPenyakit = computed(() => {
                             type="button"
                             :disabled="deleting"
                             @click="closeDelete"
-                            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+                            class="rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50 disabled:opacity-50"
                         >
                             Batal
                         </button>
@@ -3023,7 +3023,7 @@ const topPenyakit = computed(() => {
                             type="button"
                             :disabled="deleting"
                             @click="deleteKunjungan"
-                            class="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            class="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
                         >
 
                             <svg

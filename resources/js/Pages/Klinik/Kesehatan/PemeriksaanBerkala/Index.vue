@@ -349,7 +349,7 @@ const getStatusClass = (siswa) => {
 
     return getStatus(siswa) === 'selesai'
         ? 'bg-emerald-100 text-emerald-700'
-        : 'bg-rose-100 text-rose-700'
+        : 'bg-pink-100 text-pink-700'
 
 }
 
@@ -1077,8 +1077,8 @@ const clearFlash = () => {
                 class="rounded-xl border px-4 py-3"
                 :class="
                     periodeSelesai
-                        ? 'border-slate-200 bg-slate-50'
-                        : 'border-blue-100 bg-blue-50'
+                        ? 'border-pink-100 bg-pink-50'
+                        : 'border-pink-100 bg-pink-50'
                 "
             >
 
@@ -1087,7 +1087,7 @@ const clearFlash = () => {
                     :class="
                         periodeSelesai
                             ? 'text-slate-500'
-                            : 'text-blue-500'
+                            : 'text-pink-500'
                     "
                 >
                     {{ statusPeriodeLabel }}
@@ -1098,7 +1098,7 @@ const clearFlash = () => {
                     :class="
                         periodeSelesai
                             ? 'text-slate-700'
-                            : 'text-blue-800'
+                            : 'text-pink-800'
                     "
                 >
                     {{ periode.nama_periode }}
@@ -1118,9 +1118,9 @@ const clearFlash = () => {
             class="rounded-2xl border p-5"
             :class="
                 periodeSelesai
-                    ? 'border-slate-200 bg-slate-50'
+                    ? 'border-pink-100 bg-pink-50'
                     : fasePemeriksaan === 1
-                        ? 'border-blue-200 bg-blue-50'
+                        ? 'border-pink-200 bg-pink-50'
                         : 'border-emerald-200 bg-emerald-50'
             "
         >
@@ -1133,7 +1133,7 @@ const clearFlash = () => {
                         periodeSelesai
                             ? 'bg-slate-200'
                             : fasePemeriksaan === 1
-                                ? 'bg-blue-100'
+                                ? 'bg-pink-100'
                                 : 'bg-emerald-100'
                     "
                 >
@@ -1144,7 +1144,7 @@ const clearFlash = () => {
                             periodeSelesai
                                 ? 'text-slate-500'
                                 : fasePemeriksaan === 1
-                                    ? 'text-blue-600'
+                                    ? 'text-pink-600'
                                     : 'text-emerald-600'
                         "
                     />
@@ -1159,7 +1159,7 @@ const clearFlash = () => {
                             periodeSelesai
                                 ? 'text-slate-500'
                                 : fasePemeriksaan === 1
-                                    ? 'text-blue-600'
+                                    ? 'text-pink-600'
                                     : 'text-emerald-600'
                         "
                     >
@@ -1176,7 +1176,7 @@ const clearFlash = () => {
                             periodeSelesai
                                 ? 'text-slate-700'
                                 : fasePemeriksaan === 1
-                                    ? 'text-blue-800'
+                                    ? 'text-pink-800'
                                     : 'text-emerald-800'
                         "
                     >
@@ -1193,7 +1193,7 @@ const clearFlash = () => {
                             periodeSelesai
                                 ? 'text-slate-500'
                                 : fasePemeriksaan === 1
-                                    ? 'text-blue-600'
+                                    ? 'text-pink-600'
                                     : 'text-emerald-600'
                         "
                     >
@@ -1245,22 +1245,22 @@ const clearFlash = () => {
 
         <div
             v-if="flashError"
-            class="flex items-start justify-between gap-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700"
+            class="flex items-start justify-between gap-4 rounded-xl border border-pink-200 bg-pink-50 px-4 py-3 text-sm text-pink-700"
         >
 
             <div class="flex items-start gap-3">
 
                 <ExclamationTriangleIcon
-                    class="mt-0.5 h-5 w-5 text-rose-600"
+                    class="mt-0.5 h-5 w-5 text-pink-600"
                 />
 
                 <div>
 
-                    <p class="font-bold text-rose-800">
+                    <p class="font-bold text-pink-800">
                         Terjadi kesalahan
                     </p>
 
-                    <p class="mt-0.5 text-xs text-rose-600">
+                    <p class="mt-0.5 text-xs text-pink-600">
                         {{ flashError }}
                     </p>
 
@@ -1271,7 +1271,7 @@ const clearFlash = () => {
             <button
                 type="button"
                 @click="clearFlash"
-                class="rounded-lg p-1 text-rose-500 transition hover:bg-rose-100"
+                class="rounded-lg p-1 text-pink-500 transition hover:bg-pink-100"
             >
 
                 <XMarkIcon class="h-4 w-4" />
@@ -1324,7 +1324,7 @@ const clearFlash = () => {
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p class="text-xs font-semibold text-slate-400">
@@ -1339,7 +1339,7 @@ const clearFlash = () => {
 
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p class="text-xs font-semibold text-slate-400">
@@ -1358,7 +1358,7 @@ const clearFlash = () => {
 
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p class="text-xs font-semibold text-slate-400">
@@ -1369,7 +1369,7 @@ const clearFlash = () => {
                         }}
                     </p>
 
-                    <p class="mt-1 text-2xl font-bold text-rose-600">
+                    <p class="mt-1 text-2xl font-bold text-pink-600">
                         {{ jumlahBelumSelesai }}
                     </p>
 
@@ -1383,7 +1383,7 @@ const clearFlash = () => {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white shadow-sm"
             >
 
                 <div
@@ -1400,7 +1400,7 @@ const clearFlash = () => {
                             v-model="search"
                             type="text"
                             placeholder="Cari NISN, nama, kelas, atau jurusan..."
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-pink-100 bg-pink-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                         />
 
                     </div>
@@ -1408,7 +1408,7 @@ const clearFlash = () => {
 
                     <select
                         v-model="statusFilter"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none"
+                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm font-medium text-slate-600 outline-none"
                     >
 
                         <option value="">
@@ -1429,7 +1429,7 @@ const clearFlash = () => {
                     <button
                         type="button"
                         @click="showFilter = !showFilter"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-pink-50"
                     >
 
                         <FunnelIcon class="h-4 w-4" />
@@ -1443,7 +1443,7 @@ const clearFlash = () => {
 
                 <div
                     v-if="showFilter"
-                    class="border-t border-slate-100 bg-slate-50/70 px-4 py-4"
+                    class="border-t border-pink-100 bg-pink-50/70 px-4 py-4"
                 >
 
                     <label
@@ -1454,7 +1454,7 @@ const clearFlash = () => {
 
                     <select
                         v-model="kelasFilter"
-                        class="w-full max-w-xs rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700"
+                        class="w-full max-w-xs rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700"
                     >
 
                         <option value="">
@@ -1495,10 +1495,10 @@ const clearFlash = () => {
             ================================================== -->
 
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
             >
 
-                <div class="border-b border-slate-100 px-5 py-4">
+                <div class="border-b border-pink-100 px-5 py-4">
 
                     <h2 class="text-sm font-bold text-slate-800">
                         Daftar Pemeriksaan Siswa
@@ -1523,7 +1523,7 @@ const clearFlash = () => {
 
                         <thead>
 
-                            <tr class="border-b border-slate-200 bg-slate-50">
+                            <tr class="border-b border-pink-100 bg-pink-50">
 
                                 <th class="px-5 py-3 text-left text-xs font-bold uppercase text-slate-500">
                                     No
@@ -1559,7 +1559,7 @@ const clearFlash = () => {
                                         <button
                                             type="button"
                                             @click.stop="clickBerkala('berkala_1')"
-                                            class="inline-flex items-center gap-1 rounded-lg px-2 py-1 transition hover:bg-blue-50 hover:text-blue-600"
+                                            class="inline-flex items-center gap-1 rounded-lg px-2 py-1 transition hover:bg-pink-50 hover:text-pink-600"
                                         >
 
                                             <span>
@@ -1580,14 +1580,14 @@ const clearFlash = () => {
                                             @mouseleave="leavePopupBerkala"
                                         >
 
-                                            <div class="rounded-xl border border-blue-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5">
+                                            <div class="rounded-xl border border-pink-100 bg-white p-4 text-left shadow-2xl ring-1 ring-black/5">
 
                                                 <div class="flex items-start gap-2">
 
-                                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50">
+                                                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-pink-50">
 
                                                         <CalendarDaysIcon
-                                                            class="h-4 w-4 text-blue-600"
+                                                            class="h-4 w-4 text-pink-600"
                                                         />
 
                                                     </div>
@@ -1699,7 +1699,7 @@ const clearFlash = () => {
                             <tr
                                 v-for="(siswa, index) in filteredSiswas"
                                 :key="siswa.id"
-                                class="transition hover:bg-slate-50"
+                                class="transition hover:bg-pink-50"
                             >
 
                                 <td class="px-5 py-4 text-sm text-slate-500">
@@ -1716,7 +1716,7 @@ const clearFlash = () => {
 
                                     <div class="flex items-center gap-3">
 
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+                                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-pink-100 text-xs font-bold text-pink-700">
 
                                             {{ siswa.nama?.charAt(0)?.toUpperCase() }}
 
@@ -1789,10 +1789,10 @@ const clearFlash = () => {
                                                 }
                                             )
                                         "
-                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 hover:bg-blue-100"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-pink-200 bg-pink-50 px-3 py-2 hover:bg-pink-100"
                                     >
 
-                                        <span class="flex items-center gap-1.5 text-xs font-bold text-blue-700">
+                                        <span class="flex items-center gap-1.5 text-xs font-bold text-pink-700">
 
                                             <ClipboardDocumentCheckIcon class="h-4 w-4" />
 
@@ -1804,7 +1804,7 @@ const clearFlash = () => {
 
                                         </span>
 
-                                        <span class="mt-0.5 text-[10px] text-blue-600">
+                                        <span class="mt-0.5 text-[10px] text-pink-600">
                                             Bisa diisi
                                         </span>
 
@@ -1815,7 +1815,7 @@ const clearFlash = () => {
                                         v-else-if="siswa.berkala_1 && berkala1View"
                                         type="button"
                                         @click="openResultModal(siswa, 'berkala_1')"
-                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 hover:bg-slate-100"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-pink-100 bg-pink-50 px-3 py-2 hover:bg-slate-100"
                                     >
 
                                         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-600">
@@ -1835,7 +1835,7 @@ const clearFlash = () => {
 
                                     <div
                                         v-else
-                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-pink-100 bg-pink-50 px-3 py-2"
                                     >
 
                                         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
@@ -1914,7 +1914,7 @@ const clearFlash = () => {
                                         v-else-if="siswa.berkala_2 && berkala2View"
                                         type="button"
                                         @click="openResultModal(siswa, 'berkala_2')"
-                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 hover:bg-slate-100"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-pink-100 bg-pink-50 px-3 py-2 hover:bg-slate-100"
                                     >
 
                                         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-600">
@@ -1934,7 +1934,7 @@ const clearFlash = () => {
 
                                     <div
                                         v-else
-                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
+                                        class="inline-flex min-w-[115px] flex-col items-center justify-center rounded-xl border border-pink-100 bg-pink-50 px-3 py-2"
                                     >
 
                                         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-500">
@@ -2016,7 +2016,7 @@ const clearFlash = () => {
 
                             <div class="flex items-center gap-3">
 
-                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-700">
 
                                     {{ siswa.nama?.charAt(0)?.toUpperCase() }}
 
@@ -2130,18 +2130,18 @@ const clearFlash = () => {
                                         }
                                     )
                                 "
-                                class="rounded-xl border border-blue-200 bg-blue-50 p-3"
+                                class="rounded-xl border border-pink-200 bg-pink-50 p-3"
                             >
 
-                                <p class="text-[10px] font-bold uppercase text-blue-600">
+                                <p class="text-[10px] font-bold uppercase text-pink-600">
                                     Berkala 1
                                 </p>
 
                                 <div class="mt-1 flex items-center gap-1.5">
 
-                                    <ClipboardDocumentCheckIcon class="h-4 w-4 text-blue-600" />
+                                    <ClipboardDocumentCheckIcon class="h-4 w-4 text-pink-600" />
 
-                                    <span class="text-xs font-bold text-blue-700">
+                                    <span class="text-xs font-bold text-pink-700">
                                         {{
                                             siswa.berkala_1
                                                 ? 'Edit Data'
@@ -2151,7 +2151,7 @@ const clearFlash = () => {
 
                                 </div>
 
-                                <p class="mt-1 text-[10px] text-blue-500">
+                                <p class="mt-1 text-[10px] text-pink-500">
                                     Bisa diisi
                                 </p>
 
@@ -2162,7 +2162,7 @@ const clearFlash = () => {
                                 v-else-if="siswa.berkala_1 && berkala1View"
                                 type="button"
                                 @click="openResultModal(siswa, 'berkala_1')"
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-left hover:bg-slate-100"
+                                class="rounded-xl border border-pink-100 bg-pink-50 p-3 text-left hover:bg-slate-100"
                             >
 
                                 <p class="text-[10px] font-bold uppercase text-slate-500">
@@ -2188,7 +2188,7 @@ const clearFlash = () => {
 
                             <div
                                 v-else
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                                class="rounded-xl border border-pink-100 bg-pink-50 p-3"
                             >
 
                                 <p class="text-[10px] font-bold uppercase text-slate-400">
@@ -2281,7 +2281,7 @@ const clearFlash = () => {
                                 v-else-if="siswa.berkala_2 && berkala2View"
                                 type="button"
                                 @click="openResultModal(siswa, 'berkala_2')"
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-left hover:bg-slate-100"
+                                class="rounded-xl border border-pink-100 bg-pink-50 p-3 text-left hover:bg-slate-100"
                             >
 
                                 <p class="text-[10px] font-bold uppercase text-slate-500">
@@ -2307,7 +2307,7 @@ const clearFlash = () => {
 
                             <div
                                 v-else
-                                class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                                class="rounded-xl border border-pink-100 bg-pink-50 p-3"
                             >
 
                                 <p class="text-[10px] font-bold uppercase text-slate-400">
@@ -2390,7 +2390,7 @@ const clearFlash = () => {
                 ================================================== -->
 
                 <div
-                    class="flex items-start justify-between border-b border-slate-100 bg-white px-6 py-5"
+                    class="flex items-start justify-between border-b border-pink-100 bg-white px-6 py-5"
                 >
 
                     <div class="flex items-center gap-3">
@@ -2452,13 +2452,13 @@ const clearFlash = () => {
                     ================================================== -->
 
                     <div
-                        class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                        class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
                     >
 
                         <div class="flex items-start gap-4">
 
                             <div
-                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-lg font-bold text-blue-700"
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pink-100 text-lg font-bold text-pink-700"
                             >
 
                                 {{
@@ -2535,13 +2535,13 @@ const clearFlash = () => {
                     >
 
                         <div
-                            class="rounded-xl border border-slate-200 bg-white p-4"
+                            class="rounded-xl border border-pink-100 bg-white p-4"
                         >
 
                             <div class="flex items-center gap-3">
 
                                 <CalendarDaysIcon
-                                    class="h-5 w-5 text-blue-500"
+                                    class="h-5 w-5 text-pink-500"
                                 />
 
                                 <div>
@@ -2615,7 +2615,7 @@ const clearFlash = () => {
                         <div class="mb-3 flex items-center gap-2">
 
                             <ScaleIcon
-                                class="h-5 w-5 text-blue-600"
+                                class="h-5 w-5 text-pink-600"
                             />
 
                             <h3 class="text-sm font-bold text-slate-800">
@@ -2632,7 +2632,7 @@ const clearFlash = () => {
                             <!-- BB -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2663,7 +2663,7 @@ const clearFlash = () => {
                             <!-- TB -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2694,7 +2694,7 @@ const clearFlash = () => {
                             <!-- IMT -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2723,7 +2723,7 @@ const clearFlash = () => {
                         <div class="mb-3 flex items-center gap-2">
 
                             <HeartIcon
-                                class="h-5 w-5 text-rose-500"
+                                class="h-5 w-5 text-pink-500"
                             />
 
                             <h3 class="text-sm font-bold text-slate-800">
@@ -2740,7 +2740,7 @@ const clearFlash = () => {
                             <!-- TEKANAN DARAH -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2759,7 +2759,7 @@ const clearFlash = () => {
                             <!-- NADI -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2790,7 +2790,7 @@ const clearFlash = () => {
                             <!-- SUHU -->
 
                             <div
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2847,7 +2847,7 @@ const clearFlash = () => {
 
                             <!-- MATA -->
 
-                            <div class="rounded-xl border border-slate-200 bg-white p-4">
+                            <div class="rounded-xl border border-pink-100 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Mata
@@ -2862,7 +2862,7 @@ const clearFlash = () => {
 
                             <!-- TELINGA -->
 
-                            <div class="rounded-xl border border-slate-200 bg-white p-4">
+                            <div class="rounded-xl border border-pink-100 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Telinga
@@ -2879,7 +2879,7 @@ const clearFlash = () => {
 
                             <div
                                 v-if="'hidung' in selectedPemeriksaan"
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2897,7 +2897,7 @@ const clearFlash = () => {
 
                             <div
                                 v-if="'tenggorokan' in selectedPemeriksaan"
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2913,7 +2913,7 @@ const clearFlash = () => {
 
                             <!-- GIGI -->
 
-                            <div class="rounded-xl border border-slate-200 bg-white p-4">
+                            <div class="rounded-xl border border-pink-100 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Gigi & Mulut
@@ -2930,7 +2930,7 @@ const clearFlash = () => {
 
                             <div
                                 v-if="'kulit' in selectedPemeriksaan"
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -2946,7 +2946,7 @@ const clearFlash = () => {
 
                             <!-- KONDISI UMUM -->
 
-                            <div class="rounded-xl border border-slate-200 bg-white p-4">
+                            <div class="rounded-xl border border-pink-100 bg-white p-4">
 
                                 <p class="text-xs text-slate-400">
                                     Kondisi Umum
@@ -2982,7 +2982,7 @@ const clearFlash = () => {
                         </div>
 
                         <div
-                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                            class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <p
@@ -3015,7 +3015,7 @@ const clearFlash = () => {
                         </div>
 
                         <div
-                            class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                            class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <p
@@ -3044,11 +3044,11 @@ const clearFlash = () => {
                         </h3>
 
                         <div
-                            class="rounded-xl border border-blue-100 bg-blue-50 p-4"
+                            class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <p
-                                class="whitespace-pre-line text-sm leading-6 text-blue-800"
+                                class="whitespace-pre-line text-sm leading-6 text-pink-800"
                             >
                                 {{
                                     displayValue(
@@ -3134,7 +3134,7 @@ const clearFlash = () => {
                             <div
                                 v-for="[key, value] in detailFields"
                                 :key="key"
-                                class="rounded-xl border border-slate-200 bg-white p-4"
+                                class="rounded-xl border border-pink-100 bg-white p-4"
                             >
 
                                 <p class="text-xs text-slate-400">
@@ -3159,7 +3159,7 @@ const clearFlash = () => {
                     ================================================== -->
 
                     <div
-                        class="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        class="mt-6 rounded-xl border border-pink-100 bg-pink-50 p-4"
                     >
 
                         <div class="flex items-center gap-3">
@@ -3209,7 +3209,7 @@ const clearFlash = () => {
                 ================================================== -->
 
                 <div
-                    class="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4"
+                    class="flex items-center justify-between gap-3 border-t border-pink-100 bg-pink-50 px-6 py-4"
                 >
 
                     <Link
@@ -3221,7 +3221,7 @@ const clearFlash = () => {
                             )
                         "
                         :href="editPemeriksaanUrl"
-                        class="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100"
+                        class="inline-flex items-center gap-2 rounded-xl border border-pink-200 bg-pink-50 px-5 py-2.5 text-sm font-semibold text-pink-700 hover:bg-pink-100"
                     >
 
                         <PencilSquareIcon class="h-4 w-4" />

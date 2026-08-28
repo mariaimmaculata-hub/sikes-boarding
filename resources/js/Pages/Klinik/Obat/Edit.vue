@@ -16,7 +16,6 @@ import {
     ArchiveBoxIcon,
     PlusIcon,
     CalendarDaysIcon,
-    TrashIcon,
     CubeIcon,
 } from '@heroicons/vue/24/outline'
 
@@ -355,7 +354,7 @@ const isNearExpired = (tanggal) => {
                     </h1>
 
                     <span
-                        class="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600"
+                        class="rounded-full bg-pink-50 px-3 py-1 text-xs font-bold text-pink-600"
                     >
                         {{ jumlahBatch }} Batch
                     </span>
@@ -375,7 +374,7 @@ const isNearExpired = (tanggal) => {
 
             <Link
                 :href="route('klinik.obat.index')"
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-pink-50 hover:text-pink-700"
             >
 
                 <ArrowLeftIcon
@@ -434,13 +433,13 @@ const isNearExpired = (tanggal) => {
 
         <form
             @submit.prevent="submit"
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <!-- HEADER -->
 
             <div
-                class="border-b border-slate-100 px-6 py-5"
+                class="border-b border-pink-100 px-6 py-5"
             >
 
                 <div
@@ -448,11 +447,11 @@ const isNearExpired = (tanggal) => {
                 >
 
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <BeakerIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -517,7 +516,7 @@ const isNearExpired = (tanggal) => {
 
                             getError('nama_obat')
                                 ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                         ]"
                     />
 
@@ -557,7 +556,7 @@ const isNearExpired = (tanggal) => {
 
                             getError('satuan')
                                 ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                         ]"
                     />
 
@@ -596,7 +595,7 @@ const isNearExpired = (tanggal) => {
 
                             getError('keterangan')
                                 ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+                                : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                         ]"
                     ></textarea>
 
@@ -619,10 +618,11 @@ const isNearExpired = (tanggal) => {
                     class="grid grid-cols-1 gap-4 md:grid-cols-2"
                 >
 
+
                     <!-- TOTAL STOK -->
 
                     <div
-                        class="rounded-xl border border-blue-100 bg-blue-50 p-4"
+                        class="rounded-xl border border-pink-100 bg-pink-50/60 p-4"
                     >
 
                         <div
@@ -630,11 +630,11 @@ const isNearExpired = (tanggal) => {
                         >
 
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100"
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                             >
 
                                 <CubeIcon
-                                    class="h-5 w-5 text-blue-600"
+                                    class="h-5 w-5 text-pink-600"
                                 />
 
                             </div>
@@ -643,13 +643,13 @@ const isNearExpired = (tanggal) => {
                             <div>
 
                                 <p
-                                    class="text-xs font-semibold text-blue-500"
+                                    class="text-xs font-semibold text-pink-500"
                                 >
                                     TOTAL STOK
                                 </p>
 
                                 <p
-                                    class="mt-1 text-xl font-bold text-blue-800"
+                                    class="mt-1 text-xl font-bold text-pink-800"
                                 >
                                     {{ totalStok }}
                                     {{ form.satuan || '' }}
@@ -665,7 +665,7 @@ const isNearExpired = (tanggal) => {
                     <!-- JUMLAH BATCH -->
 
                     <div
-                        class="rounded-xl border border-emerald-100 bg-emerald-50 p-4"
+                        class="rounded-xl border border-pink-100 bg-pink-50/60 p-4"
                     >
 
                         <div
@@ -673,11 +673,11 @@ const isNearExpired = (tanggal) => {
                         >
 
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100"
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100"
                             >
 
                                 <ArchiveBoxIcon
-                                    class="h-5 w-5 text-emerald-600"
+                                    class="h-5 w-5 text-pink-600"
                                 />
 
                             </div>
@@ -686,13 +686,13 @@ const isNearExpired = (tanggal) => {
                             <div>
 
                                 <p
-                                    class="text-xs font-semibold text-emerald-600"
+                                    class="text-xs font-semibold text-pink-500"
                                 >
                                     JUMLAH BATCH
                                 </p>
 
                                 <p
-                                    class="mt-1 text-xl font-bold text-emerald-800"
+                                    class="mt-1 text-xl font-bold text-pink-800"
                                 >
                                     {{ jumlahBatch }}
                                     Batch
@@ -712,12 +712,12 @@ const isNearExpired = (tanggal) => {
             <!-- FOOTER -->
 
             <div
-                class="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50/50 px-6 py-4 sm:flex-row sm:justify-end"
+                class="flex flex-col-reverse gap-3 border-t border-pink-100 bg-pink-50/30 px-6 py-4 sm:flex-row sm:justify-end"
             >
 
                 <Link
                     :href="route('klinik.obat.index')"
-                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                    class="inline-flex items-center justify-center rounded-xl border border-pink-100 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50 hover:text-pink-700"
                 >
                     Batal
                 </Link>
@@ -726,7 +726,7 @@ const isNearExpired = (tanggal) => {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
 
                     <CheckIcon
@@ -753,13 +753,13 @@ const isNearExpired = (tanggal) => {
         ================================================== -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <!-- BATCH HEADER -->
 
             <div
-                class="flex flex-col gap-4 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
+                class="flex flex-col gap-4 border-b border-pink-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
             >
 
                 <div>
@@ -769,11 +769,11 @@ const isNearExpired = (tanggal) => {
                     >
 
                         <div
-                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50"
+                            class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50"
                         >
 
                             <ArchiveBoxIcon
-                                class="h-5 w-5 text-emerald-600"
+                                class="h-5 w-5 text-pink-600"
                             />
 
                         </div>
@@ -805,7 +805,7 @@ const isNearExpired = (tanggal) => {
                 <button
                     type="button"
                     @click="openBatchForm"
-                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700"
                 >
 
                     <PlusIcon
@@ -825,7 +825,7 @@ const isNearExpired = (tanggal) => {
 
             <div
                 v-if="showBatchForm"
-                class="border-b border-emerald-100 bg-emerald-50/40 px-6 py-6"
+                class="border-b border-pink-100 bg-pink-50/40 px-6 py-6"
             >
 
                 <div
@@ -852,7 +852,7 @@ const isNearExpired = (tanggal) => {
                     <button
                         type="button"
                         @click="closeBatchForm"
-                        class="text-sm font-semibold text-slate-500 hover:text-slate-700"
+                        class="text-sm font-semibold text-slate-500 transition hover:text-pink-600"
                     >
                         Batal
                     </button>
@@ -879,6 +879,7 @@ const isNearExpired = (tanggal) => {
                 <div
                     class="grid grid-cols-1 gap-5 md:grid-cols-3"
                 >
+
 
                     <!-- TANGGAL MASUK -->
 
@@ -909,11 +910,11 @@ const isNearExpired = (tanggal) => {
                                 v-model="batchForm.tanggal_masuk"
                                 type="date"
                                 :class="[
-                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none focus:ring-2',
+                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:ring-2',
 
                                     getBatchError('tanggal_masuk')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-emerald-500 focus:ring-emerald-100'
+                                        : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -960,11 +961,11 @@ const isNearExpired = (tanggal) => {
                                 type="date"
                                 :min="batchForm.tanggal_masuk || undefined"
                                 :class="[
-                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none focus:ring-2',
+                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:ring-2',
 
                                     getBatchError('tanggal_kadaluarsa')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-emerald-500 focus:ring-emerald-100'
+                                        : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -1013,11 +1014,11 @@ const isNearExpired = (tanggal) => {
                                 step="1"
                                 placeholder="Contoh: 100"
                                 :class="[
-                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none focus:ring-2',
+                                    'w-full rounded-xl border bg-white py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:ring-2',
 
                                     getBatchError('jumlah')
                                         ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-100'
-                                        : 'border-slate-200 focus:border-emerald-500 focus:ring-emerald-100'
+                                        : 'border-pink-100 focus:border-pink-500 focus:ring-pink-100'
                                 ]"
                             />
 
@@ -1046,7 +1047,7 @@ const isNearExpired = (tanggal) => {
                         type="button"
                         @click="submitBatch"
                         :disabled="batchForm.processing"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
 
                         <PlusIcon
@@ -1077,11 +1078,11 @@ const isNearExpired = (tanggal) => {
 
                 <div
                     v-if="!props.obat.batches?.length"
-                    class="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center"
+                    class="rounded-xl border border-dashed border-pink-200 bg-pink-50/30 px-6 py-10 text-center"
                 >
 
                     <ArchiveBoxIcon
-                        class="mx-auto h-10 w-10 text-slate-300"
+                        class="mx-auto h-10 w-10 text-pink-200"
                     />
 
                     <p
@@ -1113,7 +1114,7 @@ const isNearExpired = (tanggal) => {
                         <thead>
 
                             <tr
-                                class="border-b border-slate-100"
+                                class="border-b border-pink-100"
                             >
 
                                 <th
@@ -1158,13 +1159,13 @@ const isNearExpired = (tanggal) => {
 
 
                         <tbody
-                            class="divide-y divide-slate-100"
+                            class="divide-y divide-pink-50"
                         >
 
                             <tr
                                 v-for="(batch, index) in props.obat.batches"
                                 :key="batch.id"
-                                class="transition hover:bg-slate-50"
+                                class="transition hover:bg-pink-50/40"
                             >
 
                                 <!-- NOMOR -->
@@ -1187,7 +1188,7 @@ const isNearExpired = (tanggal) => {
                                     >
 
                                         <CalendarDaysIcon
-                                            class="h-4 w-4 text-slate-400"
+                                            class="h-4 w-4 text-pink-400"
                                         />
 
                                         <span
@@ -1254,7 +1255,7 @@ const isNearExpired = (tanggal) => {
                                         class="text-sm font-bold"
                                         :class="
                                             batch.stok > 0
-                                                ? 'text-emerald-600'
+                                                ? 'text-pink-600'
                                                 : 'text-slate-400'
                                         "
                                     >
@@ -1300,7 +1301,7 @@ const isNearExpired = (tanggal) => {
 
                                     <span
                                         v-else
-                                        class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600"
+                                        class="inline-flex rounded-full bg-pink-50 px-2.5 py-1 text-xs font-bold text-pink-600"
                                     >
                                         Aktif
                                     </span>

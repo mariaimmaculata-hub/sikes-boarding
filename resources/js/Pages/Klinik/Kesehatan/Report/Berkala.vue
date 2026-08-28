@@ -492,7 +492,7 @@ function overallLabel(status) {
                     <select
                         :value="periode.id"
                         @change="changePeriode"
-                        class="min-w-[220px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="min-w-[220px] rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option
@@ -566,17 +566,17 @@ function overallLabel(status) {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
             >
 
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <CalendarDaysIcon
-                            class="h-6 w-6 text-blue-600"
+                            class="h-6 w-6 text-pink-600"
                         />
 
                     </div>
@@ -584,13 +584,13 @@ function overallLabel(status) {
                     <div>
 
                         <p
-                            class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
+                            class="text-[10px] font-bold uppercase tracking-wide text-pink-500"
                         >
                             Periode Pemeriksaan
                         </p>
 
                         <p
-                            class="mt-0.5 font-bold text-blue-800"
+                            class="mt-0.5 font-bold text-pink-800"
                         >
                             {{ periode.nama_periode }}
                         </p>
@@ -611,7 +611,7 @@ function overallLabel(status) {
             >
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p
@@ -630,7 +630,7 @@ function overallLabel(status) {
 
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p
@@ -640,7 +640,7 @@ function overallLabel(status) {
                     </p>
 
                     <p
-                        class="mt-2 text-3xl font-bold text-blue-600"
+                        class="mt-2 text-3xl font-bold text-pink-600"
                     >
                         {{ progress1 }}%
                     </p>
@@ -655,7 +655,7 @@ function overallLabel(status) {
 
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p
@@ -680,7 +680,7 @@ function overallLabel(status) {
 
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <p
@@ -711,7 +711,7 @@ function overallLabel(status) {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
                 <div
@@ -729,7 +729,7 @@ function overallLabel(status) {
                         <select
                             v-model="kelasId"
                             @change="applyFilter"
-                            class="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-pink-100 px-4 py-2.5 text-sm outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -760,7 +760,7 @@ function overallLabel(status) {
                     <button
                         type="button"
                         @click="resetFilter"
-                        class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                        class="rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-pink-50"
                     >
                         Reset
                     </button>
@@ -775,13 +775,13 @@ function overallLabel(status) {
             ================================================== -->
 
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
             >
 
                 <!-- HEADER TABLE -->
 
                 <div
-                    class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
+                    class="flex flex-col gap-3 border-b border-pink-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
                 >
 
                     <div>
@@ -825,7 +825,7 @@ function overallLabel(status) {
                         <button
                             type="button"
                             @click="downloadPdf"
-                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                            class="inline-flex items-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-pink-50"
                         >
 
                             <ArrowDownTrayIcon
@@ -872,7 +872,7 @@ function overallLabel(status) {
 >
 
                         <thead
-    class="border-b border-slate-100 bg-slate-50"
+    class="border-b border-pink-100 bg-pink-50"
 >
     <tr>
 
@@ -892,7 +892,7 @@ function overallLabel(status) {
 
         <!-- B1 -->
         <th
-            class="w-[17%] px-4 py-3 text-[11px] font-bold uppercase text-blue-500"
+            class="w-[17%] px-4 py-3 text-[11px] font-bold uppercase text-pink-500"
         >
             Berkala 1
         </th>
@@ -929,7 +929,7 @@ function overallLabel(status) {
                             <tr
                                 v-for="item in siswa"
                                 :key="item.id"
-                                class="hover:bg-slate-50/70"
+                                class="hover:bg-pink-50/70"
                             >
 
                                 <!-- SISWA -->
@@ -1099,7 +1099,7 @@ function overallLabel(status) {
                                             v-if="item.berkala_1"
                                             type="button"
                                             @click="openB1(item)"
-                                            class="rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                                            class="rounded-lg bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700 hover:bg-pink-100"
                                         >
                                             B1
                                         </button>
@@ -1159,13 +1159,13 @@ function overallLabel(status) {
                     <!-- HEADER -->
 
                     <div
-                        class="flex items-start justify-between border-b border-slate-100 px-6 py-5"
+                        class="flex items-start justify-between border-b border-pink-100 px-6 py-5"
                     >
 
                         <div>
 
                             <p
-                                class="text-xs font-bold uppercase tracking-wide text-blue-500"
+                                class="text-xs font-bold uppercase tracking-wide text-pink-500"
                             >
                                 {{
                                     formatJenis(
@@ -1308,7 +1308,7 @@ function overallLabel(status) {
                                 class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3"
                             >
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Berat Badan
@@ -1332,7 +1332,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Tinggi Badan
@@ -1357,7 +1357,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         IMT
@@ -1387,7 +1387,7 @@ function overallLabel(status) {
                                 class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3"
                             >
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Tekanan Darah
@@ -1403,7 +1403,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Denyut Nadi
@@ -1428,7 +1428,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Suhu Tubuh
@@ -1467,7 +1467,7 @@ function overallLabel(status) {
                                 class="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2"
                             >
 
-                                <div class="rounded-xl border border-slate-100 p-4">
+                                <div class="rounded-xl border border-pink-100 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Mata
@@ -1483,7 +1483,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl border border-slate-100 p-4">
+                                <div class="rounded-xl border border-pink-100 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Telinga
@@ -1499,7 +1499,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl border border-slate-100 p-4">
+                                <div class="rounded-xl border border-pink-100 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Gigi & Mulut
@@ -1515,7 +1515,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl border border-slate-100 p-4">
+                                <div class="rounded-xl border border-pink-100 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Kondisi Umum
@@ -1543,7 +1543,7 @@ function overallLabel(status) {
 
                             <div class="space-y-3">
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Keluhan
@@ -1561,7 +1561,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Hasil Pemeriksaan
@@ -1579,7 +1579,7 @@ function overallLabel(status) {
                                 </div>
 
 
-                                <div class="rounded-xl bg-slate-50 p-4">
+                                <div class="rounded-xl bg-pink-50 p-4">
 
                                     <p class="text-xs text-slate-400">
                                         Rekomendasi
@@ -1626,12 +1626,12 @@ function overallLabel(status) {
                     <!-- FOOTER -->
 
                     <div
-    class="flex shrink-0 justify-between border-t border-slate-100 bg-white px-6 py-4"
+    class="flex shrink-0 justify-between border-t border-pink-100 bg-white px-6 py-4"
 >
                         <button
                             type="button"
                             @click="downloadDetail"
-                            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-blue-700"
+                            class="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-pink-700"
                         >
 
                             <ArrowDownTrayIcon
@@ -1646,7 +1646,7 @@ function overallLabel(status) {
                         <button
                             type="button"
                             @click="closeDetail"
-                            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                            class="rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-pink-50"
                         >
                             Tutup
                         </button>

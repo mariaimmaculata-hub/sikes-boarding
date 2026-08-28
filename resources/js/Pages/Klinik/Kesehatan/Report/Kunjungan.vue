@@ -505,7 +505,7 @@ const obatList = computed(() => {
                     <select
                         :value="periode.id"
                         @change="changePeriode"
-                        class="min-w-[220px] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="min-w-[220px] rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option
@@ -582,7 +582,7 @@ const obatList = computed(() => {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
             >
 
                 <div
@@ -590,11 +590,11 @@ const obatList = computed(() => {
                 >
 
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <CalendarDaysIcon
-                            class="h-6 w-6 text-blue-600"
+                            class="h-6 w-6 text-pink-600"
                         />
 
                     </div>
@@ -602,19 +602,19 @@ const obatList = computed(() => {
                     <div>
 
                         <p
-                            class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
+                            class="text-[10px] font-bold uppercase tracking-wide text-pink-500"
                         >
                             Periode Kesehatan
                         </p>
 
                         <p
-                            class="mt-0.5 font-bold text-blue-800"
+                            class="mt-0.5 font-bold text-pink-800"
                         >
                             {{ periode.nama_periode }}
                         </p>
 
                         <p
-                            class="mt-0.5 text-xs text-blue-600"
+                            class="mt-0.5 text-xs text-pink-600"
                         >
                             {{ formatDate(periode.tanggal_mulai) }}
                             -
@@ -639,7 +639,7 @@ const obatList = computed(() => {
                 <!-- TOTAL KUNJUNGAN -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <div
@@ -669,11 +669,11 @@ const obatList = computed(() => {
                         </div>
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50"
                         >
 
                             <ClipboardDocumentListIcon
-                                class="h-5 w-5 text-blue-600"
+                                class="h-5 w-5 text-pink-600"
                             />
 
                         </div>
@@ -686,7 +686,7 @@ const obatList = computed(() => {
                 <!-- TOTAL SISWA -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <div
@@ -733,7 +733,7 @@ const obatList = computed(() => {
                 <!-- SELESAI -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <div
@@ -780,7 +780,7 @@ const obatList = computed(() => {
                 <!-- RUJUK -->
 
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                 >
 
                     <div
@@ -831,7 +831,7 @@ const obatList = computed(() => {
             ================================================== -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
                 <div
@@ -851,7 +851,7 @@ const obatList = computed(() => {
                         <select
                             v-model="kelasId"
                             @change="applyFilter"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                         >
 
                             <option value="">
@@ -902,7 +902,7 @@ const obatList = computed(() => {
                                 v-model="search"
                                 type="text"
                                 placeholder="Nama, NISN, kelas..."
-                                class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-pink-100 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                             />
 
                         </div>
@@ -919,7 +919,7 @@ const obatList = computed(() => {
                         <button
                             type="button"
                             @click="resetFilter"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50"
                         >
 
                             <ArrowPathIcon
@@ -942,13 +942,13 @@ const obatList = computed(() => {
             ================================================== -->
 
             <div
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
             >
 
                 <!-- TABLE HEADER -->
 
                 <div
-                    class="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
+                    class="flex flex-col gap-3 border-b border-pink-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
                 >
 
                     <div>
@@ -992,7 +992,7 @@ const obatList = computed(() => {
                         <button
                             type="button"
                             @click="downloadPdf"
-                            class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                            class="inline-flex items-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-pink-50"
                         >
 
                             <ArrowDownTrayIcon
@@ -1046,7 +1046,7 @@ const obatList = computed(() => {
                     >
 
                         <thead
-                            class="border-b border-slate-100 bg-slate-50"
+                            class="border-b border-pink-100 bg-pink-50"
                         >
 
                             <tr>
@@ -1111,7 +1111,7 @@ const obatList = computed(() => {
                             <tr
                                 v-for="item in filteredSiswa"
                                 :key="item.id"
-                                class="transition hover:bg-slate-50/70"
+                                class="transition hover:bg-pink-50/70"
                             >
 
                                 <!-- SISWA -->
@@ -1306,7 +1306,7 @@ const obatList = computed(() => {
                                         @click="
                                             openDetail(item)
                                         "
-                                        class="rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
+                                        class="rounded-lg bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700 transition hover:bg-pink-100"
                                     >
                                         Detail
                                     </button>
@@ -1345,7 +1345,7 @@ const obatList = computed(() => {
                     <!-- HEADER -->
 
                     <div
-                        class="flex items-start justify-between border-b border-slate-100 px-6 py-5"
+                        class="flex items-start justify-between border-b border-pink-100 px-6 py-5"
                     >
 
                         <div>
@@ -1355,7 +1355,7 @@ const obatList = computed(() => {
                             >
 
                                 <span
-                                    class="text-xs font-bold uppercase tracking-wide text-blue-500"
+                                    class="text-xs font-bold uppercase tracking-wide text-pink-500"
                                 >
                                     Kunjungan Klinik
                                 </span>
@@ -1429,7 +1429,7 @@ const obatList = computed(() => {
                         >
 
                             <div
-                                class="rounded-xl bg-slate-50 p-4"
+                                class="rounded-xl bg-pink-50 p-4"
                             >
 
                                 <p
@@ -1454,7 +1454,7 @@ const obatList = computed(() => {
 
 
                             <div
-                                class="rounded-xl bg-slate-50 p-4"
+                                class="rounded-xl bg-pink-50 p-4"
                             >
 
                                 <p
@@ -1479,7 +1479,7 @@ const obatList = computed(() => {
 
 
                             <div
-                                class="rounded-xl bg-slate-50 p-4"
+                                class="rounded-xl bg-pink-50 p-4"
                             >
 
                                 <p
@@ -1507,7 +1507,7 @@ const obatList = computed(() => {
                         <!-- PEMERIKSA -->
 
                         <div
-                            class="mb-6 rounded-xl border border-slate-100 p-4"
+                            class="mb-6 rounded-xl border border-pink-100 p-4"
                         >
 
                             <p
@@ -1542,7 +1542,7 @@ const obatList = computed(() => {
                         </h3>
 
                         <div
-                            class="mb-6 rounded-xl bg-slate-50 p-4"
+                            class="mb-6 rounded-xl bg-pink-50 p-4"
                         >
 
                             <p
@@ -1567,7 +1567,7 @@ const obatList = computed(() => {
                         </h3>
 
                         <div
-                            class="mb-6 rounded-xl bg-slate-50 p-4"
+                            class="mb-6 rounded-xl bg-pink-50 p-4"
                         >
 
                             <p
@@ -1592,7 +1592,7 @@ const obatList = computed(() => {
                         </h3>
 
                         <div
-                            class="mb-6 rounded-xl bg-slate-50 p-4"
+                            class="mb-6 rounded-xl bg-pink-50 p-4"
                         >
 
                             <p
@@ -1617,7 +1617,7 @@ const obatList = computed(() => {
                         </h3>
 
                         <div
-                            class="mb-6 rounded-xl bg-slate-50 p-4"
+                            class="mb-6 rounded-xl bg-pink-50 p-4"
                         >
 
                             <p
@@ -1646,7 +1646,7 @@ const obatList = computed(() => {
                             </h3>
 
                             <div
-                                class="mb-6 overflow-hidden rounded-xl border border-slate-100"
+                                class="mb-6 overflow-hidden rounded-xl border border-pink-100"
                             >
 
                                 <table
@@ -1654,7 +1654,7 @@ const obatList = computed(() => {
                                 >
 
                                     <thead
-                                        class="bg-slate-50"
+                                        class="bg-pink-50"
                                     >
 
                                         <tr>
@@ -1773,13 +1773,13 @@ const obatList = computed(() => {
                     <!-- FOOTER -->
 
                     <div
-                        class="flex justify-between border-t border-slate-100 px-6 py-4"
+                        class="flex justify-between border-t border-pink-100 px-6 py-4"
                     >
 
                         <button
                             type="button"
                             @click="downloadDetail"
-                            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700"
+                            class="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-pink-700"
                         >
 
                             <ArrowDownTrayIcon
@@ -1794,7 +1794,7 @@ const obatList = computed(() => {
                         <button
                             type="button"
                             @click="closeDetail"
-                            class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                            class="rounded-xl border border-pink-100 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-pink-50"
                         >
                             Tutup
                         </button>

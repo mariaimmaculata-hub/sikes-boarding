@@ -1,12 +1,11 @@
 <script setup>
 
-import { ref, computed } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Link, usePage, router } from '@inertiajs/vue3'
 import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
     HomeIcon,
-    UserGroupIcon,
     ClipboardDocumentListIcon,
     BookOpenIcon,
     ChartBarIcon,
@@ -19,240 +18,248 @@ import {
 } from '@heroicons/vue/24/outline'
 
 
+// ======================================================
+// PAGE
+// ======================================================
+
 const page = usePage()
 
+const currentUrl = computed(() => page.url)
 
-/*
-|--------------------------------------------------------------------------
-| STATE
-|--------------------------------------------------------------------------
-*/
+
+// ======================================================
+// NOTIFICATION
+// ======================================================
+
+const notificationCount = computed(() =>
+    Number(page.props.notificationCount ?? 0)
+)
+
+let notificationTimer = null
+
+onMounted(() => {
+
+    notificationTimer = window.setInterval(() => {
+
+        router.reload({
+            only: ['notificationCount'],
+            preserveScroll: true,
+            preserveState: true,
+        })
+
+    }, 10000)
+
+})
+
+onBeforeUnmount(() => {
+
+    if (notificationTimer) {
+        window.clearInterval(notificationTimer)
+    }
+
+})
+
+
+// ======================================================
+// STATE
+// ======================================================
 
 const isMobileSidebarOpen = ref(false)
+
 const isProfileDropdownOpen = ref(false)
-const isTksiAccordionOpen = ref(true)
+
+const isTksiAccordionOpen = ref(
+    currentUrl.value.startsWith('/tksi')
+)
 
 
-/*
-|--------------------------------------------------------------------------
-| USER
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// USER
+// ======================================================
 
-const user = computed(() => page.props.auth?.user)
+const user = computed(() =>
+    page.props.auth?.user
+)
 
 
-/*
-|--------------------------------------------------------------------------
-| MOBILE SIDEBAR
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// TOGGLE
+// ======================================================
 
 const toggleMobileSidebar = () => {
-    isMobileSidebarOpen.value = !isMobileSidebarOpen.value
+
+    isMobileSidebarOpen.value =
+        !isMobileSidebarOpen.value
+
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| PROFILE DROPDOWN
-|--------------------------------------------------------------------------
-*/
 
 const toggleProfileDropdown = () => {
+
     isProfileDropdownOpen.value =
         !isProfileDropdownOpen.value
+
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| TKSI ACCORDION
-|--------------------------------------------------------------------------
-*/
 
 const toggleTksiAccordion = () => {
+
     isTksiAccordionOpen.value =
         !isTksiAccordionOpen.value
+
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| ACTIVE ROUTE
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// ACTIVE ROUTE
+// ======================================================
 
-const isActive = (url) => {
-    return page.url === url
+const isActive = (path) => {
+
+    return (
+        currentUrl.value === path ||
+        currentUrl.value.startsWith(`${path}/`)
+    )
+
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| BREADCRUMB
-|--------------------------------------------------------------------------
-*/
+// ======================================================
+// CEK ID / UUID
+// ======================================================
+
+const isIdentifier = (segment) => {
+
+    if (/^\d+$/.test(segment)) {
+        return true
+    }
+
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+    return uuidRegex.test(segment)
+
+}
+
+
+// ======================================================
+// BREADCRUMB MAP
+// ======================================================
+
+const breadcrumbMap = {
+
+    // TKSI
+    tksi: 'TKSI',
+    panduan: 'Panduan TKSI',
+    input: 'Input TKSI',
+    report: 'Report Periode',
+
+    // NOTIFIKASI
+    notifikasi: 'Notifikasi',
+
+    // ACTION
+    create: 'Tambah Data',
+    edit: 'Ubah Data',
+    show: 'Detail',
+
+}
+
+
+// ======================================================
+// BREADCRUMB
+// ======================================================
 
 const breadcrumbs = computed(() => {
 
-    const path = page.url.split('?')[0]
+    const segments = currentUrl.value
+        .split('?')[0]
+        .split('/')
+        .filter(Boolean)
 
-    if (path === '/tksi/dashboard') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-        ]
-    }
-
-    if (path === '/tksi/panduan') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Panduan TKSI',
-                url: '/tksi/panduan',
-            },
-        ]
-    }
-
-    if (path.startsWith('/tksi/panduan/')) {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Panduan TKSI',
-                url: '/tksi/panduan',
-            },
-            {
-                name: 'Detail Panduan',
-                url: path,
-            },
-        ]
-    }
-
-    if (path === '/tksi/input') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Input TKSI',
-                url: '/tksi/input',
-            },
-        ]
-    }
-
-    if (path === '/tksi/input/create') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Input TKSI',
-                url: '/tksi/input',
-            },
-            {
-                name: 'Tambah Data',
-                url: '/tksi/input/create',
-            },
-        ]
-    }
-
-    if (path.startsWith('/tksi/input/')) {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Input TKSI',
-                url: '/tksi/input',
-            },
-            {
-                name: 'Detail TKSI',
-                url: path,
-            },
-        ]
-    }
-
-    if (path === '/tksi/report') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/tksi/dashboard',
-            },
-            {
-                name: 'Report Periode',
-                url: '/tksi/Report',
-            },
-        ]
-    }
-
- /*
-|--------------------------------------------------------------------------
-| NOTIFIKASI
-|--------------------------------------------------------------------------
-*/
-
-if (path === '/notifikasi') {
-    return [
-        {
-            name: 'Dashboard',
-            url: '/tksi/dashboard',
-        },
-        {
-            name: 'Notifikasi',
-            url: '/notifikasi',
-        },
-    ]
-}
-
-/*
-|--------------------------------------------------------------------------
-| DETAIL NOTIFIKASI
-|--------------------------------------------------------------------------
-|
-| URL:
-| /notifikasi/{id}
-|
-| Jangan tampilkan UUID / ID notifikasi.
-| Tampilkan nama halaman "Detail Notifikasi".
-|
-|--------------------------------------------------------------------------
-*/
-
-if (path.startsWith('/notifikasi/')) {
-    return [
-        {
-            name: 'Dashboard',
-            url: '/tksi/dashboard',
-        },
-        {
-            name: 'Notifikasi',
-            url: '/notifikasi',
-        },
-        {
-            name: 'Detail Notifikasi',
-            url: path,
-        },
-    ]
-}
-
-    return [
+    const list = [
         {
             name: 'Dashboard',
             url: '/tksi/dashboard',
         },
     ]
+
+    let currentPath = ''
+
+    for (
+        let index = 0;
+        index < segments.length;
+        index++
+    ) {
+
+        const segment = segments[index]
+
+        currentPath += `/${segment}`
+
+
+        // Jangan tampilkan "tksi"
+        if (segment === 'tksi') {
+            continue
+        }
+
+
+        // Jangan tampilkan dashboard
+        if (segment === 'dashboard') {
+            continue
+        }
+
+
+        // Jangan tampilkan ID / UUID
+        if (isIdentifier(segment)) {
+            continue
+        }
+
+
+        const name =
+            breadcrumbMap[segment] ??
+            segment
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, char =>
+                    char.toUpperCase()
+                )
+
+
+        // Hindari nama breadcrumb duplikat
+        const alreadyExists = list.some(
+            item => item.name === name
+        )
+
+        if (alreadyExists) {
+            continue
+        }
+
+
+        list.push({
+            name,
+            url: currentPath,
+        })
+
+    }
+
+
+    // Notifikasi
+    if (
+        currentUrl.value.startsWith('/notifikasi')
+    ) {
+
+        return [
+            {
+                name: 'Dashboard',
+                url: '/tksi/dashboard',
+            },
+            {
+                name: 'Notifikasi',
+                url: currentUrl.value,
+            },
+        ]
+
+    }
+
+
+    return list
+
 })
 
 </script>
@@ -261,7 +268,7 @@ if (path.startsWith('/notifikasi/')) {
 <template>
 
     <div
-        class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased"
+        class="min-h-screen bg-pink-50/40 flex flex-col font-sans text-slate-800 antialiased"
     >
 
         <!-- ==================================================
@@ -269,7 +276,7 @@ if (path.startsWith('/notifikasi/')) {
         ================================================== -->
 
         <header
-            class="bg-white border-b border-slate-200 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6"
+            class="bg-white border-b border-pink-100 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6 shadow-sm"
         >
 
             <!-- LEFT -->
@@ -281,13 +288,11 @@ if (path.startsWith('/notifikasi/')) {
                 <button
                     type="button"
                     @click="toggleMobileSidebar"
-                    class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none"
+                    class="lg:hidden p-2 rounded-lg text-pink-500 hover:bg-pink-50 focus:outline-none transition"
                     aria-label="Buka menu"
                 >
 
-                    <Bars3Icon
-                        class="w-6 h-6"
-                    />
+                    <Bars3Icon class="w-6 h-6" />
 
                 </button>
 
@@ -299,11 +304,11 @@ if (path.startsWith('/notifikasi/')) {
                 >
 
                     <div
-                        class="bg-blue-900 p-1.5 rounded-lg flex items-center justify-center"
+                        class="bg-pink-600 p-1.5 rounded-lg flex items-center justify-center shadow-sm"
                     >
 
                         <svg
-                            class="w-6 h-6 text-yellow-400"
+                            class="w-6 h-6 text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -319,9 +324,7 @@ if (path.startsWith('/notifikasi/')) {
                     </div>
 
 
-                    <div
-                        class="flex flex-col"
-                    >
+                    <div class="flex flex-col">
 
                         <span
                             class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight leading-tight"
@@ -344,30 +347,27 @@ if (path.startsWith('/notifikasi/')) {
 
             <!-- RIGHT -->
 
-            <div
-                class="flex items-center space-x-4"
-            >
+            <div class="flex items-center space-x-4">
 
                 <!-- NOTIFICATION -->
-<NotificationDropdown />
+
+                <NotificationDropdown />
 
 
                 <!-- PROFILE -->
 
-                <div
-                    class="relative"
-                >
+                <div class="relative">
 
                     <button
                         type="button"
                         @click="toggleProfileDropdown"
-                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none"
+                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-pink-50 transition focus:outline-none"
                     >
 
                         <!-- AVATAR -->
 
                         <div
-                            class="w-8 h-8 rounded-full bg-blue-100 text-blue-900 font-bold flex items-center justify-center text-sm border border-blue-200"
+                            class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center text-sm border border-pink-200"
                         >
 
                             {{
@@ -379,7 +379,7 @@ if (path.startsWith('/notifikasi/')) {
                         </div>
 
 
-                        <!-- NAME -->
+                        <!-- USER NAME -->
 
                         <div
                             class="hidden sm:flex flex-col items-start"
@@ -388,9 +388,11 @@ if (path.startsWith('/notifikasi/')) {
                             <span
                                 class="text-sm font-semibold text-slate-700"
                             >
+
                                 {{
                                     user?.name || 'TKSI'
                                 }}
+
                             </span>
 
                             <span
@@ -426,17 +428,19 @@ if (path.startsWith('/notifikasi/')) {
 
                         <div
                             v-if="isProfileDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50"
+                            class="absolute right-0 mt-2 w-48 bg-white border border-pink-100 rounded-2xl shadow-xl py-2 z-50"
                         >
+
+                            <!-- PROFILE -->
 
                             <Link
                                 href="/profile"
-                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition font-medium"
+                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-pink-50 hover:text-pink-700 transition font-medium"
                                 @click="isProfileDropdownOpen = false"
                             >
 
                                 <UserIcon
-                                    class="w-4 h-4 text-slate-400"
+                                    class="w-4 h-4 text-pink-400"
                                 />
 
                                 <span>
@@ -446,11 +450,13 @@ if (path.startsWith('/notifikasi/')) {
                             </Link>
 
 
+                            <!-- LOGOUT -->
+
                             <Link
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50/50 transition font-bold border-t border-slate-100"
+                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition font-bold border-t border-pink-100"
                             >
 
                                 <svg
@@ -490,36 +496,31 @@ if (path.startsWith('/notifikasi/')) {
              PAGE BODY
         ================================================== -->
 
-        <div
-            class="flex flex-row pt-16 flex-grow"
-        >
+        <div class="flex flex-row pt-16 flex-grow">
+
 
             <!-- ==================================================
                  DESKTOP SIDEBAR
             ================================================== -->
 
             <aside
-                class="bg-blue-950 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-blue-900 shadow-xl overflow-y-auto"
+                class="bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-pink-800 shadow-xl overflow-y-auto"
             >
 
-                <div
-                    class="py-6 px-4"
-                >
+                <div class="py-6 px-4">
 
                     <!-- TITLE -->
 
-                    <div
-                        class="px-3 mb-6"
-                    >
+                    <div class="px-3 mb-6">
 
                         <span
-                            class="text-[10px] font-bold text-blue-300 uppercase tracking-widest block"
+                            class="text-[10px] font-bold text-pink-100 uppercase tracking-widest block"
                         >
                             Menu Navigasi
                         </span>
 
                         <span
-                            class="text-xs text-blue-200/60 font-medium tracking-wide"
+                            class="text-xs text-pink-100/70 font-medium tracking-wide"
                         >
                             TKSI Panel
                         </span>
@@ -529,9 +530,8 @@ if (path.startsWith('/notifikasi/')) {
 
                     <!-- NAV -->
 
-                    <nav
-                        class="space-y-1"
-                    >
+                    <nav class="space-y-1">
+
 
                         <!-- ==================================================
                              DASHBOARD
@@ -542,14 +542,12 @@ if (path.startsWith('/notifikasi/')) {
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/tksi/dashboard')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <HomeIcon
-                                class="w-5 h-5"
-                            />
+                            <HomeIcon class="w-5 h-5" />
 
                             <span>
                                 Dashboard
@@ -569,11 +567,9 @@ if (path.startsWith('/notifikasi/')) {
                                 @click="toggleTksiAccordion"
                                 :class="[
                                     'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                    page.url.startsWith('/tksi/panduan') ||
-                                    page.url.startsWith('/tksi/input') ||
-                                    page.url.startsWith('/tksi/report')
-                                        ? 'text-white bg-blue-900/40'
-                                        : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    currentUrl.startsWith('/tksi')
+                                        ? 'text-white bg-white/15'
+                                        : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                 ]"
                             >
 
@@ -593,7 +589,7 @@ if (path.startsWith('/notifikasi/')) {
 
 
                                 <ChevronRightIcon
-                                    class="w-4 h-4 text-blue-300 transition-transform duration-200"
+                                    class="w-4 h-4 text-pink-100 transition-transform duration-200"
                                     :class="{
                                         'rotate-90':
                                             isTksiAccordionOpen
@@ -616,9 +612,9 @@ if (path.startsWith('/notifikasi/')) {
                                     href="/tksi/panduan"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                        page.url.startsWith('/tksi/panduan')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                        isActive('/tksi/panduan')
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -639,9 +635,9 @@ if (path.startsWith('/notifikasi/')) {
                                     href="/tksi/input"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                        page.url.startsWith('/tksi/input')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                        isActive('/tksi/input')
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -663,8 +659,8 @@ if (path.startsWith('/notifikasi/')) {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/tksi/report')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -692,8 +688,8 @@ if (path.startsWith('/notifikasi/')) {
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/notifikasi')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
@@ -701,9 +697,7 @@ if (path.startsWith('/notifikasi/')) {
                                 class="flex items-center space-x-3"
                             >
 
-                                <BellIcon
-                                    class="w-5 h-5"
-                                />
+                                <BellIcon class="w-5 h-5" />
 
                                 <span>
                                     Notifikasi
@@ -713,9 +707,16 @@ if (path.startsWith('/notifikasi/')) {
 
 
                             <span
-                                class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                v-if="notificationCount > 0"
+                                class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full shadow-sm"
                             >
-                                0
+
+                                {{
+                                    notificationCount > 99
+                                        ? '99+'
+                                        : notificationCount
+                                }}
+
                             </span>
 
                         </Link>
@@ -728,9 +729,11 @@ if (path.startsWith('/notifikasi/')) {
                 <!-- FOOTER -->
 
                 <div
-                    class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50 font-medium"
+                    class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60 font-medium"
                 >
+
                     &copy; 2026 SMKN Jateng Semarang
+
                 </div>
 
             </aside>
@@ -765,7 +768,7 @@ if (path.startsWith('/notifikasi/')) {
                     <!-- DRAWER -->
 
                     <aside
-                        class="relative bg-blue-950 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
+                        class="relative bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
                     >
 
                         <div
@@ -781,13 +784,13 @@ if (path.startsWith('/notifikasi/')) {
                                 <div>
 
                                     <span
-                                        class="text-xs font-bold text-blue-300 uppercase tracking-widest block"
+                                        class="text-xs font-bold text-pink-100 uppercase tracking-widest block"
                                     >
                                         Menu Navigasi
                                     </span>
 
                                     <span
-                                        class="text-[10px] text-blue-200/60"
+                                        class="text-[10px] text-pink-100/70"
                                     >
                                         TKSI Panel
                                     </span>
@@ -798,7 +801,7 @@ if (path.startsWith('/notifikasi/')) {
                                 <button
                                     type="button"
                                     @click="toggleMobileSidebar"
-                                    class="p-1 rounded-lg hover:bg-blue-900 text-white"
+                                    class="p-1 rounded-lg hover:bg-white/10 text-white"
                                 >
 
                                     <XMarkIcon
@@ -812,9 +815,8 @@ if (path.startsWith('/notifikasi/')) {
 
                             <!-- MOBILE NAV -->
 
-                            <nav
-                                class="space-y-1"
-                            >
+                            <nav class="space-y-1">
+
 
                                 <!-- DASHBOARD -->
 
@@ -824,14 +826,12 @@ if (path.startsWith('/notifikasi/')) {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/tksi/dashboard')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10'
                                     ]"
                                 >
 
-                                    <HomeIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <HomeIcon class="w-5 h-5" />
 
                                     <span>
                                         Dashboard
@@ -849,11 +849,9 @@ if (path.startsWith('/notifikasi/')) {
                                         @click="toggleTksiAccordion"
                                         :class="[
                                             'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                            page.url.startsWith('/tksi/panduan') ||
-                                            page.url.startsWith('/tksi/input') ||
-                                            page.url.startsWith('/tksi/report')
-                                                ? 'text-white bg-blue-900/40'
-                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                            currentUrl.startsWith('/tksi')
+                                                ? 'text-white bg-white/15'
+                                                : 'text-pink-50 hover:bg-white/10'
                                         ]"
                                     >
 
@@ -873,7 +871,7 @@ if (path.startsWith('/notifikasi/')) {
 
 
                                         <ChevronRightIcon
-                                            class="w-4 h-4 text-blue-300 transition-transform"
+                                            class="w-4 h-4 text-pink-100 transition-transform"
                                             :class="{
                                                 'rotate-90':
                                                     isTksiAccordionOpen
@@ -897,9 +895,9 @@ if (path.startsWith('/notifikasi/')) {
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                                page.url.startsWith('/tksi/panduan')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                isActive('/tksi/panduan')
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -921,9 +919,9 @@ if (path.startsWith('/notifikasi/')) {
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
-                                                page.url.startsWith('/tksi/input')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                isActive('/tksi/input')
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -946,8 +944,8 @@ if (path.startsWith('/notifikasi/')) {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/tksi/report')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -974,8 +972,8 @@ if (path.startsWith('/notifikasi/')) {
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/notifikasi')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10'
                                     ]"
                                 >
 
@@ -983,9 +981,7 @@ if (path.startsWith('/notifikasi/')) {
                                         class="flex items-center space-x-3"
                                     >
 
-                                        <BellIcon
-                                            class="w-5 h-5"
-                                        />
+                                        <BellIcon class="w-5 h-5" />
 
                                         <span>
                                             Notifikasi
@@ -995,9 +991,16 @@ if (path.startsWith('/notifikasi/')) {
 
 
                                     <span
-                                        class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                        v-if="notificationCount > 0"
+                                        class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                                     >
-                                        0
+
+                                        {{
+                                            notificationCount > 99
+                                                ? '99+'
+                                                : notificationCount
+                                        }}
+
                                     </span>
 
                                 </Link>
@@ -1010,9 +1013,11 @@ if (path.startsWith('/notifikasi/')) {
                         <!-- FOOTER -->
 
                         <div
-                            class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50"
+                            class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60"
                         >
+
                             &copy; 2026 SMKN Jateng Semarang
+
                         </div>
 
                     </aside>
@@ -1043,12 +1048,12 @@ if (path.startsWith('/notifikasi/')) {
 
                         <template
                             v-for="(crumb, idx) in breadcrumbs"
-                            :key="`${crumb.name}-${idx}`"
+                            :key="`${crumb.url}-${idx}`"
                         >
 
                             <span
                                 v-if="idx > 0"
-                                class="text-slate-300"
+                                class="text-pink-200"
                             >
                                 /
                             </span>
@@ -1057,17 +1062,21 @@ if (path.startsWith('/notifikasi/')) {
                             <Link
                                 v-if="idx < breadcrumbs.length - 1"
                                 :href="crumb.url"
-                                class="hover:text-blue-600 transition"
+                                class="hover:text-pink-600 transition"
                             >
+
                                 {{ crumb.name }}
+
                             </Link>
 
 
                             <span
                                 v-else
-                                class="text-slate-800 font-bold"
+                                class="text-pink-700 font-bold"
                             >
+
                                 {{ crumb.name }}
+
                             </span>
 
                         </template>
@@ -1085,7 +1094,7 @@ if (path.startsWith('/notifikasi/')) {
                 <!-- FOOTER -->
 
                 <footer
-                    class="bg-white border-t border-slate-200 py-4 text-center text-xs font-semibold text-slate-400"
+                    class="bg-white border-t border-pink-100 py-4 text-center text-xs font-semibold text-slate-400"
                 >
 
                     &copy; 2026 SMKN Jateng Semarang.

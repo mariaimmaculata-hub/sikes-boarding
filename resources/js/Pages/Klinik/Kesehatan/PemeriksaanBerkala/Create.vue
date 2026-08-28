@@ -299,7 +299,7 @@ const cancel = () => {
 
                     <Link
                         href="/klinik/kesehatan/pemeriksaan-berkala"
-                        class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-blue-700"
+                        class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-pink-100 bg-white text-slate-500 shadow-sm transition hover:bg-pink-50 hover:text-pink-700"
                     >
                         <ArrowLeftIcon class="h-5 w-5" />
                     </Link>
@@ -323,16 +323,16 @@ const cancel = () => {
                 <!-- PERIODE -->
 
                 <div
-                    class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-2.5"
+                    class="rounded-xl border border-pink-100 bg-pink-50 px-4 py-2.5"
                 >
 
                     <div
-                        class="text-[10px] font-bold uppercase tracking-wider text-blue-500"
+                        class="text-[10px] font-bold uppercase tracking-wider text-pink-500"
                     >
                         Periode Aktif
                     </div>
 
-                    <div class="mt-0.5 text-sm font-bold text-blue-900">
+                    <div class="mt-0.5 text-sm font-bold text-pink-900">
                         {{ periode.nama_periode }}
                     </div>
 
@@ -346,15 +346,15 @@ const cancel = () => {
             ================================================== -->
 
             <section
-                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
             >
 
                 <div
-                    class="flex items-center gap-3 border-b border-slate-100 px-5 py-4"
+                    class="flex items-center gap-3 border-b border-pink-100 px-5 py-4"
                 >
 
                     <div
-                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50 text-pink-700"
                     >
                         <UserIcon class="h-5 w-5" />
                     </div>
@@ -450,11 +450,11 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="flex items-center gap-3 border-b border-slate-100 px-5 py-4"
+                        class="flex items-center gap-3 border-b border-pink-100 px-5 py-4"
                     >
 
                         <div
@@ -487,22 +487,22 @@ const cancel = () => {
                                 class="mb-1.5 block text-xs font-bold text-slate-700"
                             >
                                 Tanggal Pemeriksaan
-                                <span class="text-rose-500">*</span>
+                                <span class="text-pink-500">*</span>
                             </label>
 
                             <input
                                 v-model="form.tanggal_pemeriksaan"
                                 type="date"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 :class="{
-                                    'border-rose-300 focus:border-rose-500 focus:ring-rose-50':
+                                    'border-pink-300 focus:border-pink-500 focus:ring-pink-50':
                                         errorFor('tanggal_pemeriksaan')
                                 }"
                             />
 
                             <p
                                 v-if="errorFor('tanggal_pemeriksaan')"
-                                class="mt-1 text-xs font-medium text-rose-500"
+                                class="mt-1 text-xs font-medium text-pink-500"
                             >
                                 {{ errorFor('tanggal_pemeriksaan') }}
                             </p>
@@ -518,12 +518,12 @@ const cancel = () => {
                                 class="mb-1.5 block text-xs font-bold text-slate-700"
                             >
                                 Status Pemeriksaan
-                                <span class="text-rose-500">*</span>
+                                <span class="text-pink-500">*</span>
                             </label>
 
                             <select
                                 v-model="form.status"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             >
 
                                 <option value="belum">
@@ -538,7 +538,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('status')"
-                                class="mt-1 text-xs font-medium text-rose-500"
+                                class="mt-1 text-xs font-medium text-pink-500"
                             >
                                 {{ errorFor('status') }}
                             </p>
@@ -555,10 +555,10 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
-                    <div class="border-b border-slate-100 px-5 py-4">
+                    <div class="border-b border-pink-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Antropometri
@@ -593,7 +593,7 @@ const cancel = () => {
                                     step="0.01"
                                     min="0"
                                     placeholder="Contoh: 55"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -606,7 +606,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('berat_badan')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('berat_badan') }}
                             </p>
@@ -633,7 +633,7 @@ const cancel = () => {
                                     step="0.01"
                                     min="0"
                                     placeholder="Contoh: 168"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -646,7 +646,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('tinggi_badan')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('tinggi_badan') }}
                             </p>
@@ -671,7 +671,7 @@ const cancel = () => {
                                     type="text"
                                     readonly
                                     placeholder="-"
-                                    class="w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 pr-16 text-sm font-semibold text-slate-700 outline-none"
+                                    class="w-full cursor-not-allowed rounded-xl border border-pink-100 bg-pink-50 px-3.5 py-2.5 pr-16 text-sm font-semibold text-slate-700 outline-none"
                                 />
 
                                 <span
@@ -684,7 +684,7 @@ const cancel = () => {
 
                             <p
                                 v-if="kategoriImt"
-                                class="mt-1.5 text-xs font-semibold text-blue-600"
+                                class="mt-1.5 text-xs font-semibold text-pink-600"
                             >
                                 {{ kategoriImt }}
                             </p>
@@ -701,10 +701,10 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
-                    <div class="border-b border-slate-100 px-5 py-4">
+                    <div class="border-b border-pink-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Tanda Vital
@@ -736,7 +736,7 @@ const cancel = () => {
                                     v-model="form.tekanan_darah"
                                     type="text"
                                     placeholder="110/70"
-                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-16 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 px-3.5 py-2.5 pr-16 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -749,7 +749,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('tekanan_darah')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('tekanan_darah') }}
                             </p>
@@ -774,7 +774,7 @@ const cancel = () => {
                                     type="number"
                                     min="0"
                                     placeholder="78"
-                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-14 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 px-3.5 py-2.5 pr-14 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -787,7 +787,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('denyut_nadi')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('denyut_nadi') }}
                             </p>
@@ -813,7 +813,7 @@ const cancel = () => {
                                     min="0"
                                     step="0.1"
                                     placeholder="36.5"
-                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 px-3.5 py-2.5 pr-12 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -826,7 +826,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('suhu_tubuh')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('suhu_tubuh') }}
                             </p>
@@ -853,7 +853,7 @@ const cancel = () => {
                                     max="100"
                                     step="0.1"
                                     placeholder="98"
-                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 pr-10 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                    class="w-full rounded-xl border border-pink-100 px-3.5 py-2.5 pr-10 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 />
 
                                 <span
@@ -866,7 +866,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('saturasi_oksigen')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('saturasi_oksigen') }}
                             </p>
@@ -883,10 +883,10 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
-                    <div class="border-b border-slate-100 px-5 py-4">
+                    <div class="border-b border-pink-100 px-5 py-4">
 
                         <div class="flex items-center gap-3">
 
@@ -929,7 +929,7 @@ const cancel = () => {
 
                             <select
                                 v-model="form.mata"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             >
 
                                 <option value="">
@@ -952,7 +952,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('mata')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('mata') }}
                             </p>
@@ -972,7 +972,7 @@ const cancel = () => {
 
                             <select
                                 v-model="form.telinga"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             >
 
                                 <option value="">
@@ -995,7 +995,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('telinga')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('telinga') }}
                             </p>
@@ -1015,7 +1015,7 @@ const cancel = () => {
 
                             <select
                                 v-model="form.gigi_mulut"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             >
 
                                 <option value="">
@@ -1038,7 +1038,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('gigi_mulut')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('gigi_mulut') }}
                             </p>
@@ -1058,7 +1058,7 @@ const cancel = () => {
 
                             <select
                                 v-model="form.kondisi_umum"
-                                class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             >
 
                                 <option value="">
@@ -1081,7 +1081,7 @@ const cancel = () => {
 
                             <p
                                 v-if="errorFor('kondisi_umum')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('kondisi_umum') }}
                             </p>
@@ -1098,17 +1098,17 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <div
-                        class="border-b border-slate-100 px-5 py-4"
+                        class="border-b border-pink-100 px-5 py-4"
                     >
 
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-50 text-cyan-600"
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50 text-pink-600"
                             >
                                 <ClipboardDocumentCheckIcon class="h-5 w-5" />
                             </div>
@@ -1133,22 +1133,22 @@ const cancel = () => {
                     <div class="p-5">
 
                         <div
-                            class="mb-5 rounded-xl border border-cyan-100 bg-cyan-50 p-4"
+                            class="mb-5 rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <div class="flex items-start gap-3">
 
                                 <InformationCircleIcon
-                                    class="mt-0.5 h-5 w-5 shrink-0 text-cyan-600"
+                                    class="mt-0.5 h-5 w-5 shrink-0 text-pink-600"
                                 />
 
                                 <div>
 
-                                    <p class="text-xs font-bold text-cyan-900">
+                                    <p class="text-xs font-bold text-pink-900">
                                         Pemeriksaan Kebersihan
                                     </p>
 
-                                    <p class="mt-1 text-xs leading-5 text-cyan-700">
+                                    <p class="mt-1 text-xs leading-5 text-pink-700">
                                         Periksa kebersihan secara berurutan mulai dari rambut,
                                         wajah, telinga, hidung, mulut dan gigi, tangan dan kuku,
                                         kulit tubuh, hingga kaki dan kuku.
@@ -1177,7 +1177,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_rambut"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1200,7 +1200,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_rambut')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_rambut') }}
                                 </p>
@@ -1220,7 +1220,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_wajah"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1243,7 +1243,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_wajah')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_wajah') }}
                                 </p>
@@ -1263,7 +1263,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_telinga"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1286,7 +1286,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_telinga')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_telinga') }}
                                 </p>
@@ -1306,7 +1306,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_hidung"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1329,7 +1329,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_hidung')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_hidung') }}
                                 </p>
@@ -1349,7 +1349,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_mulut_gigi"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1372,7 +1372,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_mulut_gigi')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_mulut_gigi') }}
                                 </p>
@@ -1392,7 +1392,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_tangan_kuku"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1415,7 +1415,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_tangan_kuku')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_tangan_kuku') }}
                                 </p>
@@ -1435,7 +1435,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_kulit_badan"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1458,7 +1458,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_kulit_badan')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_kulit_badan') }}
                                 </p>
@@ -1478,7 +1478,7 @@ const cancel = () => {
 
                                 <select
                                     v-model="form.kebersihan_kaki_kuku"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-50"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                                 >
 
                                     <option value="">
@@ -1501,7 +1501,7 @@ const cancel = () => {
 
                                 <p
                                     v-if="errorFor('kebersihan_kaki_kuku')"
-                                    class="mt-1 text-xs text-rose-500"
+                                    class="mt-1 text-xs text-pink-500"
                                 >
                                     {{ errorFor('kebersihan_kaki_kuku') }}
                                 </p>
@@ -1520,10 +1520,10 @@ const cancel = () => {
                 ================================================== -->
 
                 <section
-                    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
-                    <div class="border-b border-slate-100 px-5 py-4">
+                    <div class="border-b border-pink-100 px-5 py-4">
 
                         <h2 class="text-sm font-bold text-slate-800">
                             Keluhan & Hasil Pemeriksaan
@@ -1552,12 +1552,12 @@ const cancel = () => {
                                 v-model="form.keluhan"
                                 rows="3"
                                 placeholder="Tuliskan keluhan siswa jika ada..."
-                                class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full resize-none rounded-xl border border-pink-100 px-3.5 py-3 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             ></textarea>
 
                             <p
                                 v-if="errorFor('keluhan')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('keluhan') }}
                             </p>
@@ -1579,12 +1579,12 @@ const cancel = () => {
                                 v-model="form.hasil_pemeriksaan"
                                 rows="4"
                                 placeholder="Tuliskan hasil pemeriksaan secara keseluruhan..."
-                                class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full resize-none rounded-xl border border-pink-100 px-3.5 py-3 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             ></textarea>
 
                             <p
                                 v-if="errorFor('hasil_pemeriksaan')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('hasil_pemeriksaan') }}
                             </p>
@@ -1606,12 +1606,12 @@ const cancel = () => {
                                 v-model="form.rekomendasi"
                                 rows="3"
                                 placeholder="Tuliskan rekomendasi atau tindak lanjut..."
-                                class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full resize-none rounded-xl border border-pink-100 px-3.5 py-3 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             ></textarea>
 
                             <p
                                 v-if="errorFor('rekomendasi')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('rekomendasi') }}
                             </p>
@@ -1633,12 +1633,12 @@ const cancel = () => {
                                 v-model="form.catatan"
                                 rows="3"
                                 placeholder="Catatan tambahan jika diperlukan..."
-                                class="w-full resize-none rounded-xl border border-slate-200 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                                class="w-full resize-none rounded-xl border border-pink-100 px-3.5 py-3 text-sm outline-none transition focus:border-pink-500 focus:ring-4 focus:ring-pink-50"
                             ></textarea>
 
                             <p
                                 v-if="errorFor('catatan')"
-                                class="mt-1 text-xs text-rose-500"
+                                class="mt-1 text-xs text-pink-500"
                             >
                                 {{ errorFor('catatan') }}
                             </p>
@@ -1655,27 +1655,27 @@ const cancel = () => {
                 ================================================== -->
 
                 <div
-                    class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4"
+                    class="flex items-start gap-3 rounded-2xl border border-pink-100 bg-pink-50 p-4"
                 >
 
                     <InformationCircleIcon
-                        class="mt-0.5 h-5 w-5 shrink-0 text-blue-600"
+                        class="mt-0.5 h-5 w-5 shrink-0 text-pink-600"
                     />
 
-                    <div class="text-xs leading-5 text-blue-800">
+                    <div class="text-xs leading-5 text-pink-800">
 
                         <p class="font-bold">
                             Informasi Pemeriksaan
                         </p>
 
-                        <p class="mt-0.5 text-blue-700">
+                        <p class="mt-0.5 text-pink-700">
                             Data pemeriksaan akan disimpan sebagai
                             {{ jenisLabel }}
                             pada periode
                             {{ periode.nama_periode }}.
                         </p>
 
-                        <p class="mt-1 text-blue-700">
+                        <p class="mt-1 text-pink-700">
                             Pemeriksaan dilakukan secara menyeluruh mulai
                             dari pengukuran tubuh, tanda vital, pemeriksaan
                             fisik, hingga kebersihan diri siswa.
@@ -1697,7 +1697,7 @@ const cancel = () => {
                     <button
                         type="button"
                         @click="cancel"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
+                        class="inline-flex items-center justify-center rounded-xl border border-pink-100 bg-white px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-pink-50"
                     >
                         Batal
                     </button>
@@ -1706,7 +1706,7 @@ const cancel = () => {
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-700 px-6 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-60"
                     >
 
                         <CheckCircleIcon

@@ -107,28 +107,13 @@ const isActive = (path) => {
 // ======================================================
 // CEK ID / UUID
 // ======================================================
-//
-// Digunakan agar ID seperti:
-//
-// 1
-// 25
-// 123
-//
-// maupun UUID seperti:
-//
-// C97d06a8-50b0-4f33-b100-44af40e15d6d
-//
-// TIDAK DITAMPILKAN DI BREADCRUMB.
-// ======================================================
 
 const isIdentifier = (segment) => {
 
-    // ID angka
     if (/^\d+$/.test(segment)) {
         return true
     }
 
-    // UUID standar
     const uuidRegex =
         /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -143,96 +128,34 @@ const isIdentifier = (segment) => {
 // ======================================================
 // BREADCRUMB MAP
 // ======================================================
-//
-// MASTER DATA TIDAK DITAMPILKAN
-//
-// /admin/dashboard
-// Dashboard
-//
-// /admin/master/siswa
-// Dashboard / Data Siswa
-//
-// /admin/master/user
-// Dashboard / Data User
-//
-// /admin/periode
-// Dashboard / Periode
-//
-// /admin/periode/siswa-aktif
-// Dashboard / Periode / Siswa Periode Aktif
-//
-// /admin/periode/report
-// Dashboard / Periode / Report Periode
-//
-// /admin/kunjungan
-// Dashboard / Kunjungan Klinik
-//
-// /notifikasi
-// Dashboard / Notifikasi
-//
-// /notifikasi/{uuid}
-// Dashboard / Notifikasi
-// ======================================================
 
 const breadcrumbMap = {
 
-    // ==================================================
     // MASTER DATA
-    // ==================================================
-
     siswa: 'Data Siswa',
-
     user: 'Data User',
-
     'siswa-import': 'Import Siswa',
 
-
-    // ==================================================
     // PERIODE
-    // ==================================================
-
     periode: 'Periode',
-
     'siswa-aktif': 'Siswa Periode Aktif',
-
     report: 'Report Periode',
 
-
-    // ==================================================
     // LAINNYA
-    // ==================================================
-
     kunjungan: 'Kunjungan Klinik',
-
     notifikasi: 'Notifikasi',
 
-
-    // ==================================================
     // PEMERIKSAAN
-    // ==================================================
-
     pemeriksaan: 'Pemeriksaan Berkala',
-
     'report-berkala': 'Report Berkala',
 
-
-    // ==================================================
     // TKSI
-    // ==================================================
-
     tksi: 'TKSI',
-
     input: 'Input TKSI',
 
-
-    // ==================================================
     // ACTION
-    // ==================================================
-
     create: 'Tambah',
-
     edit: 'Ubah',
-
     show: 'Detail',
 }
 
@@ -248,11 +171,6 @@ const breadcrumbs = computed(() => {
         .split('/')
         .filter(Boolean)
 
-
-    // ==================================================
-    // DASHBOARD SELALU MENJADI ROOT
-    // ==================================================
-
     const list = [
         {
             name: 'Dashboard',
@@ -260,9 +178,7 @@ const breadcrumbs = computed(() => {
         },
     ]
 
-
     let currentPath = ''
-
 
     for (let index = 0; index < segments.length; index++) {
 
@@ -270,66 +186,21 @@ const breadcrumbs = computed(() => {
 
         currentPath += `/${segment}`
 
-
-        // ==================================================
-        // JANGAN TAMPILKAN "admin"
-        // ==================================================
-
         if (segment === 'admin') {
             continue
         }
-
-
-        // ==================================================
-        // JANGAN TAMPILKAN "dashboard"
-        //
-        // Dashboard sudah menjadi root.
-        // ==================================================
 
         if (segment === 'dashboard') {
             continue
         }
 
-
-        // ==================================================
-        // JANGAN TAMPILKAN "master"
-        //
-        // /admin/master/siswa
-        //
-        // menjadi:
-        //
-        // Dashboard / Data Siswa
-        //
-        // bukan:
-        //
-        // Dashboard / Master / Data Siswa
-        // ==================================================
-
         if (segment === 'master') {
             continue
         }
 
-
-        // ==================================================
-        // JANGAN TAMPILKAN ID / UUID
-        //
-        // Contoh:
-        //
-        // /notifikasi/C97d06a8-50b0-4f33-b100-44af40e15d6d
-        //
-        // menjadi:
-        //
-        // Dashboard / Notifikasi
-        // ==================================================
-
         if (isIdentifier(segment)) {
             continue
         }
-
-
-        // ==================================================
-        // NAMA BREADCRUMB
-        // ==================================================
 
         const name =
             breadcrumbMap[segment] ??
@@ -339,11 +210,6 @@ const breadcrumbs = computed(() => {
                     char.toUpperCase()
                 )
 
-
-        // ==================================================
-        // CEGAH DUPLIKAT
-        // ==================================================
-
         const alreadyExists = list.some(
             item => item.name === name
         )
@@ -352,17 +218,11 @@ const breadcrumbs = computed(() => {
             continue
         }
 
-
-        // ==================================================
-        // TAMBAHKAN BREADCRUMB
-        // ==================================================
-
         list.push({
             name,
             url: currentPath,
         })
     }
-
 
     return list
 })
@@ -372,7 +232,7 @@ const breadcrumbs = computed(() => {
 <template>
 
     <div
-        class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased"
+        class="min-h-screen bg-pink-50/40 flex flex-col font-sans text-slate-800 antialiased"
     >
 
         <!-- ==================================================
@@ -380,7 +240,7 @@ const breadcrumbs = computed(() => {
         ================================================== -->
 
         <header
-            class="bg-white border-b border-slate-200 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6"
+            class="bg-white border-b border-pink-100 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6 shadow-sm"
         >
 
             <!-- LEFT -->
@@ -392,7 +252,7 @@ const breadcrumbs = computed(() => {
                 <button
                     type="button"
                     @click="toggleMobileSidebar"
-                    class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none"
+                    class="lg:hidden p-2 rounded-lg text-pink-500 hover:bg-pink-50 focus:outline-none transition"
                 >
 
                     <Bars3Icon class="w-6 h-6" />
@@ -407,11 +267,11 @@ const breadcrumbs = computed(() => {
                 >
 
                     <div
-                        class="bg-blue-900 p-1.5 rounded-lg flex items-center justify-center"
+                        class="bg-pink-600 p-1.5 rounded-lg flex items-center justify-center shadow-sm"
                     >
 
                         <svg
-                            class="w-6 h-6 text-yellow-400"
+                            class="w-6 h-6 text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -464,11 +324,11 @@ const breadcrumbs = computed(() => {
                     <button
                         type="button"
                         @click="toggleProfileDropdown"
-                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none"
+                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-pink-50 transition focus:outline-none"
                     >
 
                         <div
-                            class="w-8 h-8 rounded-full bg-blue-100 text-blue-900 font-bold flex items-center justify-center text-sm border border-blue-200"
+                            class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center text-sm border border-pink-200"
                         >
                             A
                         </div>
@@ -505,16 +365,16 @@ const breadcrumbs = computed(() => {
 
                         <div
                             v-if="isProfileDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50"
+                            class="absolute right-0 mt-2 w-48 bg-white border border-pink-100 rounded-2xl shadow-xl py-2 z-50"
                         >
 
                             <Link
                                 href="/profile"
-                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition font-medium"
+                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-pink-50 hover:text-pink-700 transition font-medium"
                             >
 
                                 <UserIcon
-                                    class="w-4 h-4 text-slate-400"
+                                    class="w-4 h-4 text-pink-400"
                                 />
 
                                 <span>
@@ -528,7 +388,7 @@ const breadcrumbs = computed(() => {
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50/50 transition font-bold border-t border-slate-100"
+                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition font-bold border-t border-pink-100"
                             >
 
                                 <svg
@@ -576,7 +436,7 @@ const breadcrumbs = computed(() => {
             ================================================== -->
 
             <aside
-                class="bg-blue-950 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-blue-900 shadow-xl overflow-y-auto"
+                class="bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-pink-800 shadow-xl overflow-y-auto"
             >
 
                 <div class="py-6 px-4">
@@ -586,13 +446,13 @@ const breadcrumbs = computed(() => {
                     <div class="px-3 mb-6">
 
                         <span
-                            class="text-[10px] font-bold text-blue-300 uppercase tracking-widest block"
+                            class="text-[10px] font-bold text-pink-100 uppercase tracking-widest block"
                         >
                             Menu Navigasi
                         </span>
 
                         <span
-                            class="text-xs text-blue-200/60 font-medium tracking-wide"
+                            class="text-xs text-pink-100/70 font-medium tracking-wide"
                         >
                             Admin Panel
                         </span>
@@ -604,17 +464,15 @@ const breadcrumbs = computed(() => {
 
                     <nav class="space-y-1">
 
-                        <!-- ==================================================
-                             DASHBOARD
-                        ================================================== -->
+                        <!-- DASHBOARD -->
 
                         <Link
                             href="/admin/dashboard"
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/admin/dashboard')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
@@ -627,9 +485,7 @@ const breadcrumbs = computed(() => {
                         </Link>
 
 
-                        <!-- ==================================================
-                             MASTER DATA
-                        ================================================== -->
+                        <!-- MASTER DATA -->
 
                         <div>
 
@@ -639,14 +495,12 @@ const breadcrumbs = computed(() => {
                                 :class="[
                                     'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                     isActive('/admin/master')
-                                        ? 'text-white bg-blue-900/40'
-                                        : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                        ? 'text-white bg-white/15'
+                                        : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                 ]"
                             >
 
-                                <div
-                                    class="flex items-center space-x-3"
-                                >
+                                <div class="flex items-center space-x-3">
 
                                     <FolderIcon class="w-5 h-5" />
 
@@ -658,7 +512,7 @@ const breadcrumbs = computed(() => {
 
 
                                 <ChevronRightIcon
-                                    class="w-4 h-4 text-blue-300 transition-transform duration-200"
+                                    class="w-4 h-4 text-pink-100 transition-transform duration-200"
                                     :class="{
                                         'rotate-90':
                                             isMasterAccordionOpen
@@ -680,8 +534,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/admin/master/siswa')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -701,8 +555,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/admin/master/user')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -719,9 +573,7 @@ const breadcrumbs = computed(() => {
                         </div>
 
 
-                        <!-- ==================================================
-                             PERIODE
-                        ================================================== -->
+                        <!-- PERIODE -->
 
                         <div>
 
@@ -731,14 +583,12 @@ const breadcrumbs = computed(() => {
                                 :class="[
                                     'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                     isActive('/admin/periode')
-                                        ? 'text-white bg-blue-900/40'
-                                        : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                        ? 'text-white bg-white/15'
+                                        : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                 ]"
                             >
 
-                                <div
-                                    class="flex items-center space-x-3"
-                                >
+                                <div class="flex items-center space-x-3">
 
                                     <CalendarDaysIcon class="w-5 h-5" />
 
@@ -750,7 +600,7 @@ const breadcrumbs = computed(() => {
 
 
                                 <ChevronRightIcon
-                                    class="w-4 h-4 text-blue-300 transition-transform duration-200"
+                                    class="w-4 h-4 text-pink-100 transition-transform duration-200"
                                     :class="{
                                         'rotate-90':
                                             isPeriodeAccordionOpen
@@ -772,8 +622,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         currentUrl === '/admin/periode'
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -793,8 +643,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/admin/periode/siswa-aktif')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -814,8 +664,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/admin/periode/report')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -832,17 +682,15 @@ const breadcrumbs = computed(() => {
                         </div>
 
 
-                        <!-- ==================================================
-                             KUNJUNGAN KLINIK
-                        ================================================== -->
+                        <!-- KUNJUNGAN KLINIK -->
 
                         <Link
                             href="/admin/kunjungan"
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/admin/kunjungan')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
@@ -855,23 +703,19 @@ const breadcrumbs = computed(() => {
                         </Link>
 
 
-                        <!-- ==================================================
-                             NOTIFIKASI
-                        ================================================== -->
+                        <!-- NOTIFIKASI -->
 
                         <Link
                             href="/notifikasi"
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/notifikasi')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <div
-                                class="flex items-center space-x-3"
-                            >
+                            <div class="flex items-center space-x-3">
 
                                 <BellIcon class="w-5 h-5" />
 
@@ -884,7 +728,7 @@ const breadcrumbs = computed(() => {
 
                             <span
                                 v-if="notificationCount > 0"
-                                class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full shadow-sm"
                             >
 
                                 {{
@@ -905,7 +749,7 @@ const breadcrumbs = computed(() => {
                 <!-- FOOTER -->
 
                 <div
-                    class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50 font-medium"
+                    class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60 font-medium"
                 >
 
                     &copy; 2026 SMKN Jateng Semarang
@@ -944,7 +788,7 @@ const breadcrumbs = computed(() => {
                     <!-- DRAWER -->
 
                     <aside
-                        class="relative bg-blue-950 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
+                        class="relative bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
                     >
 
                         <div
@@ -960,13 +804,13 @@ const breadcrumbs = computed(() => {
                                 <div>
 
                                     <span
-                                        class="text-xs font-bold text-blue-300 uppercase tracking-widest block"
+                                        class="text-xs font-bold text-pink-100 uppercase tracking-widest block"
                                     >
                                         Menu Navigasi
                                     </span>
 
                                     <span
-                                        class="text-[10px] text-blue-200/60"
+                                        class="text-[10px] text-pink-100/70"
                                     >
                                         Admin Panel
                                     </span>
@@ -977,7 +821,7 @@ const breadcrumbs = computed(() => {
                                 <button
                                     type="button"
                                     @click="toggleMobileSidebar"
-                                    class="p-1 rounded-lg hover:bg-blue-900 text-white"
+                                    class="p-1 rounded-lg hover:bg-white/10 text-white"
                                 >
 
                                     <XMarkIcon class="w-5 h-5" />
@@ -999,8 +843,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/admin/dashboard')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10'
                                     ]"
                                 >
 
@@ -1023,14 +867,12 @@ const breadcrumbs = computed(() => {
                                         :class="[
                                             'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                             isActive('/admin/master')
-                                                ? 'text-white bg-blue-900/40'
-                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                                ? 'text-white bg-white/15'
+                                                : 'text-pink-50 hover:bg-white/10'
                                         ]"
                                     >
 
-                                        <div
-                                            class="flex items-center space-x-3"
-                                        >
+                                        <div class="flex items-center space-x-3">
 
                                             <FolderIcon class="w-5 h-5" />
 
@@ -1042,7 +884,7 @@ const breadcrumbs = computed(() => {
 
 
                                         <ChevronRightIcon
-                                            class="w-4 h-4 text-blue-300 transition-transform"
+                                            class="w-4 h-4 text-pink-100 transition-transform"
                                             :class="{
                                                 'rotate-90':
                                                     isMasterAccordionOpen
@@ -1063,8 +905,8 @@ const breadcrumbs = computed(() => {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/admin/master/siswa')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -1083,8 +925,8 @@ const breadcrumbs = computed(() => {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/admin/master/user')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -1111,14 +953,12 @@ const breadcrumbs = computed(() => {
                                         :class="[
                                             'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                             isActive('/admin/periode')
-                                                ? 'text-white bg-blue-900/40'
-                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                                ? 'text-white bg-white/15'
+                                                : 'text-pink-50 hover:bg-white/10'
                                         ]"
                                     >
 
-                                        <div
-                                            class="flex items-center space-x-3"
-                                        >
+                                        <div class="flex items-center space-x-3">
 
                                             <CalendarDaysIcon class="w-5 h-5" />
 
@@ -1130,7 +970,7 @@ const breadcrumbs = computed(() => {
 
 
                                         <ChevronRightIcon
-                                            class="w-4 h-4 text-blue-300 transition-transform"
+                                            class="w-4 h-4 text-pink-100 transition-transform"
                                             :class="{
                                                 'rotate-90':
                                                     isPeriodeAccordionOpen
@@ -1151,8 +991,8 @@ const breadcrumbs = computed(() => {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 currentUrl === '/admin/periode'
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -1171,8 +1011,8 @@ const breadcrumbs = computed(() => {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/admin/periode/siswa-aktif')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:bg-white/10 hover:text-white'
                                             ]"
                                         >
 
@@ -1191,8 +1031,8 @@ const breadcrumbs = computed(() => {
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/admin/periode/report')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:bg-white/10 hover:text-white'
                                             ]"
                                         >
 
@@ -1217,8 +1057,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/admin/kunjungan')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10'
                                     ]"
                                 >
 
@@ -1239,14 +1079,12 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/notifikasi')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10'
                                     ]"
                                 >
 
-                                    <div
-                                        class="flex items-center space-x-3"
-                                    >
+                                    <div class="flex items-center space-x-3">
 
                                         <BellIcon class="w-5 h-5" />
 
@@ -1259,7 +1097,7 @@ const breadcrumbs = computed(() => {
 
                                     <span
                                         v-if="notificationCount > 0"
-                                        class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                        class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                                     >
 
                                         {{
@@ -1280,7 +1118,7 @@ const breadcrumbs = computed(() => {
                         <!-- FOOTER -->
 
                         <div
-                            class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50"
+                            class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60"
                         >
 
                             &copy; 2026 SMKN Jateng Semarang
@@ -1306,9 +1144,7 @@ const breadcrumbs = computed(() => {
                     class="p-4 lg:p-6 space-y-6"
                 >
 
-                    <!-- ==================================================
-                         BREADCRUMB
-                    ================================================== -->
+                    <!-- BREADCRUMB -->
 
                     <nav
                         class="flex flex-wrap items-center text-xs font-semibold text-slate-500 gap-x-2 gap-y-1"
@@ -1320,22 +1156,18 @@ const breadcrumbs = computed(() => {
                             :key="`${crumb.url}-${idx}`"
                         >
 
-                            <!-- SEPARATOR -->
-
                             <span
                                 v-if="idx > 0"
-                                class="text-slate-300"
+                                class="text-pink-200"
                             >
                                 /
                             </span>
 
 
-                            <!-- CLICKABLE BREADCRUMB -->
-
                             <Link
                                 v-if="idx < breadcrumbs.length - 1"
                                 :href="crumb.url"
-                                class="hover:text-blue-600 transition"
+                                class="hover:text-pink-600 transition"
                             >
 
                                 {{ crumb.name }}
@@ -1343,11 +1175,9 @@ const breadcrumbs = computed(() => {
                             </Link>
 
 
-                            <!-- CURRENT PAGE -->
-
                             <span
                                 v-else
-                                class="text-slate-800 font-bold"
+                                class="text-pink-700 font-bold"
                             >
 
                                 {{ crumb.name }}
@@ -1359,21 +1189,17 @@ const breadcrumbs = computed(() => {
                     </nav>
 
 
-                    <!-- ==================================================
-                         PAGE CONTENT
-                    ================================================== -->
+                    <!-- PAGE CONTENT -->
 
                     <slot />
 
                 </div>
 
 
-                <!-- ==================================================
-                     FOOTER
-                ================================================== -->
+                <!-- FOOTER -->
 
                 <footer
-                    class="bg-white border-t border-slate-200 py-4 text-center text-xs font-semibold text-slate-400"
+                    class="bg-white border-t border-pink-100 py-4 text-center text-xs font-semibold text-slate-400"
                 >
 
                     &copy; 2026 SMKN Jateng Semarang.

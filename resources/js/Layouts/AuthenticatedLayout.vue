@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
@@ -36,6 +35,7 @@ const toggleProfileDropdown = () => {
 // ============================================================
 
 const roleLabel = computed(() => {
+
     const role = user.value?.role
 
     if (!role) {
@@ -88,7 +88,7 @@ const breadcrumbs = computed(() => {
 <template>
 
     <div
-        class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased"
+        class="min-h-screen bg-pink-50/40 flex flex-col font-sans text-slate-800 antialiased"
     >
 
         <!-- ==================================================
@@ -96,7 +96,7 @@ const breadcrumbs = computed(() => {
         ================================================== -->
 
         <header
-            class="bg-white border-b border-slate-200 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6"
+            class="bg-white border-b border-pink-100 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6 shadow-sm"
         >
 
             <!-- ==================================================
@@ -110,11 +110,11 @@ const breadcrumbs = computed(() => {
                     <!-- LOGO ICON -->
 
                     <div
-                        class="bg-blue-900 p-1.5 rounded-lg flex items-center justify-center"
+                        class="bg-pink-600 p-1.5 rounded-lg flex items-center justify-center shadow-sm"
                     >
 
                         <svg
-                            class="w-6 h-6 text-yellow-400"
+                            class="w-6 h-6 text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -165,7 +165,7 @@ const breadcrumbs = computed(() => {
 
                 <Link
                     href="/notifikasi"
-                    class="relative p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition"
+                    class="relative p-2 text-pink-400 hover:text-pink-600 hover:bg-pink-50 rounded-full transition"
                     aria-label="Notifikasi"
                 >
 
@@ -189,13 +189,13 @@ const breadcrumbs = computed(() => {
                     <button
                         type="button"
                         @click="toggleProfileDropdown"
-                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none"
+                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-pink-50 transition focus:outline-none"
                     >
 
                         <!-- AVATAR -->
 
                         <div
-                            class="w-8 h-8 rounded-full bg-blue-100 text-blue-900 font-bold flex items-center justify-center text-sm border border-blue-200"
+                            class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center text-sm border border-pink-200"
                         >
 
                             {{
@@ -231,7 +231,7 @@ const breadcrumbs = computed(() => {
                         <!-- CHEVRON -->
 
                         <ChevronDownIcon
-                            class="w-4 h-4 text-slate-400 transition-transform duration-200"
+                            class="w-4 h-4 text-pink-300 transition-transform duration-200"
                             :class="{
                                 'rotate-180':
                                     isProfileDropdownOpen
@@ -256,21 +256,21 @@ const breadcrumbs = computed(() => {
 
                         <div
                             v-if="isProfileDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50"
+                            class="absolute right-0 mt-2 w-48 bg-white border border-pink-100 rounded-2xl shadow-xl py-2 z-50"
                         >
 
                             <!-- PROFILE -->
 
                             <Link
                                 href="/profile"
-                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition"
+                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-pink-50 hover:text-pink-700 transition"
                                 @click="
                                     isProfileDropdownOpen = false
                                 "
                             >
 
                                 <UserIcon
-                                    class="w-4 h-4 text-slate-400"
+                                    class="w-4 h-4 text-pink-400"
                                 />
 
                                 <span>
@@ -286,7 +286,7 @@ const breadcrumbs = computed(() => {
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 border-t border-slate-100 transition"
+                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 border-t border-pink-100 transition"
                             >
 
                                 <svg
@@ -300,7 +300,7 @@ const breadcrumbs = computed(() => {
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 013-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                     />
 
                                 </svg>
@@ -353,7 +353,7 @@ const breadcrumbs = computed(() => {
 
                         <span
                             v-if="idx > 0"
-                            class="text-slate-300"
+                            class="text-pink-200"
                         >
                             /
                         </span>
@@ -367,7 +367,7 @@ const breadcrumbs = computed(() => {
                                 breadcrumbs.length - 1
                             "
                             :href="crumb.url"
-                            class="hover:text-blue-600 transition"
+                            class="hover:text-pink-600 transition"
                         >
                             {{ crumb.name }}
                         </Link>
@@ -377,7 +377,7 @@ const breadcrumbs = computed(() => {
 
                         <span
                             v-else
-                            class="text-slate-800 font-bold"
+                            class="text-pink-700 font-bold"
                         >
                             {{ crumb.name }}
                         </span>
@@ -401,7 +401,7 @@ const breadcrumbs = computed(() => {
             ================================================== -->
 
             <footer
-                class="bg-white border-t border-slate-200 py-4 text-center text-xs font-semibold text-slate-400"
+                class="bg-white border-t border-pink-100 py-4 text-center text-xs font-semibold text-slate-400"
             >
 
                 &copy; 2026 SMKN Jateng Semarang.

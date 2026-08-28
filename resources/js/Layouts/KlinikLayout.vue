@@ -1,86 +1,85 @@
-
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
-    Bars3Icon,
-    XMarkIcon,
-    BellIcon,
-    ChevronDownIcon,
-    ChevronRightIcon,
     HomeIcon,
-    UserIcon,
     UserGroupIcon,
+    UserIcon,
     HeartIcon,
     ClipboardDocumentCheckIcon,
     ChartBarIcon,
     ClockIcon,
     BeakerIcon,
     ExclamationTriangleIcon,
+    BellIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+    Bars3Icon,
+    XMarkIcon,
 } from '@heroicons/vue/24/outline'
 
 
-// ============================================================
+// ======================================================
 // PAGE
-// ============================================================
+// ======================================================
 
 const page = usePage()
 
+const currentUrl = computed(() => page.url)
+
 const user = computed(() => page.props.auth?.user)
 
-const notificationCount = computed(() => Number(page.props.notificationCount ?? 0))
+const notificationCount = computed(() =>
+    Number(page.props.notificationCount ?? 0)
+)
+
 let notificationTimer = null
 
 onMounted(() => {
     notificationTimer = window.setInterval(() => {
-        router.reload({ only: ['notificationCount'], preserveScroll: true, preserveState: true })
+        router.reload({
+            only: ['notificationCount'],
+            preserveScroll: true,
+            preserveState: true,
+        })
     }, 10000)
 })
 
 onBeforeUnmount(() => {
-    if (notificationTimer) window.clearInterval(notificationTimer)
+    if (notificationTimer) {
+        window.clearInterval(notificationTimer)
+    }
 })
 
 
-// ============================================================
+// ======================================================
 // STATE
-// ============================================================
+// ======================================================
 
 const isMobileSidebarOpen = ref(false)
 
 const isProfileDropdownOpen = ref(false)
 
 const isKesehatanAccordionOpen = ref(
-    window.location.pathname.startsWith('/klinik/kesehatan/pemeriksaan-berkala') ||
-    window.location.pathname.startsWith('/klinik/kesehatan/report')
+    currentUrl.value.startsWith('/klinik/kesehatan')
 )
 
 
-// ============================================================
-// MOBILE SIDEBAR
-// ============================================================
+// ======================================================
+// TOGGLE
+// ======================================================
 
 const toggleMobileSidebar = () => {
     isMobileSidebarOpen.value =
         !isMobileSidebarOpen.value
 }
 
-
-// ============================================================
-// PROFILE DROPDOWN
-// ============================================================
-
 const toggleProfileDropdown = () => {
     isProfileDropdownOpen.value =
         !isProfileDropdownOpen.value
 }
-
-
-// ============================================================
-// KESEHATAN ACCORDION
-// ============================================================
 
 const toggleKesehatanAccordion = () => {
     isKesehatanAccordionOpen.value =
@@ -88,225 +87,180 @@ const toggleKesehatanAccordion = () => {
 }
 
 
-// ============================================================
-// ACTIVE MENU
-// ============================================================
+// ======================================================
+// ACTIVE ROUTE
+// ======================================================
 
 const isActive = (path) => {
-    const currentPath = window.location.pathname
-
     if (path === '/klinik/dashboard') {
-        return currentPath === path
+        return currentUrl.value === path
     }
 
     return (
-        currentPath === path ||
-        currentPath.startsWith(`${path}/`)
+        currentUrl.value === path ||
+        currentUrl.value.startsWith(`${path}/`)
     )
 }
 
 
-// ============================================================
+// ======================================================
+// CEK ID / UUID
+// ======================================================
+
+const isIdentifier = (segment) => {
+
+    if (/^\d+$/.test(segment)) {
+        return true
+    }
+
+    const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+    return uuidRegex.test(segment)
+}
+
+
+// ======================================================
+// BREADCRUMB MAP
+// ======================================================
+
+const breadcrumbMap = {
+
+    // KLINIK
+    siswa: 'Data Siswa',
+
+    // KESEHATAN
+    kesehatan: 'Kesehatan',
+    'pemeriksaan-berkala': 'Pemeriksaan Berkala',
+    'report': 'Report',
+    'berkala': 'Report Berkala',
+    kunjungan: 'Kunjungan Klinik',
+
+    // KUNJUNGAN
+    'report-kunjungan': 'Riwayat Kunjungan',
+
+    // OBAT
+    obat: 'Data Obat',
+
+    // PENYAKIT
+    penyakit: 'Data Penyakit',
+
+    // NOTIFIKASI
+    notifikasi: 'Notifikasi',
+
+    // ACTION
+    create: 'Tambah',
+    edit: 'Ubah',
+    show: 'Detail',
+}
+
+
+// ======================================================
 // BREADCRUMB
-// ============================================================
+// ======================================================
 
 const breadcrumbs = computed(() => {
-    const path = window.location.pathname
 
-    const items = [
+    const segments = currentUrl.value
+        .split('?')[0]
+        .split('/')
+        .filter(Boolean)
+
+    const list = [
         {
             name: 'Dashboard',
             url: '/klinik/dashboard',
         },
     ]
 
-    if (path === '/klinik/dashboard') {
-        return [
-            {
-                name: 'Dashboard',
-                url: '/klinik/dashboard',
-            },
-        ]
-    }
+    let currentPath = ''
+
+    for (let index = 0; index < segments.length; index++) {
+
+        const segment = segments[index]
+
+        currentPath += `/${segment}`
 
 
-    // ========================================================
-    // DATA SISWA
-    // ========================================================
+        // ----------------------------------------------
+        // SKIP PREFIX
+        // ----------------------------------------------
 
-    if (path.startsWith('/klinik/siswa')) {
-        items.push({
-            name: 'Data Siswa',
-            url: '/klinik/siswa',
-        })
-
-        if (path !== '/klinik/siswa') {
-            items.push({
-                name: 'Detail Siswa',
-                url: path,
-            })
+        if (segment === 'klinik') {
+            continue
         }
 
-        return items
-    }
-
-
-    // ========================================================
-    // PEMERIKSAAN
-    // ========================================================
-
-    if (path.startsWith('/klinik/kesehatan/pemeriksaan-berkala')) {
-        items.push({
-            name: 'Kesehatan',
-            url: '/klinik/kesehatan/pemeriksaan-berkala',
-        })
-
-        items.push({
-            name: 'Pemeriksaan Berkala',
-            url: '/klinik/kesehatan/pemeriksaan-berkala',
-        })
-
-        if (path !== '/klinik/kesehatan/pemeriksaan-berkala') {
-            items.push({
-                name: 'Detail Pemeriksaan',
-                url: path,
-            })
+        if (segment === 'dashboard') {
+            continue
         }
 
-        return items
-    }
+
+        // ----------------------------------------------
+        // SKIP ID / UUID
+        // ----------------------------------------------
+
+        if (isIdentifier(segment)) {
+            continue
+        }
 
 
-    // ========================================================
-    // REPORT BERKALA
-    // ========================================================
-
-    if (path.startsWith('/klinik/kesehatan/report/berkala')) {
-        items.push({
-            name: 'Kesehatan',
-            url: '/klinik/kesehatan/pemeriksaan-berkala',
-        })
-
-        items.push({
-            name: 'Report Berkala',
-            url: '/klinik/kesehatan/report/berkala',
-        })
-
-        return items
-    }
-
-
-    // ========================================================
-    // KUNJUNGAN KLINIK
-    // ========================================================
-
-    if (
-        path === '/klinik/kesehatan/kunjungan' ||
-        path.startsWith('/klinik/kesehatan/kunjungan/')
-    ) {
-        items.push({
-            name: 'Kesehatan',
-            url: '/klinik/kesehatan/pemeriksaan-berkala',
-        })
-
-        items.push({
-            name: 'Kunjungan Klinik',
-            url: '/klinik/kesehatan/kunjungan',
-        })
+        // ----------------------------------------------
+        // KHUSUS REPORT KUNJUNGAN
+        // ----------------------------------------------
 
         if (
-            path.startsWith(
-                '/klinik/kesehatan/report/kunjungan'
-            )
+            segment === 'report' &&
+            segments[index + 1] === 'kunjungan'
         ) {
-            items.push({
-                name: 'Riwayat Kunjungan',
-                url: '/klinik/kesehatan/report/kunjungan',
-            })
+            continue
         }
 
-        return items
-    }
+        if (
+            segment === 'kunjungan' &&
+            segments[index - 1] === 'report'
+        ) {
+            const name = 'Riwayat Kunjungan'
 
+            if (!list.some(item => item.name === name)) {
+                list.push({
+                    name,
+                    url: currentPath,
+                })
+            }
 
-    // ========================================================
-    // OBAT
-    // ========================================================
-
-    if (path.startsWith('/klinik/obat')) {
-        items.push({
-            name: 'Data Obat',
-            url: '/klinik/obat',
-        })
-
-        if (path !== '/klinik/obat') {
-            items.push({
-                name: 'Detail Obat',
-                url: path,
-            })
+            continue
         }
 
-        return items
-    }
+
+        // ----------------------------------------------
+        // NAMA BREADCRUMB
+        // ----------------------------------------------
+
+        const name =
+            breadcrumbMap[segment] ??
+            segment
+                .replace(/[-_]/g, ' ')
+                .replace(/\b\w/g, char =>
+                    char.toUpperCase()
+                )
 
 
-    // ========================================================
-    // PENYAKIT
-    // ========================================================
+        // ----------------------------------------------
+        // HINDARI DUPLIKAT
+        // ----------------------------------------------
 
-    if (path.startsWith('/klinik/penyakit')) {
-        items.push({
-            name: 'Data Penyakit',
-            url: '/klinik/penyakit',
-        })
-
-        if (path !== '/klinik/penyakit') {
-            items.push({
-                name: 'Detail Penyakit',
-                url: path,
-            })
+        if (list.some(item => item.name === name)) {
+            continue
         }
 
-        return items
+
+        list.push({
+            name,
+            url: currentPath,
+        })
     }
 
-
-    // ========================================================
-    // NOTIFIKASI
-    // ========================================================
-
-    if (path.startsWith('/notifikasi')) {
-        items.push({
-            name: 'Notifikasi',
-            url: '/notifikasi',
-        })
-
-        return items
-    }
-
-    
-    // ========================================================
-    // DETAIL NOTIFIKASI
-    // ========================================================
-
-    if (path.startsWith('/notifikasi/')) {
-
-        items.push({
-            name: 'Notifikasi',
-            url: '/notifikasi',
-        })
-
-        items.push({
-            name: 'Detail Notifikasi',
-            url: path,
-        })
-
-        return items
-    }
-
-
-
-    return items
+    return list
 })
 </script>
 
@@ -314,7 +268,7 @@ const breadcrumbs = computed(() => {
 <template>
 
     <div
-        class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 antialiased"
+        class="min-h-screen bg-pink-50/40 flex flex-col font-sans text-slate-800 antialiased"
     >
 
         <!-- ==================================================
@@ -322,7 +276,7 @@ const breadcrumbs = computed(() => {
         ================================================== -->
 
         <header
-            class="bg-white border-b border-slate-200 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6"
+            class="bg-white border-b border-pink-100 h-16 fixed top-0 right-0 left-0 z-30 flex items-center justify-between px-4 lg:px-6 shadow-sm"
         >
 
             <!-- LEFT -->
@@ -334,13 +288,11 @@ const breadcrumbs = computed(() => {
                 <button
                     type="button"
                     @click="toggleMobileSidebar"
-                    class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none"
+                    class="lg:hidden p-2 rounded-lg text-pink-500 hover:bg-pink-50 focus:outline-none transition"
                     aria-label="Buka menu"
                 >
 
-                    <Bars3Icon
-                        class="w-6 h-6"
-                    />
+                    <Bars3Icon class="w-6 h-6" />
 
                 </button>
 
@@ -352,11 +304,11 @@ const breadcrumbs = computed(() => {
                 >
 
                     <div
-                        class="bg-blue-900 p-1.5 rounded-lg flex items-center justify-center"
+                        class="bg-pink-600 p-1.5 rounded-lg flex items-center justify-center shadow-sm"
                     >
 
                         <svg
-                            class="w-6 h-6 text-yellow-400"
+                            class="w-6 h-6 text-white"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -372,9 +324,7 @@ const breadcrumbs = computed(() => {
                     </div>
 
 
-                    <div
-                        class="flex flex-col"
-                    >
+                    <div class="flex flex-col">
 
                         <span
                             class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight leading-tight"
@@ -397,30 +347,27 @@ const breadcrumbs = computed(() => {
 
             <!-- RIGHT -->
 
-            <div
-                class="flex items-center space-x-4"
-            >
+            <div class="flex items-center space-x-4">
 
                 <!-- NOTIFICATION -->
-<NotificationDropdown />
+
+                <NotificationDropdown />
 
 
                 <!-- PROFILE -->
 
-                <div
-                    class="relative"
-                >
+                <div class="relative">
 
                     <button
                         type="button"
                         @click="toggleProfileDropdown"
-                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none"
+                        class="flex items-center space-x-2.5 p-1.5 rounded-xl hover:bg-pink-50 transition focus:outline-none"
                     >
 
                         <!-- AVATAR -->
 
                         <div
-                            class="w-8 h-8 rounded-full bg-blue-100 text-blue-900 font-bold flex items-center justify-center text-sm border border-blue-200"
+                            class="w-8 h-8 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center text-sm border border-pink-200"
                         >
 
                             {{
@@ -432,7 +379,7 @@ const breadcrumbs = computed(() => {
                         </div>
 
 
-                        <!-- NAME -->
+                        <!-- USER -->
 
                         <div
                             class="hidden sm:flex flex-col items-start"
@@ -441,9 +388,11 @@ const breadcrumbs = computed(() => {
                             <span
                                 class="text-sm font-semibold text-slate-700"
                             >
+
                                 {{
                                     user?.name || 'Klinik'
                                 }}
+
                             </span>
 
                             <span
@@ -479,17 +428,17 @@ const breadcrumbs = computed(() => {
 
                         <div
                             v-if="isProfileDropdownOpen"
-                            class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50"
+                            class="absolute right-0 mt-2 w-48 bg-white border border-pink-100 rounded-2xl shadow-xl py-2 z-50"
                         >
 
                             <Link
                                 href="/profile"
-                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition font-medium"
                                 @click="isProfileDropdownOpen = false"
+                                class="flex items-center space-x-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-pink-50 hover:text-pink-700 transition font-medium"
                             >
 
                                 <UserIcon
-                                    class="w-4 h-4 text-slate-400"
+                                    class="w-4 h-4 text-pink-400"
                                 />
 
                                 <span>
@@ -503,7 +452,7 @@ const breadcrumbs = computed(() => {
                                 href="/logout"
                                 method="post"
                                 as="button"
-                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50/50 transition font-bold border-t border-slate-100"
+                                class="w-full text-left flex items-center space-x-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition font-bold border-t border-pink-100"
                             >
 
                                 <svg
@@ -517,7 +466,7 @@ const breadcrumbs = computed(() => {
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 013-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                     />
 
                                 </svg>
@@ -543,36 +492,31 @@ const breadcrumbs = computed(() => {
              PAGE BODY
         ================================================== -->
 
-        <div
-            class="flex flex-row pt-16 flex-grow"
-        >
+        <div class="flex flex-row pt-16 flex-grow">
+
 
             <!-- ==================================================
                  DESKTOP SIDEBAR
             ================================================== -->
 
             <aside
-                class="bg-blue-950 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-blue-900 shadow-xl overflow-y-auto"
+                class="bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 fixed top-16 bottom-0 left-0 z-20 hidden lg:flex flex-col justify-between border-r border-pink-800 shadow-xl overflow-y-auto"
             >
 
-                <div
-                    class="py-6 px-4"
-                >
+                <div class="py-6 px-4">
 
                     <!-- TITLE -->
 
-                    <div
-                        class="px-3 mb-6"
-                    >
+                    <div class="px-3 mb-6">
 
                         <span
-                            class="text-[10px] font-bold text-blue-300 uppercase tracking-widest block"
+                            class="text-[10px] font-bold text-pink-100 uppercase tracking-widest block"
                         >
                             Menu Navigasi
                         </span>
 
                         <span
-                            class="text-xs text-blue-200/60 font-medium tracking-wide"
+                            class="text-xs text-pink-100/70 font-medium tracking-wide"
                         >
                             Klinik Panel
                         </span>
@@ -582,9 +526,8 @@ const breadcrumbs = computed(() => {
 
                     <!-- NAV -->
 
-                    <nav
-                        class="space-y-1"
-                    >
+                    <nav class="space-y-1">
+
 
                         <!-- ==================================================
                              DASHBOARD
@@ -595,14 +538,12 @@ const breadcrumbs = computed(() => {
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/klinik/dashboard')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <HomeIcon
-                                class="w-5 h-5"
-                            />
+                            <HomeIcon class="w-5 h-5" />
 
                             <span>
                                 Dashboard
@@ -620,14 +561,12 @@ const breadcrumbs = computed(() => {
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/klinik/siswa')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <UserGroupIcon
-                                class="w-5 h-5"
-                            />
+                            <UserGroupIcon class="w-5 h-5" />
 
                             <span>
                                 Data Siswa
@@ -647,21 +586,15 @@ const breadcrumbs = computed(() => {
                                 @click="toggleKesehatanAccordion"
                                 :class="[
                                     'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                    isActive('/klinik/kesehatan/pemeriksaan-berkala') ||
-                                    isActive('/klinik/kesehatan/report/berkala') ||
-                                    isActive('/klinik/kesehatan/kunjungan')
-                                        ? 'text-white bg-blue-900/40'
-                                        : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    isActive('/klinik/kesehatan')
+                                        ? 'text-white bg-white/15'
+                                        : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                 ]"
                             >
 
-                                <div
-                                    class="flex items-center space-x-3"
-                                >
+                                <div class="flex items-center space-x-3">
 
-                                    <HeartIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <HeartIcon class="w-5 h-5" />
 
                                     <span>
                                         Kesehatan
@@ -671,7 +604,7 @@ const breadcrumbs = computed(() => {
 
 
                                 <ChevronRightIcon
-                                    class="w-4 h-4 text-blue-300 transition-transform duration-200"
+                                    class="w-4 h-4 text-pink-100 transition-transform duration-200"
                                     :class="{
                                         'rotate-90':
                                             isKesehatanAccordionOpen
@@ -688,15 +621,15 @@ const breadcrumbs = computed(() => {
                                 class="mt-1 pl-10 pr-2 space-y-1"
                             >
 
-                                <!-- PEMERIKSAAN -->
+                                <!-- PEMERIKSAAN BERKALA -->
 
                                 <Link
                                     href="/klinik/kesehatan/pemeriksaan-berkala"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/klinik/kesehatan/pemeriksaan-berkala')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -711,15 +644,15 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
 
-                                <!-- REPORT -->
+                                <!-- REPORT BERKALA -->
 
                                 <Link
                                     href="/klinik/kesehatan/report/berkala"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/klinik/kesehatan/report/berkala')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -734,7 +667,7 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
 
-                                <!-- KUNJUNGAN -->
+                                <!-- KUNJUNGAN KLINIK -->
 
                                 <Link
                                     href="/klinik/kesehatan/kunjungan"
@@ -742,8 +675,8 @@ const breadcrumbs = computed(() => {
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/klinik/kesehatan/kunjungan') &&
                                         !isActive('/klinik/kesehatan/report/kunjungan')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -758,15 +691,15 @@ const breadcrumbs = computed(() => {
                                 </Link>
 
 
-                                <!-- RIWAYAT -->
+                                <!-- RIWAYAT KUNJUNGAN -->
 
                                 <Link
                                     href="/klinik/kesehatan/report/kunjungan"
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                         isActive('/klinik/kesehatan/report/kunjungan')
-                                            ? 'text-white bg-blue-900/70'
-                                            : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                            ? 'text-pink-700 bg-white'
+                                            : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                     ]"
                                 >
 
@@ -794,14 +727,12 @@ const breadcrumbs = computed(() => {
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/klinik/obat')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <BeakerIcon
-                                class="w-5 h-5"
-                            />
+                            <BeakerIcon class="w-5 h-5" />
 
                             <span>
                                 Data Obat
@@ -819,8 +750,8 @@ const breadcrumbs = computed(() => {
                             :class="[
                                 'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/klinik/penyakit')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
@@ -844,18 +775,14 @@ const breadcrumbs = computed(() => {
                             :class="[
                                 'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                 isActive('/notifikasi')
-                                    ? 'bg-blue-700 text-white shadow-md'
-                                    : 'text-blue-100 hover:bg-blue-900/50 hover:text-white'
+                                    ? 'bg-white text-pink-700 shadow-md'
+                                    : 'text-pink-50 hover:bg-white/10 hover:text-white'
                             ]"
                         >
 
-                            <div
-                                class="flex items-center space-x-3"
-                            >
+                            <div class="flex items-center space-x-3">
 
-                                <BellIcon
-                                    class="w-5 h-5"
-                                />
+                                <BellIcon class="w-5 h-5" />
 
                                 <span>
                                     Notifikasi
@@ -866,9 +793,15 @@ const breadcrumbs = computed(() => {
 
                             <span
                                 v-if="notificationCount > 0"
-                                class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full shadow-sm"
                             >
-                                {{ notificationCount > 99 ? '99+' : notificationCount }}
+
+                                {{
+                                    notificationCount > 99
+                                        ? '99+'
+                                        : notificationCount
+                                }}
+
                             </span>
 
                         </Link>
@@ -881,9 +814,11 @@ const breadcrumbs = computed(() => {
                 <!-- FOOTER -->
 
                 <div
-                    class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50 font-medium"
+                    class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60 font-medium"
                 >
+
                     &copy; 2026 SMKN Jateng Semarang
+
                 </div>
 
             </aside>
@@ -918,7 +853,7 @@ const breadcrumbs = computed(() => {
                     <!-- DRAWER -->
 
                     <aside
-                        class="relative bg-blue-950 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
+                        class="relative bg-gradient-to-b from-pink-700 via-pink-700 to-rose-800 text-white w-64 flex flex-col justify-between shadow-2xl z-50"
                     >
 
                         <div
@@ -934,13 +869,13 @@ const breadcrumbs = computed(() => {
                                 <div>
 
                                     <span
-                                        class="text-xs font-bold text-blue-300 uppercase tracking-widest block"
+                                        class="text-xs font-bold text-pink-100 uppercase tracking-widest block"
                                     >
                                         Menu Navigasi
                                     </span>
 
                                     <span
-                                        class="text-[10px] text-blue-200/60"
+                                        class="text-[10px] text-pink-100/70"
                                     >
                                         Klinik Panel
                                     </span>
@@ -951,12 +886,10 @@ const breadcrumbs = computed(() => {
                                 <button
                                     type="button"
                                     @click="toggleMobileSidebar"
-                                    class="p-1 rounded-lg hover:bg-blue-900 text-white"
+                                    class="p-1 rounded-lg hover:bg-white/10 text-white"
                                 >
 
-                                    <XMarkIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <XMarkIcon class="w-5 h-5" />
 
                                 </button>
 
@@ -965,9 +898,8 @@ const breadcrumbs = computed(() => {
 
                             <!-- MOBILE NAV -->
 
-                            <nav
-                                class="space-y-1"
-                            >
+                            <nav class="space-y-1">
+
 
                                 <!-- DASHBOARD -->
 
@@ -977,14 +909,12 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/klinik/dashboard')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                     ]"
                                 >
 
-                                    <HomeIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <HomeIcon class="w-5 h-5" />
 
                                     <span>
                                         Dashboard
@@ -1001,14 +931,12 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/klinik/siswa')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                     ]"
                                 >
 
-                                    <UserGroupIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <UserGroupIcon class="w-5 h-5" />
 
                                     <span>
                                         Data Siswa
@@ -1026,21 +954,15 @@ const breadcrumbs = computed(() => {
                                         @click="toggleKesehatanAccordion"
                                         :class="[
                                             'w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
-                                            isActive('/klinik/kesehatan/pemeriksaan-berkala') ||
-                                            isActive('/klinik/kesehatan/report') ||
-                                            isActive('/klinik/kesehatan/report/kunjungan')
-                                                ? 'text-white bg-blue-900/40'
-                                                : 'text-blue-100 hover:bg-blue-900/50'
+                                            isActive('/klinik/kesehatan')
+                                                ? 'text-white bg-white/15'
+                                                : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                         ]"
                                     >
 
-                                        <div
-                                            class="flex items-center space-x-3"
-                                        >
+                                        <div class="flex items-center space-x-3">
 
-                                            <HeartIcon
-                                                class="w-5 h-5"
-                                            />
+                                            <HeartIcon class="w-5 h-5" />
 
                                             <span>
                                                 Kesehatan
@@ -1050,7 +972,7 @@ const breadcrumbs = computed(() => {
 
 
                                         <ChevronRightIcon
-                                            class="w-4 h-4 text-blue-300 transition-transform"
+                                            class="w-4 h-4 text-pink-100 transition-transform"
                                             :class="{
                                                 'rotate-90':
                                                     isKesehatanAccordionOpen
@@ -1065,14 +987,16 @@ const breadcrumbs = computed(() => {
                                         class="mt-1 pl-10 pr-2 space-y-1"
                                     >
 
+                                        <!-- PEMERIKSAAN -->
+
                                         <Link
                                             href="/klinik/kesehatan/pemeriksaan-berkala"
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/klinik/kesehatan/pemeriksaan-berkala')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -1087,14 +1011,16 @@ const breadcrumbs = computed(() => {
                                         </Link>
 
 
+                                        <!-- REPORT -->
+
                                         <Link
                                             href="/klinik/kesehatan/report/berkala"
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/klinik/kesehatan/report/berkala')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
@@ -1109,6 +1035,8 @@ const breadcrumbs = computed(() => {
                                         </Link>
 
 
+                                        <!-- KUNJUNGAN -->
+
                                         <Link
                                             href="/klinik/kesehatan/kunjungan"
                                             @click="toggleMobileSidebar"
@@ -1116,14 +1044,12 @@ const breadcrumbs = computed(() => {
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/klinik/kesehatan/kunjungan') &&
                                                 !isActive('/klinik/kesehatan/report/kunjungan')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
-                                            <HeartIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <HeartIcon class="w-4 h-4" />
 
                                             <span>
                                                 Kunjungan Klinik
@@ -1132,20 +1058,20 @@ const breadcrumbs = computed(() => {
                                         </Link>
 
 
+                                        <!-- RIWAYAT -->
+
                                         <Link
                                             href="/klinik/kesehatan/report/kunjungan"
                                             @click="toggleMobileSidebar"
                                             :class="[
                                                 'flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-semibold transition',
                                                 isActive('/klinik/kesehatan/report/kunjungan')
-                                                    ? 'text-white bg-blue-900/70'
-                                                    : 'text-blue-200/80 hover:text-white hover:bg-blue-900/30'
+                                                    ? 'text-pink-700 bg-white'
+                                                    : 'text-pink-100/90 hover:text-white hover:bg-white/10'
                                             ]"
                                         >
 
-                                            <ClockIcon
-                                                class="w-4 h-4"
-                                            />
+                                            <ClockIcon class="w-4 h-4" />
 
                                             <span>
                                                 Riwayat Kunjungan
@@ -1166,14 +1092,12 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/klinik/obat')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                     ]"
                                 >
 
-                                    <BeakerIcon
-                                        class="w-5 h-5"
-                                    />
+                                    <BeakerIcon class="w-5 h-5" />
 
                                     <span>
                                         Data Obat
@@ -1190,8 +1114,8 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/klinik/penyakit')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                     ]"
                                 >
 
@@ -1214,18 +1138,14 @@ const breadcrumbs = computed(() => {
                                     :class="[
                                         'flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition',
                                         isActive('/notifikasi')
-                                            ? 'bg-blue-700 text-white'
-                                            : 'text-blue-100 hover:bg-blue-900/50'
+                                            ? 'bg-white text-pink-700'
+                                            : 'text-pink-50 hover:bg-white/10 hover:text-white'
                                     ]"
                                 >
 
-                                    <div
-                                        class="flex items-center space-x-3"
-                                    >
+                                    <div class="flex items-center space-x-3">
 
-                                        <BellIcon
-                                            class="w-5 h-5"
-                                        />
+                                        <BellIcon class="w-5 h-5" />
 
                                         <span>
                                             Notifikasi
@@ -1235,9 +1155,16 @@ const breadcrumbs = computed(() => {
 
 
                                     <span
-                                        class="bg-rose-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
+                                        v-if="notificationCount > 0"
+                                        class="bg-white text-pink-600 text-[9px] font-bold min-w-5 h-5 px-1 flex items-center justify-center rounded-full"
                                     >
-                                        0
+
+                                        {{
+                                            notificationCount > 99
+                                                ? '99+'
+                                                : notificationCount
+                                        }}
+
                                     </span>
 
                                 </Link>
@@ -1250,9 +1177,11 @@ const breadcrumbs = computed(() => {
                         <!-- FOOTER -->
 
                         <div
-                            class="p-4 border-t border-blue-900 text-center text-xs text-blue-200/50"
+                            class="p-4 border-t border-white/10 text-center text-xs text-pink-100/60"
                         >
+
                             &copy; 2026 SMKN Jateng Semarang
+
                         </div>
 
                     </aside>
@@ -1283,12 +1212,12 @@ const breadcrumbs = computed(() => {
 
                         <template
                             v-for="(crumb, idx) in breadcrumbs"
-                            :key="`${crumb.name}-${idx}`"
+                            :key="`${crumb.url}-${idx}`"
                         >
 
                             <span
                                 v-if="idx > 0"
-                                class="text-slate-300"
+                                class="text-pink-200"
                             >
                                 /
                             </span>
@@ -1297,17 +1226,21 @@ const breadcrumbs = computed(() => {
                             <Link
                                 v-if="idx < breadcrumbs.length - 1"
                                 :href="crumb.url"
-                                class="hover:text-blue-600 transition"
+                                class="hover:text-pink-600 transition"
                             >
+
                                 {{ crumb.name }}
+
                             </Link>
 
 
                             <span
                                 v-else
-                                class="text-slate-800 font-bold"
+                                class="text-pink-700 font-bold"
                             >
+
                                 {{ crumb.name }}
+
                             </span>
 
                         </template>
@@ -1325,7 +1258,7 @@ const breadcrumbs = computed(() => {
                 <!-- FOOTER -->
 
                 <footer
-                    class="bg-white border-t border-slate-200 py-4 text-center text-xs font-semibold text-slate-400"
+                    class="bg-white border-t border-pink-100 py-4 text-center text-xs font-semibold text-slate-400"
                 >
 
                     &copy; 2026 SMKN Jateng Semarang.

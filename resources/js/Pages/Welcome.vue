@@ -109,7 +109,6 @@ const numberFormat = (value) => {
     return Number(value ?? 0).toLocaleString('id-ID')
 }
 
-
 const percentage = (value) => {
     return `${Number(value ?? 0).toFixed(1)}%`
 }
@@ -143,11 +142,6 @@ const periodeAktif = computed(() =>
 |--------------------------------------------------------------------------
 | PEMERIKSAAN BERKALA
 |--------------------------------------------------------------------------
-|
-| Berkala 1 = jumlah siswa yang sudah menyelesaikan Berkala 1
-| Berkala 2 = jumlah siswa yang sudah menyelesaikan Berkala 2
-|
-|--------------------------------------------------------------------------
 */
 
 const berkala1 = computed(() =>
@@ -158,7 +152,6 @@ const berkala1 = computed(() =>
     )
 )
 
-
 const berkala2 = computed(() =>
     numberFormat(
         props.stats?.berkala2 ??
@@ -166,7 +159,6 @@ const berkala2 = computed(() =>
         0
     )
 )
-
 
 const totalPemeriksaan = computed(() => {
 
@@ -195,13 +187,6 @@ const totalPemeriksaan = computed(() => {
 |--------------------------------------------------------------------------
 | TKSI
 |--------------------------------------------------------------------------
-|
-| Prioritas:
-| tksiSelesai
-| tesKebugaran
-| tesKebugaranBulanIni
-|
-|--------------------------------------------------------------------------
 */
 
 const tksiSelesai = computed(() =>
@@ -211,7 +196,6 @@ const tksiSelesai = computed(() =>
         0
     )
 )
-
 
 const tksiBulanIni = computed(() =>
     numberFormat(
@@ -235,14 +219,12 @@ const totalKunjungan = computed(() =>
     )
 )
 
-
 const kunjunganBulanIni = computed(() =>
     numberFormat(
         props.stats?.kunjunganBulanIni ??
         0
     )
 )
-
 
 const totalKunjungan30Hari = computed(() =>
     numberFormat(
@@ -264,7 +246,6 @@ const totalKelas = computed(() =>
     )
 )
 
-
 const rataRataKunjungan = computed(() =>
     Number(
         props.stats?.rataRataKunjungan ??
@@ -272,13 +253,11 @@ const rataRataKunjungan = computed(() =>
     ).toFixed(1)
 )
 
-
 const puncakKunjungan = computed(() =>
     numberFormat(
         props.stats?.puncakKunjungan
     )
 )
-
 
 const tren7Hari = computed(() =>
     Number(
@@ -300,13 +279,11 @@ const sehat = computed(() =>
     )
 )
 
-
 const perluPerhatian = computed(() =>
     numberFormat(
         props.stats?.perluPerhatian
     )
 )
-
 
 const rujuk = computed(() =>
     numberFormat(
@@ -314,13 +291,11 @@ const rujuk = computed(() =>
     )
 )
 
-
 const belumDiperiksa = computed(() =>
     numberFormat(
         props.stats?.belumDiperiksa
     )
 )
-
 
 const totalStatusKesehatan = computed(() =>
     numberFormat(
@@ -411,10 +386,10 @@ const lineChartData = computed(() => ({
                 props.lineChart?.data ?? [],
 
             borderColor:
-                '#2563eb',
+                '#D4458A',
 
             backgroundColor:
-                'rgba(37, 99, 235, 0.08)',
+                'rgba(212, 69, 138, 0.10)',
 
             borderWidth:
                 2.5,
@@ -426,7 +401,7 @@ const lineChartData = computed(() => ({
                 0.35,
 
             pointBackgroundColor:
-                '#2563eb',
+                '#D4458A',
 
             pointBorderColor:
                 '#ffffff',
@@ -463,7 +438,7 @@ const lineChartOptions = {
             padding: 10,
 
             backgroundColor:
-                '#0f172a',
+                '#7D1E4D',
 
             titleFont: {
                 size: 12,
@@ -491,7 +466,7 @@ const lineChartOptions = {
                 precision: 0,
 
                 color:
-                    '#64748b',
+                    '#9A265E',
 
                 font: {
                     size: 10
@@ -501,7 +476,7 @@ const lineChartOptions = {
 
             grid: {
                 color:
-                    '#f1f5f9'
+                    '#FAD4E6'
             }
 
         },
@@ -515,7 +490,7 @@ const lineChartOptions = {
             ticks: {
 
                 color:
-                    '#64748b',
+                    '#9A265E',
 
                 font: {
                     size: 10
@@ -549,9 +524,9 @@ const doughnutChartData = computed(() => ({
                 props.doughnutChart?.data ?? [],
 
             backgroundColor: [
-                '#10b981',
-                '#f59e0b',
-                '#f43f5e'
+                '#D4458A',
+                '#EE7CAE',
+                '#F5A9C9'
             ],
 
             borderWidth:
@@ -583,7 +558,7 @@ const doughnutChartOptions = {
             labels: {
 
                 color:
-                    '#475569',
+                    '#9A265E',
 
                 font: {
 
@@ -652,14 +627,14 @@ const diseaseChartData = computed(() => ({
                 props.diseaseChart?.data ?? [],
 
             backgroundColor: [
-                '#3b82f6',
-                '#10b981',
-                '#f59e0b',
-                '#f43f5e',
-                '#8b5cf6',
-                '#06b6d4',
-                '#64748b',
-                '#ec4899'
+                '#D4458A',
+                '#E45E9C',
+                '#EE7CAE',
+                '#F5A9C9',
+                '#C73E80',
+                '#B73574',
+                '#9A265E',
+                '#FAD4E6'
             ],
 
             borderRadius:
@@ -693,7 +668,7 @@ const diseaseChartOptions = {
                 10,
 
             backgroundColor:
-                '#0f172a',
+                '#7D1E4D',
 
             cornerRadius:
                 8
@@ -715,14 +690,14 @@ const diseaseChartOptions = {
                     0,
 
                 color:
-                    '#64748b'
+                    '#9A265E'
 
             },
 
             grid: {
 
                 color:
-                    '#f1f5f9'
+                    '#FAD4E6'
 
             }
 
@@ -736,7 +711,7 @@ const diseaseChartOptions = {
 
             ticks: {
                 color:
-                    '#64748b'
+                    '#9A265E'
             }
 
         }
@@ -816,9 +791,7 @@ const systemStatus = computed(() => {
 <Head title="SiKes-Boarding | SMKN Jateng Semarang" />
 
 
-<div
-    class="min-h-screen bg-slate-50 text-slate-800 font-sans"
->
+<div class="min-h-screen bg-[#FDF1F7] text-slate-800 font-sans">
 
 
 <!-- ================================================================== -->
@@ -826,15 +799,23 @@ const systemStatus = computed(() => {
 <!-- ================================================================== -->
 
 <section
-    class="relative bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white overflow-hidden"
+    class="
+        relative
+        bg-gradient-to-br
+        from-[#D4458A]
+        via-[#C73E80]
+        to-[#9A265E]
+        text-white
+        overflow-hidden
+    "
 >
 
     <div
-        class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/20 rounded-full blur-[120px] pointer-events-none"
+        class="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-[120px] pointer-events-none"
     ></div>
 
     <div
-        class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/20 rounded-full blur-[100px] pointer-events-none"
+        class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-[100px] pointer-events-none"
     ></div>
 
     <div
@@ -855,7 +836,7 @@ const systemStatus = computed(() => {
             >
 
                 <svg
-                    class="w-6 h-6 text-yellow-400"
+                    class="w-6 h-6 text-pink-200"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -907,7 +888,7 @@ const systemStatus = computed(() => {
 
         <Link
             :href="route('login')"
-            class="px-5 sm:px-6 py-2 border border-white/80 text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-white hover:text-blue-900 transition duration-300"
+            class="px-5 sm:px-6 py-2 border border-white/80 text-white text-sm sm:text-base font-semibold rounded-xl hover:bg-white hover:text-[#D4458A] transition duration-300"
         >
             Login
         </Link>
@@ -954,11 +935,11 @@ const systemStatus = computed(() => {
             >
 
                 <div
-                    class="bg-blue-50 p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
+                    class="bg-[#FDF1F7] p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
                 >
 
                     <svg
-                        class="w-11 h-11 text-emerald-500"
+                        class="w-11 h-11 text-[#D4458A]"
                         viewBox="0 0 24 24"
                         fill="currentColor"
                     >
@@ -975,7 +956,7 @@ const systemStatus = computed(() => {
                 <div class="text-center sm:text-left">
 
                     <h2
-                        class="text-xl sm:text-2xl font-bold text-blue-900"
+                        class="text-xl sm:text-2xl font-bold text-[#9A265E]"
                     >
                         Layanan Klinik & Kesehatan
                     </h2>
@@ -988,7 +969,7 @@ const systemStatus = computed(() => {
                     </p>
 
                     <p
-                        class="text-sm text-blue-600 font-bold mt-4"
+                        class="text-sm text-[#D4458A] font-bold mt-4"
                     >
                         Login sebagai Petugas Klinik →
                     </p>
@@ -1006,11 +987,11 @@ const systemStatus = computed(() => {
             >
 
                 <div
-                    class="bg-emerald-50 p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
+                    class="bg-[#FDF1F7] p-4 rounded-2xl flex-shrink-0 group-hover:scale-105 transition"
                 >
 
                     <svg
-                        class="w-11 h-11 text-emerald-500"
+                        class="w-11 h-11 text-[#D4458A]"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -1035,7 +1016,7 @@ const systemStatus = computed(() => {
                 <div class="text-center sm:text-left">
 
                     <h2
-                        class="text-xl sm:text-2xl font-bold text-blue-900"
+                        class="text-xl sm:text-2xl font-bold text-[#9A265E]"
                     >
                         Layanan Tes Kebugaran
                     </h2>
@@ -1048,7 +1029,7 @@ const systemStatus = computed(() => {
                     </p>
 
                     <p
-                        class="text-sm text-emerald-600 font-bold mt-4"
+                        class="text-sm text-[#D4458A] font-bold mt-4"
                     >
                         Login sebagai Petugas TKSI →
                     </p>
@@ -1078,7 +1059,7 @@ const systemStatus = computed(() => {
 
         <path
             d="M0,0 C300,120 900,120 1200,0 L1200,120 L0,120 Z"
-            fill="#f8fafc"
+            fill="#FDF1F7"
         />
 
     </svg>
@@ -1091,7 +1072,7 @@ const systemStatus = computed(() => {
 <!-- ================================================================== -->
 
 <section
-    class="bg-slate-50 py-12 sm:py-16"
+    class="bg-[#FDF1F7] py-12 sm:py-16"
 >
 
 <div
@@ -1106,24 +1087,24 @@ const systemStatus = computed(() => {
     >
 
         <div
-            class="inline-flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-wider mb-2"
+            class="inline-flex items-center gap-2 text-[#D4458A] text-xs font-bold uppercase tracking-wider mb-2"
         >
 
             <span
-                class="w-8 h-px bg-blue-600"
+                class="w-8 h-px bg-[#D4458A]"
             ></span>
 
             DATA SISTEM
 
             <span
-                class="w-8 h-px bg-blue-600"
+                class="w-8 h-px bg-[#D4458A]"
             ></span>
 
         </div>
 
 
         <h2
-            class="text-2xl sm:text-3xl font-extrabold text-slate-800"
+            class="text-2xl sm:text-3xl font-extrabold text-[#7D1E4D]"
         >
             Statistik Kesehatan & Kebugaran
         </h2>
@@ -1139,7 +1120,7 @@ const systemStatus = computed(() => {
 
         <div
             v-if="props.stats?.periodeAktif || props.stats?.namaPeriode"
-            class="mt-3 inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold"
+            class="mt-3 inline-flex items-center gap-2 bg-[#FAD4E6] text-[#9A265E] px-3 py-1.5 rounded-lg text-xs font-bold"
         >
 
             Periode Aktif:
@@ -1151,9 +1132,7 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- STAT CARD UTAMA -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"
@@ -1163,7 +1142,7 @@ const systemStatus = computed(() => {
         <!-- TOTAL SISWA -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-blue-600 shadow-sm hover:shadow-md transition"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] border-t-4 border-t-[#D4458A] shadow-sm hover:shadow-md transition"
         >
 
             <div
@@ -1184,7 +1163,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+                class="text-2xl sm:text-3xl font-black text-[#7D1E4D] mt-3"
             >
                 {{ totalSiswa }}
             </p>
@@ -1202,7 +1181,7 @@ const systemStatus = computed(() => {
         <!-- BERKALA 1 -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-blue-500 shadow-sm hover:shadow-md transition"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] border-t-4 border-t-[#E45E9C] shadow-sm hover:shadow-md transition"
         >
 
             <div
@@ -1223,7 +1202,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+                class="text-2xl sm:text-3xl font-black text-[#7D1E4D] mt-3"
             >
                 {{ berkala1 }}
             </p>
@@ -1241,7 +1220,7 @@ const systemStatus = computed(() => {
         <!-- BERKALA 2 -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-indigo-500 shadow-sm hover:shadow-md transition"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] border-t-4 border-t-[#EE7CAE] shadow-sm hover:shadow-md transition"
         >
 
             <div
@@ -1262,7 +1241,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+                class="text-2xl sm:text-3xl font-black text-[#7D1E4D] mt-3"
             >
                 {{ berkala2 }}
             </p>
@@ -1280,7 +1259,7 @@ const systemStatus = computed(() => {
         <!-- TKSI -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-amber-500 shadow-sm hover:shadow-md transition"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] border-t-4 border-t-[#C73E80] shadow-sm hover:shadow-md transition"
         >
 
             <div
@@ -1301,7 +1280,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+                class="text-2xl sm:text-3xl font-black text-[#7D1E4D] mt-3"
             >
                 {{ tksiSelesai }}
             </p>
@@ -1319,7 +1298,7 @@ const systemStatus = computed(() => {
         <!-- KUNJUNGAN -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 border-t-4 border-t-emerald-500 shadow-sm hover:shadow-md transition"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] border-t-4 border-t-[#B73574] shadow-sm hover:shadow-md transition"
         >
 
             <div
@@ -1340,7 +1319,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-2xl sm:text-3xl font-black text-slate-800 mt-3"
+                class="text-2xl sm:text-3xl font-black text-[#7D1E4D] mt-3"
             >
                 {{ totalKunjungan }}
             </p>
@@ -1357,9 +1336,7 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- RINGKASAN PEMERIKSAAN -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-1 md:grid-cols-3 gap-4"
@@ -1369,7 +1346,7 @@ const systemStatus = computed(() => {
         <!-- BERKALA 1 -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] shadow-sm"
         >
 
             <div
@@ -1379,14 +1356,14 @@ const systemStatus = computed(() => {
                 <div>
 
                     <p
-                        class="text-xs font-bold text-blue-600 uppercase tracking-wider"
+                        class="text-xs font-bold text-[#D4458A] uppercase tracking-wider"
                     >
                         Pemeriksaan Berkala 1
                     </p>
 
 
                     <p
-                        class="text-2xl font-black text-slate-800 mt-2"
+                        class="text-2xl font-black text-[#7D1E4D] mt-2"
                     >
                         {{ berkala1 }}
                         <span
@@ -1407,7 +1384,7 @@ const systemStatus = computed(() => {
 
 
                 <div
-                    class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-xl font-black text-blue-600"
+                    class="w-11 h-11 rounded-xl bg-[#FDF1F7] flex items-center justify-center text-xl font-black text-[#D4458A]"
                 >
                     1
                 </div>
@@ -1420,7 +1397,7 @@ const systemStatus = computed(() => {
         <!-- BERKALA 2 -->
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] shadow-sm"
         >
 
             <div
@@ -1430,14 +1407,14 @@ const systemStatus = computed(() => {
                 <div>
 
                     <p
-                        class="text-xs font-bold text-indigo-600 uppercase tracking-wider"
+                        class="text-xs font-bold text-[#C73E80] uppercase tracking-wider"
                     >
                         Pemeriksaan Berkala 2
                     </p>
 
 
                     <p
-                        class="text-2xl font-black text-slate-800 mt-2"
+                        class="text-2xl font-black text-[#7D1E4D] mt-2"
                     >
                         {{ berkala2 }}
                         <span
@@ -1458,7 +1435,7 @@ const systemStatus = computed(() => {
 
 
                 <div
-                    class="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center text-xl font-black text-indigo-600"
+                    class="w-11 h-11 rounded-xl bg-[#FDF1F7] flex items-center justify-center text-xl font-black text-[#C73E80]"
                 >
                     2
                 </div>
@@ -1471,7 +1448,7 @@ const systemStatus = computed(() => {
         <!-- TKSI -->
 
         <div
-            class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white shadow-sm"
+            class="bg-gradient-to-br from-[#E45E9C] to-[#9A265E] rounded-2xl p-5 text-white shadow-sm"
         >
 
             <p
@@ -1504,28 +1481,25 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- KUNJUNGAN KLINIK -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-1 md:grid-cols-3 gap-4"
     >
 
-
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] shadow-sm"
         >
 
             <p
-                class="text-xs font-bold text-indigo-600 uppercase tracking-wider"
+                class="text-xs font-bold text-[#D4458A] uppercase tracking-wider"
             >
                 Total Kunjungan Klinik
             </p>
 
 
             <p
-                class="text-3xl font-black text-slate-800 mt-2"
+                class="text-3xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ totalKunjungan }}
             </p>
@@ -1541,18 +1515,18 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] shadow-sm"
         >
 
             <p
-                class="text-xs font-bold text-purple-600 uppercase tracking-wider"
+                class="text-xs font-bold text-[#C73E80] uppercase tracking-wider"
             >
                 Kunjungan Bulan Ini
             </p>
 
 
             <p
-                class="text-3xl font-black text-slate-800 mt-2"
+                class="text-3xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ kunjunganBulanIni }}
             </p>
@@ -1568,18 +1542,18 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            class="bg-white rounded-2xl p-5 border border-[#F5A9C9] shadow-sm"
         >
 
             <p
-                class="text-xs font-bold text-rose-600 uppercase tracking-wider"
+                class="text-xs font-bold text-[#B73574] uppercase tracking-wider"
             >
                 30 Hari Terakhir
             </p>
 
 
             <p
-                class="text-3xl font-black text-slate-800 mt-2"
+                class="text-3xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ totalKunjungan30Hari }}
             </p>
@@ -1596,12 +1570,10 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- PROGRESS TKSI -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
@@ -1611,7 +1583,7 @@ const systemStatus = computed(() => {
             <div>
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     🏃 Progress Tes TKSI
                 </h3>
@@ -1627,7 +1599,7 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="text-2xl font-black text-amber-500"
+                class="text-2xl font-black text-[#D4458A]"
             >
                 {{ progressTKSI }}%
             </div>
@@ -1636,11 +1608,11 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="mt-5 h-3 bg-slate-100 rounded-full overflow-hidden"
+            class="mt-5 h-3 bg-[#FDF1F7] rounded-full overflow-hidden"
         >
 
             <div
-                class="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-500"
+                class="h-full bg-gradient-to-r from-[#F5A9C9] via-[#E45E9C] to-[#B73574] rounded-full transition-all duration-500"
                 :style="{
                     width: `${progressTKSI}%`
                 }"
@@ -1667,27 +1639,25 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- STATUS KESEHATAN -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-2 md:grid-cols-4 gap-4"
     >
 
         <div
-            class="bg-white rounded-xl p-4 border border-emerald-100"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
-                class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider"
+                class="text-[10px] font-bold text-[#D4458A] uppercase tracking-wider"
             >
                 Sehat
             </p>
 
 
             <p
-                class="text-2xl font-black text-emerald-600 mt-2"
+                class="text-2xl font-black text-[#D4458A] mt-2"
             >
                 {{ sehat }}
             </p>
@@ -1703,18 +1673,18 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-amber-100"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
-                class="text-[10px] font-bold text-amber-600 uppercase tracking-wider"
+                class="text-[10px] font-bold text-[#C73E80] uppercase tracking-wider"
             >
                 Perlu Perhatian
             </p>
 
 
             <p
-                class="text-2xl font-black text-amber-600 mt-2"
+                class="text-2xl font-black text-[#C73E80] mt-2"
             >
                 {{ perluPerhatian }}
             </p>
@@ -1730,18 +1700,18 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-rose-100"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
-                class="text-[10px] font-bold text-rose-600 uppercase tracking-wider"
+                class="text-[10px] font-bold text-[#9A265E] uppercase tracking-wider"
             >
                 Rujuk
             </p>
 
 
             <p
-                class="text-2xl font-black text-rose-600 mt-2"
+                class="text-2xl font-black text-[#9A265E] mt-2"
             >
                 {{ rujuk }}
             </p>
@@ -1757,18 +1727,18 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-slate-200"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
-                class="text-[10px] font-bold text-slate-500 uppercase tracking-wider"
+                class="text-[10px] font-bold text-[#7D1E4D] uppercase tracking-wider"
             >
                 Belum Diperiksa
             </p>
 
 
             <p
-                class="text-2xl font-black text-slate-600 mt-2"
+                class="text-2xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ belumDiperiksa }}
             </p>
@@ -1785,12 +1755,10 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- PROGRESS KESEHATAN -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
@@ -1800,7 +1768,7 @@ const systemStatus = computed(() => {
             <div>
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     📊 Progress Pemeriksaan Kesehatan
                 </h3>
@@ -1817,7 +1785,7 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="text-2xl font-black text-blue-600"
+                class="text-2xl font-black text-[#D4458A]"
             >
                 {{ progressKesehatan }}%
             </div>
@@ -1826,11 +1794,11 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="mt-5 h-3 bg-slate-100 rounded-full overflow-hidden"
+            class="mt-5 h-3 bg-[#FDF1F7] rounded-full overflow-hidden"
         >
 
             <div
-                class="h-full bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full transition-all duration-500"
+                class="h-full bg-gradient-to-r from-[#F5A9C9] via-[#E45E9C] to-[#B73574] rounded-full transition-all duration-500"
                 :style="{
                     width: `${progressKesehatan}%`
                 }"
@@ -1857,16 +1825,14 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- SECONDARY STAT -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-2 md:grid-cols-4 gap-4"
     >
 
         <div
-            class="bg-white rounded-xl p-4 border border-slate-200"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
@@ -1877,7 +1843,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-xl font-black text-slate-800 mt-2"
+                class="text-xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ totalKelas }}
             </p>
@@ -1886,7 +1852,7 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-slate-200"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
@@ -1897,7 +1863,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-xl font-black text-slate-800 mt-2"
+                class="text-xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ rataRataKunjungan }}
             </p>
@@ -1913,7 +1879,7 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-slate-200"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
@@ -1924,7 +1890,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                class="text-xl font-black text-slate-800 mt-2"
+                class="text-xl font-black text-[#7D1E4D] mt-2"
             >
                 {{ puncakKunjungan }}
             </p>
@@ -1940,7 +1906,7 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="bg-white rounded-xl p-4 border border-slate-200"
+            class="bg-white rounded-xl p-4 border border-[#F5A9C9]"
         >
 
             <p
@@ -1951,12 +1917,7 @@ const systemStatus = computed(() => {
 
 
             <p
-                :class="[
-                    'text-xl font-black mt-2',
-                    tren7Hari >= 0
-                        ? 'text-emerald-600'
-                        : 'text-rose-600'
-                ]"
+                class="text-xl font-black text-[#D4458A] mt-2"
             >
                 {{ tren7Hari >= 0 ? '+' : '' }}{{ tren7Hari }}%
             </p>
@@ -1973,22 +1934,20 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- LINE CHART -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
-            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-4 mb-5"
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#FAD4E6] pb-4 mb-5"
         >
 
             <div>
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     📈 Aktivitas Kunjungan Klinik
                 </h3>
@@ -2004,7 +1963,7 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg w-fit"
+                class="text-xs font-semibold text-[#D4458A] bg-[#FDF1F7] px-3 py-1.5 rounded-lg w-fit"
             >
                 30 Hari Terakhir
             </div>
@@ -2035,9 +1994,7 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- HEALTH + DISEASE -->
-    <!-- ================================================================= -->
 
     <div
         class="grid grid-cols-1 lg:grid-cols-2 gap-6"
@@ -2047,15 +2004,15 @@ const systemStatus = computed(() => {
         <!-- STATUS KESEHATAN -->
 
         <div
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+            class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
         >
 
             <div
-                class="border-b border-slate-100 pb-4 mb-4"
+                class="border-b border-[#FAD4E6] pb-4 mb-4"
             >
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     🩺 Distribusi Status Kesehatan
                 </h3>
@@ -2099,17 +2056,17 @@ const systemStatus = computed(() => {
             >
 
                 <div
-                    class="text-center bg-emerald-50 rounded-xl p-3"
+                    class="text-center bg-[#FDF1F7] rounded-xl p-3"
                 >
 
                     <p
-                        class="text-lg font-black text-emerald-600"
+                        class="text-lg font-black text-[#D4458A]"
                     >
                         {{ sehat }}
                     </p>
 
                     <p
-                        class="text-[10px] text-emerald-700"
+                        class="text-[10px] text-[#9A265E]"
                     >
                         Sehat
                     </p>
@@ -2118,17 +2075,17 @@ const systemStatus = computed(() => {
 
 
                 <div
-                    class="text-center bg-amber-50 rounded-xl p-3"
+                    class="text-center bg-[#FAD4E6] rounded-xl p-3"
                 >
 
                     <p
-                        class="text-lg font-black text-amber-600"
+                        class="text-lg font-black text-[#C73E80]"
                     >
                         {{ perluPerhatian }}
                     </p>
 
                     <p
-                        class="text-[10px] text-amber-700"
+                        class="text-[10px] text-[#9A265E]"
                     >
                         Perhatian
                     </p>
@@ -2137,17 +2094,17 @@ const systemStatus = computed(() => {
 
 
                 <div
-                    class="text-center bg-rose-50 rounded-xl p-3"
+                    class="text-center bg-[#F5A9C9] rounded-xl p-3"
                 >
 
                     <p
-                        class="text-lg font-black text-rose-600"
+                        class="text-lg font-black text-[#7D1E4D]"
                     >
                         {{ rujuk }}
                     </p>
 
                     <p
-                        class="text-[10px] text-rose-700"
+                        class="text-[10px] text-[#7D1E4D]"
                     >
                         Rujuk
                     </p>
@@ -2162,17 +2119,17 @@ const systemStatus = computed(() => {
         <!-- PENYAKIT -->
 
         <div
-            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+            class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
         >
 
             <div
-                class="flex items-start justify-between gap-3 border-b border-slate-100 pb-4 mb-4"
+                class="flex items-start justify-between gap-3 border-b border-[#FAD4E6] pb-4 mb-4"
             >
 
                 <div>
 
                     <h3
-                        class="text-lg font-bold text-slate-800"
+                        class="text-lg font-bold text-[#7D1E4D]"
                     >
                         🦠 Penyakit yang Sering Ditemukan
                     </h3>
@@ -2200,7 +2157,7 @@ const systemStatus = computed(() => {
 
 
                     <p
-                        class="text-xs font-bold text-blue-600 mt-1"
+                        class="text-xs font-bold text-[#D4458A] mt-1"
                     >
                         {{
                             topDisease.nama ??
@@ -2239,22 +2196,20 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- REKAP PENYAKIT -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
-            class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4"
+            class="flex items-center justify-between border-b border-[#FAD4E6] pb-4 mb-4"
         >
 
             <div>
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     📋 Ringkasan Penyakit
                 </h3>
@@ -2287,7 +2242,7 @@ const systemStatus = computed(() => {
                 <thead>
 
                     <tr
-                        class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500"
+                        class="bg-[#FDF1F7] border-b border-[#F5A9C9] text-xs uppercase text-[#9A265E]"
                     >
 
                         <th class="px-4 py-3 text-left">
@@ -2312,7 +2267,7 @@ const systemStatus = computed(() => {
                     <tr
                         v-for="(item, index) in props.diseases"
                         :key="item.id ?? index"
-                        class="border-b border-slate-100 hover:bg-slate-50 transition"
+                        class="border-b border-[#FDF1F7] hover:bg-[#FDF1F7] transition"
                     >
 
                         <td
@@ -2324,7 +2279,7 @@ const systemStatus = computed(() => {
                             >
 
                                 <span
-                                    class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold"
+                                    class="w-7 h-7 rounded-lg bg-[#FDF1F7] text-[#D4458A] flex items-center justify-center text-xs font-bold"
                                 >
                                     {{ index + 1 }}
                                 </span>
@@ -2357,7 +2312,7 @@ const systemStatus = computed(() => {
 
 
                         <td
-                            class="px-4 py-3 text-center font-semibold text-blue-600"
+                            class="px-4 py-3 text-center font-semibold text-[#D4458A]"
                         >
 
                             {{
@@ -2395,20 +2350,18 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- REKAP KELAS -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
-            class="border-b border-slate-100 pb-4 mb-4"
+            class="border-b border-[#FAD4E6] pb-4 mb-4"
         >
 
             <h3
-                class="text-lg font-bold text-slate-800"
+                class="text-lg font-bold text-[#7D1E4D]"
             >
                 📚 Rekapitulasi Kesehatan per Kelas
             </h3>
@@ -2433,7 +2386,7 @@ const systemStatus = computed(() => {
                 <thead>
 
                     <tr
-                        class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500"
+                        class="bg-[#FDF1F7] border-b border-[#F5A9C9] text-xs uppercase text-[#9A265E]"
                     >
 
                         <th class="px-4 py-3 text-left">
@@ -2478,11 +2431,11 @@ const systemStatus = computed(() => {
                     <tr
                         v-for="(row, index) in props.tableData"
                         :key="row.class ?? index"
-                        class="border-b border-slate-100 hover:bg-slate-50 transition"
+                        class="border-b border-[#FDF1F7] hover:bg-[#FDF1F7] transition"
                     >
 
                         <td
-                            class="px-4 py-3 font-bold text-blue-900"
+                            class="px-4 py-3 font-bold text-[#9A265E]"
                         >
                             {{ row.class ?? '-' }}
                         </td>
@@ -2496,21 +2449,21 @@ const systemStatus = computed(() => {
 
 
                         <td
-                            class="px-4 py-3 text-center text-emerald-600 font-semibold"
+                            class="px-4 py-3 text-center text-[#D4458A] font-semibold"
                         >
                             {{ numberFormat(row.healthy) }}
                         </td>
 
 
                         <td
-                            class="px-4 py-3 text-center text-amber-600 font-semibold"
+                            class="px-4 py-3 text-center text-[#C73E80] font-semibold"
                         >
                             {{ numberFormat(row.attention) }}
                         </td>
 
 
                         <td
-                            class="px-4 py-3 text-center text-rose-600 font-semibold"
+                            class="px-4 py-3 text-center text-[#9A265E] font-semibold"
                         >
                             {{ numberFormat(row.refer) }}
                         </td>
@@ -2550,12 +2503,11 @@ const systemStatus = computed(() => {
 
 
                                 <div
-                                    class="w-24 h-2.5 bg-slate-200 rounded-full overflow-hidden"
+                                    class="w-24 h-2.5 bg-[#FAD4E6] rounded-full overflow-hidden"
                                 >
 
                                     <div
-                                        :class="row.barColor ?? 'bg-blue-500'"
-                                        class="h-full rounded-full transition-all"
+                                        class="h-full bg-gradient-to-r from-[#F5A9C9] to-[#D4458A] rounded-full transition-all"
                                         :style="{
                                             width: `${Math.min(
                                                 100,
@@ -2582,7 +2534,7 @@ const systemStatus = computed(() => {
                                 :class="[
                                     'px-2.5 py-1 rounded-full text-[10px] font-bold inline-block',
                                     row.badgeClass ??
-                                    'bg-slate-100 text-slate-600'
+                                    'bg-[#FDF1F7] text-[#9A265E]'
                                 ]"
                             >
                                 {{ row.status ?? '-' }}
@@ -2615,22 +2567,20 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- AKTIVITAS TERBARU -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6"
+        class="bg-white rounded-2xl border border-[#F5A9C9] shadow-sm p-5 sm:p-6"
     >
 
         <div
-            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4"
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#FAD4E6] pb-4"
         >
 
             <div>
 
                 <h3
-                    class="text-lg font-bold text-slate-800"
+                    class="text-lg font-bold text-[#7D1E4D]"
                 >
                     🏥 Aktivitas Klinik Terbaru
                 </h3>
@@ -2647,7 +2597,7 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold w-fit"
+                class="bg-[#FDF1F7] text-[#D4458A] px-3 py-1.5 rounded-lg text-xs font-bold w-fit"
             >
 
                 {{ numberFormat(recentActivityCount) }}
@@ -2663,18 +2613,18 @@ const systemStatus = computed(() => {
         >
 
             <div
-                class="rounded-xl bg-slate-50 border border-slate-100 p-4"
+                class="rounded-xl bg-[#FDF1F7] border border-[#FAD4E6] p-4"
             >
 
                 <p
-                    class="text-[10px] font-bold text-slate-400 uppercase"
+                    class="text-[10px] font-bold text-[#9A265E] uppercase"
                 >
                     Total Aktivitas
                 </p>
 
 
                 <p
-                    class="text-2xl font-black text-slate-800 mt-2"
+                    class="text-2xl font-black text-[#7D1E4D] mt-2"
                 >
                     {{ numberFormat(recentActivityCount) }}
                 </p>
@@ -2683,18 +2633,18 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="rounded-xl bg-emerald-50 border border-emerald-100 p-4"
+                class="rounded-xl bg-[#FDF1F7] border border-[#FAD4E6] p-4"
             >
 
                 <p
-                    class="text-[10px] font-bold text-emerald-600 uppercase"
+                    class="text-[10px] font-bold text-[#D4458A] uppercase"
                 >
                     Status
                 </p>
 
 
                 <p
-                    class="text-lg font-black text-emerald-700 mt-2"
+                    class="text-lg font-black text-[#B73574] mt-2"
                 >
                     Tercatat
                 </p>
@@ -2703,18 +2653,18 @@ const systemStatus = computed(() => {
 
 
             <div
-                class="rounded-xl bg-blue-50 border border-blue-100 p-4"
+                class="rounded-xl bg-[#FDF1F7] border border-[#FAD4E6] p-4"
             >
 
                 <p
-                    class="text-[10px] font-bold text-blue-600 uppercase"
+                    class="text-[10px] font-bold text-[#D4458A] uppercase"
                 >
                     Privasi
                 </p>
 
 
                 <p
-                    class="text-lg font-black text-blue-700 mt-2"
+                    class="text-lg font-black text-[#B73574] mt-2"
                 >
                     Terlindungi
                 </p>
@@ -2725,13 +2675,13 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="mt-5 bg-blue-50 border border-blue-100 rounded-xl p-4"
+            class="mt-5 bg-[#FDF1F7] border border-[#FAD4E6] rounded-xl p-4"
         >
 
             <div class="flex gap-3">
 
                 <div
-                    class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0"
+                    class="w-8 h-8 rounded-lg bg-[#FAD4E6] text-[#D4458A] flex items-center justify-center flex-shrink-0"
                 >
                     🔒
                 </div>
@@ -2740,7 +2690,7 @@ const systemStatus = computed(() => {
                 <div>
 
                     <p
-                        class="text-sm font-bold text-blue-900"
+                        class="text-sm font-bold text-[#9A265E]"
                     >
                         Perlindungan Data Siswa
                     </p>
@@ -2765,12 +2715,10 @@ const systemStatus = computed(() => {
     </div>
 
 
-    <!-- ================================================================= -->
     <!-- INFO SYSTEM -->
-    <!-- ================================================================= -->
 
     <div
-        class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg"
+        class="bg-gradient-to-r from-[#D4458A] via-[#C73E80] to-[#9A265E] rounded-2xl p-6 sm:p-8 text-white shadow-lg"
     >
 
         <div
@@ -2784,7 +2732,7 @@ const systemStatus = computed(() => {
                 >
 
                     <span
-                        class="w-2.5 h-2.5 bg-emerald-300 rounded-full animate-pulse"
+                        class="w-2.5 h-2.5 bg-pink-200 rounded-full animate-pulse"
                     ></span>
 
 
@@ -2818,7 +2766,7 @@ const systemStatus = computed(() => {
 
             <Link
                 :href="route('login')"
-                class="inline-flex items-center justify-center px-5 py-2.5 bg-white text-blue-700 rounded-xl font-bold text-sm hover:bg-blue-50 transition shadow-sm whitespace-nowrap"
+                class="inline-flex items-center justify-center px-5 py-2.5 bg-white text-[#B73574] rounded-xl font-bold text-sm hover:bg-[#FDF1F7] transition shadow-sm whitespace-nowrap"
             >
                 Masuk ke Sistem →
             </Link>
@@ -2837,7 +2785,7 @@ const systemStatus = computed(() => {
 <!-- ================================================================== -->
 
 <footer
-    class="bg-white border-t border-slate-200 py-8"
+    class="bg-white border-t border-[#F5A9C9] py-8"
 >
 
     <div
@@ -2851,7 +2799,7 @@ const systemStatus = computed(() => {
             <div>
 
                 <p
-                    class="font-bold text-slate-700"
+                    class="font-bold text-[#7D1E4D]"
                 >
                     SiKes-Boarding
                 </p>
@@ -2872,7 +2820,7 @@ const systemStatus = computed(() => {
             >
 
                 <span
-                    class="font-bold text-slate-700"
+                    class="font-bold text-[#7D1E4D]"
                 >
                     SMKN Jateng Semarang
                 </span>
@@ -2897,7 +2845,7 @@ const systemStatus = computed(() => {
 
 
         <div
-            class="border-t border-slate-100 mt-6 pt-5 flex flex-col sm:flex-row justify-between gap-2 text-xs text-slate-400"
+            class="border-t border-[#FAD4E6] mt-6 pt-5 flex flex-col sm:flex-row justify-between gap-2 text-xs text-slate-400"
         >
 
             <p>

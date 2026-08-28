@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =========================================================
+   SIKES BOARDING - GLOBAL PINK THEME
+   ========================================================= */
+
+:root {
+    --brand-50: #FDF1F7;
+    --brand-100: #FAD4E6;
+    --brand-200: #F5A9C9;
+    --brand-300: #EE7CAE;
+    --brand-400: #E45E9C;
+    --brand-500: #D4458A;
+    --brand-600: #C73E80;
+    --brand-700: #B73574;
+    --brand-800: #9A265E;
+    --brand-900: #7D1E4D;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #FDF1F7;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #D4458A;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #C73E80;
+}
+
+/* Selection */
+::selection {
+    background: #FAD4E6;
+    color: #9A265E;
+}
+
+/* Focus */
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #D4458A !important;
+    box-shadow: 0 0 0 3px rgba(212, 69, 138, 0.12) !important;
+    outline: none;
+}

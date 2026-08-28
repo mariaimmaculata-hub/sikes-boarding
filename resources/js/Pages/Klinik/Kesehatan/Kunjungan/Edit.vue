@@ -322,7 +322,7 @@ function submit() {
                         'klinik.kesehatan.kunjungan.index'
                     )
                 "
-                class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                class="inline-flex items-center justify-center gap-2 rounded-xl border border-pink-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:bg-pink-50"
             >
 
                 <ArrowLeftIcon
@@ -342,17 +342,17 @@ function submit() {
 
         <div
             v-if="Object.keys(form.errors).length"
-            class="rounded-2xl border border-rose-200 bg-rose-50 p-4"
+            class="rounded-2xl border border-pink-200 bg-pink-50 p-4"
         >
 
             <div class="flex items-start gap-3">
 
                 <div
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                 >
 
                     <ExclamationTriangleIcon
-                        class="h-5 w-5 text-rose-600"
+                        class="h-5 w-5 text-pink-600"
                     />
 
                 </div>
@@ -360,7 +360,7 @@ function submit() {
                 <div>
 
                     <p
-                        class="text-sm font-bold text-rose-800"
+                        class="text-sm font-bold text-pink-800"
                     >
                         Terdapat kesalahan pada data.
                     </p>
@@ -372,7 +372,7 @@ function submit() {
                         <p
                             v-for="(error, key) in form.errors"
                             :key="key"
-                            class="text-xs text-rose-600"
+                            class="text-xs text-pink-600"
                         >
                             • {{ error }}
                         </p>
@@ -391,21 +391,21 @@ function submit() {
         ========================================================= -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="border-b border-slate-100 px-6 py-5"
+                class="border-b border-pink-100 px-6 py-5"
             >
 
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50"
                     >
 
                         <CalendarDaysIcon
-                            class="h-5 w-5 text-blue-600"
+                            class="h-5 w-5 text-pink-600"
                         />
 
                     </div>
@@ -449,7 +449,7 @@ function submit() {
 
                     <select
                         v-model="form.siswa_id"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option value="">
@@ -472,7 +472,7 @@ function submit() {
 
                     <p
                         v-if="form.errors.siswa_id"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.siswa_id }}
                     </p>
@@ -482,7 +482,7 @@ function submit() {
 
                     <div
                         v-if="selectedSiswa"
-                        class="mt-3 rounded-xl bg-blue-50 px-4 py-3"
+                        class="mt-3 rounded-xl bg-pink-50 px-4 py-3"
                     >
 
                         <div
@@ -491,12 +491,12 @@ function submit() {
 
                             <div>
 
-                                <span class="text-blue-400">
+                                <span class="text-pink-400">
                                     NISN
                                 </span>
 
                                 <p
-                                    class="font-semibold text-blue-800"
+                                    class="font-semibold text-pink-800"
                                 >
                                     {{ selectedSiswa.nisn }}
                                 </p>
@@ -506,12 +506,12 @@ function submit() {
 
                             <div>
 
-                                <span class="text-blue-400">
+                                <span class="text-pink-400">
                                     Kelas
                                 </span>
 
                                 <p
-                                    class="font-semibold text-blue-800"
+                                    class="font-semibold text-pink-800"
                                 >
                                     {{
                                         selectedSiswa.kelas?.nama_kelas
@@ -524,12 +524,12 @@ function submit() {
 
                             <div>
 
-                                <span class="text-blue-400">
+                                <span class="text-pink-400">
                                     Jurusan
                                 </span>
 
                                 <p
-                                    class="font-semibold text-blue-800"
+                                    class="font-semibold text-pink-800"
                                 >
                                     {{
                                         selectedSiswa.jurusan?.nama_jurusan
@@ -559,7 +559,7 @@ function submit() {
                     </label>
 
                     <div
-                        class="flex min-h-[66px] items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                        class="flex min-h-[66px] items-center gap-3 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                     >
 
                         <div
@@ -567,7 +567,7 @@ function submit() {
                         >
 
                             <CalendarDaysIcon
-                                class="h-5 w-5 text-blue-600"
+                                class="h-5 w-5 text-pink-600"
                             />
 
                         </div>
@@ -575,7 +575,7 @@ function submit() {
                         <div class="min-w-0">
 
                             <p
-                                class="text-sm font-bold text-blue-800"
+                                class="text-sm font-bold text-pink-800"
                             >
                                 {{
                                     periode?.nama_periode
@@ -587,7 +587,7 @@ function submit() {
                             </p>
 
                             <p
-                                class="mt-0.5 text-[11px] text-blue-500"
+                                class="mt-0.5 text-[11px] text-pink-500"
                             >
                                 Periode tersimpan pada kunjungan
                             </p>
@@ -598,7 +598,7 @@ function submit() {
 
                     <p
                         v-if="form.errors.periode_id"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.periode_id }}
                     </p>
@@ -625,7 +625,7 @@ function submit() {
                         </label>
 
                         <div
-                            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                         >
 
                             <div
@@ -674,7 +674,7 @@ function submit() {
                         </label>
 
                         <div
-                            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                            class="flex min-h-[66px] items-center gap-3 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                         >
 
                             <div
@@ -723,11 +723,11 @@ function submit() {
         ========================================================= -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <div
-                class="border-b border-slate-100 px-6 py-5"
+                class="border-b border-pink-100 px-6 py-5"
             >
 
                 <div class="flex items-center gap-3">
@@ -781,12 +781,12 @@ function submit() {
                         v-model="form.keluhan"
                         rows="3"
                         placeholder="Tuliskan keluhan siswa..."
-                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full resize-none rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     ></textarea>
 
                     <p
                         v-if="form.errors.keluhan"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.keluhan }}
                     </p>
@@ -808,12 +808,12 @@ function submit() {
                         v-model="form.pemeriksaan"
                         rows="4"
                         placeholder="Tuliskan hasil pemeriksaan..."
-                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full resize-none rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     ></textarea>
 
                     <p
                         v-if="form.errors.pemeriksaan"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.pemeriksaan }}
                     </p>
@@ -833,7 +833,7 @@ function submit() {
 
                     <select
                         v-model="form.penyakit_id"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     >
 
                         <option value="">
@@ -860,7 +860,7 @@ function submit() {
 
                     <p
                         v-if="form.errors.penyakit_id"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.penyakit_id }}
                     </p>
@@ -937,7 +937,7 @@ function submit() {
                         class="mb-2 block text-xs font-bold text-slate-600"
                     >
                         Triase
-                        <span class="text-rose-500">*</span>
+                        <span class="text-pink-500">*</span>
                     </label>
 
                     <div
@@ -951,7 +951,7 @@ function submit() {
                             :class="
                                 form.triase === 'merah'
                                     ? 'border-red-500 bg-red-50 ring-2 ring-red-100'
-                                    : 'border-slate-200 bg-white hover:bg-red-50'
+                                    : 'border-pink-100 bg-white hover:bg-red-50'
                             "
                         >
 
@@ -992,7 +992,7 @@ function submit() {
                             :class="
                                 form.triase === 'kuning'
                                     ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-100'
-                                    : 'border-slate-200 bg-white hover:bg-yellow-50'
+                                    : 'border-pink-100 bg-white hover:bg-yellow-50'
                             "
                         >
 
@@ -1032,7 +1032,7 @@ function submit() {
                             :class="
                                 form.triase === 'hijau'
                                     ? 'border-green-500 bg-green-50 ring-2 ring-green-100'
-                                    : 'border-slate-200 bg-white hover:bg-green-50'
+                                    : 'border-pink-100 bg-white hover:bg-green-50'
                             "
                         >
 
@@ -1072,7 +1072,7 @@ function submit() {
                             :class="
                                 form.triase === 'hitam'
                                     ? 'border-slate-700 bg-slate-100 ring-2 ring-slate-200'
-                                    : 'border-slate-200 bg-white hover:bg-slate-50'
+                                    : 'border-pink-100 bg-white hover:bg-pink-50'
                             "
                         >
 
@@ -1109,7 +1109,7 @@ function submit() {
 
                     <p
                         v-if="form.errors.triase"
-                        class="mt-2 text-xs font-medium text-rose-600"
+                        class="mt-2 text-xs font-medium text-pink-600"
                     >
                         {{ form.errors.triase }}
                     </p>
@@ -1131,12 +1131,12 @@ function submit() {
                         v-model="form.tindakan"
                         rows="3"
                         placeholder="Tuliskan tindakan yang dilakukan..."
-                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full resize-none rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     ></textarea>
 
                     <p
                         v-if="form.errors.tindakan"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.tindakan }}
                     </p>
@@ -1158,12 +1158,12 @@ function submit() {
                         v-model="form.catatan"
                         rows="3"
                         placeholder="Catatan tambahan..."
-                        class="w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        class="w-full resize-none rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                     ></textarea>
 
                     <p
                         v-if="form.errors.catatan"
-                        class="mt-1 text-xs text-rose-500"
+                        class="mt-1 text-xs text-pink-500"
                     >
                         {{ form.errors.catatan }}
                     </p>
@@ -1180,13 +1180,13 @@ function submit() {
         ========================================================= -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
             <!-- HEADER -->
 
             <div
-                class="border-b border-slate-100 px-6 py-5"
+                class="border-b border-pink-100 px-6 py-5"
             >
 
                 <div class="flex items-center gap-3">
@@ -1229,7 +1229,7 @@ function submit() {
 
                 <div
                     v-if="!form.obat.length"
-                    class="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center"
+                    class="rounded-xl border border-dashed border-slate-300 bg-pink-50 px-5 py-8 text-center"
                 >
 
                     <BeakerIcon
@@ -1261,7 +1261,7 @@ function submit() {
                     <div
                         v-for="(item, index) in form.obat"
                         :key="index"
-                        class="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                        class="rounded-xl border border-pink-100 bg-pink-50 p-4"
                     >
 
                         <div
@@ -1279,7 +1279,7 @@ function submit() {
                                 </label>
 
                                 <div
-                                    class="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5"
+                                    class="flex min-h-[42px] items-center rounded-xl border border-pink-100 bg-slate-100 px-3 py-2.5"
                                 >
 
                                     <span
@@ -1304,7 +1304,7 @@ function submit() {
                                 </label>
 
                                 <div
-                                    class="flex min-h-[42px] items-center rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5"
+                                    class="flex min-h-[42px] items-center rounded-xl border border-pink-100 bg-slate-100 px-3 py-2.5"
                                 >
 
                                     <span
@@ -1332,7 +1332,7 @@ function submit() {
                             </label>
 
                             <div
-                                class="min-h-[42px] rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5"
+                                class="min-h-[42px] rounded-xl border border-pink-100 bg-slate-100 px-3 py-2.5"
                             >
 
                                 <span
@@ -1387,7 +1387,7 @@ function submit() {
                         'klinik.kesehatan.kunjungan.index'
                     )
                 "
-                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+                class="inline-flex items-center justify-center rounded-xl border border-pink-100 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-pink-50"
             >
                 Batal
             </Link>
@@ -1397,7 +1397,7 @@ function submit() {
                 type="button"
                 @click="submit"
                 :disabled="form.processing"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-pink-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
 
                 <svg

@@ -154,8 +154,10 @@ const deletePenyakit = (penyakit) => {
 
                 <div class="flex items-center gap-3">
 
+                    <!-- ICON -->
+
                     <div
-                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-100 text-rose-600"
+                        class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100 text-pink-600"
                     >
 
                         <ExclamationTriangleIcon
@@ -165,6 +167,8 @@ const deletePenyakit = (penyakit) => {
                     </div>
 
 
+                    <!-- TITLE -->
+
                     <div>
 
                         <h1
@@ -172,7 +176,6 @@ const deletePenyakit = (penyakit) => {
                         >
                             Data Penyakit
                         </h1>
-
 
                         <p
                             class="mt-0.5 text-sm text-slate-500"
@@ -191,7 +194,7 @@ const deletePenyakit = (penyakit) => {
 
             <Link
                 :href="route('klinik.penyakit.create')"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500/30"
             >
 
                 <PlusIcon
@@ -217,7 +220,7 @@ const deletePenyakit = (penyakit) => {
             <!-- TOTAL -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm transition hover:shadow-md"
             >
 
                 <div
@@ -232,7 +235,6 @@ const deletePenyakit = (penyakit) => {
                             Total Penyakit
                         </p>
 
-
                         <p
                             class="mt-1 text-2xl font-bold text-slate-900"
                         >
@@ -243,7 +245,7 @@ const deletePenyakit = (penyakit) => {
 
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-600"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100 text-pink-600"
                     >
 
                         <ExclamationTriangleIcon
@@ -260,7 +262,7 @@ const deletePenyakit = (penyakit) => {
             <!-- HASIL PENCARIAN -->
 
             <div
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm transition hover:shadow-md"
             >
 
                 <div
@@ -275,7 +277,6 @@ const deletePenyakit = (penyakit) => {
                             Hasil Pencarian
                         </p>
 
-
                         <p
                             class="mt-1 text-2xl font-bold text-slate-900"
                         >
@@ -286,7 +287,7 @@ const deletePenyakit = (penyakit) => {
 
 
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700"
+                        class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-100 text-pink-600"
                     >
 
                         <MagnifyingGlassIcon
@@ -307,7 +308,7 @@ const deletePenyakit = (penyakit) => {
         ================================================== -->
 
         <div
-            class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
         >
 
 
@@ -316,7 +317,7 @@ const deletePenyakit = (penyakit) => {
             ================================================== -->
 
             <div
-                class="border-b border-slate-200 p-4 lg:p-5"
+                class="border-b border-pink-100 bg-white p-4 lg:p-5"
             >
 
                 <div
@@ -324,7 +325,7 @@ const deletePenyakit = (penyakit) => {
                 >
 
                     <MagnifyingGlassIcon
-                        class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                        class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-pink-300"
                     />
 
 
@@ -332,7 +333,7 @@ const deletePenyakit = (penyakit) => {
                         v-model="search"
                         type="text"
                         placeholder="Cari nama penyakit, kategori, atau keterangan..."
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20"
+                        class="w-full rounded-xl border border-pink-100 bg-pink-50/50 py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-500/20"
                     />
 
                 </div>
@@ -354,41 +355,41 @@ const deletePenyakit = (penyakit) => {
                     <!-- HEADER -->
 
                     <thead
-                        class="border-b border-slate-200 bg-slate-50"
+                        class="border-b border-pink-100 bg-pink-50/70"
                     >
 
                         <tr>
 
                             <th
-                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500"
+                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-pink-700"
                             >
                                 No
                             </th>
 
 
                             <th
-                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500"
+                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-pink-700"
                             >
                                 Nama Penyakit
                             </th>
 
 
                             <th
-                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500"
+                                class="whitespace-nowrap px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-pink-700"
                             >
                                 Kategori
                             </th>
 
 
                             <th
-                                class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500"
+                                class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-pink-700"
                             >
                                 Keterangan
                             </th>
 
 
                             <th
-                                class="whitespace-nowrap px-5 py-3.5 text-center text-xs font-bold uppercase tracking-wider text-slate-500"
+                                class="whitespace-nowrap px-5 py-3.5 text-center text-xs font-bold uppercase tracking-wider text-pink-700"
                             >
                                 Aksi
                             </th>
@@ -401,7 +402,7 @@ const deletePenyakit = (penyakit) => {
                     <!-- BODY -->
 
                     <tbody
-                        class="divide-y divide-slate-100"
+                        class="divide-y divide-pink-50"
                     >
 
 
@@ -410,7 +411,7 @@ const deletePenyakit = (penyakit) => {
                         <tr
                             v-for="(penyakit, index) in filteredPenyakits"
                             :key="penyakit.id"
-                            class="transition hover:bg-slate-50/70"
+                            class="transition hover:bg-pink-50/40"
                         >
 
 
@@ -436,7 +437,7 @@ const deletePenyakit = (penyakit) => {
                                 >
 
                                     <div
-                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600"
+                                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-50 text-pink-600"
                                     >
 
                                         <ExclamationTriangleIcon
@@ -475,7 +476,7 @@ const deletePenyakit = (penyakit) => {
 
                                 <span
                                     v-if="penyakit.kategori"
-                                    class="inline-flex items-center rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700"
+                                    class="inline-flex items-center rounded-lg bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-700"
                                 >
                                     {{ penyakit.kategori }}
                                 </span>
@@ -525,7 +526,7 @@ const deletePenyakit = (penyakit) => {
                                             penyakit.id
                                         )"
                                         title="Lihat detail"
-                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700 transition hover:bg-blue-100"
+                                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-pink-50 text-pink-700 transition hover:bg-pink-100"
                                     >
 
                                         <EyeIcon
@@ -600,7 +601,7 @@ const deletePenyakit = (penyakit) => {
                                 >
 
                                     <div
-                                        class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400"
+                                        class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-pink-50 text-pink-300"
                                     >
 
                                         <ExclamationTriangleIcon
@@ -641,7 +642,7 @@ const deletePenyakit = (penyakit) => {
                                     <Link
                                         v-if="!search"
                                         :href="route('klinik.penyakit.create')"
-                                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500/30"
                                     >
 
                                         <PlusIcon
@@ -671,7 +672,7 @@ const deletePenyakit = (penyakit) => {
 
             <div
                 v-if="filteredPenyakits.length > 0"
-                class="border-t border-slate-100 bg-slate-50/50 px-5 py-3"
+                class="border-t border-pink-100 bg-pink-50/30 px-5 py-3"
             >
 
                 <p
@@ -679,17 +680,27 @@ const deletePenyakit = (penyakit) => {
                 >
 
                     Menampilkan
-                    <span class="font-semibold text-slate-600">
+
+                    <span
+                        class="font-semibold text-pink-700"
+                    >
                         {{ filteredPenyakits.length }}
                     </span>
+
                     data penyakit
 
                     <span v-if="search">
+
                         dari
-                        <span class="font-semibold text-slate-600">
+
+                        <span
+                            class="font-semibold text-pink-700"
+                        >
                             {{ props.penyakits.length }}
                         </span>
+
                         total data.
+
                     </span>
 
                 </p>
