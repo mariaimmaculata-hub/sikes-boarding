@@ -846,217 +846,173 @@ const initialNama = () => {
                 </div> 
  
  
-                <!-- ================================================= --> 
-                <!-- OBAT --> 
-                <!-- ================================================= --> 
- 
-                <section 
-                    class="mt-6 overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm" 
-                > 
- 
-                    <div 
-                        class="flex items-center justify-between border-b border-pink-100 px-6 py-5" 
-                    > 
- 
-                        <div class="flex items-center gap-3"> 
- 
-                            <div 
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600" 
-                            > 
- 
-                                <svg 
-                                    class="h-5 w-5" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24" 
-                                > 
- 
-                                    <path 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        stroke-width="2" 
-                                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46" 
-                                    /> 
- 
-                                </svg> 
- 
-                            </div> 
- 
- 
-                            <div> 
- 
-                                <h2 
-                                    class="font-bold text-slate-900" 
-                                > 
-                                    Obat 
-                                </h2> 
- 
- 
-                                <p 
-                                    class="text-xs text-slate-500" 
-                                > 
-                                    Obat yang diberikan kepada siswa 
-                                </p> 
- 
-                            </div> 
- 
-                        </div> 
- 
- 
-                        <span 
-                            v-if="kunjungan.kunjungan_obat?.length" 
-                            class="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600" 
-                        > 
-                            {{ kunjungan.kunjungan_obat.length }} obat 
-                        </span> 
- 
-                    </div> 
- 
- 
-                    <div class="p-6"> 
- 
- 
-                        <!-- ADA OBAT --> 
- 
-                        <div 
-                            v-if="kunjungan.kunjungan_obat?.length" 
-                            class="overflow-x-auto" 
-                        > 
- 
-                            <table 
-                                class="w-full min-w-[600px] text-sm" 
-                            > 
- 
-                                <thead> 
- 
-                                    <tr 
-                                        class="border-b border-pink-100 text-left" 
-                                    > 
- 
-                                        <th 
-                                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400" 
-                                        > 
-                                            # 
-                                        </th> 
- 
- 
-                                        <th 
-                                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400" 
-                                        > 
-                                            Nama Obat 
-                                        </th> 
- 
- 
-                                        <th 
-                                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400" 
-                                        > 
-                                            Jumlah 
-                                        </th> 
- 
- 
-                                        <th 
-                                            class="pb-3 text-xs font-bold uppercase tracking-wider text-slate-400" 
-                                        > 
-                                            Keterangan 
-                                        </th> 
- 
-                                    </tr> 
- 
-                                </thead> 
- 
- 
-                                <tbody> 
- 
-                                    <tr 
-                                        v-for="(item, index) in kunjungan.kunjungan_obat" 
-                                        :key="item.id" 
-                                        class="border-b border-pink-50 last:border-0" 
-                                    > 
- 
-                                        <td 
-                                            class="py-4 pr-4 text-slate-400" 
-                                        > 
-                                            {{ index + 1 }} 
-                                        </td> 
- 
- 
-                                        <td 
-                                            class="py-4 pr-4 font-semibold text-slate-800" 
-                                        > 
-                                            {{ item.obat?.nama_obat || item.nama_obat || '-' }} 
-                                        </td> 
- 
- 
-                                        <td 
-                                            class="py-4 pr-4 text-slate-600" 
-                                        > 
-                                            {{ item.jumlah || '-' }} 
-                                        </td> 
- 
- 
-                                        <td 
-                                            class="py-4 text-slate-500" 
-                                        > 
-                                            {{ item.keterangan || '-' }} 
-                                        </td> 
- 
-                                    </tr> 
- 
-                                </tbody> 
- 
-                            </table> 
- 
-                        </div> 
- 
- 
-                        <!-- TIDAK ADA OBAT --> 
- 
-                        <div 
-                            v-else 
-                            class="flex flex-col items-center justify-center py-10 text-center" 
-                        > 
- 
-                            <div 
-                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-50 text-pink-300" 
-                            > 
- 
-                                <svg 
-                                    class="h-6 w-6" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24" 
-                                > 
- 
-                                    <path 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round" 
-                                        stroke-width="1.8" 
-                                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46" 
-                                    /> 
- 
-                                </svg> 
- 
-                            </div> 
- 
- 
-                            <p 
-                                class="mt-3 text-sm font-semibold text-slate-600" 
-                            > 
-                                Tidak ada obat 
-                            </p> 
- 
- 
-                            <p 
-                                class="mt-1 text-xs text-slate-400" 
-                            > 
-                                Tidak ada obat yang diberikan pada kunjungan ini. 
-                            </p> 
- 
-                        </div> 
- 
-                    </div> 
- 
-                </section> 
+        <!-- ================================================= -->
+<!-- OBAT -->
+<!-- ================================================= -->
+
+<section
+    class="mt-6 overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
+>
+    <div
+        class="flex items-center justify-between border-b border-pink-100 px-6 py-5"
+    >
+        <div class="flex items-center gap-3">
+
+            <div
+                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-600"
+            >
+                <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46"
+                    />
+                </svg>
+            </div>
+
+            <div>
+                <h2 class="font-bold text-slate-900">
+                    Obat
+                </h2>
+
+                <p class="text-xs text-slate-500">
+                    Obat yang diberikan kepada siswa
+                </p>
+            </div>
+
+        </div>
+
+        <span
+            v-if="kunjungan.kunjungan_obat?.length"
+            class="rounded-full bg-pink-50 px-2.5 py-1 text-xs font-semibold text-pink-600"
+        >
+            {{ kunjungan.kunjungan_obat.length }} obat
+        </span>
+    </div>
+
+
+    <div class="p-6">
+
+        <!-- ADA OBAT -->
+        <div
+            v-if="kunjungan.kunjungan_obat?.length"
+            class="overflow-x-auto"
+        >
+
+            <table class="w-full min-w-[600px] text-sm">
+
+                <thead>
+                    <tr
+                        class="border-b border-pink-100 text-left"
+                    >
+                        <th
+                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400"
+                        >
+                            #
+                        </th>
+
+                        <th
+                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400"
+                        >
+                            Nama Obat
+                        </th>
+
+                        <th
+                            class="pb-3 pr-4 text-xs font-bold uppercase tracking-wider text-slate-400"
+                        >
+                            Jumlah
+                        </th>
+
+                        <th
+                            class="pb-3 text-xs font-bold uppercase tracking-wider text-slate-400"
+                        >
+                            Keterangan
+                        </th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+
+                    <tr
+                        v-for="(item, index) in kunjungan.kunjungan_obat"
+                        :key="item.id"
+                        class="border-b border-pink-50 last:border-0"
+                    >
+
+                        <td class="py-4 pr-4 text-slate-400">
+                            {{ index + 1 }}
+                        </td>
+
+                        <td
+                            class="py-4 pr-4 font-semibold text-slate-800"
+                        >
+                            {{ item.obat?.nama_obat || '-' }}
+                        </td>
+
+                        <td class="py-4 pr-4 text-slate-600">
+                            {{ item.jumlah || '-' }}
+                        </td>
+
+                        <td class="py-4 text-slate-500">
+                            {{ item.keterangan || '-' }}
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TIDAK ADA OBAT -->
+        <div
+            v-else
+            class="flex flex-col items-center justify-center py-10 text-center"
+        >
+
+            <div
+                class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-50 text-pink-300"
+            >
+                <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.8"
+                        d="M19.428 15.341A8 8 0 018.66 3.88m10.768 11.461A8 8 0 116.66 4.88m12.768 10.461L15 21.77M9 2.23l6 3.46"
+                    />
+                </svg>
+            </div>
+
+            <p
+                class="mt-3 text-sm font-semibold text-slate-600"
+            >
+                Tidak ada obat
+            </p>
+
+            <p
+                class="mt-1 text-xs text-slate-400"
+            >
+                Tidak ada obat yang diberikan pada kunjungan ini.
+            </p>
+
+        </div>
+
+    </div>
+</section>
  
             </main> 
  

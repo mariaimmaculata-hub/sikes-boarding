@@ -47,7 +47,7 @@ const updatePassword = () => {
                 type="password"
                 autocomplete="current-password"
                 required
-                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="mt-2 block w-full rounded-xl border-pink-200 px-4 py-3 text-slate-800 shadow-sm focus:border-pink-500 focus:ring-pink-500"
             />
 
             <InputError
@@ -70,7 +70,7 @@ const updatePassword = () => {
                 type="password"
                 autocomplete="new-password"
                 required
-                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="mt-2 block w-full rounded-xl border-pink-200 px-4 py-3 text-slate-800 shadow-sm focus:border-pink-500 focus:ring-pink-500"
             />
 
             <InputError
@@ -93,7 +93,7 @@ const updatePassword = () => {
                 type="password"
                 autocomplete="new-password"
                 required
-                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                class="mt-2 block w-full rounded-xl border-pink-200 px-4 py-3 text-slate-800 shadow-sm focus:border-pink-500 focus:ring-pink-500"
             />
 
             <InputError
@@ -107,7 +107,7 @@ const updatePassword = () => {
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="rounded-xl bg-gradient-to-r from-blue-600 to-teal-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:from-blue-700 hover:to-teal-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                class="rounded-xl bg-pink-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-pink-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 PERBARUI PASSWORD
             </button>
@@ -120,7 +120,7 @@ const updatePassword = () => {
             >
                 <p
                     v-if="form.recentlySuccessful"
-                    class="text-sm font-semibold text-green-600"
+                    class="text-sm font-semibold text-pink-600"
                 >
                     Password berhasil diperbarui.
                 </p>

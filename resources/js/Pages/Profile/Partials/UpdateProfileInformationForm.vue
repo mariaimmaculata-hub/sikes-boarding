@@ -42,7 +42,7 @@ const submit = () => {
             <TextInput
                 id="name"
                 type="text"
-                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 focus:border-blue-500 focus:ring-blue-500"
+                class="mt-2 block w-full rounded-xl border-pink-200 px-4 py-3 text-slate-800 focus:border-pink-500 focus:ring-pink-500"
                 v-model="form.name"
                 required
                 autocomplete="name"
@@ -65,7 +65,7 @@ const submit = () => {
             <TextInput
                 id="email"
                 type="email"
-                class="mt-2 block w-full rounded-xl border-slate-300 px-4 py-3 text-slate-800 focus:border-blue-500 focus:ring-blue-500"
+                class="mt-2 block w-full rounded-xl border-pink-200 px-4 py-3 text-slate-800 focus:border-pink-500 focus:ring-pink-500"
                 v-model="form.email"
                 required
                 autocomplete="username"
@@ -89,14 +89,14 @@ const submit = () => {
                     :href="route('verification.send')"
                     method="post"
                     as="button"
-                    class="mt-2 text-sm font-semibold text-blue-700 underline hover:text-blue-900"
+                    class="mt-2 text-sm font-semibold text-pink-700 underline hover:text-pink-900"
                 >
                     Kirim ulang email verifikasi
                 </Link>
 
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-semibold text-green-700"
+                    class="mt-2 text-sm font-semibold text-pink-600"
                 >
                     Link verifikasi baru telah dikirim ke email Anda.
                 </div>
@@ -108,7 +108,7 @@ const submit = () => {
             <button
                 type="submit"
                 :disabled="form.processing"
-                class="rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:from-blue-700 hover:to-blue-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                class="rounded-xl bg-pink-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-pink-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
                 SIMPAN PERUBAHAN
             </button>
@@ -121,7 +121,7 @@ const submit = () => {
             >
                 <p
                     v-if="form.recentlySuccessful"
-                    class="text-sm font-semibold text-green-600"
+                    class="text-sm font-semibold text-pink-600"
                 >
                     Tersimpan.
                 </p>

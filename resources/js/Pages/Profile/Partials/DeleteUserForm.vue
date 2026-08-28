@@ -51,7 +51,7 @@ const closeModal = () => {
             <button
                 type="button"
                 @click="confirmUserDeletion"
-                class="rounded-xl bg-red-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-red-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                class="rounded-xl bg-pink-600 px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-pink-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2"
             >
                 HAPUS AKUN
             </button>
@@ -64,7 +64,7 @@ const closeModal = () => {
             <div class="p-6">
 
                 <div
-                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600"
+                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-pink-100 text-pink-600"
                 >
                     <svg
                         class="h-7 w-7"
@@ -104,7 +104,7 @@ const closeModal = () => {
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="mt-2 block w-full rounded-xl border-slate-300"
+                        class="mt-2 block w-full rounded-xl border-pink-200 focus:border-pink-500 focus:ring-pink-500"
                         placeholder="Masukkan password"
                         @keyup.enter="deleteUser"
                     />
@@ -126,6 +126,7 @@ const closeModal = () => {
                     <DangerButton
                         :disabled="form.processing"
                         @click="deleteUser"
+                        class="bg-pink-600 hover:bg-pink-700 focus:ring-pink-500"
                     >
                         Hapus Akun
                     </DangerButton>

@@ -102,11 +102,18 @@ class KunjunganController extends Controller
 
     public function show(KunjunganKlinik $kunjungan)
     {
+        // =====================================================
+        // AMBIL DATA DETAIL KUNJUNGAN
+        // =====================================================
+
         $kunjungan->load([
             'siswa.kelas',
             'periode',
             'pemeriksa',
-            'kunjunganObat',
+
+            // Ambil obat yang diberikan pada kunjungan
+            // sekaligus ambil data master obat
+            'kunjunganObat.obat',
         ]);
 
         return Inertia::render('Admin/KunjunganKlinik/Show', [
