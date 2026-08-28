@@ -361,7 +361,7 @@ const ubahJurusan = () => {
             <!-- ========================================================= -->
 
             <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 p-6 text-white shadow-lg md:p-8"
             >
 
                 <div
@@ -460,16 +460,18 @@ const ubahJurusan = () => {
 
             <template v-if="periode">
 
+                <!-- ===================================================== -->
                 <!-- PERIODE -->
+                <!-- ===================================================== -->
 
                 <div
-                    class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                    class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
                 >
 
                     <div class="flex items-start gap-3">
 
                         <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700"
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-pink-700"
                         >
                             <CalendarDaysIcon class="h-5 w-5" />
                         </div>
@@ -477,22 +479,22 @@ const ubahJurusan = () => {
                         <div class="min-w-0">
 
                             <p
-                                class="text-[10px] font-extrabold uppercase tracking-wider text-blue-500"
+                                class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500"
                             >
                                 Periode Aktif
                             </p>
 
                             <h2
-                                class="mt-1 text-base font-extrabold text-blue-900"
+                                class="mt-1 text-base font-extrabold text-pink-900"
                             >
                                 {{ periode.nama_periode }}
                             </h2>
 
-                           <p class="mt-1 text-xs font-medium text-blue-700">
-    {{ formatTanggal(periode.tanggal_mulai) }}
-    —
-    {{ formatTanggal(periode.tanggal_selesai) }}
-</p>
+                            <p class="mt-1 text-xs font-medium text-pink-700">
+                                {{ formatTanggal(periode.tanggal_mulai) }}
+                                —
+                                {{ formatTanggal(periode.tanggal_selesai) }}
+                            </p>
 
                         </div>
 
@@ -516,13 +518,13 @@ const ubahJurusan = () => {
                     <!-- TOTAL -->
 
                     <div
-                        class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
+                        class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
                     >
 
                         <div class="flex items-center gap-3">
 
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-700"
                             >
                                 <UserGroupIcon class="h-5 w-5" />
                             </div>
@@ -625,13 +627,13 @@ const ubahJurusan = () => {
                 <!-- ===================================================== -->
 
                 <div
-                    class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
+                    class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                 >
 
                     <!-- HEADER -->
 
                     <div
-                        class="border-b border-slate-100 px-6 py-5"
+                        class="border-b border-pink-100 px-6 py-5"
                     >
 
                         <div>
@@ -654,13 +656,13 @@ const ubahJurusan = () => {
                     <!-- ================================================= -->
 
                     <div
-                        class="border-b border-slate-100 bg-slate-50/70 px-6 py-5"
+                        class="border-b border-pink-100 bg-pink-50/50 px-6 py-5"
                     >
 
                         <div class="flex items-center gap-2">
 
                             <FunnelIcon
-                                class="h-4 w-4 text-slate-500"
+                                class="h-4 w-4 text-pink-500"
                             />
 
                             <p
@@ -685,21 +687,21 @@ const ubahJurusan = () => {
                             <div class="relative">
 
                                 <MagnifyingGlassIcon
-                                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pink-400"
                                 />
 
                                 <input
                                     v-model="search"
                                     type="text"
                                     placeholder="Cari nama, NISN, kelas, jurusan, tingkat..."
-                                    class="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-10 text-xs font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-white py-3 pl-10 pr-10 text-xs font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                                 />
 
                                 <button
                                     v-if="search"
                                     type="button"
                                     @click="search = ''"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-pink-600"
                                 >
                                     <XMarkIcon class="h-4 w-4" />
                                 </button>
@@ -727,7 +729,7 @@ const ubahJurusan = () => {
 
                                 <select
                                     v-model="statusFilter"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                                 >
 
                                     <option value="semua">
@@ -760,7 +762,7 @@ const ubahJurusan = () => {
                                 <select
                                     v-model="tingkatFilter"
                                     @change="ubahTingkat"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                                 >
 
                                     <option value="semua">
@@ -793,7 +795,7 @@ const ubahJurusan = () => {
                                 <select
                                     v-model="jurusanFilter"
                                     @change="ubahJurusan"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                                 >
 
                                     <option value="semua">
@@ -825,7 +827,7 @@ const ubahJurusan = () => {
 
                                 <select
                                     v-model="kelasFilter"
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                                    class="w-full rounded-xl border border-pink-100 bg-white px-3 py-3 text-xs font-semibold text-slate-700 outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-100"
                                 >
 
                                     <option value="semua">
@@ -854,15 +856,21 @@ const ubahJurusan = () => {
                         >
 
                             <p class="text-[10px] font-semibold text-slate-400">
+
                                 Menampilkan
+
                                 <span class="font-extrabold text-slate-700">
                                     {{ jumlahHasilFilter }}
                                 </span>
+
                                 dari
+
                                 <span class="font-extrabold text-slate-700">
                                     {{ props.siswa.length }}
                                 </span>
+
                                 siswa
+
                             </p>
 
 
@@ -870,7 +878,7 @@ const ubahJurusan = () => {
                                 v-if="adaFilterAktif"
                                 type="button"
                                 @click="resetFilter"
-                                class="inline-flex items-center justify-center gap-1.5 text-[10px] font-extrabold text-blue-600 hover:text-blue-800"
+                                class="inline-flex items-center justify-center gap-1.5 text-[10px] font-extrabold text-pink-600 hover:text-pink-800"
                             >
 
                                 <XMarkIcon class="h-3.5 w-3.5" />
@@ -890,13 +898,13 @@ const ubahJurusan = () => {
 
                     <div
                         v-if="siswaTampil.length"
-                        class="divide-y divide-slate-100"
+                        class="divide-y divide-pink-50"
                     >
 
                         <div
                             v-for="student in siswaTampil"
                             :key="student.id"
-                            class="flex flex-col gap-4 px-6 py-5 transition hover:bg-slate-50 md:flex-row md:items-center md:justify-between"
+                            class="flex flex-col gap-4 px-6 py-5 transition hover:bg-pink-50/40 md:flex-row md:items-center md:justify-between"
                         >
 
                             <!-- IDENTITAS -->
@@ -906,7 +914,7 @@ const ubahJurusan = () => {
                             >
 
                                 <div
-                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-extrabold text-blue-700"
+                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-sm font-extrabold text-pink-700"
                                 >
                                     {{
                                         student.nama
@@ -1004,7 +1012,7 @@ const ubahJurusan = () => {
                                     />
 
                                     Belum Lengkap
-                                    ({{ student.jumlah_hasil }}/{{
+                                    ({{ student.jumlah_hasil }}/{{ 
                                         student.total_komponen
                                     }})
 
@@ -1022,7 +1030,7 @@ const ubahJurusan = () => {
                                             }
                                         )
                                     "
-                                    class="inline-flex items-center justify-center gap-1 rounded-xl border border-slate-200 px-4 py-2.5 text-[10px] font-extrabold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                    class="inline-flex items-center justify-center gap-1 rounded-xl border border-pink-100 px-4 py-2.5 text-[10px] font-extrabold text-slate-700 transition hover:border-pink-200 hover:bg-pink-50 hover:text-pink-700"
                                 >
 
                                     {{
@@ -1054,7 +1062,7 @@ const ubahJurusan = () => {
                     >
 
                         <MagnifyingGlassIcon
-                            class="mx-auto h-10 w-10 text-slate-300"
+                            class="mx-auto h-10 w-10 text-pink-200"
                         />
 
                         <p
@@ -1073,7 +1081,7 @@ const ubahJurusan = () => {
                             v-if="adaFilterAktif"
                             type="button"
                             @click="resetFilter"
-                            class="mt-4 rounded-xl bg-blue-50 px-4 py-2 text-[10px] font-extrabold text-blue-700 transition hover:bg-blue-100"
+                            class="mt-4 rounded-xl bg-pink-50 px-4 py-2 text-[10px] font-extrabold text-pink-700 transition hover:bg-pink-100"
                         >
                             Reset Filter
                         </button>
@@ -1088,3 +1096,4 @@ const ubahJurusan = () => {
 
     </TksiLayout>
 </template>
+

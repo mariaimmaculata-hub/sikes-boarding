@@ -32,7 +32,6 @@ const panduan = [
         description:
             'Tes untuk mengukur koordinasi mata-tangan melalui lempar dan tangkap bola secara bergantian.',
         icon: ClipboardDocumentCheckIcon,
-        color: 'blue',
 
         deskripsi:
             'Merupakan tes yang dilakukan dengan cara melempar bola ke arah tembok menggunakan tangan kanan dan menangkap bola dengan tangan kiri atau sebaliknya. Tes ini merupakan modifikasi dari Hand Wall Toss Test (Ashok, 2008).',
@@ -65,36 +64,11 @@ const panduan = [
             'Nilai validitas instrumen hand eye coordination test sebesar 0.751 > 0.103 (rhitung > rtabel) memiliki validitas sangat tinggi, dan reliabilitas sebesar 0.689 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≥ 22',
-                puteri: '≥ 15',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: '16 - 21',
-                puteri: '10 - 14',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: '10 - 15',
-                puteri: '5 - 9',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: '4 - 9',
-                puteri: '1 - 4',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≤ 3',
-                puteri: '≤ 0',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≥ 22', puteri: '≥ 15', skor: '5', kategori: 'Baik Sekali' },
+            { putera: '16 - 21', puteri: '10 - 14', skor: '4', kategori: 'Baik' },
+            { putera: '10 - 15', puteri: '5 - 9', skor: '3', kategori: 'Sedang' },
+            { putera: '4 - 9', puteri: '1 - 4', skor: '2', kategori: 'Kurang' },
+            { putera: '≤ 3', puteri: '≤ 0', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 
@@ -105,7 +79,6 @@ const panduan = [
         description:
             'Tes untuk mengukur daya ledak atau power otot tungkai melalui lompatan vertikal.',
         icon: ArrowsUpDownIcon,
-        color: 'emerald',
 
         deskripsi:
             'Merupakan tes yang dilakukan dengan cara melompat secara tegak lurus ke atas (vertical) menggunakan jangkauan lengan yang setinggi-tingginya. Tes ini merupakan adopsi dari vertical jump test tanpa mengubah prosedur tes (Fukuda, 2019).',
@@ -139,36 +112,11 @@ const panduan = [
             'Nilai validitas instrumen vertical jump sebesar 0.805 > 0.103 (rhitung > rtabel) memiliki validitas tinggi, dan reliabilitas sebesar 0.683 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≥ 63',
-                puteri: '≥ 59',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: '59 - 62',
-                puteri: '35 - 58',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: '35 - 58',
-                puteri: '27 - 34',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: '20 - 34',
-                puteri: '19 - 26',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≤ 19',
-                puteri: '≤ 18',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≥ 63', puteri: '≥ 59', skor: '5', kategori: 'Baik Sekali' },
+            { putera: '59 - 62', puteri: '35 - 58', skor: '4', kategori: 'Baik' },
+            { putera: '35 - 58', puteri: '27 - 34', skor: '3', kategori: 'Sedang' },
+            { putera: '20 - 34', puteri: '19 - 26', skor: '2', kategori: 'Kurang' },
+            { putera: '≤ 19', puteri: '≤ 18', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 
@@ -179,7 +127,6 @@ const panduan = [
         description:
             'Tes untuk mengukur kelincahan siswa melalui gerakan berlari, galloping, dan berlari mundur.',
         icon: BoltIcon,
-        color: 'purple',
 
         deskripsi:
             'Tes ini dilakukan dengan cara berlari ke arah depan, galloping ke arah samping kiri dan kanan serta berlari mundur. Tes ini merupakan adopsi dari T-Test tanpa mengubah prosedur tes (Fukuda, 2019).',
@@ -219,36 +166,11 @@ const panduan = [
             'Nilai validitas instrumen T-Test sebesar 0.714 > 0.103 (rhitung > rtabel) memiliki validitas tinggi, dan reliabilitas sebesar 0.693 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≤ 00.06.63',
-                puteri: '≤ 00.07.19',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: '00.06.64 - 00.10.15',
-                puteri: '00.07.20 - 00.11.20',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: '00.10.16 - 00.14.16',
-                puteri: '00.11.21 - 00.15.19',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: '00.14.17 - 00.18.17',
-                puteri: '00.15.20 - 00.19.20',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≥ 00.18.18',
-                puteri: '≥ 00.19.21',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≤ 00.06.63', puteri: '≤ 00.07.19', skor: '5', kategori: 'Baik Sekali' },
+            { putera: '00.06.64 - 00.10.15', puteri: '00.07.20 - 00.11.20', skor: '4', kategori: 'Baik' },
+            { putera: '00.10.16 - 00.14.16', puteri: '00.11.21 - 00.15.19', skor: '3', kategori: 'Sedang' },
+            { putera: '00.14.17 - 00.18.17', puteri: '00.15.20 - 00.19.20', skor: '2', kategori: 'Kurang' },
+            { putera: '≥ 00.18.18', puteri: '≥ 00.19.21', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 
@@ -259,7 +181,6 @@ const panduan = [
         description:
             'Tes untuk mengukur kecepatan reaksi melalui gerakan menyentuh cone sesuai dengan aba-aba warna.',
         icon: HandRaisedIcon,
-        color: 'orange',
 
         deskripsi:
             'Merupakan tes yang dilakukan dengan cara bergerak ke kanan atau ke kiri secepat-cepatnya menyentuh cone kerucut sesuai dengan aba-aba, yaitu menyebutkan warna "hitam" atau "hijau". Tes ini merupakan modifikasi dari berbagai latihan kecepatan reaksi.',
@@ -295,36 +216,11 @@ const panduan = [
             'Nilai validitas instrumen hand touch reaction test sebesar 0.323 > 0.103 (rhitung > rtabel) memiliki validitas rendah, dan reliabilitas sebesar 0.732 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≤ 0.80',
-                puteri: '≤ 0.91',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: '0.81 - 1.09',
-                puteri: '0.92 - 1.21',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: '1.10 - 1.39',
-                puteri: '1.22 - 1.51',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: '1.40 - 1.69',
-                puteri: '1.52 - 1.81',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≥ 1.70',
-                puteri: '≥ 1.82',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≤ 0.80', puteri: '≤ 0.91', skor: '5', kategori: 'Baik Sekali' },
+            { putera: '0.81 - 1.09', puteri: '0.92 - 1.21', skor: '4', kategori: 'Baik' },
+            { putera: '1.10 - 1.39', puteri: '1.22 - 1.51', skor: '3', kategori: 'Sedang' },
+            { putera: '1.40 - 1.69', puteri: '1.52 - 1.81', skor: '2', kategori: 'Kurang' },
+            { putera: '≥ 1.70', puteri: '≥ 1.82', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 
@@ -335,7 +231,6 @@ const panduan = [
         description:
             'Tes untuk mengukur daya tahan otot lengan melalui gerakan dipping selama 3 menit.',
         icon: FireIcon,
-        color: 'rose',
 
         deskripsi:
             'Merupakan tes yang dilakukan dengan cara menekuk dan meluruskan lengan (mengangkat badan) selama 3 menit secara berulang mengikuti irama metronome. Tes ini merupakan modifikasi dari Dynamic Muscular Endurance Test (Miller, 2010).',
@@ -370,36 +265,11 @@ const panduan = [
             'Nilai validitas instrumen dipping test sebesar 0.520 > 0.103 (rhitung > rtabel) memiliki validitas sedang, dan reliabilitas sebesar 0.714 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≥ 25',
-                puteri: '≥ 19',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: '22 - 24',
-                puteri: '16 - 18',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: '19 - 21',
-                puteri: '13 - 15',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: '16 - 18',
-                puteri: '10 - 12',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≤ 15',
-                puteri: '≤ 9',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≥ 25', puteri: '≥ 19', skor: '5', kategori: 'Baik Sekali' },
+            { putera: '22 - 24', puteri: '16 - 18', skor: '4', kategori: 'Baik' },
+            { putera: '19 - 21', puteri: '13 - 15', skor: '3', kategori: 'Sedang' },
+            { putera: '16 - 18', puteri: '10 - 12', skor: '2', kategori: 'Kurang' },
+            { putera: '≤ 15', puteri: '≤ 9', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 
@@ -410,7 +280,6 @@ const panduan = [
         description:
             'Tes daya tahan kardiorespirasi melalui aktivitas lari bolak-balik mengikuti irama beep sejauh 20 meter.',
         icon: SpeakerWaveIcon,
-        color: 'indigo',
 
         deskripsi:
             'Merupakan tes yang dilakukan dengan cara berlari mengikuti isyarat audio (bunyi beep) dari titik/garis awal ke akhir yang berjarak 20 meter. Tes ini merupakan adopsi dari beep test tanpa mengubah prosedur (Wood, 2019).',
@@ -446,36 +315,11 @@ const panduan = [
             'Nilai validitas instrumen beep test sebesar 0.257 > 0.103 (rhitung > rtabel) memiliki validitas rendah, dan reliabilitas sebesar 0.738 (reliabilitas tinggi).',
 
         norma: [
-            {
-                putera: '≥ L12 B3',
-                puteri: '≥ L7 B10',
-                skor: '5',
-                kategori: 'Baik Sekali',
-            },
-            {
-                putera: 'L9 B10 - L12 B2',
-                puteri: 'L6 B2 - L7 B9',
-                skor: '4',
-                kategori: 'Baik',
-            },
-            {
-                putera: 'L7 B4 - L9 B9',
-                puteri: 'L4 B6 - L6 B1',
-                skor: '3',
-                kategori: 'Sedang',
-            },
-            {
-                putera: 'L4 B8 - L7 B3',
-                puteri: 'L1 B5 - L4 B5',
-                skor: '2',
-                kategori: 'Kurang',
-            },
-            {
-                putera: '≤ L4 B7',
-                puteri: '≤ L1 B4',
-                skor: '1',
-                kategori: 'Kurang Sekali',
-            },
+            { putera: '≥ L12 B3', puteri: '≥ L7 B10', skor: '5', kategori: 'Baik Sekali' },
+            { putera: 'L9 B10 - L12 B2', puteri: 'L6 B2 - L7 B9', skor: '4', kategori: 'Baik' },
+            { putera: 'L7 B4 - L9 B9', puteri: 'L4 B6 - L6 B1', skor: '3', kategori: 'Sedang' },
+            { putera: 'L4 B8 - L7 B3', puteri: 'L1 B5 - L4 B5', skor: '2', kategori: 'Kurang' },
+            { putera: '≤ L4 B7', puteri: '≤ L1 B4', skor: '1', kategori: 'Kurang Sekali' },
         ],
     },
 ]
@@ -493,66 +337,48 @@ const selectedTest = computed(() =>
     panduan.find(item => item.id === selectedId.value)
 )
 
+
 const selectTest = (id) => {
+
     selectedId.value = id
 
     window.scrollTo({
         top: 0,
         behavior: 'smooth',
     })
+
 }
 
+
 const backToList = () => {
+
     selectedId.value = null
 
     window.scrollTo({
         top: 0,
         behavior: 'smooth',
     })
+
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| STYLE HELPERS
+| THEME
 |--------------------------------------------------------------------------
+|
+| Mengikuti tema TksiLayout:
+| Pink → Rose
+|
 */
 
-const colorClasses = (color) => {
-    const colors = {
-        blue: {
-            icon: 'bg-blue-50 text-blue-700',
-            border: 'border-blue-500',
-            badge: 'bg-blue-50 text-blue-700',
-        },
-        emerald: {
-            icon: 'bg-emerald-50 text-emerald-700',
-            border: 'border-emerald-500',
-            badge: 'bg-emerald-50 text-emerald-700',
-        },
-        purple: {
-            icon: 'bg-purple-50 text-purple-700',
-            border: 'border-purple-500',
-            badge: 'bg-purple-50 text-purple-700',
-        },
-        orange: {
-            icon: 'bg-orange-50 text-orange-700',
-            border: 'border-orange-500',
-            badge: 'bg-orange-50 text-orange-700',
-        },
-        rose: {
-            icon: 'bg-rose-50 text-rose-700',
-            border: 'border-rose-500',
-            badge: 'bg-rose-50 text-rose-700',
-        },
-        indigo: {
-            icon: 'bg-indigo-50 text-indigo-700',
-            border: 'border-indigo-500',
-            badge: 'bg-indigo-50 text-indigo-700',
-        },
-    }
-
-    return colors[color] ?? colors.blue
+const theme = {
+    icon: 'bg-pink-50 text-pink-700',
+    iconSoft: 'bg-pink-50 text-pink-600',
+    border: 'border-pink-100',
+    badge: 'bg-pink-50 text-pink-700',
+    accent: 'text-pink-700',
+    button: 'bg-pink-700 hover:bg-pink-800',
 }
 </script>
 
@@ -561,7 +387,14 @@ const colorClasses = (color) => {
 
     <TksiLayout>
 
-        <Head :title="selectedTest ? `Panduan ${selectedTest.shortTitle}` : 'Panduan TKSI'" />
+        <Head
+            :title="
+                selectedTest
+                    ? `Panduan ${selectedTest.shortTitle}`
+                    : 'Panduan TKSI'
+            "
+        />
+
 
         <!-- =========================================================
              DETAIL
@@ -577,18 +410,20 @@ const colorClasses = (color) => {
             <button
                 type="button"
                 @click="backToList"
-                class="flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-blue-900"
+                class="flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-pink-700"
             >
+
                 <ArrowLeftIcon class="h-4 w-4" />
 
                 Kembali ke Panduan TKSI
+
             </button>
 
 
             <!-- HEADER -->
 
             <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 p-6 text-white shadow-lg md:p-8"
             >
 
                 <div
@@ -599,7 +434,10 @@ const colorClasses = (color) => {
                     class="pointer-events-none absolute -bottom-16 right-20 h-48 w-48 rounded-full bg-white/5"
                 ></div>
 
-                <div class="relative z-10 flex items-start gap-4">
+
+                <div
+                    class="relative z-10 flex items-start gap-4"
+                >
 
                     <div
                         class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10"
@@ -612,17 +450,24 @@ const colorClasses = (color) => {
 
                     </div>
 
+
                     <div>
 
-                        <p class="text-xs font-bold uppercase tracking-wider text-white/60">
+                        <p
+                            class="text-xs font-bold uppercase tracking-wider text-white/60"
+                        >
                             Panduan Tes TKSI
                         </p>
 
-                        <h1 class="mt-1 text-2xl font-bold tracking-tight">
+                        <h1
+                            class="mt-1 text-2xl font-bold tracking-tight"
+                        >
                             {{ selectedTest.title }}
                         </h1>
 
-                        <p class="mt-2 max-w-3xl text-sm font-medium leading-6 text-white/80">
+                        <p
+                            class="mt-2 max-w-3xl text-sm font-medium leading-6 text-white/80"
+                        >
                             {{ selectedTest.description }}
                         </p>
 
@@ -635,44 +480,76 @@ const colorClasses = (color) => {
 
             <!-- DESKRIPSI + TUJUAN -->
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div
+                class="grid grid-cols-1 gap-6 lg:grid-cols-2"
+            >
 
-                <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                <!-- DESKRIPSI -->
+
+                <div
+                    class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+                >
 
                     <div class="flex items-center gap-3">
 
-                        <div class="rounded-xl bg-blue-50 p-2 text-blue-700">
-                            <InformationCircleIcon class="h-5 w-5" />
+                        <div
+                            class="rounded-xl bg-pink-50 p-2 text-pink-700"
+                        >
+
+                            <InformationCircleIcon
+                                class="h-5 w-5"
+                            />
+
                         </div>
 
-                        <h2 class="text-sm font-extrabold text-slate-800">
+                        <h2
+                            class="text-sm font-extrabold text-slate-800"
+                        >
                             Deskripsi
                         </h2>
 
                     </div>
 
-                    <p class="mt-4 text-sm leading-7 text-slate-600">
+
+                    <p
+                        class="mt-4 text-sm leading-7 text-slate-600"
+                    >
                         {{ selectedTest.deskripsi }}
                     </p>
 
                 </div>
 
 
-                <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+                <!-- TUJUAN -->
+
+                <div
+                    class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+                >
 
                     <div class="flex items-center gap-3">
 
-                        <div class="rounded-xl bg-emerald-50 p-2 text-emerald-700">
-                            <CheckCircleIcon class="h-5 w-5" />
+                        <div
+                            class="rounded-xl bg-pink-50 p-2 text-pink-700"
+                        >
+
+                            <CheckCircleIcon
+                                class="h-5 w-5"
+                            />
+
                         </div>
 
-                        <h2 class="text-sm font-extrabold text-slate-800">
+                        <h2
+                            class="text-sm font-extrabold text-slate-800"
+                        >
                             Tujuan
                         </h2>
 
                     </div>
 
-                    <p class="mt-4 text-sm leading-7 text-slate-600">
+
+                    <p
+                        class="mt-4 text-sm leading-7 text-slate-600"
+                    >
                         {{ selectedTest.tujuan }}
                     </p>
 
@@ -683,21 +560,32 @@ const colorClasses = (color) => {
 
             <!-- PERALATAN -->
 
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div
+                class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
 
                 <div class="flex items-center gap-3">
 
-                    <div class="rounded-xl bg-amber-50 p-2 text-amber-700">
+                    <div
+                        class="rounded-xl bg-pink-50 p-2 text-pink-700"
+                    >
+
                         <BeakerIcon class="h-5 w-5" />
+
                     </div>
+
 
                     <div>
 
-                        <h2 class="text-sm font-extrabold text-slate-800">
+                        <h2
+                            class="text-sm font-extrabold text-slate-800"
+                        >
                             Peralatan
                         </h2>
 
-                        <p class="text-[11px] font-medium text-slate-400">
+                        <p
+                            class="text-[11px] font-medium text-slate-400"
+                        >
                             Peralatan yang diperlukan sebelum pelaksanaan tes.
                         </p>
 
@@ -706,21 +594,25 @@ const colorClasses = (color) => {
                 </div>
 
 
-                <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div
+                    class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
+                >
 
                     <div
                         v-for="(alat, index) in selectedTest.peralatan"
                         :key="index"
-                        class="flex items-start gap-3 rounded-xl bg-slate-50 p-3"
+                        class="flex items-start gap-3 rounded-xl bg-pink-50/50 p-3"
                     >
 
                         <span
-                            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-extrabold text-blue-700 shadow-sm"
+                            class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-extrabold text-pink-700 shadow-sm"
                         >
                             {{ index + 1 }}
                         </span>
 
-                        <span class="text-xs font-semibold leading-5 text-slate-600">
+                        <span
+                            class="text-xs font-semibold leading-5 text-slate-600"
+                        >
                             {{ alat }}
                         </span>
 
@@ -733,15 +625,23 @@ const colorClasses = (color) => {
 
             <!-- PROSEDUR -->
 
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div
+                class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
 
-                <div class="border-b border-slate-100 pb-4">
+                <div
+                    class="border-b border-pink-100 pb-4"
+                >
 
-                    <h2 class="text-base font-extrabold text-slate-800">
+                    <h2
+                        class="text-base font-extrabold text-slate-800"
+                    >
                         Prosedur Pelaksanaan Tes
                     </h2>
 
-                    <p class="mt-1 text-xs font-medium text-slate-400">
+                    <p
+                        class="mt-1 text-xs font-medium text-slate-400"
+                    >
                         Ikuti tahapan berikut secara berurutan.
                     </p>
 
@@ -757,14 +657,19 @@ const colorClasses = (color) => {
                     >
 
                         <div
-                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-900 text-xs font-extrabold text-white"
+                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-700 text-xs font-extrabold text-white"
                         >
                             {{ index + 1 }}
                         </div>
 
-                        <div class="rounded-xl bg-slate-50 p-4">
 
-                            <p class="text-sm leading-6 text-slate-600">
+                        <div
+                            class="rounded-xl bg-pink-50/50 p-4"
+                        >
+
+                            <p
+                                class="text-sm leading-6 text-slate-600"
+                            >
                                 {{ step }}
                             </p>
 
@@ -779,15 +684,25 @@ const colorClasses = (color) => {
 
             <!-- PENSKORAN -->
 
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div
+                class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
 
                 <div class="flex items-center gap-3">
 
-                    <div class="rounded-xl bg-purple-50 p-2 text-purple-700">
-                        <ClipboardDocumentCheckIcon class="h-5 w-5" />
+                    <div
+                        class="rounded-xl bg-pink-50 p-2 text-pink-700"
+                    >
+
+                        <ClipboardDocumentCheckIcon
+                            class="h-5 w-5"
+                        />
+
                     </div>
 
-                    <h2 class="text-sm font-extrabold text-slate-800">
+                    <h2
+                        class="text-sm font-extrabold text-slate-800"
+                    >
                         Penskoran
                     </h2>
 
@@ -803,10 +718,12 @@ const colorClasses = (color) => {
                     >
 
                         <CheckCircleIcon
-                            class="mt-0.5 h-5 w-5 shrink-0 text-emerald-500"
+                            class="mt-0.5 h-5 w-5 shrink-0 text-pink-500"
                         />
 
-                        <p class="text-sm leading-6 text-slate-600">
+                        <p
+                            class="text-sm leading-6 text-slate-600"
+                        >
                             {{ item }}
                         </p>
 
@@ -819,13 +736,19 @@ const colorClasses = (color) => {
 
             <!-- VALIDITAS -->
 
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div
+                class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
 
-                <h2 class="text-sm font-extrabold text-slate-800">
+                <h2
+                    class="text-sm font-extrabold text-slate-800"
+                >
                     Validitas dan Reliabilitas
                 </h2>
 
-                <p class="mt-3 text-sm leading-7 text-slate-600">
+                <p
+                    class="mt-3 text-sm leading-7 text-slate-600"
+                >
                     {{ selectedTest.validitas }}
                 </p>
 
@@ -834,15 +757,21 @@ const colorClasses = (color) => {
 
             <!-- NORMA -->
 
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div
+                class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
+            >
 
                 <div class="mb-5">
 
-                    <h2 class="text-sm font-extrabold text-slate-800">
+                    <h2
+                        class="text-sm font-extrabold text-slate-800"
+                    >
                         Norma Tes
                     </h2>
 
-                    <p class="mt-1 text-xs font-medium text-slate-400">
+                    <p
+                        class="mt-1 text-xs font-medium text-slate-400"
+                    >
                         Norma penilaian berdasarkan jenis kelamin dan skor.
                     </p>
 
@@ -851,25 +780,37 @@ const colorClasses = (color) => {
 
                 <div class="overflow-x-auto">
 
-                    <table class="w-full min-w-[600px] text-left">
+                    <table
+                        class="w-full min-w-[600px] text-left"
+                    >
 
                         <thead>
 
-                            <tr class="border-b border-slate-200">
+                            <tr
+                                class="border-b border-pink-100"
+                            >
 
-                                <th class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <th
+                                    class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400"
+                                >
                                     Putera
                                 </th>
 
-                                <th class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <th
+                                    class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400"
+                                >
                                     Puteri
                                 </th>
 
-                                <th class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <th
+                                    class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400"
+                                >
                                     Skor
                                 </th>
 
-                                <th class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <th
+                                    class="px-4 py-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400"
+                                >
                                     Kategori
                                 </th>
 
@@ -877,25 +818,32 @@ const colorClasses = (color) => {
 
                         </thead>
 
+
                         <tbody>
 
                             <tr
                                 v-for="(row, index) in selectedTest.norma"
                                 :key="index"
-                                class="border-b border-slate-100 last:border-0"
+                                class="border-b border-pink-50 last:border-0"
                             >
 
-                                <td class="px-4 py-3 text-xs font-semibold text-slate-600">
+                                <td
+                                    class="px-4 py-3 text-xs font-semibold text-slate-600"
+                                >
                                     {{ row.putera }}
                                 </td>
 
-                                <td class="px-4 py-3 text-xs font-semibold text-slate-600">
+                                <td
+                                    class="px-4 py-3 text-xs font-semibold text-slate-600"
+                                >
                                     {{ row.puteri }}
                                 </td>
 
                                 <td class="px-4 py-3">
 
-                                    <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-xs font-extrabold text-blue-700">
+                                    <span
+                                        class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-pink-50 text-xs font-extrabold text-pink-700"
+                                    >
                                         {{ row.skor }}
                                     </span>
 
@@ -904,8 +852,7 @@ const colorClasses = (color) => {
                                 <td class="px-4 py-3">
 
                                     <span
-                                        class="inline-flex rounded-full px-3 py-1 text-[10px] font-extrabold"
-                                        :class="colorClasses(selectedTest.color).badge"
+                                        class="inline-flex rounded-full bg-pink-50 px-3 py-1 text-[10px] font-extrabold text-pink-700"
                                     >
                                         {{ row.kategori }}
                                     </span>
@@ -925,15 +872,19 @@ const colorClasses = (color) => {
 
             <!-- BACK BUTTON -->
 
-            <div class="flex justify-center pb-4">
+            <div
+                class="flex justify-center pb-4"
+            >
 
                 <button
                     type="button"
                     @click="backToList"
-                    class="flex items-center gap-2 rounded-xl bg-blue-900 px-5 py-3 text-xs font-bold text-white shadow-sm transition hover:bg-blue-800"
+                    class="flex items-center gap-2 rounded-xl bg-pink-700 px-5 py-3 text-xs font-bold text-white shadow-sm transition hover:bg-pink-800"
                 >
 
-                    <ArrowLeftIcon class="h-4 w-4" />
+                    <ArrowLeftIcon
+                        class="h-4 w-4"
+                    />
 
                     Kembali ke Daftar Panduan
 
@@ -956,7 +907,7 @@ const colorClasses = (color) => {
             <!-- HEADER -->
 
             <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 p-6 text-white shadow-lg md:p-8"
             >
 
                 <div
@@ -967,17 +918,24 @@ const colorClasses = (color) => {
                     class="pointer-events-none absolute -bottom-16 right-20 h-48 w-48 rounded-full bg-white/5"
                 ></div>
 
+
                 <div class="relative z-10">
 
-                    <p class="text-xs font-bold uppercase tracking-wider text-white/60">
+                    <p
+                        class="text-xs font-bold uppercase tracking-wider text-white/60"
+                    >
                         TKSI
                     </p>
 
-                    <h1 class="mt-1 text-2xl font-bold tracking-tight">
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight"
+                    >
                         Panduan TKSI
                     </h1>
 
-                    <p class="mt-2 max-w-2xl text-sm font-medium leading-6 text-white/80">
+                    <p
+                        class="mt-2 max-w-2xl text-sm font-medium leading-6 text-white/80"
+                    >
                         Panduan pelaksanaan tes TKSI sebagai acuan dalam
                         melakukan pengukuran dan pencatatan hasil tes siswa.
                     </p>
@@ -990,26 +948,35 @@ const colorClasses = (color) => {
             <!-- INFORMASI -->
 
             <div
-                class="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm"
+                class="rounded-2xl border border-pink-100 bg-white p-5 shadow-sm"
             >
 
-                <div class="flex items-start gap-3">
+                <div
+                    class="flex items-start gap-3"
+                >
 
                     <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50 text-pink-700"
                     >
 
-                        <ClipboardDocumentCheckIcon class="h-5 w-5" />
+                        <ClipboardDocumentCheckIcon
+                            class="h-5 w-5"
+                        />
 
                     </div>
 
+
                     <div>
 
-                        <h2 class="text-sm font-extrabold text-slate-800">
+                        <h2
+                            class="text-sm font-extrabold text-slate-800"
+                        >
                             Tentang Panduan TKSI
                         </h2>
 
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
+                        <p
+                            class="mt-1 text-xs leading-5 text-slate-500"
+                        >
                             Pilih salah satu jenis tes di bawah ini untuk
                             melihat detail prosedur, peralatan, penskoran,
                             validitas, reliabilitas, dan norma tes.
@@ -1028,11 +995,15 @@ const colorClasses = (color) => {
 
                 <div class="mb-4">
 
-                    <h2 class="text-base font-extrabold text-slate-800">
+                    <h2
+                        class="text-base font-extrabold text-slate-800"
+                    >
                         Jenis Tes TKSI
                     </h2>
 
-                    <p class="mt-1 text-xs font-medium text-slate-400">
+                    <p
+                        class="mt-1 text-xs font-medium text-slate-400"
+                    >
                         Tersedia 6 panduan tes.
                     </p>
 
@@ -1048,14 +1019,15 @@ const colorClasses = (color) => {
                         :key="item.id"
                         type="button"
                         @click="selectTest(item.id)"
-                        class="group rounded-2xl border border-slate-100 bg-white p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-blue-100 hover:shadow-md"
+                        class="group rounded-2xl border border-pink-100 bg-white p-5 text-left shadow-sm transition duration-200 hover:-translate-y-1 hover:border-pink-200 hover:shadow-md"
                     >
 
-                        <div class="flex items-start justify-between">
+                        <div
+                            class="flex items-start justify-between"
+                        >
 
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-xl"
-                                :class="colorClasses(item.color).icon"
+                                class="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-50 text-pink-700 transition group-hover:bg-pink-100"
                             >
 
                                 <component
@@ -1067,7 +1039,7 @@ const colorClasses = (color) => {
 
 
                             <span
-                                class="text-[10px] font-bold text-slate-300"
+                                class="text-[10px] font-bold text-pink-200"
                             >
                                 {{ String(index + 1).padStart(2, '0') }}
                             </span>
@@ -1076,19 +1048,21 @@ const colorClasses = (color) => {
 
 
                         <h3
-                            class="mt-5 text-sm font-extrabold text-slate-800 transition group-hover:text-blue-900"
+                            class="mt-5 text-sm font-extrabold text-slate-800 transition group-hover:text-pink-700"
                         >
                             {{ item.title }}
                         </h3>
 
 
-                        <p class="mt-2 text-xs leading-5 text-slate-500">
+                        <p
+                            class="mt-2 text-xs leading-5 text-slate-500"
+                        >
                             {{ item.description }}
                         </p>
 
 
                         <div
-                            class="mt-5 flex items-center gap-1 text-[10px] font-extrabold text-blue-700"
+                            class="mt-5 flex items-center gap-1 text-[10px] font-extrabold text-pink-700"
                         >
 
                             <span>
@@ -1113,16 +1087,20 @@ const colorClasses = (color) => {
             <!-- FOOTER INFORMATION -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
             >
 
-                <div class="flex items-start gap-3">
+                <div
+                    class="flex items-start gap-3"
+                >
 
                     <InformationCircleIcon
-                        class="mt-0.5 h-5 w-5 shrink-0 text-blue-700"
+                        class="mt-0.5 h-5 w-5 shrink-0 text-pink-700"
                     />
 
-                    <p class="text-xs leading-6 text-blue-900">
+                    <p
+                        class="text-xs leading-6 text-pink-900"
+                    >
                         Gunakan panduan ini sebagai acuan dalam pelaksanaan
                         pengukuran TKSI. Pastikan prosedur, peralatan, dan
                         ketentuan penskoran diperhatikan sebelum melakukan

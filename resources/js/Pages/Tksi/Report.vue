@@ -1006,7 +1006,7 @@ function hasilAkhirClass(item) {
             return 'bg-green-100 text-green-700'
 
         case 'Sedang':
-            return 'bg-blue-100 text-blue-700'
+            return 'bg-pink-100 text-pink-700'
 
         case 'Kurang':
             return 'bg-amber-100 text-amber-700'
@@ -1205,7 +1205,7 @@ function komponenClass(item, namaKomponen) {
         kategoriLower.includes('cukup') ||
         kategoriLower.includes('sedang')
     ) {
-        return 'bg-blue-100 text-blue-700'
+        return 'bg-pink-100 text-pink-700'
     }
 
     if (
@@ -1390,7 +1390,7 @@ function exportPdf() {
         <!-- ========================================================= -->
 
         <div
-            class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+            class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 p-6 text-white shadow-lg md:p-8"
         >
 
             <div
@@ -1402,7 +1402,7 @@ function exportPdf() {
             ></div>
 
             <div
-                class="pointer-events-none absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-indigo-400/10"
+                class="pointer-events-none absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-pink-400/10"
             ></div>
 
 
@@ -1553,17 +1553,17 @@ function exportPdf() {
             <!-- INFO PERIODE -->
 
             <div
-                class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
             >
 
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100"
+                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                     >
 
                         <CalendarDaysIcon
-                            class="h-6 w-6 text-blue-600"
+                            class="h-6 w-6 text-pink-600"
                         />
 
                     </div>
@@ -1572,13 +1572,13 @@ function exportPdf() {
                     <div>
 
                         <p
-                            class="text-[10px] font-bold uppercase tracking-wide text-blue-500"
+                            class="text-[10px] font-bold uppercase tracking-wide text-pink-500"
                         >
                             Periode TKSI
                         </p>
 
                         <p
-                            class="mt-0.5 font-bold text-blue-800"
+                            class="mt-0.5 font-bold text-pink-700"
                         >
                             {{ selectedPeriodeName }}
                         </p>
@@ -1635,7 +1635,7 @@ function exportPdf() {
                     </p>
 
                     <p
-                        class="mt-2 text-3xl font-bold text-blue-600"
+                        class="mt-2 text-3xl font-bold text-pink-600"
                     >
                         {{ totalHasil }}
                     </p>
@@ -1660,7 +1660,7 @@ function exportPdf() {
                     </p>
 
                     <p
-                        class="mt-2 text-3xl font-bold text-purple-600"
+                        class="mt-2 text-3xl font-bold text-pink-600"
                     >
                         {{ jumlahKomponen }}
                     </p>
@@ -1717,11 +1717,11 @@ function exportPdf() {
                     <div class="flex items-center gap-2">
 
                         <div
-                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50"
+                            class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50"
                         >
 
                             <FunnelIcon
-                                class="h-4 w-4 text-blue-600"
+                                class="h-4 w-4 text-pink-600"
                             />
 
                         </div>
@@ -1748,7 +1748,7 @@ function exportPdf() {
 
                     <span
                         v-if="activeFilterCount"
-                        class="w-fit rounded-full bg-blue-50 px-3 py-1.5 text-[10px] font-bold text-blue-700"
+                        class="w-fit rounded-full bg-pink-50 px-3 py-1.5 text-[10px] font-bold text-pink-700"
                     >
                         {{ activeFilterCount }} filter aktif
                     </span>
@@ -1781,7 +1781,7 @@ function exportPdf() {
                                 v-model="search"
                                 type="text"
                                 placeholder="Cari siswa / NISN..."
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-9 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-9 pr-9 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-pink-500 focus:bg-white focus:ring-2 focus:ring-pink-100"
                                 @keyup.enter="applyFilter"
                             />
 
@@ -1817,7 +1817,7 @@ function exportPdf() {
                                 >
 
                                     <CalendarDaysIcon
-                                        class="h-4 w-4 shrink-0 text-blue-500"
+                                        class="h-4 w-4 shrink-0 text-pink-500"
                                     />
 
                                     <span class="truncate">
@@ -1856,7 +1856,7 @@ function exportPdf() {
                                     class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold transition hover:bg-slate-50"
                                     :class="
                                         !periodeId
-                                            ? 'bg-blue-50 text-blue-700'
+                                            ? 'bg-pink-50 text-pink-700'
                                             : 'text-slate-600'
                                     "
                                 >
@@ -1872,7 +1872,7 @@ function exportPdf() {
                                     class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold transition hover:bg-slate-50"
                                     :class="
                                         String(periodeId) === String(item.id)
-                                            ? 'bg-blue-50 text-blue-700'
+                                            ? 'bg-pink-50 text-pink-700'
                                             : 'text-slate-600'
                                     "
                                 >
@@ -1944,7 +1944,7 @@ function exportPdf() {
                                     class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold hover:bg-slate-50"
                                     :class="
                                         !tingkat
-                                            ? 'bg-indigo-50 text-indigo-700'
+                                            ? 'bg-pink-50 text-pink-700'
                                             : 'text-slate-600'
                                     "
                                 >
@@ -1960,7 +1960,7 @@ function exportPdf() {
                                     class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold hover:bg-slate-50"
                                     :class="
                                         String(tingkat) === String(item)
-                                            ? 'bg-indigo-50 text-indigo-700'
+                                            ? 'bg-pink-50 text-pink-700'
                                             : 'text-slate-600'
                                     "
                                 >
@@ -2017,7 +2017,7 @@ function exportPdf() {
                                     class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold hover:bg-slate-50"
                                     :class="
                                         !jurusanId
-                                            ? 'bg-purple-50 text-purple-700'
+                                            ? 'bg-pink-50 text-pink-700'
                                             : 'text-slate-600'
                                     "
                                 >
@@ -2037,7 +2037,7 @@ function exportPdf() {
                                         class="w-full rounded-lg px-3 py-2.5 text-left text-xs font-semibold hover:bg-slate-50"
                                         :class="
                                             String(jurusanId) === String(jurusan.id)
-                                                ? 'bg-purple-50 text-purple-700'
+                                                ? 'bg-pink-50 text-pink-700'
                                                 : 'text-slate-600'
                                         "
                                     >
@@ -2078,7 +2078,7 @@ function exportPdf() {
                                 >
 
                                     <FunnelIcon
-                                        class="h-4 w-4 shrink-0 text-fuchsia-500"
+                                        class="h-4 w-4 shrink-0 text-pink-500"
                                     />
 
                                     <span class="truncate">
@@ -2094,7 +2094,7 @@ function exportPdf() {
 
                                     <span
                                         v-if="selectedKomponen.length"
-                                        class="flex h-5 min-w-5 items-center justify-center rounded-full bg-fuchsia-600 px-1.5 text-[9px] font-bold text-white"
+                                        class="flex h-5 min-w-5 items-center justify-center rounded-full bg-pink-600 px-1.5 text-[9px] font-bold text-white"
                                     >
                                         {{ selectedKomponen.length }}
                                     </span>
@@ -2144,7 +2144,7 @@ function exportPdf() {
                                         <button
                                             type="button"
                                             @click="selectAllKomponen"
-                                            class="rounded-md px-2 py-1 text-[10px] font-bold text-blue-600 hover:bg-blue-50"
+                                            class="rounded-md px-2 py-1 text-[10px] font-bold text-pink-600 hover:bg-pink-50"
                                         >
                                             Semua
                                         </button>
@@ -2177,7 +2177,7 @@ function exportPdf() {
                                             type="checkbox"
                                             :checked="isKomponenSelected(komponen)"
                                             @change="toggleKomponen(komponen)"
-                                            class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                            class="h-4 w-4 rounded border-slate-300 text-pink-600 focus:ring-pink-500"
                                         />
 
                                         <span
@@ -2237,7 +2237,7 @@ function exportPdf() {
                             <button
                                 type="button"
                                 @click="applyFilter"
-                                class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"
+                                class="inline-flex items-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-pink-700"
                             >
 
                                 <FunnelIcon
@@ -2281,15 +2281,15 @@ function exportPdf() {
 
                     <div
                         v-if="activeFilterCount"
-                        class="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                        class="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-pink-100 bg-pink-50 px-4 py-3"
                     >
 
                         <CheckCircleIcon
-                            class="h-4 w-4 text-blue-500"
+                            class="h-4 w-4 text-pink-500"
                         />
 
                         <span
-                            class="text-xs font-semibold text-blue-700"
+                            class="text-xs font-semibold text-pink-700"
                         >
                             Filter aktif:
                         </span>
@@ -2305,7 +2305,7 @@ function exportPdf() {
 
                         <span
                             v-if="periodeId"
-                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-blue-700"
+                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-pink-700"
                         >
                             {{ selectedPeriodeName }}
                         </span>
@@ -2313,7 +2313,7 @@ function exportPdf() {
 
                         <span
                             v-if="tingkat"
-                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-indigo-700"
+                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-pink-700"
                         >
                             Tingkat {{ tingkat }}
                         </span>
@@ -2321,7 +2321,7 @@ function exportPdf() {
 
                         <span
                             v-if="jurusanId"
-                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-purple-700"
+                            class="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold text-pink-700"
                         >
                             {{ selectedJurusanName }}
                         </span>
@@ -2375,7 +2375,7 @@ function exportPdf() {
 
                                 Menampilkan hasil komponen
 
-                                <strong class="text-blue-500">
+                                <strong class="text-pink-500">
                                     {{ selectedKomponenLabel }}
                                 </strong>
 
@@ -2500,7 +2500,7 @@ function exportPdf() {
 
 
                                 <th
-    class="w-[180px] min-w-[180px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-blue-500"
+    class="w-[180px] min-w-[180px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-pink-500"
 >
     Tanggal Tes
 </th>
@@ -2509,7 +2509,7 @@ function exportPdf() {
                                 <th
                                     v-for="namaKomponen in displayedKomponen"
                                     :key="namaKomponen"
-                                    class="w-[170px] min-w-[170px] max-w-[170px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-blue-500"
+                                    class="w-[170px] min-w-[170px] max-w-[170px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-pink-500"
                                 >
 
                                     <div
@@ -2522,7 +2522,7 @@ function exportPdf() {
 
 
                                <th
-    class="w-[160px] min-w-[160px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-purple-500"
+    class="w-[160px] min-w-[160px] px-5 py-4 text-center text-[11px] font-bold uppercase tracking-wide text-pink-500"
 >
     Hasil Akhir
 </th>
@@ -2623,7 +2623,7 @@ function exportPdf() {
                                         >
 
                                             <CalendarDaysIcon
-                                                class="h-4 w-4 text-blue-500"
+                                                class="h-4 w-4 text-pink-500"
                                             />
 
                                             {{ formatTanggal(item.tanggal_tes) }}
@@ -2756,7 +2756,7 @@ function exportPdf() {
                                     <button
                                         type="button"
                                         @click="openDetail(item)"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 transition hover:bg-blue-100"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-pink-50 px-3 py-2 text-xs font-bold text-pink-700 transition hover:bg-pink-100"
                                     >
 
                                         <EyeIcon
@@ -2861,7 +2861,7 @@ function exportPdf() {
                         <div>
 
                             <p
-                                class="text-xs font-bold uppercase tracking-wide text-blue-500"
+                                class="text-xs font-bold uppercase tracking-wide text-pink-500"
                             >
                                 Detail Hasil TKSI
                             </p>
@@ -2908,7 +2908,7 @@ function exportPdf() {
                         <!-- IDENTITAS -->
 
                         <div
-                            class="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4"
+                            class="mb-4 rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
                             <div
@@ -2916,11 +2916,11 @@ function exportPdf() {
                             >
 
                                 <div
-                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100"
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100"
                                 >
 
                                     <UserGroupIcon
-                                        class="h-5 w-5 text-blue-600"
+                                        class="h-5 w-5 text-pink-600"
                                     />
 
                                 </div>
@@ -2929,19 +2929,19 @@ function exportPdf() {
                                 <div>
 
                                     <p
-                                        class="text-xs font-bold uppercase tracking-wide text-blue-600"
+                                        class="text-xs font-bold uppercase tracking-wide text-pink-600"
                                     >
                                         Data Siswa
                                     </p>
 
                                     <p
-                                        class="mt-1 text-sm font-bold text-blue-800"
+                                        class="mt-1 text-sm font-bold text-pink-700"
                                     >
                                         {{ selectedData.siswa?.nama || '-' }}
                                     </p>
 
                                     <p
-                                        class="mt-1 text-xs text-blue-700"
+                                        class="mt-1 text-xs text-pink-700"
                                     >
 
                                         NISN:
@@ -2983,7 +2983,7 @@ function exportPdf() {
                         <!-- TANGGAL TES -->
 
                         <div
-                            class="mb-6 rounded-xl border border-blue-100 bg-white p-4 shadow-sm"
+                            class="mb-6 rounded-xl border border-pink-100 bg-white p-4 shadow-sm"
                         >
 
                             <div
@@ -2991,11 +2991,11 @@ function exportPdf() {
                             >
 
                                 <div
-                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50"
+                                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-50"
                                 >
 
                                     <CalendarDaysIcon
-                                        class="h-5 w-5 text-blue-600"
+                                        class="h-5 w-5 text-pink-600"
                                     />
 
                                 </div>
@@ -3094,7 +3094,7 @@ function exportPdf() {
 
                         <div
                             v-else
-                            class="mb-6 rounded-xl border border-purple-100 bg-purple-50 p-5"
+                            class="mb-6 rounded-xl border border-pink-100 bg-pink-50 p-5"
                         >
 
                             <div
@@ -3104,13 +3104,13 @@ function exportPdf() {
                                 <div>
 
                                     <p
-                                        class="text-xs font-bold uppercase tracking-wide text-purple-500"
+                                        class="text-xs font-bold uppercase tracking-wide text-pink-500"
                                     >
                                         Rata-rata TKSI
                                     </p>
 
                                     <p
-                                        class="mt-1 text-3xl font-bold text-purple-700"
+                                        class="mt-1 text-3xl font-bold text-pink-700"
                                     >
                                         {{
                                             formatRataRata(
@@ -3123,11 +3123,11 @@ function exportPdf() {
 
 
                                 <div
-                                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100"
+                                    class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100"
                                 >
 
                                     <ChartBarIcon
-                                        class="h-6 w-6 text-purple-600"
+                                        class="h-6 w-6 text-pink-600"
                                     />
 
                                 </div>
@@ -3240,10 +3240,10 @@ function exportPdf() {
 
                         <div
                             v-if="komponenOptions.some(item => isBeepTest(item)) && selectedData"
-                            class="mt-5 rounded-xl border border-indigo-100 bg-indigo-50 p-4"
+                            class="mt-5 rounded-xl border border-pink-100 bg-pink-50 p-4"
                         >
 
-                            <p class="text-xs font-bold uppercase tracking-wide text-indigo-700">
+                            <p class="text-xs font-bold uppercase tracking-wide text-pink-700">
                                 Norma Beep Test — {{ isPuteraReport(selectedData) ? 'Putera' : 'Puteri' }}
                             </p>
 
@@ -3252,13 +3252,13 @@ function exportPdf() {
                                 <div
                                     v-for="norm in normaBeepReport(selectedData)"
                                     :key="norm.skor"
-                                    class="rounded-xl border border-indigo-100 bg-white p-3"
+                                    class="rounded-xl border border-pink-100 bg-white p-3"
                                 >
                                     <div class="flex items-center justify-between gap-2">
                                         <span class="text-[10px] font-extrabold text-slate-700">
                                             {{ norm.kategori }}
                                         </span>
-                                        <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-[9px] font-bold text-indigo-700">
+                                        <span class="rounded-full bg-pink-100 px-2 py-0.5 text-[9px] font-bold text-pink-700">
                                             {{ norm.skor }}
                                         </span>
                                     </div>

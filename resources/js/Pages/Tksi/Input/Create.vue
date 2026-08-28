@@ -1855,7 +1855,7 @@ function submit() {
             <!-- HEADER -->
 
             <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-700 to-rose-800 p-6 text-white shadow-lg md:p-8"
             >
 
                 <div
@@ -1947,7 +1947,7 @@ function submit() {
                 <!-- PERIODE -->
 
                 <div
-                    class="rounded-2xl border border-blue-100 bg-blue-50 p-5"
+                    class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
                 >
 
                     <div
@@ -1955,7 +1955,7 @@ function submit() {
                     >
 
                         <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700"
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-pink-700"
                         >
                             <CalendarDaysIcon
                                 class="h-5 w-5"
@@ -1966,21 +1966,21 @@ function submit() {
                         <div class="min-w-0">
 
                             <p
-                                class="text-[10px] font-extrabold uppercase tracking-wider text-blue-500"
+                                class="text-[10px] font-extrabold uppercase tracking-wider text-pink-500"
                             >
                                 Periode Aktif
                             </p>
 
 
                             <h2
-                                class="mt-1 text-base font-extrabold text-blue-900"
+                                class="mt-1 text-base font-extrabold text-pink-900"
                             >
                                 {{ periode.nama_periode }}
                             </h2>
 
 
                             <p
-                                class="mt-1 text-xs font-medium text-blue-700"
+                                class="mt-1 text-xs font-medium text-pink-700"
                             >
                                 {{ formatTanggal(periode.tanggal_mulai) }}
                                 —
@@ -2004,7 +2004,7 @@ function submit() {
                 <!-- DATA SISWA -->
 
                 <div
-                    class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
                 >
 
                     <div
@@ -2012,7 +2012,7 @@ function submit() {
                     >
 
                         <div
-                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-700"
                         >
                             <UserIcon
                                 class="h-5 w-5"
@@ -2118,7 +2118,7 @@ function submit() {
                 <!-- TANGGAL -->
 
                 <div
-                    class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm"
+                    class="rounded-2xl border border-pink-100 bg-white p-6 shadow-sm"
                 >
 
                     <label
@@ -2141,7 +2141,7 @@ function submit() {
                                 periode.tanggal_selesai
                             )
                         "
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 md:w-1/2"
+                        class="w-full rounded-xl border border-pink-100 bg-white px-4 py-3 text-sm font-semibold text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100 md:w-1/2"
                     />
 
 
@@ -2158,25 +2158,25 @@ function submit() {
                 <!-- INFO NORMA -->
 
                 <div
-                    class="rounded-2xl border border-indigo-100 bg-indigo-50 p-5"
+                    class="rounded-2xl border border-pink-100 bg-pink-50 p-5"
                 >
 
                     <div class="flex gap-3">
 
                         <InformationCircleIcon
-                            class="mt-0.5 h-5 w-5 shrink-0 text-indigo-600"
+                            class="mt-0.5 h-5 w-5 shrink-0 text-pink-600"
                         />
 
                         <div>
 
                             <p
-                                class="text-sm font-extrabold text-indigo-800"
+                                class="text-sm font-extrabold text-pink-800"
                             >
                                 Norma {{ genderLabel }}
                             </p>
 
                             <p
-                                class="mt-1 text-xs font-medium leading-5 text-indigo-700"
+                                class="mt-1 text-xs font-medium leading-5 text-pink-700"
                             >
                                 Kategori dan skor hasil tes akan
                                 dihitung otomatis berdasarkan
@@ -2216,13 +2216,13 @@ function submit() {
                         <div
                             v-for="(item, index) in komponen"
                             :key="item.key"
-                            class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm"
+                            class="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm"
                         >
 
                             <!-- TITLE -->
 
                             <div
-                                class="border-b border-slate-100 bg-slate-50 px-5 py-4"
+                                class="border-b border-pink-100 bg-pink-50 px-5 py-4"
                             >
 
                                 <div
@@ -2236,7 +2236,7 @@ function submit() {
                                         >
 
                                             <div
-                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-700"
+                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-pink-50 text-pink-700"
                                             >
                                                 <ClipboardDocumentCheckIcon
                                                     class="h-5 w-5"
@@ -2262,7 +2262,7 @@ function submit() {
 
 
                                     <span
-                                        class="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-[10px] font-bold text-blue-700"
+                                        class="inline-flex w-fit rounded-full bg-pink-100 px-3 py-1 text-[10px] font-bold text-pink-700"
                                     >
                                         {{ item.satuan }}
                                     </span>
@@ -2305,7 +2305,7 @@ function submit() {
                                                 min="1"
                                                 step="1"
                                                 placeholder="Contoh: 5"
-                                                class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                                class="w-full rounded-xl border border-pink-100 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                             />
 
 
@@ -2346,7 +2346,7 @@ function submit() {
                                                 min="1"
                                                 step="1"
                                                 placeholder="Contoh: 8"
-                                                class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                                class="w-full rounded-xl border border-pink-100 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                             />
 
 
@@ -2383,18 +2383,18 @@ function submit() {
                                                 v-if="
                                                     hasilBeepTest(item.key)
                                                 "
-                                                class="rounded-xl border border-blue-200 bg-blue-50 p-4"
+                                                class="rounded-xl border border-pink-200 bg-pink-50 p-4"
                                             >
 
                                                 <p
-                                                    class="text-[10px] font-bold uppercase text-blue-500"
+                                                    class="text-[10px] font-bold uppercase text-pink-500"
                                                 >
                                                     Level.Balikan
                                                 </p>
 
 
                                                 <p
-                                                    class="mt-1 text-2xl font-extrabold text-blue-900"
+                                                    class="mt-1 text-2xl font-extrabold text-pink-900"
                                                 >
                                                     {{
                                                         hasilBeepTest(
@@ -2405,7 +2405,7 @@ function submit() {
 
 
                                                 <p
-                                                    class="mt-1 text-[10px] font-medium text-blue-600"
+                                                    class="mt-1 text-[10px] font-medium text-pink-600"
                                                 >
                                                     Level
                                                     {{
@@ -2427,7 +2427,7 @@ function submit() {
 
                                             <div
                                                 v-else
-                                                class="flex min-h-[82px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-center text-xs text-slate-400"
+                                                class="flex min-h-[82px] items-center justify-center rounded-xl border border-dashed border-pink-100 bg-pink-50 text-center text-xs text-slate-400"
                                             >
                                                 Masukkan level dan
                                                 balikan.
@@ -2517,7 +2517,7 @@ function submit() {
 
                                         <div
                                             v-else
-                                            class="flex min-h-[92px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 text-center text-xs font-medium text-slate-400"
+                                            class="flex min-h-[92px] items-center justify-center rounded-xl border border-dashed border-pink-100 bg-pink-50 px-4 text-center text-xs font-medium text-slate-400"
                                         >
                                             Masukkan level dan
                                             balikan untuk melihat
@@ -2536,7 +2536,7 @@ function submit() {
                                         <div
                                             v-for="norm in normaBeepTest"
                                             :key="norm.skor"
-                                            class="rounded-xl border border-slate-100 bg-white p-3"
+                                            class="rounded-xl border border-pink-100 bg-white p-3"
                                         >
 
                                             <div
@@ -2653,7 +2653,7 @@ function submit() {
                                                             item.key
                                                         )
                                                     "
-                                                    class="w-full rounded-xl border border-slate-200 px-4 py-3 pr-20 text-sm font-bold text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                                    class="w-full rounded-xl border border-pink-100 px-4 py-3 pr-20 text-sm font-bold text-slate-800 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                                 />
 
 
@@ -2686,7 +2686,7 @@ function submit() {
                                                 v-if="
                                                     norma[item.key]
                                                 "
-                                                class="mt-3 rounded-xl bg-slate-50 p-3"
+                                                class="mt-3 rounded-xl bg-pink-50 p-3"
                                             >
 
                                                 <p
@@ -2795,7 +2795,7 @@ function submit() {
 
                                             <div
                                                 v-else
-                                                class="flex min-h-[92px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 text-center text-xs font-medium text-slate-400"
+                                                class="flex min-h-[92px] items-center justify-center rounded-xl border border-dashed border-pink-100 bg-pink-50 px-4 text-center text-xs font-medium text-slate-400"
                                             >
                                                 Masukkan nilai untuk
                                                 melihat kategori
@@ -2817,7 +2817,7 @@ function submit() {
                                                     :key="
                                                         norm.skor
                                                     "
-                                                    class="rounded-xl border border-slate-100 bg-white p-3"
+                                                    class="rounded-xl border border-pink-100 bg-white p-3"
                                                 >
 
                                                     <div
@@ -2887,7 +2887,7 @@ function submit() {
                                         "
                                         rows="2"
                                         placeholder="Tambahkan catatan jika diperlukan..."
-                                        class="w-full resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                        class="w-full resize-none rounded-xl border border-pink-100 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-100"
                                     ></textarea>
 
                                 </div>
@@ -2940,7 +2940,7 @@ function submit() {
                 <!-- BUTTON -->
 
                 <div
-                    class="flex flex-col-reverse gap-3 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:flex-row sm:justify-end"
+                    class="flex flex-col-reverse gap-3 rounded-2xl border border-pink-100 bg-white p-5 shadow-sm sm:flex-row sm:justify-end"
                 >
 
                     <Link
@@ -2949,7 +2949,7 @@ function submit() {
                                 'tksi.input.index'
                             )
                         "
-                        class="rounded-xl border border-slate-200 px-5 py-3 text-center text-xs font-extrabold text-slate-600 transition hover:bg-slate-50"
+                        class="rounded-xl border border-pink-100 px-5 py-3 text-center text-xs font-extrabold text-slate-600 transition hover:bg-pink-50"
                     >
                         Batal
                     </Link>
@@ -2963,7 +2963,7 @@ function submit() {
                             !siswa ||
                             !periode
                         "
-                        class="rounded-xl bg-blue-900 px-6 py-3 text-xs font-extrabold text-white shadow-sm transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="rounded-xl bg-pink-700 px-6 py-3 text-xs font-extrabold text-white shadow-sm transition hover:bg-pink-800 disabled:cursor-not-allowed disabled:opacity-50"
                     >
 
                         {{
@@ -3008,7 +3008,7 @@ function submit() {
                             'tksi.input.index'
                         )
                     "
-                    class="mt-4 inline-flex rounded-xl bg-blue-900 px-4 py-2.5 text-xs font-bold text-white"
+                    class="mt-4 inline-flex rounded-xl bg-pink-700 px-4 py-2.5 text-xs font-bold text-white"
                 >
                     Kembali ke Daftar Siswa
                 </Link>

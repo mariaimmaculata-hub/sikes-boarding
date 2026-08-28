@@ -59,17 +59,17 @@ const reminders = computed(
             ========================================================== -->
 
             <div
-                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white shadow-lg md:p-8"
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-pink-700 via-pink-600 to-rose-600 p-6 text-white shadow-lg md:p-8"
             >
 
                 <!-- DEKORASI -->
 
                 <div
-                    class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5"
+                    class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10"
                 ></div>
 
                 <div
-                    class="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-indigo-400/10"
+                    class="pointer-events-none absolute -bottom-20 right-20 h-48 w-48 rounded-full bg-rose-300/10"
                 ></div>
 
                 <div
@@ -102,7 +102,7 @@ const reminders = computed(
                     <!-- LABEL -->
 
                     <p
-                        class="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-200"
+                        class="text-[11px] font-bold uppercase tracking-[0.2em] text-pink-100"
                     >
                         Instrumen Kebugaran Siswa Indonesia
                     </p>
@@ -126,6 +126,7 @@ const reminders = computed(
                         <p
                             class="text-sm font-semibold leading-6 text-white/95 md:text-base"
                         >
+
                             <span class="font-extrabold text-white">
                                 TKSI
                             </span>
@@ -135,27 +136,34 @@ const reminders = computed(
                             <span class="font-extrabold text-white">
                                 Tes Kebugaran Siswa Indonesia.
                             </span>
+
                         </p>
 
 
                         <p
-                            class="mt-1.5 text-xs leading-5 text-blue-100/80 md:text-sm md:leading-6"
+                            class="mt-1.5 text-xs leading-5 text-pink-50/90 md:text-sm md:leading-6"
                         >
+
                             Instrumen Kebugaran Siswa Indonesia merupakan
                             satu paket rangkaian tes kebugaran siswa Indonesia
                             yang harus dilakukan secara keseluruhan tanpa
                             mengurangi dan menambahkan item tes lain.
+
                         </p>
 
 
                         <p
-                            class="mt-1.5 text-xs leading-5 text-blue-100/80 md:text-sm md:leading-6"
+                            class="mt-1.5 text-xs leading-5 text-pink-50/90 md:text-sm md:leading-6"
                         >
+
                             Instrumen ini digunakan bagi siswa
-                            <span class="font-semibold text-blue-100">
+
+                            <span class="font-semibold text-white">
                                 SMA/SMK/MK/Madrasah Aliyah (MA)
                             </span>
+
                             pada fase EF.
+
                         </p>
 
                     </div>
@@ -164,7 +172,7 @@ const reminders = computed(
                     <!-- PEMBATAS -->
 
                     <div
-                        class="my-5 h-px w-full bg-white/10"
+                        class="my-5 h-px w-full bg-white/15"
                     ></div>
 
 
@@ -177,7 +185,7 @@ const reminders = computed(
                         <!-- WELCOME -->
 
                         <p
-                            class="text-sm font-medium leading-6 text-white/80"
+                            class="text-sm font-medium leading-6 text-white/85"
                         >
 
                             Selamat datang,
@@ -204,7 +212,7 @@ const reminders = computed(
                         >
 
                             <span
-                                class="inline-flex items-center rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm"
+                                class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm"
                             >
 
                                 Periode:
@@ -235,7 +243,7 @@ const reminders = computed(
                 <div
                     v-for="(s, idx) in stats"
                     :key="idx"
-                    class="flex min-h-[145px] flex-col justify-between rounded-2xl border-l-4 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
+                    class="flex min-h-[145px] flex-col justify-between rounded-2xl border border-slate-100 border-l-4 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
                     :class="s.color"
                 >
 
@@ -265,7 +273,6 @@ const reminders = computed(
                         >
                             {{ s.value }}
                         </span>
-
 
                         <span
                             class="mt-2 text-[9px] font-semibold leading-tight text-slate-400"
@@ -308,7 +315,7 @@ const reminders = computed(
                         >
 
                             <HeartIcon
-                                class="h-5 w-5 text-rose-500"
+                                class="h-5 w-5 text-pink-500"
                             />
 
                             <span>
@@ -338,11 +345,10 @@ const reminders = computed(
                                 >
 
                                     <span
-                                        class="block truncate font-extrabold text-blue-900"
+                                        class="block truncate font-extrabold text-pink-700"
                                     >
                                         {{ student.name }}
                                     </span>
-
 
                                     <span
                                         class="block text-[10px] font-bold text-slate-400"
@@ -383,13 +389,12 @@ const reminders = computed(
 
                         <div
                             v-else
-                            class="rounded-xl bg-slate-50 px-4 py-8 text-center"
+                            class="rounded-xl bg-pink-50/50 px-4 py-8 text-center"
                         >
 
                             <HeartIcon
-                                class="mx-auto h-8 w-8 text-slate-300"
+                                class="mx-auto h-8 w-8 text-pink-200"
                             />
-
 
                             <p
                                 class="mt-2 text-sm font-semibold text-slate-400"
@@ -406,13 +411,12 @@ const reminders = computed(
 
                     <Link
                         :href="route('tksi.tksi.index')"
-                        class="mt-6 flex w-full items-center justify-center gap-1 rounded-xl border border-slate-200 py-2.5 text-center text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+                        class="mt-6 flex w-full items-center justify-center gap-1 rounded-xl border border-pink-100 py-2.5 text-center text-xs font-bold text-pink-700 transition hover:bg-pink-50"
                     >
 
                         <span>
                             Lihat Data TKSI
                         </span>
-
 
                         <ArrowRightIcon
                             class="h-3.5 w-3.5"
@@ -469,7 +473,7 @@ const reminders = computed(
                                     <!-- ICON -->
 
                                     <div
-                                        class="mt-0.5 flex-shrink-0 rounded-lg bg-blue-50 p-1.5 text-blue-600"
+                                        class="mt-0.5 flex-shrink-0 rounded-lg bg-pink-50 p-1.5 text-pink-600"
                                     >
 
                                         <ClockIcon
@@ -617,7 +621,7 @@ const reminders = computed(
 
                             <div
                                 v-else
-                                class="rounded-xl bg-slate-50 px-4 py-6 text-center text-xs font-semibold text-slate-400"
+                                class="rounded-xl bg-pink-50/50 px-4 py-6 text-center text-xs font-semibold text-slate-400"
                             >
                                 Tidak ada jadwal TKSI saat ini.
                             </div>
