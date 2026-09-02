@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
+import NotificationDropdown from '@/Components/NotificationDropdown.vue'
 
 import {
-    BellIcon,
     ChevronDownIcon,
     UserIcon,
 } from '@heroicons/vue/24/outline'
@@ -163,21 +163,7 @@ const breadcrumbs = computed(() => {
                      NOTIFICATION
                 ================================================== -->
 
-                <Link
-                    href="/notifikasi"
-                    class="relative p-2 text-pink-400 hover:text-pink-600 hover:bg-pink-50 rounded-full transition"
-                    aria-label="Notifikasi"
-                >
-
-                    <BellIcon class="w-6 h-6" />
-
-                    <span
-                        class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white"
-                    >
-                        0
-                    </span>
-
-                </Link>
+                <NotificationDropdown />
 
 
                 <!-- ==================================================

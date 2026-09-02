@@ -11,174 +11,70 @@ import {
     ArrowRightIcon,
 } from '@heroicons/vue/24/outline'
 
-/*
-|--------------------------------------------------------------------------
-| PAGE
-|--------------------------------------------------------------------------
-*/
-
 const page = usePage()
-
-/*
-|--------------------------------------------------------------------------
-| STATE
-|--------------------------------------------------------------------------
-*/
 
 const isOpen = ref(false)
 
-/*
-|--------------------------------------------------------------------------
-| NOTIFICATION COUNT
-|--------------------------------------------------------------------------
-*/
-
 const notificationCount = computed(() => {
-    return Number(
-        page.props.notificationCount ?? 0
-    )
+    return Number(page.props.notificationCount ?? 0)
 })
-
-/*
-|--------------------------------------------------------------------------
-| RECENT NOTIFICATIONS
-|--------------------------------------------------------------------------
-*/
 
 const recentNotifications = computed(() => {
     return page.props.recentNotifications ?? []
 })
 
-/*
-|--------------------------------------------------------------------------
-| TYPE CLASS
-|--------------------------------------------------------------------------
-*/
-
 const typeClass = (type) => {
-
     return {
-        success:
-            'bg-emerald-100 text-emerald-600',
-
-        warning:
-            'bg-amber-100 text-amber-600',
-
-        danger:
-            'bg-red-100 text-red-600',
-
-        info:
-            'bg-blue-100 text-blue-600',
-
+        success: 'bg-emerald-100 text-emerald-600',
+        warning: 'bg-amber-100 text-amber-600',
+        danger: 'bg-red-100 text-red-600',
+        info: 'bg-blue-100 text-blue-600',
     }[type] ?? 'bg-blue-100 text-blue-600'
 }
 
-/*
-|--------------------------------------------------------------------------
-| TYPE ICON
-|--------------------------------------------------------------------------
-*/
-
 const typeIcon = (type) => {
-
     return {
-        success:
-            CheckCircleIcon,
-
-        warning:
-            ExclamationTriangleIcon,
-
-        danger:
-            XCircleIcon,
-
-        info:
-            InformationCircleIcon,
-
+        success: CheckCircleIcon,
+        warning: ExclamationTriangleIcon,
+        danger: XCircleIcon,
+        info: InformationCircleIcon,
     }[type] ?? InformationCircleIcon
 }
 
-/*
-|--------------------------------------------------------------------------
-| TOGGLE
-|--------------------------------------------------------------------------
-*/
-
 const toggle = () => {
-    isOpen.value =
-        !isOpen.value
+    isOpen.value = !isOpen.value
 }
-
-/*
-|--------------------------------------------------------------------------
-| CLOSE
-|--------------------------------------------------------------------------
-*/
 
 const close = () => {
     isOpen.value = false
 }
 
-/*
-|--------------------------------------------------------------------------
-| CLICK OUTSIDE
-|--------------------------------------------------------------------------
-*/
-
 const handleClickOutside = (event) => {
-
     const target = event.target
 
-    if (
-        !target.closest(
-            '[data-notification-dropdown]'
-        )
-    ) {
+    if (!target.closest('[data-notification-dropdown]')) {
         close()
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| MOUNT
-|--------------------------------------------------------------------------
-*/
-
 onMounted(() => {
-
-    document.addEventListener(
-        'click',
-        handleClickOutside
-    )
-
+    document.addEventListener('click', handleClickOutside)
 })
 
-/*
-|--------------------------------------------------------------------------
-| UNMOUNT
-|--------------------------------------------------------------------------
-*/
-
 onBeforeUnmount(() => {
-
-    document.removeEventListener(
-        'click',
-        handleClickOutside
-    )
-
+    document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
-
 <template>
-
     <div
         data-notification-dropdown
         class="relative"
     >
 
-        <!-- ===================================================== -->
-        <!-- BELL BUTTON -->
-        <!-- ===================================================== -->
+        <!-- ================================================= -->
+        <!-- BELL -->
+        <!-- ================================================= -->
 
         <button
             type="button"
@@ -186,16 +82,11 @@ onBeforeUnmount(() => {
             class="relative rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none"
             title="Notifikasi"
         >
-
-            <BellIcon
-                class="h-6 w-6"
-            />
-
-            <!-- BADGE UNREAD -->
+            <BellIcon class="h-5 w-5 sm:h-6 sm:w-6" />
 
             <span
                 v-if="notificationCount > 0"
-                class="absolute right-1 top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full border border-white bg-rose-500 px-1 text-[9px] font-bold text-white"
+                class="absolute right-0.5 top-0.5 flex min-h-3.5 min-w-3.5 items-center justify-center rounded-full border border-white bg-rose-500 px-0.5 text-[8px] font-bold leading-none text-white sm:right-1 sm:top-1 sm:min-h-4 sm:min-w-4 sm:px-1 sm:text-[9px]"
             >
                 {{
                     notificationCount > 99
@@ -203,26 +94,40 @@ onBeforeUnmount(() => {
                         : notificationCount
                 }}
             </span>
-
         </button>
 
 
-        <!-- ===================================================== -->
+        <!-- ================================================= -->
         <!-- DROPDOWN -->
-        <!-- ===================================================== -->
+        <!-- ================================================= -->
 
         <transition
-            enter-active-class="transition duration-200 ease-out"
+            enter-active-class="transition duration-150 ease-out"
             enter-from-class="translate-y-1 opacity-0"
             enter-to-class="translate-y-0 opacity-100"
-            leave-active-class="transition duration-150 ease-in"
+            leave-active-class="transition duration-100 ease-in"
             leave-from-class="translate-y-0 opacity-100"
             leave-to-class="translate-y-1 opacity-0"
         >
 
             <div
                 v-if="isOpen"
-                class="absolute right-0 top-full z-50 mt-3 w-[360px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl"
+                class="
+                    absolute right-0 top-full z-50 mt-2
+                    w-[min(260px,calc(100vw-1.25rem))]
+                    overflow-hidden
+                    rounded-xl
+                    border border-slate-200
+                    bg-white
+                    shadow-xl
+
+                    sm:w-[300px]
+                    sm:rounded-2xl
+
+                    md:w-[320px]
+
+                    lg:w-[360px]
+                "
             >
 
                 <!-- ================================================= -->
@@ -230,31 +135,46 @@ onBeforeUnmount(() => {
                 <!-- ================================================= -->
 
                 <div
-                    class="flex items-center justify-between border-b border-slate-100 px-4 py-4"
+                    class="
+                        flex items-center justify-between
+                        border-b border-slate-100
+                        px-3 py-2.5
+
+                        sm:px-4 sm:py-3
+                    "
                 >
 
-                    <div>
+                    <div class="min-w-0">
 
                         <h3
-                            class="text-sm font-bold text-slate-800"
+                            class="
+                                text-xs font-bold text-slate-800
+                                sm:text-sm
+                            "
                         >
                             Notifikasi
                         </h3>
 
                         <p
-                            class="mt-0.5 text-[11px] text-slate-400"
+                            class="
+                                mt-0.5 text-[9px] text-slate-400
+                                sm:text-[10px]
+                            "
                         >
-                            {{ notificationCount }}
-                            belum dibaca
+                            {{ notificationCount }} belum dibaca
                         </p>
 
                     </div>
 
-
                     <Link
                         href="/notifikasi"
                         @click="close"
-                        class="text-xs font-semibold text-blue-600 transition hover:text-blue-700"
+                        class="
+                            shrink-0
+                            text-[9px] font-semibold text-blue-600
+                            hover:text-blue-700
+                            sm:text-[11px]
+                        "
                     >
                         Lihat semua
                     </Link>
@@ -268,7 +188,14 @@ onBeforeUnmount(() => {
 
                 <div
                     v-if="recentNotifications.length"
-                    class="max-h-[390px] overflow-y-auto"
+                    class="
+                        max-h-[280px]
+                        overflow-y-auto
+
+                        sm:max-h-[340px]
+
+                        lg:max-h-[390px]
+                    "
                 >
 
                     <Link
@@ -281,7 +208,19 @@ onBeforeUnmount(() => {
                             )
                         "
                         @click="close"
-                        class="flex gap-3 border-b border-slate-100 px-4 py-4 text-left transition last:border-b-0 hover:bg-slate-50"
+                        class="
+                            flex gap-2
+                            border-b border-slate-100
+                            px-3 py-2.5
+                            text-left
+                            transition
+                            last:border-b-0
+                            hover:bg-slate-50
+
+                            sm:gap-3
+                            sm:px-4
+                            sm:py-3
+                        "
                         :class="{
                             'bg-blue-50/40':
                                 !notification.read,
@@ -291,7 +230,16 @@ onBeforeUnmount(() => {
                         <!-- ICON -->
 
                         <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                            class="
+                                flex h-8 w-8 shrink-0
+                                items-center justify-center
+                                rounded-lg
+
+                                sm:h-9 sm:w-9
+                                sm:rounded-xl
+
+                                lg:h-10 lg:w-10
+                            "
                             :class="
                                 typeClass(
                                     notification.type
@@ -305,7 +253,13 @@ onBeforeUnmount(() => {
                                         notification.type
                                     )
                                 "
-                                class="h-5 w-5"
+                                class="
+                                    h-4 w-4
+
+                                    sm:h-4.5 sm:w-4.5
+
+                                    lg:h-5 lg:w-5
+                                "
                             />
 
                         </div>
@@ -313,51 +267,108 @@ onBeforeUnmount(() => {
 
                         <!-- CONTENT -->
 
-                        <div
-                            class="min-w-0 flex-1"
-                        >
+                        <div class="min-w-0 flex-1">
 
                             <div
-                                class="flex items-start justify-between gap-2"
+                                class="
+                                    flex items-start
+                                    justify-between
+                                    gap-1.5
+                                "
                             >
 
                                 <h4
-                                    class="line-clamp-1 text-xs font-bold text-slate-700"
+                                    class="
+                                        line-clamp-1
+                                        text-[10px]
+                                        font-bold
+                                        text-slate-700
+
+                                        sm:text-[11px]
+
+                                        lg:text-xs
+                                    "
                                 >
                                     {{ notification.title }}
                                 </h4>
 
-
-                                <!-- UNREAD DOT -->
-
                                 <span
                                     v-if="!notification.read"
-                                    class="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-500"
+                                    class="
+                                        mt-0.5
+                                        h-1.5 w-1.5
+                                        shrink-0
+                                        rounded-full
+                                        bg-blue-500
+
+                                        sm:h-2 sm:w-2
+                                    "
                                 />
 
                             </div>
 
 
                             <p
-                                class="mt-1 line-clamp-2 text-[11px] leading-5 text-slate-500"
+                                class="
+                                    mt-0.5
+                                    line-clamp-2
+                                    text-[9px]
+                                    leading-4
+                                    text-slate-500
+
+                                    sm:text-[10px]
+                                    sm:leading-4.5
+
+                                    lg:text-[11px]
+                                    lg:leading-5
+                                "
                             >
                                 {{ notification.message }}
                             </p>
 
 
                             <div
-                                class="mt-2 flex items-center justify-between gap-2"
+                                class="
+                                    mt-1.5
+                                    flex
+                                    items-center
+                                    justify-between
+                                    gap-1.5
+
+                                    sm:mt-2
+                                "
                             >
 
                                 <span
-                                    class="text-[10px] font-medium text-slate-400"
+                                    class="
+                                        min-w-0
+                                        truncate
+                                        text-[8px]
+                                        font-medium
+                                        text-slate-400
+
+                                        sm:text-[9px]
+
+                                        lg:text-[10px]
+                                    "
                                 >
                                     {{ notification.created_at }}
                                 </span>
 
-
                                 <span
-                                    class="rounded-full px-2 py-0.5 text-[9px] font-semibold capitalize"
+                                    class="
+                                        shrink-0
+                                        rounded-full
+                                        px-1.5 py-0.5
+                                        text-[7px]
+                                        font-semibold
+                                        capitalize
+
+                                        sm:px-2
+                                        sm:text-[8px]
+
+                                        lg:text-[9px]
+                                    "
                                     :class="
                                         typeClass(
                                             notification.type
@@ -382,21 +393,47 @@ onBeforeUnmount(() => {
 
                 <div
                     v-else
-                    class="px-5 py-10 text-center"
+                    class="
+                        px-4 py-7
+                        text-center
+
+                        sm:px-5 sm:py-9
+                    "
                 >
 
                     <BellIcon
-                        class="mx-auto h-9 w-9 text-slate-300"
+                        class="
+                            mx-auto
+                            h-7 w-7
+                            text-slate-300
+
+                            sm:h-9 sm:w-9
+                        "
                     />
 
                     <p
-                        class="mt-3 text-xs font-semibold text-slate-500"
+                        class="
+                            mt-2
+                            text-[10px]
+                            font-semibold
+                            text-slate-500
+
+                            sm:mt-3
+                            sm:text-xs
+                        "
                     >
                         Tidak ada notifikasi
                     </p>
 
                     <p
-                        class="mt-1 text-[11px] text-slate-400"
+                        class="
+                            mt-0.5
+                            text-[9px]
+                            text-slate-400
+
+                            sm:mt-1
+                            sm:text-[10px]
+                        "
                     >
                         Belum ada pemberitahuan.
                     </p>
@@ -409,19 +446,52 @@ onBeforeUnmount(() => {
                 <!-- ================================================= -->
 
                 <div
-                    class="border-t border-slate-100 bg-slate-50 px-4 py-3"
+                    class="
+                        border-t border-slate-100
+                        bg-slate-50
+                        px-3 py-2
+
+                        sm:px-4 sm:py-2.5
+                    "
                 >
 
                     <Link
                         href="/notifikasi"
                         @click="close"
-                        class="flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100"
+                        class="
+                            flex
+                            items-center
+                            justify-center
+                            gap-1.5
+                            rounded-lg
+                            bg-white
+                            px-3 py-2
+                            text-[9px]
+                            font-semibold
+                            text-slate-600
+                            transition
+                            hover:bg-slate-100
+
+                            sm:gap-2
+                            sm:rounded-xl
+                            sm:px-4
+                            sm:py-2.5
+                            sm:text-[10px]
+
+                            lg:text-xs
+                        "
                     >
 
                         Semua Notifikasi
 
                         <ArrowRightIcon
-                            class="h-4 w-4"
+                            class="
+                                h-3 w-3
+
+                                sm:h-3.5 sm:w-3.5
+
+                                lg:h-4 lg:w-4
+                            "
                         />
 
                     </Link>
@@ -433,5 +503,4 @@ onBeforeUnmount(() => {
         </transition>
 
     </div>
-
 </template>

@@ -107,16 +107,21 @@ class SiswaController extends Controller
 
             // ==================================================
             // PEMERIKSAAN BERKALA
-            // TETAP HANYA PERIODE AKTIF
+            // SEMUA PERIODE
+            //
+            // Frontend tetap memfilter periode aktif untuk kartu
+            // pemeriksaan utama, lalu menggunakan seluruh data ini
+            // untuk tabel "Riwayat Berkala Semua Periode".
             // ==================================================
 
-            'pemeriksaanBerkala' => function ($query) use ($periodeAktif) {
+            'pemeriksaanBerkala' => function ($query) {
 
                 $query
-                    ->where('periode_id', $periodeAktif->id)
                     ->with([
                         'pemeriksa',
+                        'periode',
                     ])
+                    ->orderBy('periode_id')
                     ->orderBy('jenis_pemeriksaan')
                     ->orderBy('tanggal_pemeriksaan');
             },

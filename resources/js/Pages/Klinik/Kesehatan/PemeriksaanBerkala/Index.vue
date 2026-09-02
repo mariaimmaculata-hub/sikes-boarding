@@ -146,24 +146,12 @@ const aksesBerkala2 = computed(() => {
 // ======================================================
 
 const berkala1Aktif = computed(() => {
-
-    return (
-        periodeAktif.value &&
-        fasePemeriksaan.value === 1 &&
-        aksesBerkala1.value === 'open'
-    )
-
+    return aksesBerkala1.value === 'open'
 })
 
 
 const berkala2Aktif = computed(() => {
-
-    return (
-        periodeAktif.value &&
-        fasePemeriksaan.value === 2 &&
-        aksesBerkala2.value === 'open'
-    )
-
+    return aksesBerkala2.value === 'open'
 })
 
 
@@ -172,17 +160,7 @@ const berkala2Aktif = computed(() => {
 // ======================================================
 
 const berkala1View = computed(() => {
-
-    if (periodeSelesai.value) {
-        return true
-    }
-
-    if (fasePemeriksaan.value === 2) {
-        return true
-    }
-
     return aksesBerkala1.value === 'view'
-
 })
 
 
@@ -191,13 +169,7 @@ const berkala1View = computed(() => {
 // ======================================================
 
 const berkala2View = computed(() => {
-
-    if (periodeSelesai.value) {
-        return true
-    }
-
     return aksesBerkala2.value === 'view'
-
 })
 
 
@@ -228,7 +200,7 @@ const tahapDescription = computed(() => {
 
     if (periodeSelesai.value) {
 
-        return 'Periode pemeriksaan telah selesai. Hasil Berkala 1 dan Berkala 2 hanya dapat dilihat.'
+        return 'Periode pemeriksaan telah selesai. Data Berkala 1 dan Berkala 2 tetap dapat dilihat dan diedit.'
 
     }
 
@@ -240,7 +212,7 @@ const tahapDescription = computed(() => {
 
     if (fasePemeriksaan.value === 2) {
 
-        return 'Pemeriksaan Berkala 1 telah selesai. Saat ini memasuki tahap Berkala 2.'
+        return 'Berkala 2 sedang aktif. Data Berkala 1 tetap dapat diedit dan Berkala 2 dapat diisi atau diedit.'
 
     }
 
@@ -359,13 +331,7 @@ const getStatusClass = (siswa) => {
 // ======================================================
 
 const berkala1BisaEdit = computed(() => {
-
-    return (
-        periodeAktif.value &&
-        fasePemeriksaan.value === 1 &&
-        aksesBerkala1.value === 'open'
-    )
-
+    return aksesBerkala1.value === 'open'
 })
 
 
@@ -374,13 +340,7 @@ const berkala1BisaEdit = computed(() => {
 // ======================================================
 
 const berkala2BisaEdit = computed(() => {
-
-    return (
-        periodeAktif.value &&
-        fasePemeriksaan.value === 2 &&
-        aksesBerkala2.value === 'open'
-    )
-
+    return aksesBerkala2.value === 'open'
 })
 
 
@@ -389,11 +349,6 @@ const berkala2BisaEdit = computed(() => {
 // ======================================================
 
 const bisaEditPemeriksaan = (jenis) => {
-
-    if (!periodeAktif.value) {
-        return false
-    }
-
     if (jenis === 'berkala_1') {
         return berkala1BisaEdit.value
     }
@@ -403,7 +358,6 @@ const bisaEditPemeriksaan = (jenis) => {
     }
 
     return false
-
 }
 
 
@@ -689,7 +643,6 @@ const detailFields = computed(() => {
 // ======================================================
 // FORMAT TANGGAL
 // ======================================================
-
 const formatTanggal = (tanggal) => {
 
     if (!tanggal) {
@@ -708,7 +661,6 @@ const formatTanggal = (tanggal) => {
     const [, tahun, bulan, hari] = match
 
     const namaBulan = [
-
         'Januari',
         'Februari',
         'Maret',
@@ -721,11 +673,9 @@ const formatTanggal = (tanggal) => {
         'Oktober',
         'November',
         'Desember',
-
     ]
 
     return `${hari} ${namaBulan[Number(bulan) - 1]} ${tahun}`
-
 }
 
 
@@ -735,39 +685,47 @@ const formatTanggal = (tanggal) => {
 
 const catatanBerkala1 = computed(() => {
 
+    const berkala = props.periode?.berkala_1
+
+    if (!berkala) {
+        return 'Informasi jadwal Berkala 1 belum tersedia.'
+    }
+
+    const mulai = formatTanggal(berkala.tanggal_mulai)
+    const selesai = formatTanggal(berkala.tanggal_selesai)
+
     if (periodeSelesai.value) {
-
-        return 'Periode telah selesai. Hasil Berkala 1 hanya dapat dilihat.'
-
+        return `Berkala 1 berlangsung dari ${mulai} sampai ${selesai}. Periode telah selesai, tetapi data Berkala 1 tetap dapat dilihat dan diedit.`
     }
 
     if (fasePemeriksaan.value === 1) {
-
-        return 'Berkala 1 sedang aktif. Data pemeriksaan dapat diisi atau diedit.'
-
+        return `Berkala 1 berlangsung dari ${mulai} sampai ${selesai}. Mohon segera isi pemeriksaan Berkala 1 sebelum batas waktu berakhir.`
     }
 
-    return 'Berkala 1 telah selesai dan hanya dapat dilihat.'
-
+    return `Berkala 1 berlangsung dari ${mulai} sampai ${selesai}. Data Berkala 1 tetap dapat diakses sesuai status akses periode.`
 })
 
 
 const catatanBerkala2 = computed(() => {
 
+    const berkala = props.periode?.berkala_2
+
+    if (!berkala) {
+        return 'Informasi jadwal Berkala 2 belum tersedia.'
+    }
+
+    const mulai = formatTanggal(berkala.tanggal_mulai)
+    const selesai = formatTanggal(berkala.tanggal_selesai)
+
     if (periodeSelesai.value) {
-
-        return 'Periode telah selesai. Hasil Berkala 2 hanya dapat dilihat.'
-
+        return `Berkala 2 berlangsung dari ${mulai} sampai ${selesai}. Periode telah selesai, tetapi data Berkala 2 tetap dapat dilihat dan diedit.`
     }
 
     if (fasePemeriksaan.value === 2) {
-
-        return 'Berkala 2 sedang aktif. Data pemeriksaan dapat diisi atau diedit.'
-
+        return `Berkala 2 berlangsung dari ${mulai} sampai ${selesai}. Mohon segera isi pemeriksaan Berkala 2 sebelum periode berakhir.`
     }
 
-    return 'Berkala 2 belum memasuki tahap pemeriksaan.'
-
+    return `Berkala 2 akan aktif mulai ${mulai} sampai ${selesai}. Sebelum tanggal tersebut, pengisian Berkala 2 masih ditutup.`
 })
 
 
@@ -1073,39 +1031,43 @@ const clearFlash = () => {
 
 
             <div
-                v-if="periode"
-                class="rounded-xl border px-4 py-3"
-                :class="
-                    periodeSelesai
-                        ? 'border-pink-100 bg-pink-50'
-                        : 'border-pink-100 bg-pink-50'
-                "
-            >
+    v-if="periode"
+    class="rounded-xl border px-4 py-3"
+    :class="
+        periodeSelesai
+            ? 'border-pink-100 bg-pink-50'
+            : 'border-pink-100 bg-pink-50'
+    "
+>
+    <p
+        class="text-[10px] font-bold uppercase tracking-wider"
+        :class="
+            periodeSelesai
+                ? 'text-slate-500'
+                : 'text-pink-500'
+        "
+    >
+        {{ statusPeriodeLabel }}
+    </p>
 
-                <p
-                    class="text-[10px] font-bold uppercase tracking-wider"
-                    :class="
-                        periodeSelesai
-                            ? 'text-slate-500'
-                            : 'text-pink-500'
-                    "
-                >
-                    {{ statusPeriodeLabel }}
-                </p>
+    <p
+        class="mt-0.5 text-sm font-bold"
+        :class="
+            periodeSelesai
+                ? 'text-slate-700'
+                : 'text-pink-800'
+        "
+    >
+        {{ periode.nama_periode }}
+    </p>
 
-                <p
-                    class="mt-0.5 text-sm font-bold"
-                    :class="
-                        periodeSelesai
-                            ? 'text-slate-700'
-                            : 'text-pink-800'
-                    "
-                >
-                    {{ periode.nama_periode }}
-                </p>
-
-            </div>
-
+    <!-- TANGGAL PERIODE AKTIF -->
+    <p class="mt-1 text-xs text-slate-600">
+        {{ formatTanggal(periode.tanggal_mulai) }}
+        <span class="mx-1 text-slate-400">–</span>
+        {{ formatTanggal(periode.tanggal_selesai) }}
+    </p>
+</div>
         </div>
 
 
